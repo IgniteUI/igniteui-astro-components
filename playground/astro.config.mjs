@@ -24,6 +24,7 @@ import path from 'node:path';
 process.env.PLATFORM ??= 'React';
 process.env.DOCS_BUILD_MODE ??= 'development';
 process.env.DOCS_ENV ??= 'development';
+process.env.BASE_URL ??= 'http://localhost:4321';
 
 /** Sample sidebar tree exercising links, groups, badges, nesting and active state. */
 const sampleSidebar = [
@@ -31,25 +32,25 @@ const sampleSidebar = [
     label: 'Getting Started',
     collapsed: false,
     items: [
-      { label: 'Introduction', slug: '/' },
-      { label: 'Installation', slug: '/installation' },
-      { label: 'Quick Start', slug: '/quick-start', badge: { text: 'New', variant: 'success' } },
+      { label: 'Introduction', slug: '' },
+    //   { label: 'Installation', slug: 'installation' },
+    //   { label: 'Quick Start', slug: 'quick-start', badge: { text: 'New', variant: 'success' } },
     ],
   },
   {
     label: 'Components',
     collapsed: false,
     items: [
-      { label: 'Sidebar', slug: '/components/sidebar' },
-      { label: 'Nav Bar', slug: '/components/nav-bar' },
+      { label: 'Sidebar', slug: 'components/sidebar' },
+      { label: 'Nav Bar', slug: 'components/nav-bar' },
       {
         label: 'MDX Helpers',
         collapsed: true,
         items: [
-          { label: 'ApiLink', slug: '/components/api-link' },
-          { label: 'ApiRef', slug: '/components/api-ref' },
-          { label: 'PlatformBlock', slug: '/components/platform-block' },
-          { label: 'Sample', slug: '/components/sample' },
+          { label: 'ApiLink', slug: 'components/api-link' },
+          { label: 'ApiRef', slug: 'components/api-ref' },
+          { label: 'PlatformBlock', slug: 'components/platform-block' },
+          { label: 'Sample', slug: 'components/sample' },
         ],
       },
     ],
@@ -58,7 +59,7 @@ const sampleSidebar = [
     label: 'Reference',
     collapsed: true,
     items: [
-      { label: 'Changelog', slug: '/changelog', badge: { text: 'Beta', variant: 'caution' } },
+      { label: 'Changelog', slug: 'changelog', badge: { text: 'Beta', variant: 'caution' } },
     ],
   },
 ];
