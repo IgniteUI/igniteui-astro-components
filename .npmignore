@@ -1,0 +1,8 @@
+node_modules
+.astro
+.github
+.vscode
+tests
+*.log
+.env*
+tsconfig.json

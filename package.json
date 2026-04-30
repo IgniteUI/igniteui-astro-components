@@ -1,0 +1,86 @@
+{
+  "name": "igniteui-astro-components",
+  "version": "0.1.0",
+  "description": "Reusable Astro components, layouts, and integrations for Infragistics / Ignite UI documentation sites. Replaces the Starlight defaults with project-specific implementations.",
+  "type": "module",
+  "license": "MIT",
+  "author": "Infragistics",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/IgniteUI/igniteui-astro-components"
+  },
+  "keywords": [
+    "astro",
+    "astro-component",
+    "astro-integration",
+    "documentation",
+    "docs",
+    "infragistics",
+    "ignite-ui",
+    "sidebar",
+    "mdx"
+  ],
+  "files": [
+    "src",
+    "README.md",
+    "LICENSE"
+  ],
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    },
+    "./integration": "./src/integration.ts",
+    "./sidebar": "./src/sidebar.ts",
+    "./platform": "./src/platform.ts",
+    "./content": "./src/content-helper.ts",
+    "./content-config": "./src/content.config.ts",
+    "./llms": "./src/llms.ts",
+
+    "./layouts/MainLayout.astro": "./src/layouts/MainLayout.astro",
+
+    "./components/GlobalNavBar.astro": "./src/components/GlobalNavBar.astro",
+    "./components/GlobalFooter.astro": "./src/components/GlobalFooter.astro",
+    "./components/DocsSubHeader.astro": "./src/components/DocsSubHeader.astro",
+    "./components/Search.astro": "./src/components/Search.astro",
+    "./components/ThemingWidget.astro": "./src/components/ThemingWidget.astro",
+    "./components/MobileSidebarToggle.astro": "./src/components/MobileSidebarToggle.astro",
+
+    "./components/sidebar/DocsSidebar.astro": "./src/components/sidebar/DocsSidebar.astro",
+    "./components/sidebar/SidebarTree.astro": "./src/components/sidebar/SidebarTree.astro",
+    "./components/sidebar/SidebarItem.astro": "./src/components/sidebar/SidebarItem.astro",
+    "./components/sidebar/SidebarFilterInput.astro": "./src/components/sidebar/SidebarFilterInput.astro",
+    "./components/sidebar/sidebar-filter": "./src/components/sidebar/sidebar-filter.ts",
+
+    "./components/mdx/ApiRef.astro": "./src/components/mdx/ApiRef.astro",
+    "./components/mdx/ApiLink.astro": "./src/components/mdx/ApiLink.astro",
+    "./components/mdx/PlatformBlock.astro": "./src/components/mdx/PlatformBlock.astro",
+    "./components/mdx/Sample.astro": "./src/components/mdx/Sample.astro",
+
+    "./lib/sidebar/types": "./src/lib/sidebar/types.ts",
+    "./lib/sidebar/helpers": "./src/lib/sidebar/helpers.ts",
+    "./lib/platform-context": "./src/lib/platform-context.ts",
+
+    "./plugins/remark-docfx": "./src/plugins/remark-docfx.ts",
+
+    "./styles/custom.css": "./src/styles/custom.css",
+    "./styles/ig-theme.scss": "./src/styles/ig-theme.scss",
+
+    "./package.json": "./package.json"
+  },
+  "peerDependencies": {
+    "astro": "^5.0.0 || ^6.0.0"
+  },
+  "dependencies": {
+    "js-yaml": "^4.1.0"
+  },
+  "devDependencies": {
+    "@types/js-yaml": "^4.0.9",
+    "astro": "^6.1.6",
+    "sass": "^1.83.0",
+    "typescript": "^5.6.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
