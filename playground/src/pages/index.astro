@@ -1,9 +1,19 @@
 ---
 import MainLayout from '../../../src/layouts/MainLayout.astro';
 import DocsSidebar from '../../../src/components/sidebar/DocsSidebar.astro';
+
+const headings = [
+  { depth: 2, slug: 'pages', text: 'Pages' },
+  { depth: 3, slug: 'layout-components', text: 'Layout components' },
+  { depth: 3, slug: 'navigation-components', text: 'Navigation components' },
+  { depth: 3, slug: 'mdx-components', text: 'MDX components' },
+  { depth: 2, slug: 'how-it-works', text: 'How it works' },
+  { depth: 3, slug: 'virtual-modules', text: 'Virtual modules' },
+  { depth: 3, slug: 'adding-a-demo-page', text: 'Adding a demo page' },
+];
 ---
 
-<MainLayout title="Playground" hasSidebar currentSlug="/">
+<MainLayout title="Playground" hasSidebar currentSlug="/" headings={headings}>
   <DocsSidebar slot="sidebar" currentSlug="/" />
 
   <main class="content">
@@ -14,23 +24,48 @@ import DocsSidebar from '../../../src/components/sidebar/DocsSidebar.astro';
       pages for each component.
     </p>
 
-    <h2>Pages</h2>
+    <h2 id="pages">Pages</h2>
+
+    <h3 id="layout-components">Layout components</h3>
     <ul>
-      <li><a href="/components/sidebar">Sidebar</a></li>
-      <li><a href="/components/nav-bar">Global nav &amp; footer</a></li>
-      <li><a href="/components/api-link">ApiLink</a></li>
-      <li><a href="/components/api-ref">ApiRef</a></li>
-      <li><a href="/components/platform-block">PlatformBlock</a></li>
+      <li><a href="/components/sidebar">Sidebar</a> — left-rail navigation tree with filter input.</li>
+      <li><a href="/components/docs-toc">DocsToc</a> — "On this page" table of contents with scroll-spy.</li>
     </ul>
 
-    <h2>How it works</h2>
+    <h3 id="navigation-components">Navigation components</h3>
+    <ul>
+      <li><a href="/components/nav-bar">Global nav &amp; footer</a> — top navigation bar and site footer.</li>
+    </ul>
+
+    <h3 id="mdx-components">MDX components</h3>
+    <ul>
+      <li><a href="/components/api-link">ApiLink</a> — inline link to an API reference entry.</li>
+      <li><a href="/components/api-ref">ApiRef</a> — full API reference block.</li>
+      <li><a href="/components/platform-block">PlatformBlock</a> — conditionally renders content per platform.</li>
+    </ul>
+
+    <h2 id="how-it-works">How it works</h2>
     <p>
       The playground bypasses <code>createDocsSite()</code> and stubs the
       <code>virtual:docs-template/site-meta</code> and
       <code>virtual:docs-template/nav-html</code> modules from
-      <code>astro.config.mjs</code>. Edit
-      <code>astro.config.mjs</code> to tweak the sample sidebar, product
-      links or platform key.
+      <code>astro.config.mjs</code>.
+    </p>
+
+    <h3 id="virtual-modules">Virtual modules</h3>
+    <p>
+      The two virtual modules supply sidebar tree data, product links, the
+      active platform key, and any extra <code>&lt;head&gt;</code> entries.
+      Edit <code>astro.config.mjs</code> to tweak the sample values without
+      touching component source code.
+    </p>
+
+    <h3 id="adding-a-demo-page">Adding a demo page</h3>
+    <p>
+      Create a new <code>.astro</code> file under
+      <code>playground/src/pages/components/</code>, import
+      <code>MainLayout</code> and the component under test from
+      <code>../../../../src/</code>, and add a link to the list above.
     </p>
   </main>
 </MainLayout>
