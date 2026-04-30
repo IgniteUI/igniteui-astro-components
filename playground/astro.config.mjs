@@ -50,7 +50,6 @@ const sampleSidebar = [
           { label: 'ApiLink', slug: 'components/api-link' },
           { label: 'ApiRef', slug: 'components/api-ref' },
           { label: 'PlatformBlock', slug: 'components/platform-block' },
-          { label: 'Sample', slug: 'components/sample' },
         ],
       },
     ],

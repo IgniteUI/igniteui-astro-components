@@ -16,6 +16,8 @@ interface Props {
 
 const { item, ancestors = [], currentSlug } = Astro.props;
 const path = joinPath(ancestors, item.label);
+const normalizedSlug = isGroup(item) ? '' : normalizeSlug(item.slug);
+const href = normalizedSlug ? `${base}/${normalizedSlug}/` : `${base}/`;
 ---
 
 {isGroup(item) ? (
@@ -44,7 +46,7 @@ const path = joinPath(ancestors, item.label);
 ) : (
   <li data-label={item.label} data-slug={item.slug} data-path={path}>
     <a
-      href={`${base}/${normalizeSlug(item.slug)}/`}
+      href={href}
       aria-current={isActive(item.slug, currentSlug) ? 'page' : 'false'}
       {...item.attrs}
     >
