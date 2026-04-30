@@ -45,6 +45,7 @@
     "./components/Search.astro": "./src/components/Search.astro",
     "./components/ThemingWidget.astro": "./src/components/ThemingWidget.astro",
     "./components/MobileSidebarToggle.astro": "./src/components/MobileSidebarToggle.astro",
+    "./components/DocsToc.astro": "./src/components/DocsToc.astro",
 
     "./components/sidebar/DocsSidebar.astro": "./src/components/sidebar/DocsSidebar.astro",
     "./components/sidebar/SidebarTree.astro": "./src/components/sidebar/SidebarTree.astro",

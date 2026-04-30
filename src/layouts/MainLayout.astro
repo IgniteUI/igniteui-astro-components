@@ -1,9 +1,11 @@
 ---
+import type { MarkdownHeading } from 'astro';
 import { ClientRouter } from 'astro:transitions';
 import GlobalNavBar from '../components/GlobalNavBar.astro';
 import GlobalFooter from '../components/GlobalFooter.astro';
 import DocsSubHeader from '../components/DocsSubHeader.astro';
 import MobileSidebarToggle from '../components/MobileSidebarToggle.astro';
+import DocsToc from '../components/DocsToc.astro';
 import { widgetScriptSrc, platform as virtualPlatform } from 'virtual:docs-template/nav-html';
 import { title as siteTitle, headEntries } from 'virtual:docs-template/site-meta';
 import '../styles/ig-theme.scss';
@@ -16,9 +18,15 @@ export interface Props {
   hasSidebar?: boolean;
   /** Slug of the current page; used to compute breadcrumbs in the subheader. */
   currentSlug?: string;
+  /** Headings for the "On this page" table of contents. Omit to hide the TOC. */
+  headings?: MarkdownHeading[];
+  /** Controls which heading levels appear in the TOC. Pass `false` to disable. */
+  tocConfig?: false | { minHeadingLevel?: number; maxHeadingLevel?: number };
+  /** Label rendered above the TOC list. Defaults to "On this page". */
+  tocLabel?: string;
 }
 
-const { title, description, keywords, hasSidebar = true, currentSlug = '' } = Astro.props;
+const { title, description, keywords, hasSidebar = true, currentSlug = '', headings, tocConfig, tocLabel } = Astro.props;
 const navTheme = (virtualPlatform ?? import.meta.env.VITE_NAV_THEME ?? 'igniteui') as string;
 const showGlobalNav = navTheme !== 'none';
 const pageTitle = title ? `${title} | ${siteTitle}` : siteTitle;
@@ -94,6 +102,11 @@ type HeadEntry = { tag: string; attrs?: Record<string, string | boolean | undefi
     <div class="main-frame">
       <slot />
     </div>
+    {headings && headings.length > 0 && (
+      <aside class="toc-sidebar">
+        <DocsToc headings={headings} tocConfig={tocConfig} label={tocLabel} />
+      </aside>
+    )}
   </div>
   <GlobalFooter />
 </body>

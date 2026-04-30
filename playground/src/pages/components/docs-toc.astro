@@ -1,0 +1,97 @@
+---
+import MainLayout from '../../../../src/layouts/MainLayout.astro';
+import DocsSidebar from '../../../../src/components/sidebar/DocsSidebar.astro';
+
+const slug = '/components/docs-toc';
+
+const headings = [
+    { depth: 2, slug: 'introduction', text: 'Introduction' },
+    { depth: 2, slug: 'props', text: 'Props' },
+    { depth: 3, slug: 'headings-prop', text: 'headings prop' },
+    { depth: 3, slug: 'toc-config-prop', text: 'tocConfig prop' },
+    { depth: 3, slug: 'label-prop', text: 'label prop' },
+    { depth: 2, slug: 'behaviour', text: 'Behaviour' },
+    { depth: 2, slug: 'styling', text: 'Styling' },
+];
+---
+
+<MainLayout title="DocsToc" hasSidebar currentSlug={slug} headings={headings}>
+  <DocsSidebar slot="sidebar" currentSlug={slug} />
+
+  <main class="content">
+    <h1>DocsToc</h1>
+    <p>
+      <code>DocsToc</code> renders a "On this page" table of contents from an
+      array of <code>MarkdownHeading</code> objects. In a real docs page these
+      come from Astro's <code>getHeadings()</code> helper; here a static list
+      is used so you can see the component in action without an MDX file.
+    </p>
+    <p>
+      Scroll the page — the active link is highlighted as each section crosses
+      the 160 px threshold from the top of the viewport.
+    </p>
+
+    <h2 id="introduction">Introduction</h2>
+    <p>
+      The component is self-contained: it ships its own scroll-spy logic as a
+      custom element (<code>&lt;docs-toc&gt;</code>) and all styles as a global
+      stylesheet so the <code>.toc-sidebar</code> host element receives the
+      correct layout rules automatically.
+    </p>
+
+    <h2 id="props">Props</h2>
+    <p>Three props control the output at the root call site.</p>
+
+    <h3 id="headings-prop">headings prop</h3>
+    <p>
+      An array of <code>MarkdownHeading</code> objects (<code>depth</code>,
+      <code>slug</code>, <code>text</code>). Pass the value returned by
+      <code>getHeadings()</code> directly from your MDX layout.
+    </p>
+
+    <h3 id="toc-config-prop">tocConfig prop</h3>
+    <p>
+      Controls which heading levels are included. Accepts <code>false</code>
+      (renders nothing), <code>undefined</code> (default: h2–h3), or an object
+      with optional <code>minHeadingLevel</code> / <code>maxHeadingLevel</code>
+      fields.
+    </p>
+
+    <h3 id="label-prop">label prop</h3>
+    <p>
+      The accessible heading text rendered above the list. Defaults to
+      <em>"On this page"</em>.
+    </p>
+
+    <h2 id="behaviour">Behaviour</h2>
+    <p>
+      The custom element uses <code>requestAnimationFrame</code>-throttled
+      scroll listeners and <code>getBoundingClientRect()</code> to determine
+      which heading is currently active, then sets <code>aria-current="true"</code>
+      on the matching link.
+    </p>
+
+    <h2 id="styling">Styling</h2>
+    <p>
+      The component injects global styles for the <code>.toc-sidebar</code>
+      host, the <code>docs-toc</code> custom element, and the
+      <code>.toc-list</code> tree. On viewports narrower than 84 rem the
+      sidebar is hidden entirely via <code>display: none</code>.
+    </p>
+  </main>
+</MainLayout>
+
+<style>
+  .content {
+    max-width: 60rem;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 6rem;
+  }
+  .content h1 { margin-top: 0; }
+  .content code {
+    background: var(--sl-color-bg-inline-code);
+    padding: 0.1em 0.35em;
+    border-radius: 0.25em;
+    font-size: 0.9em;
+  }
+</style>
