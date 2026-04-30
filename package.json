@@ -82,5 +82,9 @@
   },
   "publishConfig": {
     "access": "public"
+  },
+  "scripts": {
+    "playground": "npm --prefix playground run dev",
+    "playground:build": "npm --prefix playground run build"
   }
 }

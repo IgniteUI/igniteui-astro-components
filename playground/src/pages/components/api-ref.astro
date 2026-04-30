@@ -1,0 +1,31 @@
+---
+import MainLayout from '../../../../src/layouts/MainLayout.astro';
+import DocsSidebar from '../../../../src/components/sidebar/DocsSidebar.astro';
+import ApiRef from '../../../../src/components/mdx/ApiRef.astro';
+
+const slug = '/components/api-ref';
+---
+
+<MainLayout title="ApiRef" hasSidebar currentSlug={slug}>
+  <DocsSidebar slot="sidebar" currentSlug={slug} />
+  <main class="content">
+    <h1>ApiRef</h1>
+    <p>Renders the &quot;API References&quot; section listing one or more types.</p>
+
+    <h2>Classes (default kind)</h2>
+    <ApiRef types={["Toast", "Combo", "Calendar"]} />
+
+    <h2>Interfaces</h2>
+    <ApiRef kind="interface" types={["ComboTemplateProps"]} prefixed={false} />
+
+    <h2>Enums</h2>
+    <ApiRef kind="enum" types={["CalendarSelection"]} />
+
+    <h2>Charts sub-package</h2>
+    <ApiRef pkg="charts" types={["CategoryChart", "FinancialChart"]} />
+  </main>
+</MainLayout>
+
+<style>
+  .content { max-width: 60rem; margin: 0 auto; padding: 2rem 1.5rem; }
+</style>

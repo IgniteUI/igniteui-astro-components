@@ -1,0 +1,35 @@
+---
+import MainLayout from '../../../../src/layouts/MainLayout.astro';
+import DocsSidebar from '../../../../src/components/sidebar/DocsSidebar.astro';
+import PlatformBlock from '../../../../src/components/mdx/PlatformBlock.astro';
+
+const slug = '/components/platform-block';
+---
+
+<MainLayout title="PlatformBlock" hasSidebar currentSlug={slug}>
+  <DocsSidebar slot="sidebar" currentSlug={slug} />
+  <main class="content">
+    <h1>PlatformBlock</h1>
+    <p>Only the block matching the current <code>PLATFORM</code> env var renders.</p>
+
+    <PlatformBlock for="Angular">
+      <p><strong>Angular</strong> only.</p>
+    </PlatformBlock>
+    <PlatformBlock for="React">
+      <p><strong>React</strong> only.</p>
+    </PlatformBlock>
+    <PlatformBlock for="WebComponents">
+      <p><strong>Web Components</strong> only.</p>
+    </PlatformBlock>
+    <PlatformBlock for="Blazor">
+      <p><strong>Blazor</strong> only.</p>
+    </PlatformBlock>
+    <PlatformBlock for="Angular, React">
+      <p>Visible to <strong>Angular</strong> and <strong>React</strong>.</p>
+    </PlatformBlock>
+  </main>
+</MainLayout>
+
+<style>
+  .content { max-width: 60rem; margin: 0 auto; padding: 2rem 1.5rem; }
+</style>

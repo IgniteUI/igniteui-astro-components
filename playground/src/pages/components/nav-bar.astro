@@ -1,0 +1,37 @@
+---
+import MainLayout from '../../../../src/layouts/MainLayout.astro';
+import DocsSidebar from '../../../../src/components/sidebar/DocsSidebar.astro';
+import GlobalNavBar from '../../../../src/components/GlobalNavBar.astro';
+import GlobalFooter from '../../../../src/components/GlobalFooter.astro';
+
+const slug = '/components/nav-bar';
+---
+
+<MainLayout title="Global Nav & Footer" hasSidebar currentSlug={slug}>
+  <DocsSidebar slot="sidebar" currentSlug={slug} />
+  <main class="content">
+    <h1>Global nav &amp; footer</h1>
+    <p>
+      <code>MainLayout</code> already mounts <code>GlobalNavBar</code>
+      and <code>GlobalFooter</code> at the top/bottom of the page — the
+      bar above is rendered from there.
+    </p>
+
+    <h2>Per-platform overrides</h2>
+    <p>Each component accepts a <code>theme</code> prop overriding the virtual-module value:</p>
+
+    <h3>theme="angular"</h3>
+    <GlobalNavBar theme="angular" />
+
+    <h3>theme="appbuilder"</h3>
+    <GlobalNavBar theme="appbuilder" />
+
+    <h3>Inline footer (theme="igniteui")</h3>
+    <GlobalFooter theme="igniteui" />
+  </main>
+</MainLayout>
+
+<style>
+  .content { max-width: 60rem; margin: 0 auto; padding: 2rem 1.5rem; }
+  h3 { margin-top: 2rem; }
+</style>

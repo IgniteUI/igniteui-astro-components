@@ -1,0 +1,28 @@
+---
+import MainLayout from '../../../../src/layouts/MainLayout.astro';
+import DocsSidebar from '../../../../src/components/sidebar/DocsSidebar.astro';
+
+const slug = '/components/sidebar';
+---
+
+<MainLayout title="Sidebar" hasSidebar currentSlug={slug}>
+  <DocsSidebar slot="sidebar" currentSlug={slug} />
+  <main class="content">
+    <h1>Sidebar</h1>
+    <p>
+      The current page is highlighted in the sidebar via the
+      <code>currentSlug</code> prop. Try the filter input above the tree —
+      it uses the <code>&lt;sidebar-filter&gt;</code> custom element with
+      <code>[data-filter-match]</code> attributes.
+    </p>
+    <p>
+      Sidebar data is supplied by the playground's stub of
+      <code>virtual:docs-template/site-meta</code> in
+      <code>astro.config.mjs</code>.
+    </p>
+  </main>
+</MainLayout>
+
+<style>
+  .content { max-width: 60rem; margin: 0 auto; padding: 2rem 1.5rem; }
+</style>

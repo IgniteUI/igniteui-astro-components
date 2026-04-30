@@ -1,0 +1,16 @@
+{
+  "name": "igniteui-astro-components-playground",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Local playground for visually testing the igniteui-astro-components package without publishing it.",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "astro check"
+  },
+  "devDependencies": {
+    "igniteui-theming": "*"
+  }
+}
