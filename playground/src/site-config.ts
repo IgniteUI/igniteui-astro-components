@@ -37,6 +37,7 @@ export const SIDEBAR: SidebarEntry[] = [
         items: [
           { label: 'ApiLink',       slug: 'components/api-link' },
           { label: 'ApiRef',        slug: 'components/api-ref' },
+          { label: 'DocsAside',     slug: 'components/docs-aside' },
           { label: 'PlatformBlock', slug: 'components/platform-block' },
         ],
       },
