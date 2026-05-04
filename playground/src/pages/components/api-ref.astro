@@ -1,13 +1,14 @@
 ---
-import MainLayout from '../../../../src/layouts/MainLayout.astro';
+import MainLayout from '../../../../src/layouts/MainLayout/MainLayout.astro';
 import DocsSidebar from '../../../../src/components/sidebar/DocsSidebar.astro';
-import ApiRef from '../../../../src/components/mdx/ApiRef.astro';
+import ApiRef from '../../../../src/components/mdx/ApiRef/ApiRef.astro';
+import { SITE_TITLE, SIDEBAR } from '../../site-config';
 
 const slug = 'components/api-ref';
 ---
 
-<MainLayout title="ApiRef" hasSidebar currentSlug={slug}>
-  <DocsSidebar slot="sidebar" currentSlug={slug} />
+<MainLayout title="ApiRef" siteTitle={SITE_TITLE} hasSidebar currentSlug={slug}>
+  <DocsSidebar slot="sidebar" items={SIDEBAR} currentSlug={slug} />
   <main class="content">
     <h1>ApiRef</h1>
     <p>Renders the &quot;API References&quot; section listing one or more types.</p>

@@ -1,12 +1,13 @@
 ---
-import MainLayout from '../../../../src/layouts/MainLayout.astro';
+import MainLayout from '../../../../src/layouts/MainLayout/MainLayout.astro';
 import DocsSidebar from '../../../../src/components/sidebar/DocsSidebar.astro';
+import { SITE_TITLE, SIDEBAR } from '../../site-config';
 
 const slug = 'components/sidebar';
 ---
 
-<MainLayout title="Sidebar" hasSidebar currentSlug={slug}>
-  <DocsSidebar slot="sidebar" currentSlug={slug} />
+<MainLayout title="Sidebar" siteTitle={SITE_TITLE} hasSidebar currentSlug={slug}>
+  <DocsSidebar slot="sidebar" items={SIDEBAR} currentSlug={slug} />
   <main class="content">
     <h1>Sidebar</h1>
     <p>

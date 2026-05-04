@@ -10,25 +10,49 @@
  */
 import { platform as virtualPlatform } from 'virtual:docs-template/nav-html';
 import { productLinks, sidebar as sidebarData, title as siteTitle } from 'virtual:docs-template/site-meta';
-import Search from './Search.astro';
-import type { SidebarEntry } from '../lib/sidebar/types';
-import { getBreadcrumb } from '../lib/sidebar/helpers';
+import Search from '../Search/Search.astro';
+import type { SidebarEntry } from '../../lib/sidebar/types';
+import { getBreadcrumb } from '../../lib/sidebar/helpers';
+
+interface ProductLink {
+  label: string;
+  href: string;
+  platform?: string;
+}
 
 interface Props {
   /** Fallback title if the slug is not present in the sidebar tree. */
   pageTitle?: string | null;
   /** Current page slug — used to derive the breadcrumb from the sidebar tree. */
   currentSlug?: string;
+  /**
+   * Override the site title shown on the left. Defaults to the virtual module value.
+   * Useful when consuming without `siteMetaIntegration`.
+   */
+  siteTitle?: string;
+  /**
+   * Override the cross-product navigation links. Defaults to the virtual module value.
+   * Useful when consuming without `siteMetaIntegration`.
+   */
+  productLinks?: ProductLink[];
+  /**
+   * Override the sidebar tree used for breadcrumb generation.
+   * Defaults to the virtual module value.
+   */
+  sidebarItems?: SidebarEntry[];
 }
 
-const { pageTitle = '', currentSlug = '' } = Astro.props;
+const { pageTitle = '', currentSlug = '', siteTitle: siteTitleProp, productLinks: productLinksProp, sidebarItems } = Astro.props;
+const resolvedSiteTitle = siteTitleProp ?? siteTitle;
 const currentPlatform = virtualPlatform ?? null;
-const filteredLinks = productLinks.filter(l => l.platform !== currentPlatform);
+const resolvedLinks = (productLinksProp ?? productLinks) as ProductLink[];
+const filteredLinks = resolvedLinks.filter((l: ProductLink) => l.platform !== currentPlatform);
 
 // Breadcrumb of sidebar labels for the current page (root group dropped),
 // ending with the active item's own sidebar label. Falls back to `pageTitle`
 // if the slug is not in the sidebar tree.
-const sidebarCrumbs = currentSlug ? getBreadcrumb(sidebarData as SidebarEntry[], currentSlug) : [];
+const resolvedSidebar = (sidebarItems ?? sidebarData) as SidebarEntry[];
+const sidebarCrumbs = currentSlug ? getBreadcrumb(resolvedSidebar, currentSlug) : [];
 const crumbs = sidebarCrumbs.length > 0 ? sidebarCrumbs : (pageTitle ? [pageTitle] : []);
 ---
 
@@ -37,7 +61,7 @@ const crumbs = sidebarCrumbs.length > 0 ? sidebarCrumbs : (pageTitle ? [pageTitl
 
         <!-- Left: title area, takes all free space -->
         <div class="subheader-context">
-            {siteTitle && <span class="subheader-site-title">{siteTitle}</span>}
+            {resolvedSiteTitle && <span class="subheader-site-title">{resolvedSiteTitle}</span>}
             {crumbs.map((label, i) => (
                 <>
                     <span class="subheader-sep" aria-hidden="true">{i === 0 ? '-' : '/'}</span>

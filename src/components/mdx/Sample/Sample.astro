@@ -14,7 +14,7 @@
  * DV samples (charts/, gauges/, maps/, excel/) automatically use dvDemosBaseUrl
  * when a separate demosBaseUrl is present in the environment config.
  */
-import { getPlatformContext, getEnvVars } from '../../lib/platform-context.ts';
+import { getPlatformContext, getEnvVars } from '../../../lib/platform-context.ts';
 
 interface Props {
     src: string;
@@ -102,7 +102,7 @@ const exampleTabId = `${widgetId}-example`;
       // astro:page-load fires after every client-router navigation AND on the initial
       // page load, so using it as the sole trigger handles both cases without
       // double-initialization.
-      import { initSampleWidgets } from '../../scripts/sample-widget';
+      import { initSampleWidgets } from '../../../scripts/sample-widget';
       document.addEventListener('astro:page-load', initSampleWidgets);
     </script>
   </>
