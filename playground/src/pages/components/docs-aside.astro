@@ -1,0 +1,74 @@
+---
+import MainLayout from '../../../../src/layouts/MainLayout/MainLayout.astro';
+import DocsSidebar from '../../../../src/components/sidebar/DocsSidebar.astro';
+import DocsAside from '../../../../src/components/mdx/DocsAside/DocsAside.astro';
+import { SITE_TITLE, SIDEBAR } from '../../site-config';
+
+const slug = 'components/docs-aside';
+
+const headings = [
+  { depth: 2, slug: 'variants',      text: 'Variants' },
+  { depth: 2, slug: 'custom-title',  text: 'Custom title' },
+  { depth: 2, slug: 'custom-color',  text: 'Custom color' },
+  { depth: 2, slug: 'no-icon',       text: 'No icon' },
+];
+---
+
+<MainLayout title="DocsAside" siteTitle={SITE_TITLE} hasSidebar currentSlug={slug} headings={headings}>
+  <DocsSidebar slot="sidebar" items={SIDEBAR} currentSlug={slug} />
+  <main class="content">
+    <h1>DocsAside</h1>
+    <p>
+      Styled callout blocks for notes, tips, cautions, and danger notices.
+      Each variant has a type-specific color accent and inline SVG icon.
+    </p>
+
+    <h2 id="variants">Variants</h2>
+
+    <DocsAside type="note">
+      This is a <strong>note</strong>. Use it for supplementary information the reader should be aware of.
+    </DocsAside>
+
+    <DocsAside type="tip">
+      This is a <strong>tip</strong>. Use it to share helpful shortcuts or best practices.
+    </DocsAside>
+
+    <DocsAside type="caution">
+      This is a <strong>caution</strong>. Use it to warn about potential pitfalls or breaking changes.
+    </DocsAside>
+
+    <DocsAside type="danger">
+      This is a <strong>danger</strong> notice. Use it for irreversible or destructive actions.
+    </DocsAside>
+
+    <h2 id="custom-title">Custom title</h2>
+
+    <DocsAside type="caution" title="Breaking change in v3">
+      The <code>foo</code> prop has been removed. Migrate to <code>bar</code> before upgrading.
+    </DocsAside>
+
+    <DocsAside type="tip" title="Pro tip">
+      You can override the heading text with the <code>title</code> prop.
+    </DocsAside>
+
+    <h2 id="custom-color">Custom color</h2>
+
+    <DocsAside type="note" color="hsl(280, 80%, 50%)">
+      A purple-accented note using <code>color="hsl(280, 80%, 50%)"</code>.
+    </DocsAside>
+
+    <DocsAside type="note" color="#e91e8c">
+      A magenta-accented note using <code>color="#e91e8c"</code>.
+    </DocsAside>
+
+    <h2 id="no-icon">No icon</h2>
+
+    <DocsAside type="tip" icon="">
+      This tip has no icon - pass <code>icon=""</code> to suppress it.
+    </DocsAside>
+  </main>
+</MainLayout>
+
+<style>
+  .content { max-width: 60rem; margin: 0 auto; padding: 2rem 1.5rem; }
+</style>
