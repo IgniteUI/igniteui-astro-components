@@ -30,6 +30,7 @@ export const SIDEBAR: SidebarEntry[] = [
     items: [
       { label: 'Sidebar',  slug: 'components/sidebar' },
       { label: 'Nav Bar',  slug: 'components/nav-bar' },
+      { label: 'DocsToc', slug: 'components/docs-toc' },
       {
         label: 'MDX Helpers',
         collapsed: true,
