@@ -42,6 +42,7 @@ const sampleSidebar = [
     collapsed: false,
     items: [
       { label: 'Sidebar', slug: 'components/sidebar' },
+      { label: 'DocsToc', slug: 'components/docs-toc' },
       { label: 'Nav Bar', slug: 'components/nav-bar' },
       {
         label: 'MDX Helpers',

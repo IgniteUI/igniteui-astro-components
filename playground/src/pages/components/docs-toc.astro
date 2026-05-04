@@ -11,7 +11,18 @@ const headings = [
     { depth: 3, slug: 'toc-config-prop', text: 'tocConfig prop' },
     { depth: 3, slug: 'label-prop', text: 'label prop' },
     { depth: 2, slug: 'behaviour', text: 'Behaviour' },
+    { depth: 3, slug: 'scroll-spy', text: 'Scroll-spy' },
+    { depth: 3, slug: 'active-threshold', text: 'Active threshold' },
     { depth: 2, slug: 'styling', text: 'Styling' },
+    { depth: 3, slug: 'css-custom-properties', text: 'CSS custom properties' },
+    { depth: 3, slug: 'active-state-styles', text: 'Active-state styles' },
+    { depth: 2, slug: 'integration', text: 'Integration' },
+    { depth: 3, slug: 'mdx-pages', text: 'MDX pages' },
+    { depth: 3, slug: 'main-layout', text: 'MainLayout' },
+    { depth: 2, slug: 'known-limitations', text: 'Known limitations' },
+    { depth: 3, slug: 'short-pages', text: 'Short pages' },
+    { depth: 3, slug: 'dynamic-headings', text: 'Dynamic headings' },
+    { depth: 2, slug: 'changelog', text: 'Changelog' },
 ];
 ---
 
@@ -20,64 +31,91 @@ const headings = [
 
   <main class="content">
     <h1>DocsToc</h1>
-    <p>
-      <code>DocsToc</code> renders a "On this page" table of contents from an
-      array of <code>MarkdownHeading</code> objects. In a real docs page these
-      come from Astro's <code>getHeadings()</code> helper; here a static list
-      is used so you can see the component in action without an MDX file.
-    </p>
-    <p>
-      Scroll the page — the active link is highlighted as each section crosses
-      the 160 px threshold from the top of the viewport.
-    </p>
 
     <h2 id="introduction">Introduction</h2>
     <p>
-      The component is self-contained: it ships its own scroll-spy logic as a
-      custom element (<code>&lt;docs-toc&gt;</code>) and all styles as a global
-      stylesheet so the <code>.toc-sidebar</code> host element receives the
-      correct layout rules automatically.
+      <code>DocsToc</code> renders an "On this page" sidebar from an array of
+      <code>MarkdownHeading</code> objects, with built-in scroll-spy implemented as a
+      self-contained <code>&lt;docs-toc&gt;</code> custom element.
     </p>
 
     <h2 id="props">Props</h2>
-    <p>Three props control the output at the root call site.</p>
 
     <h3 id="headings-prop">headings prop</h3>
     <p>
-      An array of <code>MarkdownHeading</code> objects (<code>depth</code>,
-      <code>slug</code>, <code>text</code>). Pass the value returned by
-      <code>getHeadings()</code> directly from your MDX layout.
+      Array of <code>MarkdownHeading</code> objects. Pass the value from
+      <code>getHeadings()</code> directly; entries outside the configured depth range are filtered automatically.
     </p>
 
     <h3 id="toc-config-prop">tocConfig prop</h3>
     <p>
-      Controls which heading levels are included. Accepts <code>false</code>
-      (renders nothing), <code>undefined</code> (default: h2–h3), or an object
-      with optional <code>minHeadingLevel</code> / <code>maxHeadingLevel</code>
-      fields.
+      Accepts <code>false</code> (render nothing), <code>undefined</code> (default: h2–h3), or
+      <code>&#123; minHeadingLevel, maxHeadingLevel &#125;</code>.
     </p>
 
     <h3 id="label-prop">label prop</h3>
     <p>
-      The accessible heading text rendered above the list. Defaults to
-      <em>"On this page"</em>.
+      Heading text rendered above the list. Defaults to <em>"On this page"</em>.
     </p>
 
     <h2 id="behaviour">Behaviour</h2>
+
+    <h3 id="scroll-spy">Scroll-spy</h3>
     <p>
-      The custom element uses <code>requestAnimationFrame</code>-throttled
-      scroll listeners and <code>getBoundingClientRect()</code> to determine
-      which heading is currently active, then sets <code>aria-current="true"</code>
-      on the matching link.
+      A passive <code>scroll</code> listener throttled via <code>requestAnimationFrame</code>
+      sets <code>aria-current="true"</code> on the link whose heading last crossed the 160 px threshold.
+    </p>
+
+    <h3 id="active-threshold">Active threshold</h3>
+    <p>
+      160 px accounts for the sticky nav bar. Headings that cannot be scrolled past it
+      (too close to the bottom) will not become active — this matches Starlight's behaviour.
     </p>
 
     <h2 id="styling">Styling</h2>
+
+    <h3 id="css-custom-properties">CSS custom properties</h3>
+    <p>Override <code>--ig-toc-width</code> (default <code>24rem</code>) to change the sidebar column width. Hidden below <code>84rem</code> viewport width; above it the sidebar is <code>position: fixed</code> on the right edge.</p>
+
+    <h3 id="active-state-styles">Active-state styles</h3>
     <p>
-      The component injects global styles for the <code>.toc-sidebar</code>
-      host, the <code>docs-toc</code> custom element, and the
-      <code>.toc-list</code> tree. On viewports narrower than 84 rem the
-      sidebar is hidden entirely via <code>display: none</code>.
+      Active link: <code>color: var(--sl-color-accent-high)</code>, <code>font-weight: 600</code>,
+      <code>background: var(--sl-color-accent-low)</code>.
     </p>
+
+    <h2 id="integration">Integration</h2>
+
+    <h3 id="mdx-pages">MDX pages</h3>
+    <p>Pass <code>getHeadings()</code> from your MDX layout to <code>&lt;MainLayout headings=&#123;headings&#125;&gt;</code>; the layout forwards it to <code>DocsToc</code>.</p>
+
+    <h3 id="main-layout">MainLayout</h3>
+    <p>
+      Accepts <code>headings</code>, <code>tocConfig</code>, and <code>tocLabel</code>;
+      omit <code>headings</code> (or pass an empty array) to hide the TOC entirely.
+    </p>
+
+    <h2 id="known-limitations">Known limitations</h2>
+
+    <h3 id="short-pages">Short pages</h3>
+    <p>
+      Headings too close to the bottom to cross the scroll threshold will not highlight
+      when clicked. This is intentional and matches Starlight's behaviour.
+    </p>
+
+    <h3 id="dynamic-headings">Dynamic headings</h3>
+    <p>
+      The heading list is collected once in <code>connectedCallback</code>; headings
+      added after mount are not tracked until the next page navigation.
+    </p>
+
+    <h2 id="changelog">Changelog</h2>
+    <ul>
+      <li><strong>0.2.0</strong> — Switched to <code>is:global</code> styles.</li>
+      <li><strong>0.1.3</strong> — Added <code>label</code> prop.</li>
+      <li><strong>0.1.2</strong> — Added <code>tocConfig</code> prop.</li>
+      <li><strong>0.1.1</strong> — Fixed RAF not cancelled in <code>disconnectedCallback</code>.</li>
+      <li><strong>0.1.0</strong> — Initial release.</li>
+    </ul>
   </main>
 </MainLayout>
 
@@ -88,10 +126,26 @@ const headings = [
     padding: 2rem 1.5rem 6rem;
   }
   .content h1 { margin-top: 0; }
+  .content pre {
+    background: var(--sl-color-bg-inline-code);
+    padding: 0.75rem 1rem;
+    border-radius: 0.375rem;
+    overflow-x: auto;
+  }
   .content code {
     background: var(--sl-color-bg-inline-code);
     padding: 0.1em 0.35em;
     border-radius: 0.25em;
     font-size: 0.9em;
+  }
+  .content pre code {
+    background: none;
+    padding: 0;
+  }
+  .content kbd {
+    font-size: 0.85em;
+    padding: 0.1em 0.4em;
+    border: 1px solid var(--sl-color-gray-3);
+    border-radius: 0.25em;
   }
 </style>

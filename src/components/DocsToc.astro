@@ -47,18 +47,19 @@ interface Props {
     headings?: MarkdownHeading[];
     tocConfig?: TocConfig;
     label?: string;
+    offsetTarget?: string;
     _items?: TocItem[];
     depth?: number;
 }
 
-const { headings = [], tocConfig, label = 'On this page', _items, depth = 0 } = Astro.props;
+const { headings = [], tocConfig, label = 'On this page', offsetTarget, _items, depth = 0 } = Astro.props;
 
 const items: TocItem[] = depth === 0 ? buildToc(headings, tocConfig) : (_items ?? []);
 ---
 
 {depth === 0 ? (
     items.length > 0 && (
-        <docs-toc>
+        <docs-toc data-offset-target={offsetTarget}>
             <nav aria-labelledby="toc-heading">
                 <h2 id="toc-heading">{label}</h2>
                 <Astro.self _items={items} depth={1} />
@@ -80,18 +81,20 @@ const items: TocItem[] = depth === 0 ? buildToc(headings, tocConfig) : (_items ?
 
 <script>
     class DocsToc extends HTMLElement {
+        private static readonly DEFAULT_THRESHOLD = 160;
+
         private rafId: number | undefined;
         private headings: HTMLElement[] = [];
         private links: HTMLAnchorElement[] = [];
         private currentLink: HTMLAnchorElement | undefined;
-        private removeScroll?: () => void;
+        private offsetSelector: string | undefined;
+        private offsetEl: Element | null = null;
+        private resizeObserver: ResizeObserver | undefined;
+        private pinnedIndex: number | undefined;
+        private controller: AbortController | undefined;
 
         connectedCallback() {
-            if (this.rafId !== undefined) {
-                cancelAnimationFrame(this.rafId);
-            }
-            this.removeScroll?.();
-            this.currentLink = undefined;
+            this.offsetSelector = this.dataset.offsetTarget;
 
             this.links = Array.from(this.querySelectorAll<HTMLAnchorElement>('a[href^="#"]'));
             this.headings = this.links
@@ -100,36 +103,123 @@ const items: TocItem[] = depth === 0 ? buildToc(headings, tocConfig) : (_items ?
 
             if (this.headings.length === 0) return;
 
-            const onScroll = () => {
-                if (this.rafId !== undefined) {
-                    return;
-                }
+            const schedule = () => {
+                if (this.rafId !== undefined) return;
                 this.rafId = requestAnimationFrame(() => {
                     this.rafId = undefined;
                     this.update();
                 });
             };
 
-            window.addEventListener('scroll', onScroll, { passive: true });
-            this.removeScroll = () => window.removeEventListener('scroll', onScroll);
+            this.controller = new AbortController();
+            const opts = { passive: true, signal: this.controller.signal };
+
+            window.addEventListener('scroll', schedule, opts);
+            window.addEventListener('resize', schedule, opts);
+            // Any user-initiated scroll input releases the click pin so the
+            // spy can take over again immediately.
+            const releasePin = () => { this.pinnedIndex = undefined; };
+            window.addEventListener('wheel', releasePin, opts);
+            window.addEventListener('touchstart', releasePin, opts);
+            window.addEventListener('keydown', releasePin, opts);
+            this.addEventListener('click', (e) => {
+                const target = (e.target as HTMLElement | null)?.closest('a[href^="#"]');
+                if (!(target instanceof HTMLAnchorElement)) return;
+                const idx = this.links.indexOf(target);
+                if (idx === -1) return;
+                this.pinnedIndex = idx;
+                this.setActive(idx);
+            }, { signal: this.controller.signal });
+
+            this.bindOffsetTarget();
+            window.addEventListener('resize', () => this.syncScrollPadding(), opts);
+
             this.update();
         }
 
         disconnectedCallback() {
-            this.removeScroll?.();
-            if (this.rafId !== undefined) cancelAnimationFrame(this.rafId);
+            this.controller?.abort();
+            this.controller = undefined;
+            this.resizeObserver?.disconnect();
+            this.resizeObserver = undefined;
+            this.offsetEl = null;
+            // Clear any scroll-padding-top we set; leave whatever the page
+            // had before (we don't know if it was authored or ours).
+            document.documentElement.style.removeProperty('scroll-padding-top');
+            if (this.rafId !== undefined) {
+                cancelAnimationFrame(this.rafId);
+                this.rafId = undefined;
+            }
+            this.currentLink = undefined;
+            this.pinnedIndex = undefined;
+        }
+
+        private bindOffsetTarget() {
+            if (!this.offsetSelector) return;
+            this.offsetEl = document.querySelector(this.offsetSelector);
+            if (!this.offsetEl) return;
+
+            this.syncScrollPadding();
+
+            // Re-measure when the header itself resizes (responsive collapse,
+            // font-load reflow, etc.).
+            this.resizeObserver = new ResizeObserver(() => this.syncScrollPadding());
+            this.resizeObserver.observe(this.offsetEl);
+        }
+
+        private syncScrollPadding() {
+            if (!this.offsetEl) return;
+            const px = Math.round(this.offsetEl.getBoundingClientRect().bottom + 8);
+            document.documentElement.style.scrollPaddingTop = `${px}px`;
         }
 
         private update() {
-            let activeIndex = 0;
+            if (this.pinnedIndex !== undefined) {
+                this.setActive(this.pinnedIndex);
+                return;
+            }
+
+            const scrollTop = window.scrollY;
+            const viewportH = window.innerHeight;
+            const docH = document.documentElement.scrollHeight;
+
+            // At the bottom of the page, the last heading wins — even if it
+            // never crossed the threshold (short trailing section).
+            if (scrollTop + viewportH >= docH - 2) {
+                this.setActive(this.headings.length - 1);
+                return;
+            }
+
+            const threshold = this.computeThreshold();
+            let activeIndex = -1;
             for (let i = 0; i < this.headings.length; i++) {
-                if (this.headings[i].getBoundingClientRect().top <= 160) {
+                if (this.headings[i].getBoundingClientRect().top <= threshold) {
                     activeIndex = i;
                 } else {
                     break;
                 }
             }
-            const next = this.links[activeIndex];
+
+            // Above the first heading: no link is active.
+            if (activeIndex === -1) {
+                this.currentLink?.removeAttribute('aria-current');
+                this.currentLink = undefined;
+                return;
+            }
+
+            this.setActive(activeIndex);
+        }
+
+        private computeThreshold(): number {
+            // The bottom edge of the sticky header is the line below which
+            // a heading is considered "passed". Add a small fudge so a
+            // heading flush against the header still activates.
+            if (this.offsetEl) return this.offsetEl.getBoundingClientRect().bottom + 8;
+            return DocsToc.DEFAULT_THRESHOLD;
+        }
+
+        private setActive(index: number) {
+            const next = this.links[index];
             if (!next || next === this.currentLink) return;
             this.currentLink?.removeAttribute('aria-current');
             next.setAttribute('aria-current', 'true');

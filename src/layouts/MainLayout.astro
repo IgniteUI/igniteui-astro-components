@@ -24,9 +24,11 @@ export interface Props {
   tocConfig?: false | { minHeadingLevel?: number; maxHeadingLevel?: number };
   /** Label rendered above the TOC list. Defaults to "On this page". */
   tocLabel?: string;
+  /** CSS selector for a sticky header; its bottom edge is auto-measured as the TOC scroll-spy threshold. */
+  tocOffsetTarget?: string;
 }
 
-const { title, description, keywords, hasSidebar = true, currentSlug = '', headings, tocConfig, tocLabel } = Astro.props;
+const { title, description, keywords, hasSidebar = true, currentSlug = '', headings, tocConfig, tocLabel, tocOffsetTarget = '.docs-subheader' } = Astro.props;
 const navTheme = (virtualPlatform ?? import.meta.env.VITE_NAV_THEME ?? 'igniteui') as string;
 const showGlobalNav = navTheme !== 'none';
 const pageTitle = title ? `${title} | ${siteTitle}` : siteTitle;
@@ -104,7 +106,7 @@ type HeadEntry = { tag: string; attrs?: Record<string, string | boolean | undefi
     </div>
     {headings && headings.length > 0 && (
       <aside class="toc-sidebar">
-        <DocsToc headings={headings} tocConfig={tocConfig} label={tocLabel} />
+        <DocsToc headings={headings} tocConfig={tocConfig} label={tocLabel} offsetTarget={tocOffsetTarget} />
       </aside>
     )}
   </div>
