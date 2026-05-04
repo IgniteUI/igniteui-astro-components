@@ -5,63 +5,28 @@
  * Goal: render every component shipped from `../src` in isolation so we can
  * style and smoke-test them without depending on a real consumer repo.
  *
- * We deliberately do NOT call `createDocsSite()` / `siteMetaIntegration()`
- * because those helpers inject route entrypoints (`./routes/*`) and a Vite
- * alias (`./compat/starlight-components`) that don't exist in this package
- * yet — they're only meaningful for a fully migrated docs project.
+ * We deliberately do NOT call `createDocsSite()` / `siteMetaIntegration()`.
  *
- * Instead we provide a small Vite plugin that supplies the two virtual
- * modules the components import from (`virtual:docs-template/site-meta`
- * and `virtual:docs-template/nav-html`) with stub data.
+ * Sidebar data, product links, and the site title are defined in
+ * `src/site-config.ts` and passed as props directly to MainLayout /
+ * DocsSidebar / DocsSubHeader — demonstrating prop-driven usage.
+ *
+ * The two virtual module stubs below are still needed to satisfy the Vite
+ * module resolver (the components import from them at the top level), but
+ * `site-meta` exports intentionally empty values — the real data flows
+ * through props. Only `nav-html` carries meaningful content (platform key,
+ * nav/footer HTML fallback, theming widget config).
  */
 
 import { defineConfig } from 'astro/config';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 
-// Default the platform context used by ApiLink / ApiRef / Sample / PlatformBlock
-// so they have something to render against.
+// Default the platform context used by ApiLink / ApiRef / PlatformBlock.
 process.env.PLATFORM ??= 'React';
 process.env.DOCS_BUILD_MODE ??= 'development';
 process.env.DOCS_ENV ??= 'development';
 process.env.BASE_URL ??= 'http://localhost:4321';
-
-/** Sample sidebar tree exercising links, groups, badges, nesting and active state. */
-const sampleSidebar = [
-  {
-    label: 'Getting Started',
-    collapsed: false,
-    items: [
-      { label: 'Introduction', slug: '' },
-    //   { label: 'Installation', slug: 'installation' },
-    //   { label: 'Quick Start', slug: 'quick-start', badge: { text: 'New', variant: 'success' } },
-    ],
-  },
-  {
-    label: 'Components',
-    collapsed: false,
-    items: [
-      { label: 'Sidebar', slug: 'components/sidebar' },
-      { label: 'Nav Bar', slug: 'components/nav-bar' },
-      {
-        label: 'MDX Helpers',
-        collapsed: true,
-        items: [
-          { label: 'ApiLink', slug: 'components/api-link' },
-          { label: 'ApiRef', slug: 'components/api-ref' },
-          { label: 'PlatformBlock', slug: 'components/platform-block' },
-        ],
-      },
-    ],
-  },
-  {
-    label: 'Reference',
-    collapsed: true,
-    items: [
-      { label: 'Changelog', slug: 'changelog', badge: { text: 'Beta', variant: 'caution' } },
-    ],
-  },
-];
 
 /**
  * Vite plugin that supplies stub implementations of the two virtual modules
@@ -82,15 +47,12 @@ function virtualDocsModules() {
     },
     load(id) {
       if (id === resolved(siteMetaId)) {
+        // Intentionally minimal — sidebar, title, and productLinks are
+        // supplied via component props from src/site-config.ts instead.
         return `
-export const title = 'Components Playground';
-export const sidebar = ${JSON.stringify(sampleSidebar)};
-export const productLinks = ${JSON.stringify([
-          { label: 'Angular', href: '#', platform: 'angular' },
-          { label: 'React', href: '#', platform: 'react' },
-          { label: 'Web Components', href: '#', platform: 'web-components' },
-          { label: 'Blazor', href: '#', platform: 'blazor' },
-        ])};
+export const title = '';
+export const sidebar = [];
+export const productLinks = [];
 export const headEntries = [];
         `;
       }

@@ -1,6 +1,7 @@
 ---
-import MainLayout from '../../../src/layouts/MainLayout.astro';
+import MainLayout from '../../../src/layouts/MainLayout/MainLayout.astro';
 import DocsSidebar from '../../../src/components/sidebar/DocsSidebar.astro';
+import { SITE_TITLE, SIDEBAR, PRODUCT_LINKS } from '../site-config';
 
 const headings = [
   { depth: 2, slug: 'pages', text: 'Pages' },
@@ -8,13 +9,12 @@ const headings = [
   { depth: 3, slug: 'navigation-components', text: 'Navigation components' },
   { depth: 3, slug: 'mdx-components', text: 'MDX components' },
   { depth: 2, slug: 'how-it-works', text: 'How it works' },
-  { depth: 3, slug: 'virtual-modules', text: 'Virtual modules' },
   { depth: 3, slug: 'adding-a-demo-page', text: 'Adding a demo page' },
 ];
 ---
 
-<MainLayout title="Playground" hasSidebar currentSlug="" headings={headings}>
-  <DocsSidebar slot="sidebar" currentSlug="" />
+<MainLayout title="Playground" siteTitle={SITE_TITLE} hasSidebar currentSlug="" headings={headings}>
+  <DocsSidebar slot="sidebar" items={SIDEBAR} currentSlug="" />
 
   <main class="content">
     <h1>igniteui-astro-components playground</h1>
@@ -46,18 +46,17 @@ const headings = [
 
     <h2 id="how-it-works">How it works</h2>
     <p>
-      The playground bypasses <code>createDocsSite()</code> and stubs the
-      <code>virtual:docs-template/site-meta</code> and
-      <code>virtual:docs-template/nav-html</code> modules from
-      <code>astro.config.mjs</code>.
+      The playground uses the prop-driven pattern: sidebar data, product links,
+      and the site title are defined in
+      <code>playground/src/site-config.ts</code> and passed directly as props
+      to <code>MainLayout</code> and <code>DocsSidebar</code> — no
+      <code>siteMetaIntegration</code> required.
     </p>
-
-    <h3 id="virtual-modules">Virtual modules</h3>
     <p>
-      The two virtual modules supply sidebar tree data, product links, the
-      active platform key, and any extra <code>&lt;head&gt;</code> entries.
-      Edit <code>astro.config.mjs</code> to tweak the sample values without
-      touching component source code.
+      The virtual module stubs in <code>astro.config.mjs</code> are still
+      present to satisfy the module resolver, but the <code>sidebar</code>,
+      <code>title</code>, and <code>productLinks</code> values they export are
+      intentionally empty — the real data flows through props.
     </p>
 
     <h3 id="adding-a-demo-page">Adding a demo page</h3>

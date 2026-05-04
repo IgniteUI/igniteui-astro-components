@@ -37,15 +37,15 @@
     "./content-config": "./src/content.config.ts",
     "./llms": "./src/llms.ts",
 
-    "./layouts/MainLayout.astro": "./src/layouts/MainLayout.astro",
+    "./layouts/MainLayout.astro": "./src/layouts/MainLayout/MainLayout.astro",
 
-    "./components/GlobalNavBar.astro": "./src/components/GlobalNavBar.astro",
-    "./components/GlobalFooter.astro": "./src/components/GlobalFooter.astro",
-    "./components/DocsSubHeader.astro": "./src/components/DocsSubHeader.astro",
-    "./components/Search.astro": "./src/components/Search.astro",
-    "./components/ThemingWidget.astro": "./src/components/ThemingWidget.astro",
-    "./components/MobileSidebarToggle.astro": "./src/components/MobileSidebarToggle.astro",
-    "./components/DocsToc.astro": "./src/components/DocsToc.astro",
+    "./components/GlobalNavBar.astro": "./src/components/GlobalNavBar/GlobalNavBar.astro",
+    "./components/GlobalFooter.astro": "./src/components/GlobalFooter/GlobalFooter.astro",
+    "./components/DocsSubHeader.astro": "./src/components/DocsSubHeader/DocsSubHeader.astro",
+    "./components/Search.astro": "./src/components/Search/Search.astro",
+    "./components/ThemingWidget.astro": "./src/components/ThemingWidget/ThemingWidget.astro",
+    "./components/MobileSidebarToggle.astro": "./src/components/MobileSidebarToggle/MobileSidebarToggle.astro",
+    "./components/DocsToc.astro": "./src/components/DocsToc/DocsToc.astro",
 
     "./components/sidebar/DocsSidebar.astro": "./src/components/sidebar/DocsSidebar.astro",
     "./components/sidebar/SidebarTree.astro": "./src/components/sidebar/SidebarTree.astro",
@@ -53,10 +53,10 @@
     "./components/sidebar/SidebarFilterInput.astro": "./src/components/sidebar/SidebarFilterInput.astro",
     "./components/sidebar/sidebar-filter": "./src/components/sidebar/sidebar-filter.ts",
 
-    "./components/mdx/ApiRef.astro": "./src/components/mdx/ApiRef.astro",
-    "./components/mdx/ApiLink.astro": "./src/components/mdx/ApiLink.astro",
-    "./components/mdx/PlatformBlock.astro": "./src/components/mdx/PlatformBlock.astro",
-    "./components/mdx/Sample.astro": "./src/components/mdx/Sample.astro",
+    "./components/mdx/ApiRef.astro": "./src/components/mdx/ApiRef/ApiRef.astro",
+    "./components/mdx/ApiLink.astro": "./src/components/mdx/ApiLink/ApiLink.astro",
+    "./components/mdx/PlatformBlock.astro": "./src/components/mdx/PlatformBlock/PlatformBlock.astro",
+    "./components/mdx/Sample.astro": "./src/components/mdx/Sample/Sample.astro",
 
     "./lib/sidebar/types": "./src/lib/sidebar/types.ts",
     "./lib/sidebar/helpers": "./src/lib/sidebar/helpers.ts",

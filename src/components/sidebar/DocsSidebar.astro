@@ -22,10 +22,15 @@ import type { SidebarEntry } from '../../lib/sidebar/types';
 
 interface Props {
   currentSlug?: string;
+  /**
+   * Sidebar tree to render. Overrides the virtual module value when provided.
+   * Useful when consuming the component without `siteMetaIntegration`.
+   */
+  items?: SidebarEntry[];
 }
 
-const { currentSlug = '' } = Astro.props;
-const items = sidebarData as SidebarEntry[];
+const { currentSlug = '', items: itemsProp } = Astro.props;
+const items = (itemsProp ?? sidebarData) as SidebarEntry[];
 ---
 
 <sidebar-filter id="docs-sidebar" data-no-results="No topics match">

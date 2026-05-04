@@ -1,15 +1,15 @@
 ---
 import type { MarkdownHeading } from 'astro';
 import { ClientRouter } from 'astro:transitions';
-import GlobalNavBar from '../components/GlobalNavBar.astro';
-import GlobalFooter from '../components/GlobalFooter.astro';
-import DocsSubHeader from '../components/DocsSubHeader.astro';
-import MobileSidebarToggle from '../components/MobileSidebarToggle.astro';
-import DocsToc from '../components/DocsToc.astro';
+import GlobalNavBar from '../../components/GlobalNavBar/GlobalNavBar.astro';
+import GlobalFooter from '../../components/GlobalFooter/GlobalFooter.astro';
+import DocsSubHeader from '../../components/DocsSubHeader/DocsSubHeader.astro';
+import MobileSidebarToggle from '../../components/MobileSidebarToggle/MobileSidebarToggle.astro';
+import DocsToc from '../../components/DocsToc/DocsToc.astro';
 import { widgetScriptSrc, platform as virtualPlatform } from 'virtual:docs-template/nav-html';
 import { title as siteTitle, headEntries } from 'virtual:docs-template/site-meta';
-import '../styles/ig-theme.scss';
-import '../styles/custom.css';
+import '../../styles/ig-theme.scss';
+import '../../styles/custom.css';
 
 export interface Props {
   title?: string;
@@ -24,12 +24,19 @@ export interface Props {
   tocConfig?: false | { minHeadingLevel?: number; maxHeadingLevel?: number };
   /** Label rendered above the TOC list. Defaults to "On this page". */
   tocLabel?: string;
+  /**
+   * Override the site name shown in the <title> and sub-header.
+   * Defaults to the value from `virtual:docs-template/site-meta`.
+   * Useful when consuming without `siteMetaIntegration`.
+   */
+  siteTitle?: string;
 }
 
-const { title, description, keywords, hasSidebar = true, currentSlug = '', headings, tocConfig, tocLabel } = Astro.props;
+const { title, description, keywords, hasSidebar = true, currentSlug = '', headings, tocConfig, tocLabel, siteTitle: siteTitleProp } = Astro.props;
+const resolvedSiteTitle = siteTitleProp ?? siteTitle;
 const navTheme = (virtualPlatform ?? import.meta.env.VITE_NAV_THEME ?? 'igniteui') as string;
 const showGlobalNav = navTheme !== 'none';
-const pageTitle = title ? `${title} | ${siteTitle}` : siteTitle;
+const pageTitle = title ? `${title} | ${resolvedSiteTitle}` : resolvedSiteTitle;
 
 type HeadEntry = { tag: string; attrs?: Record<string, string | boolean | undefined>; content?: string };
 ---
@@ -86,7 +93,7 @@ type HeadEntry = { tag: string; attrs?: Record<string, string | boolean | undefi
 <body>
   {showGlobalNav && <GlobalNavBar />}
   <div style={`--docs-global-nav-height: ${showGlobalNav ? '86px' : '0px'}`}>
-    <DocsSubHeader pageTitle={title} currentSlug={currentSlug} />
+    <DocsSubHeader pageTitle={title} currentSlug={currentSlug} siteTitle={siteTitleProp} />
   </div>
   <div class="page">
     {hasSidebar && (
