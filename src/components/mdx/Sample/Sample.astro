@@ -102,7 +102,7 @@ const exampleTabId = `${widgetId}-example`;
       // astro:page-load fires after every client-router navigation AND on the initial
       // page load, so using it as the sole trigger handles both cases without
       // double-initialization.
-      import { initSampleWidgets } from '../../scripts/sample-widget';
+      import { initSampleWidgets } from '../../../scripts/sample-widget';
       document.addEventListener('astro:page-load', initSampleWidgets);
     </script>
   </>
