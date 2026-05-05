@@ -37,7 +37,7 @@
     "./content-config": "./src/content.config.ts",
     "./llms": "./src/llms.ts",
 
-    "./layouts/MainLayout.astro": "./src/layouts/MainLayout/MainLayout.astro",
+    "./layouts/DocsLayout.astro": "./src/layouts/DocsLayout/DocsLayout.astro",
 
     "./components/GlobalNavBar.astro": "./src/components/GlobalNavBar/GlobalNavBar.astro",
     "./components/GlobalFooter.astro": "./src/components/GlobalFooter/GlobalFooter.astro",

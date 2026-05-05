@@ -1,6 +1,7 @@
 ---
-import MainLayout from '../../../../src/layouts/MainLayout/MainLayout.astro';
+import DocsLayout from '../../../../src/layouts/DocsLayout/DocsLayout.astro';
 import DocsSidebar from '../../../../src/components/sidebar/DocsSidebar.astro';
+import DocsToc from '../../../../src/components/DocsToc/DocsToc.astro';
 import { SITE_TITLE, SIDEBAR } from '../../site-config';
 
 const slug = 'components/docs-toc';
@@ -19,7 +20,7 @@ const headings = [
     { depth: 3, slug: 'active-state-styles', text: 'Active-state styles' },
     { depth: 2, slug: 'integration', text: 'Integration' },
     { depth: 3, slug: 'mdx-pages', text: 'MDX pages' },
-    { depth: 3, slug: 'main-layout', text: 'MainLayout' },
+    { depth: 3, slug: 'docs-layout', text: 'DocsLayout' },
     { depth: 2, slug: 'known-limitations', text: 'Known limitations' },
     { depth: 3, slug: 'short-pages', text: 'Short pages' },
     { depth: 3, slug: 'dynamic-headings', text: 'Dynamic headings' },
@@ -27,8 +28,9 @@ const headings = [
 ];
 ---
 
-<MainLayout title="DocsToc" siteTitle={SITE_TITLE} hasSidebar currentSlug={slug} headings={headings}>
+<DocsLayout title="DocsToc" siteTitle={SITE_TITLE} hasSidebar currentSlug={slug}>
   <DocsSidebar slot="sidebar" items={SIDEBAR} currentSlug={slug} />
+  <DocsToc slot="toc" headings={headings} offsetTarget=".docs-subheader" />
 
   <main class="content">
     <h1>DocsToc</h1>
@@ -87,12 +89,12 @@ const headings = [
     <h2 id="integration">Integration</h2>
 
     <h3 id="mdx-pages">MDX pages</h3>
-    <p>Pass <code>getHeadings()</code> from your MDX layout to <code>&lt;MainLayout headings=&#123;headings&#125;&gt;</code>; the layout forwards it to <code>DocsToc</code>.</p>
+    <p>Pass <code>getHeadings()</code> from your MDX layout and render <code>&lt;DocsToc slot="toc" headings={headings} /&gt;</code> inside <code>DocsLayout</code>.</p>
 
-    <h3 id="main-layout">MainLayout</h3>
+    <h3 id="docs-layout">DocsLayout</h3>
     <p>
-      Accepts <code>headings</code>, <code>tocConfig</code>, and <code>tocLabel</code>;
-      omit <code>headings</code> (or pass an empty array) to hide the TOC entirely.
+      Renders a <code>toc</code> named slot on the right side. Pass a <code>&lt;DocsToc slot="toc" /&gt;</code>
+      to fill it; omit the slot to hide the TOC column entirely.
     </p>
 
     <h2 id="known-limitations">Known limitations</h2>
@@ -118,7 +120,7 @@ const headings = [
       <li><strong>0.1.0</strong> — Initial release.</li>
     </ul>
   </main>
-</MainLayout>
+</DocsLayout>
 
 <style>
   .content {

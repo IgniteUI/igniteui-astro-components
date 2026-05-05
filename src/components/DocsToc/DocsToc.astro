@@ -165,7 +165,7 @@ const items: TocItem[] = depth === 0 ? buildToc(headings, tocConfig) : (_items ?
         }
 
         private bindOffsetTarget() {
-            const selector = this.dataset.offsetTarget;
+            const selector = this.dataset.offsetTarget ?? null;
             if (!selector) return;
             this.offsetEl = document.querySelector(selector);
             if (!this.offsetEl) return;

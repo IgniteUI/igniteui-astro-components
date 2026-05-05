@@ -1,6 +1,7 @@
 ---
-import MainLayout from '../../../src/layouts/MainLayout/MainLayout.astro';
+import DocsLayout from '../../../src/layouts/DocsLayout/DocsLayout.astro';
 import DocsSidebar from '../../../src/components/sidebar/DocsSidebar.astro';
+import DocsToc from '../../../src/components/DocsToc/DocsToc.astro';
 import { SITE_TITLE, SIDEBAR, PRODUCT_LINKS } from '../site-config';
 
 const headings = [
@@ -13,8 +14,9 @@ const headings = [
 ];
 ---
 
-<MainLayout title="Playground" siteTitle={SITE_TITLE} hasSidebar currentSlug="" headings={headings}>
+<DocsLayout title="Playground" siteTitle={SITE_TITLE} hasSidebar currentSlug="">
   <DocsSidebar slot="sidebar" items={SIDEBAR} currentSlug="" />
+  <DocsToc slot="toc" headings={headings} offsetTarget=".docs-subheader" />
 
   <main class="content">
     <h1>igniteui-astro-components playground</h1>
@@ -50,7 +52,7 @@ const headings = [
       The playground uses the prop-driven pattern: sidebar data, product links,
       and the site title are defined in
       <code>playground/src/site-config.ts</code> and passed directly as props
-      to <code>MainLayout</code> and <code>DocsSidebar</code> — no
+      to <code>DocsLayout</code> and <code>DocsSidebar</code> — no
       <code>siteMetaIntegration</code> required.
     </p>
     <p>
@@ -64,11 +66,11 @@ const headings = [
     <p>
       Create a new <code>.astro</code> file under
       <code>playground/src/pages/components/</code>, import
-      <code>MainLayout</code> and the component under test from
+      <code>DocsLayout</code> and the component under test from
       <code>../../../../src/</code>, and add a link to the list above.
     </p>
   </main>
-</MainLayout>
+</DocsLayout>
 
 <style>
   .content {

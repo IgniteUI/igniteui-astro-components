@@ -1,5 +1,5 @@
 ---
-import MainLayout from '../../../../src/layouts/MainLayout/MainLayout.astro';
+import DocsLayout from '../../../../src/layouts/DocsLayout/DocsLayout.astro';
 import DocsSidebar from '../../../../src/components/sidebar/DocsSidebar.astro';
 import ApiRef from '../../../../src/components/mdx/ApiRef/ApiRef.astro';
 import { SITE_TITLE, SIDEBAR } from '../../site-config';
@@ -7,7 +7,7 @@ import { SITE_TITLE, SIDEBAR } from '../../site-config';
 const slug = 'components/api-ref';
 ---
 
-<MainLayout title="ApiRef" siteTitle={SITE_TITLE} hasSidebar currentSlug={slug}>
+<DocsLayout title="ApiRef" siteTitle={SITE_TITLE} hasSidebar currentSlug={slug}>
   <DocsSidebar slot="sidebar" items={SIDEBAR} currentSlug={slug} />
   <main class="content">
     <h1>ApiRef</h1>
@@ -25,7 +25,7 @@ const slug = 'components/api-ref';
     <h2>Charts sub-package</h2>
     <ApiRef pkg="charts" types={["CategoryChart", "FinancialChart"]} />
   </main>
-</MainLayout>
+</DocsLayout>
 
 <style>
   .content { max-width: 60rem; margin: 0 auto; padding: 2rem 1.5rem; }

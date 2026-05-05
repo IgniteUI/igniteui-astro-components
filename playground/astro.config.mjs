@@ -8,7 +8,7 @@
  * We deliberately do NOT call `createDocsSite()` / `siteMetaIntegration()`.
  *
  * Sidebar data, product links, and the site title are defined in
- * `src/site-config.ts` and passed as props directly to MainLayout /
+ * `src/site-config.ts` and passed as props directly to DocsLayout /
  * DocsSidebar / DocsSubHeader — demonstrating prop-driven usage.
  *
  * The two virtual module stubs below are still needed to satisfy the Vite
