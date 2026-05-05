@@ -99,7 +99,10 @@ export default defineConfig({
           // Allow `@use 'igniteui-theming'` (in ../src/styles/ig-theme.scss)
           // to resolve from the playground's node_modules even though the
           // file lives outside this folder.
-          loadPaths: [path.join(repoRoot, 'node_modules')],
+          loadPaths: [
+            path.join(repoRoot, 'node_modules'),
+            path.resolve(repoRoot, '..', 'node_modules'),
+          ],
         },
       },
     },
