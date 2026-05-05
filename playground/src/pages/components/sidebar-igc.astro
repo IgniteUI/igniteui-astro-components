@@ -13,9 +13,9 @@ const slug = 'components/sidebar-igc';
     <p>
       The sidebar is rendered with <code>&lt;igc-tree&gt;</code> /
       <code>&lt;igc-tree-item&gt;</code> from
-      <code>igniteui-webcomponents</code>. The current page is highlighted
-      via the <code>active</code> attribute on the active
-      <code>&lt;igc-tree-item&gt;</code>.
+      <code>igniteui-webcomponents</code>. The current page is indicated
+      via <code>aria-current="page"</code> on the
+      <code>&lt;a slot="label"&gt;</code> for the active item.
     </p>
     <p>
       Expand / collapse state and scroll position are persisted in

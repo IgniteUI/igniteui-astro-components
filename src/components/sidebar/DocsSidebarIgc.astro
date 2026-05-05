@@ -2,9 +2,10 @@
 /**
  * Docs sidebar using <igc-tree> / <igc-tree-item> from igniteui-webcomponents.
  *
- * Drop-in replacement for DocsSidebarIgc.astro with identical Props.
- * The tree component is registered client-side; SSR emits the correct
- * `expanded` / `active` attributes so the first paint is correct.
+ * Drop-in replacement for DocsSidebar.astro with identical Props.
+ * The tree component is registered client-side; SSR emits the initial
+ * `expanded` state for groups, and the current page is highlighted via
+ * `aria-current="page"` on the rendered link.
  *
  * Package: igniteui-webcomponents  (public, MIT)
  *          or @infragistics/igniteui-webcomponents  (licensed — same API,
@@ -85,6 +86,7 @@ const items = (itemsProp ?? sidebarData) as SidebarEntry[];
   /* igc-tree is rendered here — scoped is fine */
   igc-tree {
     display: block;
+    --ig-tree-background: transparent;
     --igc-tree-indentation-size: 0px;
   }
 

@@ -101,10 +101,12 @@ document.addEventListener('astro:before-swap', (e) => {
 // ── Custom element ───────────────────────────────────────────────────────────
 
 type ExpandableEl = HTMLElement & { expanded: boolean };
+type FilterInputEl = HTMLElement & { value: string; focus(): void };
+type FilterClearEl = HTMLElement & { hidden: boolean };
 
 class SidebarFilterIgc extends HTMLElement {
-  private input!:    HTMLElement & { value: string };
-  private clearBtn!: HTMLElement;
+  private input!:    FilterInputEl;
+  private clearBtn!: FilterClearEl;
   private status!:   HTMLElement;
   private scrollEl:  HTMLElement | null = null;
   private items:     HTMLElement[] = [];
@@ -118,15 +120,15 @@ class SidebarFilterIgc extends HTMLElement {
   private suppressPersist = false;
 
   connectedCallback(): void {
-    const input    = this.querySelector<HTMLInputElement>('[data-sidebar-filter-input]');
-    const clearBtn = this.querySelector<HTMLButtonElement>('[data-sidebar-filter-clear]');
+    const input    = this.querySelector<FilterInputEl>('[data-sidebar-filter-input]');
+    const clearBtn = this.querySelector<FilterClearEl>('[data-sidebar-filter-clear]');
     const status   = this.querySelector<HTMLElement>('[data-sidebar-filter-status]');
     if (!input || !clearBtn || !status) return;
 
     this.input    = input;
     this.clearBtn = clearBtn;
     this.status   = status;
-    this.scrollEl = this.querySelector(SCROLL_SELECTOR);
+    this.scrollEl = this.querySelector<HTMLElement>(SCROLL_SELECTOR);
     this.items    = [...this.querySelectorAll<HTMLElement>(ITEM_SELECTOR)];
     this.groups   = [...this.querySelectorAll<HTMLElement>(GROUP_SELECTOR)];
 
@@ -381,6 +383,7 @@ class SidebarFilterIgc extends HTMLElement {
 
   private resetFilter(): void {
     this.input.value = '';
+    this.syncClearButton('');
     safeRemove(FILTER_KEY);
     this.exitFilterMode();
   }
