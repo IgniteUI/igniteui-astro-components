@@ -83,18 +83,45 @@ const items: TocItem[] = depth === 0 ? buildToc(headings, tocConfig) : (_items ?
     class DocsToc extends HTMLElement {
         private static readonly DEFAULT_THRESHOLD = 160;
 
+        private pageController: AbortController | undefined;
         private rafId: number | undefined;
         private headings: HTMLElement[] = [];
         private links: HTMLAnchorElement[] = [];
         private currentLink: HTMLAnchorElement | undefined;
-        private offsetSelector: string | undefined;
         private offsetEl: Element | null = null;
         private resizeObserver: ResizeObserver | undefined;
         private pinnedIndex: number | undefined;
-        private controller: AbortController | undefined;
 
         connectedCallback() {
-            this.offsetSelector = this.dataset.offsetTarget;
+            this.init();
+        }
+
+        disconnectedCallback() {
+            this.teardown();
+        }
+
+        private teardown() {
+            this.pageController?.abort();
+            this.pageController = undefined;
+            this.resizeObserver?.disconnect();
+            this.resizeObserver = undefined;
+            this.offsetEl = null;
+            document.documentElement.style.removeProperty('scroll-padding-top');
+            if (this.rafId !== undefined) {
+                cancelAnimationFrame(this.rafId);
+                this.rafId = undefined;
+            }
+            this.currentLink = undefined;
+            this.pinnedIndex = undefined;
+        }
+
+        init() {
+            this.teardown();
+
+            // Clear any stale aria-current left over from a previous page.
+            this.querySelectorAll('a[aria-current]').forEach(
+                (a) => a.removeAttribute('aria-current'),
+            );
 
             this.links = Array.from(this.querySelectorAll<HTMLAnchorElement>('a[href^="#"]'));
             this.headings = this.links
@@ -111,17 +138,19 @@ const items: TocItem[] = depth === 0 ? buildToc(headings, tocConfig) : (_items ?
                 });
             };
 
-            this.controller = new AbortController();
-            const opts = { passive: true, signal: this.controller.signal };
+            this.pageController = new AbortController();
+            const opts = { passive: true, signal: this.pageController.signal };
 
             window.addEventListener('scroll', schedule, opts);
-            window.addEventListener('resize', schedule, opts);
+            window.addEventListener('resize', () => { this.syncScrollPadding(); schedule(); }, opts);
+
             // Any user-initiated scroll input releases the click pin so the
             // spy can take over again immediately.
             const releasePin = () => { this.pinnedIndex = undefined; };
             window.addEventListener('wheel', releasePin, opts);
             window.addEventListener('touchstart', releasePin, opts);
             window.addEventListener('keydown', releasePin, opts);
+
             this.addEventListener('click', (e) => {
                 const target = (e.target as HTMLElement | null)?.closest('a[href^="#"]');
                 if (!(target instanceof HTMLAnchorElement)) return;
@@ -129,34 +158,16 @@ const items: TocItem[] = depth === 0 ? buildToc(headings, tocConfig) : (_items ?
                 if (idx === -1) return;
                 this.pinnedIndex = idx;
                 this.setActive(idx);
-            }, { signal: this.controller.signal });
+            }, { signal: this.pageController.signal });
 
             this.bindOffsetTarget();
-            window.addEventListener('resize', () => this.syncScrollPadding(), opts);
-
             this.update();
         }
 
-        disconnectedCallback() {
-            this.controller?.abort();
-            this.controller = undefined;
-            this.resizeObserver?.disconnect();
-            this.resizeObserver = undefined;
-            this.offsetEl = null;
-            // Clear any scroll-padding-top we set; leave whatever the page
-            // had before (we don't know if it was authored or ours).
-            document.documentElement.style.removeProperty('scroll-padding-top');
-            if (this.rafId !== undefined) {
-                cancelAnimationFrame(this.rafId);
-                this.rafId = undefined;
-            }
-            this.currentLink = undefined;
-            this.pinnedIndex = undefined;
-        }
-
         private bindOffsetTarget() {
-            if (!this.offsetSelector) return;
-            this.offsetEl = document.querySelector(this.offsetSelector);
+            const selector = this.dataset.offsetTarget;
+            if (!selector) return;
+            this.offsetEl = document.querySelector(selector);
             if (!this.offsetEl) return;
 
             this.syncScrollPadding();
@@ -200,6 +211,16 @@ const items: TocItem[] = depth === 0 ? buildToc(headings, tocConfig) : (_items ?
                 }
             }
 
+            // Favor the closer heading: if the next heading is nearer to
+            // the threshold than the current one, jump forward.
+            if (activeIndex >= 0 && activeIndex + 1 < this.headings.length) {
+                const currentDist = threshold - this.headings[activeIndex].getBoundingClientRect().top;
+                const nextDist = this.headings[activeIndex + 1].getBoundingClientRect().top - threshold;
+                if (nextDist < currentDist) {
+                    activeIndex = activeIndex + 1;
+                }
+            }
+
             // Above the first heading: no link is active.
             if (activeIndex === -1) {
                 this.currentLink?.removeAttribute('aria-current');
@@ -230,6 +251,16 @@ const items: TocItem[] = depth === 0 ? buildToc(headings, tocConfig) : (_items ?
     if (!customElements.get('docs-toc')) {
         customElements.define('docs-toc', DocsToc);
     }
+
+    // Astro View Transitions: bundled module scripts run only once, so
+    // connectedCallback alone won't re-fire after a page swap if the
+    // element is morphed rather than replaced. This top-level listener
+    // fires on both initial load and after every navigation.
+    document.addEventListener('astro:page-load', () => {
+        document.querySelectorAll('docs-toc').forEach((el) => {
+            if (el instanceof DocsToc) el.init();
+        });
+    });
 </script>
 
 <style is:global>
