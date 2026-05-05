@@ -1,6 +1,6 @@
 ---
 import MainLayout from '../../../src/layouts/MainLayout/MainLayout.astro';
-import DocsSidebar from '../../../src/components/sidebar/DocsSidebar.astro';
+import DocsSidebarIgc from '../../../src/components/sidebar/DocsSidebarIgc.astro';
 import { SITE_TITLE, SIDEBAR, PRODUCT_LINKS } from '../site-config';
 
 const headings = [
@@ -14,7 +14,7 @@ const headings = [
 ---
 
 <MainLayout title="Playground" siteTitle={SITE_TITLE} hasSidebar currentSlug="" headings={headings}>
-  <DocsSidebar slot="sidebar" items={SIDEBAR} currentSlug="" />
+  <DocsSidebarIgc slot="sidebar" items={SIDEBAR} currentSlug="" />
 
   <main class="content">
     <h1>igniteui-astro-components playground</h1>
@@ -28,7 +28,8 @@ const headings = [
 
     <h3 id="layout-components">Layout components</h3>
     <ul>
-      <li><a href="/components/sidebar">Sidebar</a> — left-rail navigation tree with filter input.</li>
+      <li><a href="/components/sidebar">Sidebar</a> — classic <code>&lt;details&gt;</code>-based sidebar with filter input.</li>
+      <li><a href="/components/sidebar-igc">Sidebar (igc-tree)</a> — same sidebar built with <code>igniteui-webcomponents</code> igc-tree.</li>
       <li><a href="/components/docs-toc">DocsToc</a> — "On this page" table of contents with scroll-spy.</li>
     </ul>
 
@@ -50,7 +51,7 @@ const headings = [
       The playground uses the prop-driven pattern: sidebar data, product links,
       and the site title are defined in
       <code>playground/src/site-config.ts</code> and passed directly as props
-      to <code>MainLayout</code> and <code>DocsSidebar</code> — no
+      to <code>MainLayout</code> and <code>DocsSidebarIgc</code> — no
       <code>siteMetaIntegration</code> required.
     </p>
     <p>

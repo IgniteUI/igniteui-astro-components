@@ -9,17 +9,19 @@ const slug = 'components/sidebar';
 <MainLayout title="Sidebar" siteTitle={SITE_TITLE} hasSidebar currentSlug={slug}>
   <DocsSidebar slot="sidebar" items={SIDEBAR} currentSlug={slug} />
   <main class="content">
-    <h1>Sidebar</h1>
+    <h1>Sidebar — classic variant</h1>
     <p>
-      The current page is highlighted in the sidebar via the
-      <code>currentSlug</code> prop. Try the filter input above the tree —
-      it uses the <code>&lt;sidebar-filter&gt;</code> custom element with
-      <code>[data-filter-match]</code> attributes.
+      The classic sidebar is rendered with plain <code>&lt;details&gt;</code>
+      / <code>&lt;summary&gt;</code> elements and a native
+      <code>&lt;input type="search"&gt;</code> for filtering.
     </p>
     <p>
-      Sidebar data is supplied by the playground's stub of
-      <code>virtual:docs-template/site-meta</code> in
-      <code>astro.config.mjs</code>.
+      Expand / collapse state and scroll position are persisted in
+      <code>sessionStorage</code> across Astro client-side navigations via
+      the <code>&lt;sidebar-filter&gt;</code> custom element.
+    </p>
+    <p>
+      See also: <a href="/components/sidebar-igc">Sidebar — igc-tree variant</a>.
     </p>
   </main>
 </MainLayout>

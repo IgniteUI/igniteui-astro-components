@@ -1,0 +1,72 @@
+---
+/**
+ * Renders a single sidebar entry as an <igc-tree-item>.
+ * Groups nest children inside the default slot (no wrapper element).
+ * Leaves place an <a> in the label slot.
+ */
+import SidebarTreeIgc from './SidebarTreeIgc.astro';
+import type { SidebarEntry } from '../../lib/sidebar/types';
+import { isActive, isGroup, isInitiallyOpen, joinPath, normalizeSlug } from '../../lib/sidebar/helpers';
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+
+interface Props {
+  item: SidebarEntry;
+  ancestors?: string[];
+  currentSlug: string;
+}
+
+const { item, ancestors = [], currentSlug } = Astro.props;
+
+const path     = joinPath(ancestors, item.label);
+const isNested = ancestors.length > 0;
+
+const normalizedSlug = isGroup(item) ? '' : normalizeSlug(item.slug);
+const href           = normalizedSlug ? `${base}/${normalizedSlug}/` : `${base}/`;
+const expanded       = isGroup(item) ? (isInitiallyOpen(item, currentSlug) || undefined) : undefined;
+const active         = !isGroup(item) && isActive(item.slug, currentSlug);
+---
+
+{isGroup(item) ? (
+  <igc-tree-item
+    class:list={['sidebar-item', isNested && 'sidebar-item--nested']}
+    data-group-key={path}
+    data-label={item.label}
+    data-path={path}
+    expanded={expanded}
+  >
+    {/* Override the default expand indicator with our caret in the label */}
+    <span slot="indicator"></span>
+    <div slot="label" class="group-label">
+      <span class="group-label-text">{item.label}</span>
+      <svg class="group-caret" viewBox="0 0 16 16" width="10" height="10" aria-hidden="true" focusable="false">
+        <path d="M4 2l8 6-8 6V2z" fill="currentColor" />
+      </svg>
+    </div>
+    <SidebarTreeIgc
+      items={item.items}
+      ancestors={[...ancestors, item.label]}
+      currentSlug={currentSlug}
+    />
+  </igc-tree-item>
+) : (
+  <igc-tree-item
+    class:list={['sidebar-item', isNested && 'sidebar-item--nested']}
+    data-label={item.label}
+    data-slug={item.slug}
+    data-path={path}
+  >
+    <a
+      slot="label"
+      href={href}
+      aria-current={active ? 'page' : undefined}
+      class="nav-link"
+      {...item.attrs}
+    >
+      <span class="link-label">{item.label}</span>
+      {item.badge && (
+        <span class={`sl-badge ${item.badge.variant}`}>{item.badge.text}</span>
+      )}
+    </a>
+  </igc-tree-item>
+)}

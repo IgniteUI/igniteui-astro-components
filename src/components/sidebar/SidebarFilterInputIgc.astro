@@ -1,0 +1,74 @@
+---
+/**
+ * Filter input UI for the docs sidebar.
+ * Markup-only — behavior lives in `./sidebar-filter-igc.ts`.
+ * Uses igc-input / igc-button / igc-icon from igniteui-webcomponents.
+ * Icons are registered via registerIconFromText in DocsSidebarIgc.astro's script.
+ */
+---
+
+<div class="sidebar-filter-wrapper" role="search" aria-label="Filter sidebar topics">
+  <igc-input
+    id="sidebar-filter-input"
+    type="search"
+    autocomplete="off"
+    spellcheck="false"
+    placeholder="Filter topics…"
+    aria-label="Filter navigation topics"
+    aria-controls="docs-sidebar"
+    data-sidebar-filter-input
+  >
+    <igc-icon slot="prefix" name="sidebar-filter-search" aria-hidden="true"></igc-icon>
+    <igc-button
+      slot="suffix"
+      variant="flat"
+      aria-label="Clear filter"
+      data-sidebar-filter-clear
+      hidden
+    ><igc-icon name="sidebar-filter-clear" aria-hidden="true"></igc-icon></igc-button>
+  </igc-input>
+  <p
+    role="status"
+    aria-atomic="true"
+    class="sidebar-filter-status"
+    data-sidebar-filter-status
+  ></p>
+</div>
+
+<style>
+  /* Sits above the scroll container — always visible, never scrolls. */
+  .sidebar-filter-wrapper {
+    flex-shrink: 0;
+    margin-block-end: 0.5rem;
+    padding-block-end: 0.25rem;
+    background: var(--sl-color-bg-sidebar, var(--sl-color-bg));
+  }
+
+  igc-input {
+    display: block;
+    width: 100%;
+    --ig-size: 1;
+  }
+
+  igc-input::part(container) {
+    font-size: var(--sl-text-xs, 0.75rem);
+    font-family: inherit;
+  }
+
+  igc-input::part(input) {
+    font-size: var(--sl-text-xs, 0.75rem);
+    font-family: inherit;
+  }
+
+  igc-button[data-sidebar-filter-clear] {
+    --ig-size: 1;
+  }
+
+  .sidebar-filter-status {
+    margin: 0.25rem 0 0;
+    font-size: 0.7rem;
+    color: var(--sl-color-gray-3);
+    min-height: 1em;
+    padding-inline-start: 0.1rem;
+  }
+</style>
