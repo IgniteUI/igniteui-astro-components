@@ -1,6 +1,6 @@
 ---
 import MainLayout from '../../../../src/layouts/MainLayout/MainLayout.astro';
-import DocsSidebar from '../../../../src/components/sidebar/DocsSidebar.astro';
+import DocsSidebarIgc from '../../../../src/components/sidebar/DocsSidebarIgc.astro';
 import GlobalNavBar from '../../../../src/components/GlobalNavBar/GlobalNavBar.astro';
 import GlobalFooter from '../../../../src/components/GlobalFooter/GlobalFooter.astro';
 import { SITE_TITLE, SIDEBAR } from '../../site-config';
@@ -9,7 +9,7 @@ const slug = 'components/nav-bar';
 ---
 
 <MainLayout title="Global Nav & Footer" siteTitle={SITE_TITLE} hasSidebar currentSlug={slug}>
-  <DocsSidebar slot="sidebar" items={SIDEBAR} currentSlug={slug} />
+  <DocsSidebarIgc slot="sidebar" items={SIDEBAR} currentSlug={slug} />
   <main class="content">
     <h1>Global nav &amp; footer</h1>
     <p>

@@ -1,6 +1,6 @@
 ---
 import MainLayout from '../../../../src/layouts/MainLayout/MainLayout.astro';
-import DocsSidebar from '../../../../src/components/sidebar/DocsSidebar.astro';
+import DocsSidebarIgc from '../../../../src/components/sidebar/DocsSidebarIgc.astro';
 import ApiLink from '../../../../src/components/mdx/ApiLink/ApiLink.astro';
 import { SITE_TITLE, SIDEBAR } from '../../site-config';
 
@@ -8,7 +8,7 @@ const slug = 'components/api-link';
 ---
 
 <MainLayout title="ApiLink" siteTitle={SITE_TITLE} hasSidebar currentSlug={slug}>
-  <DocsSidebar slot="sidebar" items={SIDEBAR} currentSlug={slug} />
+  <DocsSidebarIgc slot="sidebar" items={SIDEBAR} currentSlug={slug} />
   <main class="content">
     <h1>ApiLink</h1>
     <p>Renders an inline <code>&lt;a&gt;&lt;code&gt;</code> link to the platform-appropriate API page.</p>
