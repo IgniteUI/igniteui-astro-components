@@ -1,6 +1,6 @@
 ---
 import DocsLayout from '../../../../src/layouts/DocsLayout/DocsLayout.astro';
-import DocsSidebar from '../../../../src/components/sidebar/DocsSidebar.astro';
+import DocsSidebarIgc from '../../../../src/components/sidebar/DocsSidebarIgc.astro';
 import DocsToc from '../../../../src/components/DocsToc/DocsToc.astro';
 import { SITE_TITLE, SIDEBAR } from '../../site-config';
 
@@ -29,7 +29,7 @@ const headings = [
 ---
 
 <DocsLayout title="DocsToc" siteTitle={SITE_TITLE} hasSidebar currentSlug={slug}>
-  <DocsSidebar slot="sidebar" items={SIDEBAR} currentSlug={slug} />
+  <DocsSidebarIgc slot="sidebar" items={SIDEBAR} currentSlug={slug} />
   <DocsToc slot="toc" headings={headings} offsetTarget=".docs-subheader" />
 
   <main class="content">

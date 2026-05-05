@@ -1,0 +1,37 @@
+---
+import MainLayout from '../../../../src/layouts/MainLayout/MainLayout.astro';
+import DocsSidebarIgc from '../../../../src/components/sidebar/DocsSidebarIgc.astro';
+import { SITE_TITLE, SIDEBAR } from '../../site-config';
+
+const slug = 'components/sidebar-igc';
+---
+
+<MainLayout title="Sidebar" siteTitle={SITE_TITLE} hasSidebar currentSlug={slug}>
+  <DocsSidebarIgc slot="sidebar" items={SIDEBAR} currentSlug={slug} />
+  <main class="content">
+    <h1>Sidebar — igc-tree variant</h1>
+    <p>
+      The sidebar is rendered with <code>&lt;igc-tree&gt;</code> /
+      <code>&lt;igc-tree-item&gt;</code> from
+      <code>igniteui-webcomponents</code>. The current page is indicated
+      via <code>aria-current="page"</code> on the
+      <code>&lt;a slot="label"&gt;</code> for the active item.
+    </p>
+    <p>
+      Expand / collapse state and scroll position are persisted in
+      <code>sessionStorage</code> across Astro client-side navigations via
+      the <code>&lt;sidebar-filter-igc&gt;</code> custom element.
+    </p>
+    <p>
+      The filter input works the same as the plain-HTML sidebar: matching
+      items stay visible; non-matching ones get <code>display:none</code>.
+    </p>
+    <p>
+      See also: <a href="/components/sidebar">Sidebar — classic variant</a>.
+    </p>
+  </main>
+</MainLayout>
+
+<style>
+  .content { max-width: 60rem; margin: 0 auto; padding: 2rem 1.5rem; }
+</style>

@@ -5,12 +5,15 @@
   "type": "module",
   "description": "Local playground for visually testing the igniteui-astro-components package without publishing it.",
   "scripts": {
-    "dev": "astro dev",
+    "dev": "astro dev --port 4321",
     "build": "astro build",
     "preview": "astro preview",
     "check": "astro check"
   },
   "devDependencies": {
     "igniteui-theming": "*"
+  },
+  "dependencies": {
+    "igniteui-webcomponents": "^7.1.3"
   }
 }

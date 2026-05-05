@@ -1,0 +1,20 @@
+---
+/**
+ * Renders a flat list of SidebarItemIgc components as a fragment.
+ * No wrapper element — items go directly into the parent igc-tree-item's default slot.
+ */
+import SidebarItemIgc from './SidebarItemIgc.astro';
+import type { SidebarEntry } from '../../lib/sidebar/types';
+
+interface Props {
+  items: SidebarEntry[];
+  ancestors?: string[];
+  currentSlug: string;
+}
+
+const { items, ancestors = [], currentSlug } = Astro.props;
+---
+
+{items.map((item) => (
+  <SidebarItemIgc item={item} ancestors={ancestors} currentSlug={currentSlug} />
+))}
