@@ -96,6 +96,10 @@
   },
   "scripts": {
     "playground": "npm --prefix playground run dev",
-    "playground:build": "npm --prefix playground run build"
+    "playground:dev": "npm --prefix playground run dev",
+    "playground:build": "npm --prefix playground run build",
+    "playground:preview": "npm --prefix playground run preview",
+    "playground:clean": "npm --prefix playground run clean",
+    "playground:check": "npm --prefix playground run check"
   }
 }
