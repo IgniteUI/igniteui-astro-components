@@ -42,7 +42,9 @@ function stripScripts(html) {
     previous = current;
     current = current
       .replace(/<script\b[^>]*>[\s\S]*?<\/script\b[^>]*>/gi, '')
-      .replace(/<script\b[^>]*\/>/gi, '');
+      .replace(/<script\b[^>]*\/>/gi, '')
+      .replace(/<script\b/gi, '')
+      .replace(/<\/script\s*>/gi, '');
   } while (current !== previous);
   return current;
 }
