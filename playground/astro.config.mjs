@@ -36,9 +36,15 @@ process.env.BASE_URL ??= 'http://localhost:4321';
 
 /** Strip all <script> tags from an HTML string. */
 function stripScripts(html) {
-  return html
-    .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, '')
-    .replace(/<script\b[^>]*\/>/gi, '');
+  let previous;
+  let current = html;
+  do {
+    previous = current;
+    current = current
+      .replace(/<script\b[^>]*>[\s\S]*?<\/script\b[^>]*>/gi, '')
+      .replace(/<script\b[^>]*\/>/gi, '');
+  } while (current !== previous);
+  return current;
 }
 
 /** Rewrite root-relative href/src/action attributes to absolute URLs. */
