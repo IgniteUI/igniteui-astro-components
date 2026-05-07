@@ -2,7 +2,7 @@
  * Shared playground configuration — sidebar tree, product links, and site title.
  *
  * Imported directly by every playground page and passed as props to
- * MainLayout / DocsSidebar / DocsSubHeader. This demonstrates the prop-driven
+ * DocsLayout / DocsSidebar / DocsSubHeader. This demonstrates the prop-driven
  * usage pattern: no virtual module or siteMetaIntegration required at runtime.
  */
 import type { SidebarEntry } from '../../src/lib/sidebar/types';

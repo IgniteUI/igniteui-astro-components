@@ -8,7 +8,7 @@
  * We deliberately do NOT call `createDocsSite()` / `siteMetaIntegration()`.
  *
  * Sidebar data, product links, and the site title are defined in
- * `src/site-config.ts` and passed as props directly to MainLayout /
+ * `src/site-config.ts` and passed as props directly to DocsLayout /
  * DocsSidebar / DocsSubHeader — demonstrating prop-driven usage.
  *
  * The two virtual module stubs below are still needed to satisfy the Vite
@@ -99,7 +99,10 @@ export default defineConfig({
           // Allow `@use 'igniteui-theming'` (in ../src/styles/ig-theme.scss)
           // to resolve from the playground's node_modules even though the
           // file lives outside this folder.
-          loadPaths: [path.join(repoRoot, 'node_modules')],
+          loadPaths: [
+            path.join(repoRoot, 'node_modules'),
+            path.resolve(repoRoot, '..', 'node_modules'),
+          ],
         },
       },
     },

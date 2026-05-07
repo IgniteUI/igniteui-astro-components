@@ -1,7 +1,8 @@
 ---
-import MainLayout from '../../../../src/layouts/MainLayout/MainLayout.astro';
+import DocsLayout from '../../../../src/layouts/DocsLayout/DocsLayout.astro';
 import DocsSidebar from '../../../../src/components/sidebar/DocsSidebar.astro';
 import DocsAside from '../../../../src/components/mdx/DocsAside/DocsAside.astro';
+import DocsToc from '../../../../src/components/DocsToc/DocsToc.astro';
 import { SITE_TITLE, SIDEBAR } from '../../site-config';
 
 const slug = 'components/docs-aside';
@@ -14,8 +15,9 @@ const headings = [
 ];
 ---
 
-<MainLayout title="DocsAside" siteTitle={SITE_TITLE} hasSidebar currentSlug={slug} headings={headings}>
+<DocsLayout title="DocsAside" siteTitle={SITE_TITLE} hasSidebar currentSlug={slug}>
   <DocsSidebar slot="sidebar" items={SIDEBAR} currentSlug={slug} />
+  <DocsToc slot="toc" headings={headings} offsetTarget=".docs-subheader" />
   <main class="content">
     <h1>DocsAside</h1>
     <p>
@@ -67,7 +69,7 @@ const headings = [
       This tip has no icon - pass <code>icon=""</code> to suppress it.
     </DocsAside>
   </main>
-</MainLayout>
+</DocsLayout>
 
 <style>
   .content { max-width: 60rem; margin: 0 auto; padding: 2rem 1.5rem; }

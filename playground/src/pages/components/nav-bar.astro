@@ -1,5 +1,5 @@
 ---
-import MainLayout from '../../../../src/layouts/MainLayout/MainLayout.astro';
+import DocsLayout from '../../../../src/layouts/DocsLayout/DocsLayout.astro';
 import DocsSidebarIgc from '../../../../src/components/sidebar/DocsSidebarIgc.astro';
 import GlobalNavBar from '../../../../src/components/GlobalNavBar/GlobalNavBar.astro';
 import GlobalFooter from '../../../../src/components/GlobalFooter/GlobalFooter.astro';
@@ -8,12 +8,12 @@ import { SITE_TITLE, SIDEBAR } from '../../site-config';
 const slug = 'components/nav-bar';
 ---
 
-<MainLayout title="Global Nav & Footer" siteTitle={SITE_TITLE} hasSidebar currentSlug={slug}>
+<DocsLayout title="Global Nav & Footer" siteTitle={SITE_TITLE} hasSidebar currentSlug={slug}>
   <DocsSidebarIgc slot="sidebar" items={SIDEBAR} currentSlug={slug} />
   <main class="content">
     <h1>Global nav &amp; footer</h1>
     <p>
-      <code>MainLayout</code> already mounts <code>GlobalNavBar</code>
+      <code>DocsLayout</code> already mounts <code>GlobalNavBar</code>
       and <code>GlobalFooter</code> at the top/bottom of the page — the
       bar above is rendered from there.
     </p>
@@ -30,7 +30,7 @@ const slug = 'components/nav-bar';
     <h3>Inline footer (theme="igniteui")</h3>
     <GlobalFooter theme="igniteui" />
   </main>
-</MainLayout>
+</DocsLayout>
 
 <style>
   .content { max-width: 60rem; margin: 0 auto; padding: 2rem 1.5rem; }

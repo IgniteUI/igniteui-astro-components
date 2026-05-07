@@ -12,7 +12,7 @@
  *   import { createDocsSite, buildSidebarFromToc } from 'igniteui-astro-components';
  *
  *   // Astro components
- *   import MainLayout from 'igniteui-astro-components/layouts/MainLayout.astro';
+ *   import DocsLayout from 'igniteui-astro-components/layouts/DocsLayout.astro';
  *   import ApiLink from 'igniteui-astro-components/components/mdx/ApiLink.astro';
  */
 

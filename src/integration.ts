@@ -213,7 +213,7 @@ export interface SiteMetaOptions {
     productLinks?: ProductLink[];
     /**
      * Extra `<head>` entries injected via the `virtual:docs-template/site-meta`
-     * module and rendered by `MainLayout.astro`.
+     * module and rendered by `DocsLayout.astro`.
      */
     head?: HeadEntry[];
     /** @deprecated Use `platform` instead. */

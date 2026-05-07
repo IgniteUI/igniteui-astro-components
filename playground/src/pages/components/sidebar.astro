@@ -1,12 +1,12 @@
 ---
-import MainLayout from '../../../../src/layouts/MainLayout/MainLayout.astro';
+import DocsLayout from '../../../../src/layouts/DocsLayout/DocsLayout.astro';
 import DocsSidebar from '../../../../src/components/sidebar/DocsSidebar.astro';
 import { SITE_TITLE, SIDEBAR } from '../../site-config';
 
 const slug = 'components/sidebar';
 ---
 
-<MainLayout title="Sidebar" siteTitle={SITE_TITLE} hasSidebar currentSlug={slug}>
+<DocsLayout title="Sidebar" siteTitle={SITE_TITLE} hasSidebar currentSlug={slug}>
   <DocsSidebar slot="sidebar" items={SIDEBAR} currentSlug={slug} />
   <main class="content">
     <h1>Sidebar — classic variant</h1>
@@ -24,7 +24,7 @@ const slug = 'components/sidebar';
       See also: <a href="/components/sidebar-igc">Sidebar — igc-tree variant</a>.
     </p>
   </main>
-</MainLayout>
+</DocsLayout>
 
 <style>
   .content { max-width: 60rem; margin: 0 auto; padding: 2rem 1.5rem; }
