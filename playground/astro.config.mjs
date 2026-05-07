@@ -21,6 +21,7 @@
 import { defineConfig } from 'astro/config';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
+import sanitizeHtml from 'sanitize-html';
 import { getNavConfig, getPlatformHead } from '../src/platform.ts';
 
 // Default the platform context used by ApiLink / ApiRef / PlatformBlock.
@@ -36,17 +37,12 @@ process.env.BASE_URL ??= 'http://localhost:4321';
 
 /** Strip all <script> tags from an HTML string. */
 function stripScripts(html) {
-  let previous;
-  let current = html;
-  do {
-    previous = current;
-    current = current
-      .replace(/<script\b[^>]*>[\s\S]*?<\/script\b[^>]*>/gi, '')
-      .replace(/<script\b[^>]*\/>/gi, '')
-      .replace(/<script\b/gi, '')
-      .replace(/<\/script\s*>/gi, '');
-  } while (current !== previous);
-  return current;
+  return sanitizeHtml(html, {
+    allowedTags: false,
+    disallowedTagsMode: 'discard',
+    nonTextTags: ['script', 'style', 'textarea', 'option'],
+    allowedAttributes: false,
+  });
 }
 
 /** Rewrite root-relative href/src/action attributes to absolute URLs. */
