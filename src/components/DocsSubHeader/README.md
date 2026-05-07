@@ -70,5 +70,5 @@ import DocsSubHeader from 'igniteui-astro-components/components/DocsSubHeader.as
 <DocsSubHeader pageTitle="Toast" currentSlug="components/toast" />
 ```
 
-This component is used automatically inside `MainLayout` — you only need to
+This component is used automatically inside `DocsLayout` — you only need to
 mount it directly when building a custom page shell.

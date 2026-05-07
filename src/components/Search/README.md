@@ -20,7 +20,7 @@ None — the component is self-contained.
 
 ## Example
 
-`Search` is included automatically inside `DocsSubHeader` / `MainLayout`. Mount it directly if you build a custom header:
+`Search` is included automatically inside `DocsSubHeader` / `DocsLayout`. Mount it directly if you build a custom header:
 
 ```astro
 ---

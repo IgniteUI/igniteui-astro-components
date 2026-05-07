@@ -61,13 +61,13 @@ const sidebar: SidebarEntry[] = [
 <DocsSidebar items={sidebar} currentSlug="components/toast" />
 ```
 
-Place it in the `sidebar` slot of `MainLayout`:
+Place it in the `sidebar` slot of `DocsLayout`:
 
 ```astro
-<MainLayout siteTitle="My Library" hasSidebar currentSlug={slug}>
+<DocsLayout siteTitle="My Library" hasSidebar currentSlug={slug}>
   <DocsSidebar slot="sidebar" items={sidebar} currentSlug={slug} />
   <slot />
-</MainLayout>
+</DocsLayout>
 ```
 
 #### With `siteMetaIntegration` (integration-driven)

@@ -20,7 +20,7 @@ Then open http://localhost:4321.
 - `astro.config.mjs` registers a tiny Vite plugin that supplies stub
   implementations of `virtual:docs-template/site-meta` and
   `virtual:docs-template/nav-html` — the two virtual modules normally
-  produced by `siteMetaIntegration()`. This lets `MainLayout`,
+  produced by `siteMetaIntegration()`. This lets `DocsLayout`,
   `GlobalNavBar`, `GlobalFooter`, `DocsSidebar`, `ThemingWidget`, etc.
   run without booting the full integration (which expects route
   entrypoints and a Starlight compat shim that don't ship with this
@@ -38,7 +38,7 @@ Then open http://localhost:4321.
 
 | Route | Component(s) under test |
 | --- | --- |
-| `/` | `MainLayout`, `DocsSidebar` |
+| `/` | `DocsLayout`, `DocsSidebar` |
 | `/components/sidebar` | `DocsSidebar`, `SidebarTree`, `SidebarItem`, `SidebarFilterInput` |
 | `/components/nav-bar` | `GlobalNavBar`, `GlobalFooter` |
 | `/components/api-link` | `ApiLink` |

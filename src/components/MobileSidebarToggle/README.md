@@ -28,4 +28,4 @@ import MobileSidebarToggle from 'igniteui-astro-components/components/MobileSide
 <MobileSidebarToggle label="Components" />
 ```
 
-Used automatically inside `MainLayout` when `hasSidebar={true}`.
+Used automatically inside `DocsLayout` when `hasSidebar={true}`.

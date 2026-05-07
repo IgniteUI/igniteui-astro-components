@@ -50,15 +50,15 @@ Use the layout in a route:
 
 ```astro
 ---
-import MainLayout from 'igniteui-astro-components/layouts/MainLayout.astro';
+import DocsLayout from 'igniteui-astro-components/layouts/DocsLayout.astro';
 import DocsSidebar from 'igniteui-astro-components/components/sidebar/DocsSidebar.astro';
 
 const { slug } = Astro.params;
 ---
-<MainLayout title="Hello" hasSidebar currentSlug={slug}>
+<DocsLayout title="Hello" hasSidebar currentSlug={slug}>
   <DocsSidebar slot="sidebar" currentSlug={slug} />
   <slot />
-</MainLayout>
+</DocsLayout>
 ```
 
 Import MDX components in a page or `mdx-components.ts`:
@@ -81,11 +81,11 @@ import 'igniteui-astro-components/styles/ig-theme.scss';
 
 ## Prop-driven usage (without `siteMetaIntegration`)
 
-By default, `MainLayout`, `DocsSidebar`, and `DocsSubHeader` read their data (site title, sidebar tree, product links) from the `virtual:docs-template/site-meta` virtual module that is provided by `siteMetaIntegration` / `createDocsSite`.
+By default, `DocsLayout`, `DocsSidebar`, and `DocsSubHeader` read their data (site title, sidebar tree, product links) from the `virtual:docs-template/site-meta` virtual module that is provided by `siteMetaIntegration` / `createDocsSite`.
 
 If you are not using the integration — for example when consuming the package via a GitHub dependency in a project that builds its own config — every piece of data can be passed directly as a prop instead.
 
-### MainLayout
+### DocsLayout
 
 | Prop | Overrides |
 |------|-----------|
@@ -93,11 +93,11 @@ If you are not using the integration — for example when consuming the package 
 
 ```astro
 ---
-import MainLayout from 'igniteui-astro-components/layouts/MainLayout.astro';
+import DocsLayout from 'igniteui-astro-components/layouts/DocsLayout.astro';
 ---
-<MainLayout title="Toast" siteTitle="My Library" hasSidebar currentSlug="components/toast">
+<DocsLayout title="Toast" siteTitle="My Library" hasSidebar currentSlug="components/toast">
   <slot />
-</MainLayout>
+</DocsLayout>
 ```
 
 ### DocsSidebar
@@ -162,9 +162,10 @@ A minimal setup that needs no virtual modules or Astro integration:
 
 ```astro
 ---
-// src/layouts/DocsLayout.astro
-import MainLayout from 'igniteui-astro-components/layouts/MainLayout.astro';
+// src/layouts/MyDocsLayout.astro
+import DocsLayout from 'igniteui-astro-components/layouts/DocsLayout.astro';
 import DocsSidebar from 'igniteui-astro-components/components/sidebar/DocsSidebar.astro';
+import DocsToc from 'igniteui-astro-components/components/DocsToc.astro';
 import type { SidebarEntry } from 'igniteui-astro-components/lib/sidebar/types';
 import type { MarkdownHeading } from 'astro';
 
@@ -177,18 +178,17 @@ interface Props {
 const { title, currentSlug, headings } = Astro.props;
 
 const sidebar: SidebarEntry[] = [/* … your tree … */];
-const productLinks = [{ label: 'React', href: '/react/', platform: 'react' }];
 ---
-<MainLayout
+<DocsLayout
   title={title}
   siteTitle="My Library"
   hasSidebar
   currentSlug={currentSlug}
-  headings={headings}
 >
   <DocsSidebar slot="sidebar" items={sidebar} currentSlug={currentSlug} />
+  {headings && <DocsToc slot="toc" headings={headings} offsetTarget=".docs-subheader" />}
   <slot />
-</MainLayout>
+</DocsLayout>
 ```
 
 > The virtual modules still need to be resolvable at build time (they are declared in `src/virtual-modules.d.ts`). When not using `siteMetaIntegration`, add stub exports to your `astro.config.ts` using the playground's `virtualDocsModules` pattern — see [playground/astro.config.mjs](playground/astro.config.mjs) for a reference implementation.
@@ -207,7 +207,7 @@ const productLinks = [{ label: 'React', href: '/react/', platform: 'react' }];
 
 | Export | Purpose | Docs |
 | --- | --- | --- |
-| `igniteui-astro-components/layouts/MainLayout.astro` | Top-level page shell — global nav + sub-header + optional sidebar + main frame + footer | [README](src/layouts/MainLayout/README.md) |
+| `igniteui-astro-components/layouts/DocsLayout.astro` | Top-level page shell — global nav + sub-header + optional sidebar + main frame + footer | [README](src/layouts/DocsLayout/README.md) |
 
 ### Chrome components
 
@@ -333,7 +333,7 @@ export default defineConfig({
 ```
 
 > The alias covers the JS/TS barrel. `.astro` component imports such as
-> `'igniteui-astro-components/layouts/MainLayout.astro'` resolve automatically
+> `'igniteui-astro-components/layouts/DocsLayout.astro'` resolve automatically
 > through the `paths` wildcard in `tsconfig.json` — Astro's Vite pipeline
 > handles them at build time.
 
@@ -343,7 +343,7 @@ Import component files directly by relative path without any alias or install:
 
 ```astro
 ---
-import MainLayout from '../../astro-components/src/layouts/MainLayout/MainLayout.astro';
+import DocsLayout from '../../astro-components/src/layouts/DocsLayout/DocsLayout.astro';
 import DocsSidebar from '../../astro-components/src/components/sidebar/DocsSidebar.astro';
 import ApiLink from '../../astro-components/src/components/mdx/ApiLink/ApiLink.astro';
 ---

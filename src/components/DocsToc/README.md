@@ -43,7 +43,7 @@ const { headings } = Astro.props;
 <DocsToc headings={headings} offsetTarget=".site-header" />
 ```
 
-Used automatically inside `MainLayout` when the `headings` prop is passed.
+Place it in the `toc` slot of `DocsLayout`: `<DocsToc slot="toc" headings={headings} />`.
 
 ## Scroll-spy behaviour
 
