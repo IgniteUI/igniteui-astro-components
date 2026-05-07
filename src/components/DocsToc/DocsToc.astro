@@ -263,22 +263,23 @@ const items: TocItem[] = depth === 0 ? buildToc(headings, tocConfig) : (_items ?
     });
 </script>
 
-<style is:global>
-    :root {
+<style>
+    :global(:root) {
         --ig-toc-width: 24rem;
     }
 
-    .toc-sidebar {
+    /* .toc-sidebar and .main-frame live in DocsLayout — use :global() */
+    :global(.toc-sidebar) {
         display: none;
     }
 
     /* Hide the aside entirely when DocsToc has nothing to render */
-    .toc-sidebar:not(:has(docs-toc)) {
+    :global(.toc-sidebar:not(:has(docs-toc))) {
         display: none !important;
     }
 
     @media (min-width: 84rem) {
-        .toc-sidebar {
+        :global(.toc-sidebar) {
             display: block;
             position: fixed;
             top: var(--sl-nav-height);
@@ -290,18 +291,19 @@ const items: TocItem[] = depth === 0 ? buildToc(headings, tocConfig) : (_items ?
             border-inline-start: 1px solid var(--sl-color-hairline-shade, #d0d0d0);
         }
 
-        .page:has(docs-toc) .main-frame {
+        :global(.page:has(docs-toc) .main-frame) {
             padding-inline-end: var(--ig-toc-width);
         }
     }
 
+    /* docs-toc and everything inside it is rendered by this component — scoped */
     docs-toc {
         display: block;
     }
 
     docs-toc h2 {
         margin: 0 0 0.75rem;
-        font-size: var(--sl-text-xs);
+        font-size: var(--sl-text-xs, 0.75rem);
         font-weight: 600;
         text-transform: uppercase;
         letter-spacing: 0.06em;
