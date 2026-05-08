@@ -20,6 +20,7 @@ interface Props {
 
 import {
   platform as virtualPlatform,
+  navLang as virtualNavLang,
   abPrefetched, abFooterHtml, abFooterUtilsHtml, abFooterCopyrightHtml, abContactSalesHtml,
 } from 'virtual:docs-template/nav-html';
 import { fetchIgNav } from '../../lib/nav-helpers.ts';
@@ -30,7 +31,7 @@ const { theme, lang } = Astro.props as Props;
 
 // Props override the virtual module values (allows per-page overrides)
 const resolvedPlatform = theme ?? virtualPlatform ?? 'igniteui';
-const resolvedLang = (lang ?? 'en') as NavLang;
+const resolvedLang = (lang ?? virtualNavLang ?? 'en') as NavLang;
 
 const isAppBuilder = resolvedPlatform === 'appbuilder';
 const isIgPlatform = !isAppBuilder;

@@ -6,7 +6,8 @@
  *
  * Used by:
  *   - integration.ts (siteMetaIntegration virtual-module pipeline)
- *   - GlobalNavBarIg.astro / GlobalFooterIg.astro (self-contained prefetch)
+ *   - components/GlobalNavBar/GlobalNavBar.astro
+ *   - components/GlobalFooter/GlobalFooter.astro
  */
 
 import { JSDOM } from 'jsdom';

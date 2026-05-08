@@ -12,9 +12,9 @@
  * DocsSidebar / DocsSubHeader — demonstrating prop-driven usage.
  *
  * The two virtual module stubs below satisfy the Vite module resolver (the
- * components import from them at the top level). Nav HTML is no longer
- * fetched here — GlobalNavBarIg / GlobalFooterIg self-fetch via fetchIgNav()
- * and the old GlobalNavBar falls back to its static minimal markup.
+ * components import from them at the top level). Nav HTML is not fetched here
+ * — GlobalNavBar and GlobalFooter self-fetch via fetchIgNav() at build time
+ * and fall back to static minimal markup when the fetch fails.
  */
 
 import { defineConfig } from 'astro/config';
@@ -36,9 +36,10 @@ const platformHeadEntries = getPlatformHead('angular', 'en');
  * normally provided by `siteMetaIntegration`. This lets the components run
  * standalone in the playground.
  *
- * Nav HTML is intentionally NOT fetched here — GlobalNavBarIg / GlobalFooterIg
- * self-fetch via fetchIgNav() at build time.  The old GlobalNavBar used by
- * DocsLayout falls back to its static minimal markup (prefetched = false).
+ * Nav HTML is intentionally NOT fetched here — GlobalNavBar and GlobalFooter
+ * self-fetch via fetchIgNav() at build time (cached per locale, graceful
+ * offline fallback). The virtual module stub only needs to satisfy the
+ * resolver; the real HTML comes from the components themselves.
  */
 function virtualDocsModules() {
   const siteMetaId = 'virtual:docs-template/site-meta';

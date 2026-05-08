@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "description": "Reusable Astro components, layouts, and integrations for Infragistics / Ignite UI documentation sites. Replaces the Starlight defaults with project-specific implementations.",
   "type": "module",
+  "engines": {
+    "node": "^20.19.0 || ^22.13.0 || >=24.0.0"
+  },
   "license": "MIT",
   "author": "Infragistics",
   "repository": {
