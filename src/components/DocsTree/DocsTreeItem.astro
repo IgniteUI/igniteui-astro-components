@@ -7,11 +7,12 @@
  *   2. Leaf      — has `href`, no `children`     → label is wrapped in <a slot="label">
  *   3. Link+kids — has `href` AND `children`     → toc h2 with h3 children
  *
- * Always emits an empty <span slot="indicator"> so the variant CSS can show
- * or hide the toggle indicator without leaving shadow-layout artifacts.
+ * Sets `data-tree-id`, `data-depth`, and `data-has-children` (when applicable).
+ * Any extra `data-*` attributes come from `node.itemData` (kebab-cased keys).
  *
- * Always sets `data-tree-id` and `data-depth`. Any extra `data-*` attributes
- * come from `node.itemData` (kebab-cased keys).
+ * The native `active` attribute is set when `activeId` matches `node.id`,
+ * which drives the `::part(wrapper active)` row highlight in docs-tree.css.
+ * The default expand indicator is hidden globally via `::part(indicator)`.
  */
 import type { TreeNode, TreeVariant } from './types';
 
@@ -44,10 +45,9 @@ if (node.itemData) {
   data-depth={String(depth)}
   data-has-children={hasChildren ? '' : undefined}
   expanded={node.expanded ? '' : undefined}
+  active={isActive ? '' : undefined}
   {...dataAttrs}
 >
-  <span slot="indicator"></span>
-
   {node.href ? (
     <a
       slot="label"

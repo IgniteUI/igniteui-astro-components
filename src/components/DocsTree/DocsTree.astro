@@ -26,6 +26,8 @@ interface Props {
   activeId?: string;
   /** Pass-through to <igc-tree>. Sidebar: true. Toc: omit. */
   toggleNodeOnClick?: boolean;
+  /** Accessible label for the tree's nav role. Skip when an outer <nav aria-labelledby> already names the region. */
+  ariaLabel?: string;
   /**
    * Astro component rendering the label slot's inner content. Receives
    * `{ node, depth, isLeaf, isActive }`. When omitted, the tree falls
@@ -34,11 +36,12 @@ interface Props {
   renderLabel?: any;
 }
 
-const { nodes, variant, activeId, toggleNodeOnClick, renderLabel } = Astro.props;
+const { nodes, variant, activeId, toggleNodeOnClick, ariaLabel, renderLabel } = Astro.props;
 ---
 
 <igc-tree
   data-variant={variant}
+  aria-label={ariaLabel}
   toggle-node-on-click={toggleNodeOnClick ? '' : undefined}
 >
   {nodes.map((node) => (

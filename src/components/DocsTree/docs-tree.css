@@ -55,6 +55,32 @@ igc-tree-item::part(label) {
   overflow: visible;
 }
 
+/*
+ * Hide the default expand indicator across both variants. The sidebar
+ * draws its own caret inside the label slot via SidebarLabel; the toc
+ * has no expand UI at all (the scroll-spy drives `expanded` behind the
+ * scenes). Replaces the old slot-override pattern.
+ */
+igc-tree-item::part(indicator) {
+  display: none;
+}
+
+/*
+ * Native shadow-part hooks for keyboard focus and SSR active state.
+ * `::part(wrapper focused)` lights up when the item is keyboard-focused;
+ * `::part(wrapper active)` lights up when the `active` attribute is set
+ * on <igc-tree-item> (DocsTreeItem sets it whenever activeId matches).
+ */
+igc-tree-item::part(wrapper focused) {
+  outline: 2px solid var(--sl-color-accent, #3b82f6);
+  outline-offset: -2px;
+  border-radius: var(--docs-tree-row-radius);
+}
+igc-tree-item::part(wrapper active) {
+  border-radius: var(--docs-tree-row-radius);
+  background: color-mix(in srgb, var(--sl-color-accent) 5%, transparent);
+}
+
 /* Default label/link styling — used when consumer omits renderLabel. */
 .docs-tree-link {
   display: flex;
@@ -164,11 +190,9 @@ sidebar-filter[data-filtering] igc-tree[data-variant='sidebar'] igc-tree-item[da
 /*
  * Toc has no visible expand UI — the scroll-spy drives `expanded` on
  * parent items behind the scenes; nested entries simply appear when
- * the active section enters their parent.
+ * the active section enters their parent. The base `::part(indicator)`
+ * rule above already hides the native chevron.
  */
-igc-tree[data-variant='toc'] [slot='indicator'] {
-  display: none;
-}
 
 /* Toc rows are tighter than sidebar rows. */
 igc-tree[data-variant='toc'] .docs-tree-link {
