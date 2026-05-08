@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "description": "Reusable Astro components, layouts, and integrations for Infragistics / Ignite UI documentation sites. Replaces the Starlight defaults with project-specific implementations.",
   "type": "module",
+  "engines": {
+    "node": "^20.19.0 || ^22.13.0 || >=24.0.0"
+  },
   "license": "MIT",
   "author": "Infragistics",
   "repository": {
@@ -36,9 +39,7 @@
     "./content": "./src/content-helper.ts",
     "./content-config": "./src/content.config.ts",
     "./llms": "./src/llms.ts",
-
     "./layouts/DocsLayout.astro": "./src/layouts/DocsLayout/DocsLayout.astro",
-
     "./components/GlobalNavBar.astro": "./src/components/GlobalNavBar/GlobalNavBar.astro",
     "./components/GlobalFooter.astro": "./src/components/GlobalFooter/GlobalFooter.astro",
     "./components/DocsSubHeader.astro": "./src/components/DocsSubHeader/DocsSubHeader.astro",
@@ -80,10 +81,12 @@
   },
   "dependencies": {
     "igniteui-webcomponents": "^7.1.3",
-    "js-yaml": "^4.1.0"
+    "js-yaml": "^4.1.0",
+    "jsdom": "^29.0.1"
   },
   "devDependencies": {
     "@types/js-yaml": "^4.0.9",
+    "@types/jsdom": "^21.1.7",
     "astro": "^6.1.6",
     "igniteui-theming": "^26.0.1",
     "sass": "^1.83.0",
