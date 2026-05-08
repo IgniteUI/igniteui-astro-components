@@ -32,7 +32,7 @@ const items = (itemsProp ?? sidebarData) as SidebarEntry[];
 <sidebar-filter-igc id="docs-sidebar" data-no-results="No topics match">
   <SidebarFilterInput />
   <div class="sidebar-scroll" data-sidebar-scroll>
-    <igc-tree toggle-node-on-click>
+    <igc-tree toggle-node-on-click aria-label="Sidebar navigation">
       <SidebarTreeIgc items={items} currentSlug={currentSlug} />
     </igc-tree>
   </div>
@@ -110,6 +110,24 @@ const items = (itemsProp ?? sidebarData) as SidebarEntry[];
   }
   :global(igc-tree-item)::part(wrapper):hover {
     background: transparent;
+  }
+
+  /* Hide the default expand indicator — our caret lives in the label slot. */
+  :global(igc-tree-item)::part(indicator) {
+    display: none;
+  }
+
+  /* Keyboard focus ring via the native focused part. */
+  :global(igc-tree-item)::part(wrapper focused) {
+    outline: 2px solid var(--sl-color-accent, #3b82f6);
+    outline-offset: -2px;
+    border-radius: 0.25rem;
+  }
+
+  /* Active item (current page) wrapper highlight via native active part. */
+  :global(igc-tree-item)::part(wrapper active) {
+    border-radius: 0.25rem;
+    background: color-mix(in srgb, var(--sl-color-accent) 5%, transparent);
   }
 
   /* Label fills the full row width. */
