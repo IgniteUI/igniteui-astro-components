@@ -66,8 +66,8 @@ import {
 import { buildSidebarFromToc } from './sidebar';
 import { getNavConfig, getPlatformHead } from './platform';
 import type { HeadEntry, PlatformKey, NavLang } from './platform.ts';
-import { JSDOM } from 'jsdom';
 import { remarkDocfx, rehypeCodeView } from './plugins/remark-docfx';
+import { stripScripts, absolutifyNavUrls, extractOuterHtml } from './lib/nav-helpers.ts';
 
 /** Build / deployment mode. Drives env-var `DOCS_BUILD_MODE`. */
 export type DocsMode = 'development' | 'staging' | 'production';
@@ -105,80 +105,6 @@ function readThemingEnv(sourcePath: string | undefined, envKey: string): {
     } catch {
         return { themeApiUrl: '', widgetVersion: 'latest' };
     }
-}
-
-/**
- * Strip all <script> tags from an HTML string.
- * The nav HTML fetched from infragistics.com / appbuilder.dev may contain
- * inline or external scripts that don't belong in the docs page (e.g.
- * staging.appbuilder.dev references in the IG nav).  Platform-specific
- * scripts are already injected cleanly via getPlatformHead().
- */
-function stripScripts(html: string): string {
-    const dom = new JSDOM(html);
-    const { document } = dom.window;
-
-    document.querySelectorAll('script').forEach((el) => {
-        el.remove();
-    });
-
-    return document.body.innerHTML;
-}
-
-/**
- * Rewrite root-relative href/src/action attributes in nav HTML to absolute
- * URLs using the given base origin (e.g. 'https://www.infragistics.com').
- *
- * Without this, links like href="/products/ignite-ui" resolve against the
- * local dev-server origin and Astro's client-side router intercepts them,
- * logging 404 warnings for every nav-bar link the user hovers or clicks.
- */
-function absolutifyNavUrls(html: string, baseOrigin: string): string {
-    return html
-        .replace(/(href|src|action)="(\/)([^"]*)"/g, `$1="${baseOrigin}/$3"`)
-        .replace(/(href|src|action)='(\/)([^']*)'/g, `$1='${baseOrigin}/$3'`);
-}
-
-/**
- * Nesting-aware outer-HTML extractor.
- * Finds the first tag whose opening tag matches `openPattern` and returns
- * the complete element including its closing tag.
- *
- * @param html - Full HTML string to search.
- * @param openPattern - Regex source for the opening tag (no flags).
- */
-function extractOuterHtml(html: string, openPattern: string): string {
-    const openRe = new RegExp(openPattern, 'i');
-    const tagRe = /<\/?([a-z][a-z0-9]*)[^>]*>/gi;
-
-    let tagName: string | null = null;
-    let depth = 0;
-    let startIdx = -1;
-
-    let m: RegExpExecArray | null;
-    while ((m = tagRe.exec(html)) !== null) {
-        const full = m[0];
-        const name = m[1].toLowerCase();
-        const isSelfClose = full.endsWith('/>');
-        const isClose = full.startsWith('</');
-
-        if (tagName === null) {
-            if (openRe.test(full)) {
-                tagName = name;
-                startIdx = m.index;
-                depth = isSelfClose ? 0 : 1;
-                if (depth === 0) return full;
-            }
-            continue;
-        }
-
-        if (name !== tagName) continue;
-        if (isSelfClose) continue;
-        if (isClose) { depth--; if (depth === 0) return html.slice(startIdx, tagRe.lastIndex); }
-        else depth++;
-    }
-
-    return '';
 }
 
 // ---------------------------------------------------------------------------
