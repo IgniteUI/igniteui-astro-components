@@ -65,7 +65,7 @@
     "./lib/sidebar/helpers": "./src/lib/sidebar/helpers.ts",
     "./lib/platform-context": "./src/lib/platform-context.ts",
     "./plugins/remark-docfx": "./src/plugins/remark-docfx.ts",
-    "./styles/custom.css": "./src/styles/custom.css",
+    "./styles/custom.scss": "./src/styles/custom.scss",
     "./styles/ig-theme.scss": "./src/styles/ig-theme.scss",
     "./package.json": "./package.json"
   },
@@ -97,6 +97,10 @@
   },
   "scripts": {
     "playground": "npm --prefix playground run dev",
-    "playground:build": "npm --prefix playground run build"
+    "playground:dev": "npm --prefix playground run dev",
+    "playground:build": "npm --prefix playground run build",
+    "playground:preview": "npm --prefix playground run preview",
+    "playground:clean": "npm --prefix playground run clean",
+    "playground:check": "npm --prefix playground run check"
   }
 }
