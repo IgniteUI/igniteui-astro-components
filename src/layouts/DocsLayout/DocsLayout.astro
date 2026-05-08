@@ -7,7 +7,7 @@ import MobileSidebarToggle from '../../components/MobileSidebarToggle/MobileSide
 import { widgetScriptSrc, platform as virtualPlatform } from 'virtual:docs-template/nav-html';
 import { title as siteTitle, headEntries } from 'virtual:docs-template/site-meta';
 import '../../styles/ig-theme.scss';
-import '../../styles/custom.css';
+import '../../styles/custom.scss';
 
 export interface Props {
   title?: string;
@@ -34,7 +34,7 @@ type HeadEntry = { tag: string; attrs?: Record<string, string | boolean | undefi
 ---
 
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en" data-theme="light" style={!showGlobalNav ? '--docs-global-nav-height: 0' : undefined}>
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -80,11 +80,27 @@ type HeadEntry = { tag: string; attrs?: Record<string, string | boolean | undefi
         }
       });
     });
+
+    function updateNavHeight() {
+      var navChild = document.querySelector('[data-astro-transition-persist="global-nav-bar"] > *:first-child');
+      if (!navChild) return;
+      var h = navChild.getBoundingClientRect().height;
+      if (h > 0) {
+        document.documentElement.style.setProperty('--docs-global-nav-height', h + 'px');
+        var wrapper = document.querySelector('[data-nav-height-wrapper]');
+        if (wrapper) wrapper.style.setProperty('--docs-global-nav-height', h + 'px');
+      }
+    }
+    document.addEventListener('astro:page-load', updateNavHeight);
+    window.addEventListener('resize', updateNavHeight);
+    updateNavHeight();
+    var _navChild = document.querySelector('[data-astro-transition-persist="global-nav-bar"] > *:first-child');
+    if (_navChild) new ResizeObserver(updateNavHeight).observe(_navChild);
   </script>
 </head>
 <body>
   {showGlobalNav && <GlobalNavBar />}
-  <div style={`--docs-global-nav-height: ${showGlobalNav ? '86px' : '0px'}`}>
+  <div style={`--docs-global-nav-height: ${showGlobalNav ? '4.7rem' : '0'}`} data-nav-height-wrapper>
     <DocsSubHeader pageTitle={title} currentSlug={currentSlug} siteTitle={siteTitleProp} />
   </div>
   <div class="page">
