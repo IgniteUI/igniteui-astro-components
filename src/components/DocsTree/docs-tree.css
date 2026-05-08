@@ -66,17 +66,19 @@ igc-tree-item::part(indicator) {
 }
 
 /*
- * Native shadow-part hooks for keyboard focus and SSR active state.
- * `::part(wrapper focused)` lights up when the item is keyboard-focused;
- * `::part(wrapper active)` lights up when the `active` attribute is set
- * on <igc-tree-item> (DocsTreeItem sets it whenever activeId matches).
+ * Keyboard focus and SSR active state are gated on host-level state and
+ * styled through the wrapper part:
+ *   • :focus-visible — keyboard focus on the item host (roving tabindex
+ *     means only one item is focused at a time; not used for mouse).
+ *   • [active]       — DocsTreeItem sets the `active` attribute on
+ *     <igc-tree-item> whenever activeId matches the node's id.
  */
-igc-tree-item::part(wrapper focused) {
+igc-tree-item:focus-visible::part(wrapper) {
   outline: 2px solid var(--sl-color-accent, #3b82f6);
   outline-offset: -2px;
   border-radius: var(--docs-tree-row-radius);
 }
-igc-tree-item::part(wrapper active) {
+igc-tree-item[active]::part(wrapper) {
   border-radius: var(--docs-tree-row-radius);
   background: color-mix(in srgb, var(--sl-color-accent) 5%, transparent);
 }
