@@ -81,6 +81,13 @@ const nodes = headingsToTreeNodes(headings, tocConfig);
         init() {
             this.teardown();
 
+            // Wait for igc-tree to be defined before querying slotted links,
+            // since the links live inside igc-tree-item light DOM and igc-tree
+            // may not have upgraded yet when init() runs.
+            customElements.whenDefined('igc-tree').then(() => requestAnimationFrame(() => this._init()));
+        }
+
+        private _init() {
             // Clear any stale aria-current left over from a previous page.
             this.querySelectorAll('a[aria-current]').forEach(
                 (a) => a.removeAttribute('aria-current'),
