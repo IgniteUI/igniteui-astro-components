@@ -24,7 +24,10 @@ export interface TreeNode {
    */
   href?: string;
 
-  /** SSR-time expand hint. Sidebar uses isInitiallyOpen; toc forces always-open. */
+  /**
+   * SSR-time expand hint. Sidebar uses this for initial open state; DocsToc
+   * renders nodes collapsed at SSR and manages expansion at runtime.
+   */
   expanded?: boolean;
 
   children?: TreeNode[];
