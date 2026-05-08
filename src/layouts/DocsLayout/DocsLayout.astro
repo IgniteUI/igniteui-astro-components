@@ -244,12 +244,12 @@ type HeadEntry = { tag: string; attrs?: Record<string, string | boolean | undefi
 
   .main-frame {
     padding-block-start: var(--docs-mobile-toggle-height);
-    padding-inline-start: var(--sl-content-inline-start, 0);
   }
 
   @media (min-width: 50rem) {
     .main-frame {
       padding-block-start: 0;
+      padding-inline-start: var(--sl-content-inline-start, 0);
     }
   }
 
