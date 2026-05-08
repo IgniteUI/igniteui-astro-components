@@ -5,9 +5,9 @@
   "type": "module",
   "description": "Local playground for visually testing the igniteui-astro-components package without publishing it.",
   "scripts": {
-    "dev": "astro sync && astro dev --port 4321",
+    "dev": "astro sync && astro dev --port 4567",
     "build": "astro clean && astro sync && astro build",
-    "preview": "astro sync && astro preview",
+    "preview": "astro sync && astro preview --port 4567",
     "check": "astro check",
     "clean": "astro clean"
   },

@@ -1,15 +1,24 @@
 ---
 import DocsLayout from '../../../../src/layouts/DocsLayout/DocsLayout.astro';
-import DocsSidebarIgc from '../../../../src/components/sidebar/DocsSidebarIgc.astro';
+import DocsSidebar from '../../../../src/components/DocsSidebar/DocsSidebar.astro';
+import DocsToc from '../../../../src/components/DocsToc/DocsToc.astro';
 import GlobalNavBar from '../../../../src/components/GlobalNavBar/GlobalNavBar.astro';
 import GlobalFooter from '../../../../src/components/GlobalFooter/GlobalFooter.astro';
 import { SITE_TITLE, SIDEBAR } from '../../site-config';
 
 const slug = 'components/nav-bar';
+
+const headings = [
+  { depth: 2, slug: 'per-platform-overrides', text: 'Per-platform overrides' },
+  { depth: 3, slug: 'theme-angular',          text: 'theme="angular"' },
+  { depth: 3, slug: 'theme-appbuilder',       text: 'theme="appbuilder"' },
+  { depth: 3, slug: 'theme-igniteui-footer',  text: 'Inline footer (theme="igniteui")' },
+];
 ---
 
 <DocsLayout title="Global Nav & Footer" siteTitle={SITE_TITLE} hasSidebar currentSlug={slug}>
-  <DocsSidebarIgc slot="sidebar" items={SIDEBAR} currentSlug={slug} />
+  <DocsSidebar slot="sidebar" items={SIDEBAR} currentSlug={slug} />
+  <DocsToc slot="toc" headings={headings} offsetTarget=".docs-subheader" />
   <main class="content">
     <h1>Global nav &amp; footer</h1>
     <p>
@@ -18,16 +27,16 @@ const slug = 'components/nav-bar';
       bar above is rendered from there.
     </p>
 
-    <h2>Per-platform overrides</h2>
+    <h2 id="per-platform-overrides">Per-platform overrides</h2>
     <p>Each component accepts a <code>theme</code> prop overriding the virtual-module value:</p>
 
-    <h3>theme="angular"</h3>
+    <h3 id="theme-angular">theme="angular"</h3>
     <GlobalNavBar theme="angular" />
 
-    <h3>theme="appbuilder"</h3>
+    <h3 id="theme-appbuilder">theme="appbuilder"</h3>
     <GlobalNavBar theme="appbuilder" />
 
-    <h3>Inline footer (theme="igniteui")</h3>
+    <h3 id="theme-igniteui-footer">Inline footer (theme="igniteui")</h3>
     <GlobalFooter theme="igniteui" />
   </main>
 </DocsLayout>

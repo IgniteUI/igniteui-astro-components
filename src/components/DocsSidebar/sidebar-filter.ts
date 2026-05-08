@@ -1,7 +1,6 @@
 /**
- * <sidebar-filter-igc> custom element.
- *
- * Same responsibilities as <sidebar-filter> but for an igc-tree host.
+ * <sidebar-filter> custom element — drives the filter input + expand/collapse
+ * state for the igc-tree-based DocsSidebar.
  *
  * Design:
  *   • Filter visibility is CSS-driven:
@@ -18,14 +17,14 @@
  *         attribute is stale at the time the event fires.
  *
  * sessionStorage keys:
- *   sidebar-igc-filter-value   → current filter input value
- *   sidebar-igc-details-states → newline-joined list of expanded group keys
- *   sidebar-igc-scroll-top     → scrollTop of the scroll container
+ *   sidebar-filter-value   → current filter input value
+ *   sidebar-filter-details → newline-joined list of expanded group keys
+ *   sidebar-filter-scroll  → scrollTop of the scroll container
  */
 
-const FILTER_KEY  = 'sidebar-igc-filter-value';
-const DETAILS_KEY = 'sidebar-igc-details-states';
-const SCROLL_KEY  = 'sidebar-igc-scroll-top';
+const FILTER_KEY  = 'sidebar-filter-value';
+const DETAILS_KEY = 'sidebar-filter-details';
+const SCROLL_KEY  = 'sidebar-filter-scroll';
 
 const SCROLL_SELECTOR = '[data-sidebar-scroll]';
 const ITEM_SELECTOR   = 'igc-tree-item[data-path]';
@@ -84,7 +83,7 @@ document.addEventListener('astro:before-preparation', () => {
   // (which tracks user-intent expand state including manual collapses during filter).
   // When NOT filtering, DETAILS_KEY was already kept up-to-date by onItemToggle,
   // so we leave it as-is.
-  const host     = document.querySelector<HTMLElement>('sidebar-filter-igc[data-filtering]');
+  const host     = document.querySelector<HTMLElement>('sidebar-filter[data-filtering]');
   const intended = host?.dataset.openSnapshot;
   if (intended !== undefined) safeSet(DETAILS_KEY, intended);
 });
@@ -104,7 +103,7 @@ type ExpandableEl = HTMLElement & { expanded: boolean };
 type FilterInputEl = HTMLElement & { value: string; focus(): void };
 type FilterClearEl = HTMLElement & { hidden: boolean };
 
-class SidebarFilterIgc extends HTMLElement {
+class SidebarFilter extends HTMLElement {
   private input!:    FilterInputEl;
   private clearBtn!: FilterClearEl;
   private status!:   HTMLElement;
@@ -389,6 +388,6 @@ class SidebarFilterIgc extends HTMLElement {
   }
 }
 
-if (!customElements.get('sidebar-filter-igc')) {
-  customElements.define('sidebar-filter-igc', SidebarFilterIgc);
+if (!customElements.get('sidebar-filter')) {
+  customElements.define('sidebar-filter', SidebarFilter);
 }

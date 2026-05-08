@@ -13,7 +13,7 @@ cd playground
 npm run dev
 ```
 
-Then open http://localhost:4321.
+Then open http://localhost:4567.
 
 ## How it's wired
 

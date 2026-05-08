@@ -28,9 +28,8 @@ export const SIDEBAR: SidebarEntry[] = [
     label: 'Components',
     collapsed: false,
     items: [
-      { label: 'Sidebar (classic)',  slug: 'components/sidebar' },
-      { label: 'Sidebar (igc-tree)', slug: 'components/sidebar-igc' },
-      { label: 'Nav Bar',  slug: 'components/nav-bar' },
+      { label: 'Sidebar', slug: 'components/sidebar' },
+      { label: 'Nav Bar', slug: 'components/nav-bar' },
       { label: 'DocsToc', slug: 'components/docs-toc' },
       {
         label: 'MDX Helpers',

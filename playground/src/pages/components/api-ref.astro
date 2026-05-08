@@ -1,28 +1,37 @@
 ---
 import DocsLayout from '../../../../src/layouts/DocsLayout/DocsLayout.astro';
-import DocsSidebarIgc from '../../../../src/components/sidebar/DocsSidebarIgc.astro';
+import DocsSidebar from '../../../../src/components/DocsSidebar/DocsSidebar.astro';
+import DocsToc from '../../../../src/components/DocsToc/DocsToc.astro';
 import ApiRef from '../../../../src/components/mdx/ApiRef/ApiRef.astro';
 import { SITE_TITLE, SIDEBAR } from '../../site-config';
 
 const slug = 'components/api-ref';
+
+const headings = [
+  { depth: 2, slug: 'classes',             text: 'Classes (default kind)' },
+  { depth: 2, slug: 'interfaces',          text: 'Interfaces' },
+  { depth: 2, slug: 'enums',               text: 'Enums' },
+  { depth: 2, slug: 'charts-sub-package',  text: 'Charts sub-package' },
+];
 ---
 
 <DocsLayout title="ApiRef" siteTitle={SITE_TITLE} hasSidebar currentSlug={slug}>
-  <DocsSidebarIgc slot="sidebar" items={SIDEBAR} currentSlug={slug} />
+  <DocsSidebar slot="sidebar" items={SIDEBAR} currentSlug={slug} />
+  <DocsToc slot="toc" headings={headings} offsetTarget=".docs-subheader" />
   <main class="content">
     <h1>ApiRef</h1>
     <p>Renders the &quot;API References&quot; section listing one or more types.</p>
 
-    <h2>Classes (default kind)</h2>
+    <h2 id="classes">Classes (default kind)</h2>
     <ApiRef types={["Toast", "Combo", "Calendar"]} />
 
-    <h2>Interfaces</h2>
+    <h2 id="interfaces">Interfaces</h2>
     <ApiRef kind="interface" types={["ComboTemplateProps"]} prefixed={false} />
 
-    <h2>Enums</h2>
+    <h2 id="enums">Enums</h2>
     <ApiRef kind="enum" types={["CalendarSelection"]} />
 
-    <h2>Charts sub-package</h2>
+    <h2 id="charts-sub-package">Charts sub-package</h2>
     <ApiRef pkg="charts" types={["CategoryChart", "FinancialChart"]} />
   </main>
 </DocsLayout>

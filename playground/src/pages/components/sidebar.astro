@@ -1,27 +1,44 @@
 ---
 import DocsLayout from '../../../../src/layouts/DocsLayout/DocsLayout.astro';
-import DocsSidebar from '../../../../src/components/sidebar/DocsSidebar.astro';
+import DocsSidebar from '../../../../src/components/DocsSidebar/DocsSidebar.astro';
+import DocsToc from '../../../../src/components/DocsToc/DocsToc.astro';
 import { SITE_TITLE, SIDEBAR } from '../../site-config';
 
 const slug = 'components/sidebar';
+
+const headings = [
+  { depth: 2, slug: 'rendering',         text: 'Rendering' },
+  { depth: 2, slug: 'persistence',       text: 'Persistence' },
+  { depth: 2, slug: 'filter-input',      text: 'Filter input' },
+];
 ---
 
 <DocsLayout title="Sidebar" siteTitle={SITE_TITLE} hasSidebar currentSlug={slug}>
   <DocsSidebar slot="sidebar" items={SIDEBAR} currentSlug={slug} />
+  <DocsToc slot="toc" headings={headings} offsetTarget=".docs-subheader" />
   <main class="content">
-    <h1>Sidebar — classic variant</h1>
+    <h1>Sidebar</h1>
+
+    <h2 id="rendering">Rendering</h2>
     <p>
-      The classic sidebar is rendered with plain <code>&lt;details&gt;</code>
-      / <code>&lt;summary&gt;</code> elements and a native
-      <code>&lt;input type="search"&gt;</code> for filtering.
+      The sidebar is rendered with <code>&lt;igc-tree&gt;</code> /
+      <code>&lt;igc-tree-item&gt;</code> from
+      <code>igniteui-webcomponents</code>. The current page is indicated
+      via <code>aria-current="page"</code> on the
+      <code>&lt;a slot="label"&gt;</code> for the active item.
     </p>
+
+    <h2 id="persistence">Persistence</h2>
     <p>
       Expand / collapse state and scroll position are persisted in
       <code>sessionStorage</code> across Astro client-side navigations via
       the <code>&lt;sidebar-filter&gt;</code> custom element.
     </p>
+
+    <h2 id="filter-input">Filter input</h2>
     <p>
-      See also: <a href="/components/sidebar-igc">Sidebar — igc-tree variant</a>.
+      The filter input matches against item labels: matching items stay
+      visible; non-matching ones get <code>display:none</code>.
     </p>
   </main>
 </DocsLayout>

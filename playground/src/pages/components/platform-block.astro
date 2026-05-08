@@ -1,18 +1,26 @@
 ---
 import DocsLayout from '../../../../src/layouts/DocsLayout/DocsLayout.astro';
-import DocsSidebarIgc from '../../../../src/components/sidebar/DocsSidebarIgc.astro';
+import DocsSidebar from '../../../../src/components/DocsSidebar/DocsSidebar.astro';
+import DocsToc from '../../../../src/components/DocsToc/DocsToc.astro';
 import PlatformBlock from '../../../../src/components/mdx/PlatformBlock/PlatformBlock.astro';
 import { SITE_TITLE, SIDEBAR } from '../../site-config';
 
 const slug = 'components/platform-block';
+
+const headings = [
+  { depth: 2, slug: 'single-platform', text: 'Single platform' },
+  { depth: 2, slug: 'multi-platform',  text: 'Multi-platform' },
+];
 ---
 
 <DocsLayout title="PlatformBlock" siteTitle={SITE_TITLE} hasSidebar currentSlug={slug}>
-  <DocsSidebarIgc slot="sidebar" items={SIDEBAR} currentSlug={slug} />
+  <DocsSidebar slot="sidebar" items={SIDEBAR} currentSlug={slug} />
+  <DocsToc slot="toc" headings={headings} offsetTarget=".docs-subheader" />
   <main class="content">
     <h1>PlatformBlock</h1>
     <p>Only the block matching the current <code>PLATFORM</code> env var renders.</p>
 
+    <h2 id="single-platform">Single platform</h2>
     <PlatformBlock for="Angular">
       <p><strong>Angular</strong> only.</p>
     </PlatformBlock>
@@ -25,6 +33,8 @@ const slug = 'components/platform-block';
     <PlatformBlock for="Blazor">
       <p><strong>Blazor</strong> only.</p>
     </PlatformBlock>
+
+    <h2 id="multi-platform">Multi-platform</h2>
     <PlatformBlock for="Angular, React">
       <p>Visible to <strong>Angular</strong> and <strong>React</strong>.</p>
     </PlatformBlock>

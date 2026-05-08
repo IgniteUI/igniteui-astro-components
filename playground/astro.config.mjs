@@ -28,7 +28,7 @@ import { getNavConfig, getPlatformHead } from '../src/platform.ts';
 process.env.PLATFORM ??= 'React';
 process.env.DOCS_BUILD_MODE ??= 'development';
 process.env.DOCS_ENV ??= 'development';
-process.env.BASE_URL ??= 'http://localhost:4321';
+process.env.BASE_URL ??= 'http://localhost:4567';
 
 // ---------------------------------------------------------------------------
 // Nav-fetch helpers (mirrors integration.ts — kept inline so the playground
