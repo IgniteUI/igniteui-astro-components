@@ -39,9 +39,7 @@
     "./content": "./src/content-helper.ts",
     "./content-config": "./src/content.config.ts",
     "./llms": "./src/llms.ts",
-
     "./layouts/DocsLayout.astro": "./src/layouts/DocsLayout/DocsLayout.astro",
-
     "./components/GlobalNavBar.astro": "./src/components/GlobalNavBar/GlobalNavBar.astro",
     "./components/GlobalFooter.astro": "./src/components/GlobalFooter/GlobalFooter.astro",
     "./components/DocsSubHeader.astro": "./src/components/DocsSubHeader/DocsSubHeader.astro",
