@@ -14,6 +14,7 @@ import SidebarLabel from './SidebarLabel.astro';
 import DocsTree from '../DocsTree/DocsTree.astro';
 import { toTreeNodes } from './toTreeNodes';
 import type { SidebarEntry } from '../../lib/sidebar/types';
+import { normalizeSlug } from '../../lib/sidebar/helpers';
 
 interface Props {
   currentSlug?: string;
@@ -27,6 +28,7 @@ interface Props {
 const { currentSlug = '', items: itemsProp } = Astro.props;
 const items = (itemsProp ?? sidebarData) as SidebarEntry[];
 const nodes = toTreeNodes(items, currentSlug);
+const activeId = normalizeSlug(currentSlug);
 ---
 
 <sidebar-filter id="docs-sidebar" data-no-results="No topics match">
@@ -35,7 +37,7 @@ const nodes = toTreeNodes(items, currentSlug);
     <DocsTree
       nodes={nodes}
       variant="sidebar"
-      activeId={currentSlug}
+      activeId={activeId}
       toggleNodeOnClick
       ariaLabel="Sidebar navigation"
       renderLabel={SidebarLabel}
