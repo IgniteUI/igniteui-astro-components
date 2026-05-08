@@ -1,0 +1,96 @@
+---
+/**
+ * Docs sidebar — composes the shared DocsTree base with the sidebar
+ * filter custom element and a SidebarLabel renderer (badges + caret).
+ *
+ * Public Props are unchanged from the previous implementation.
+ *
+ * Package: igniteui-webcomponents (public, MIT) — change the import path
+ * in the <script> block below to use @infragistics/igniteui-webcomponents.
+ */
+import { sidebar as sidebarData } from 'virtual:docs-template/site-meta';
+import SidebarFilterInput from './SidebarFilterInput.astro';
+import SidebarLabel from './SidebarLabel.astro';
+import DocsTree from '../DocsTree/DocsTree.astro';
+import { toTreeNodes } from './toTreeNodes';
+import type { SidebarEntry } from '../../lib/sidebar/types';
+
+interface Props {
+  currentSlug?: string;
+  /**
+   * Sidebar tree to render. Overrides the virtual module value when provided.
+   * Useful when consuming the component without `siteMetaIntegration`.
+   */
+  items?: SidebarEntry[];
+}
+
+const { currentSlug = '', items: itemsProp } = Astro.props;
+const items = (itemsProp ?? sidebarData) as SidebarEntry[];
+const nodes = toTreeNodes(items, currentSlug);
+---
+
+<sidebar-filter id="docs-sidebar" data-no-results="No topics match">
+  <SidebarFilterInput />
+  <div class="sidebar-scroll" data-sidebar-scroll>
+    <DocsTree
+      nodes={nodes}
+      variant="sidebar"
+      activeId={currentSlug}
+      toggleNodeOnClick
+      renderLabel={SidebarLabel}
+    />
+  </div>
+</sidebar-filter>
+
+<script>
+  // Register Ignite UI Web Components used by the sidebar filter input.
+  // (DocsTree registers IgcTreeComponent / IgcTreeItemComponent itself.)
+  // To use the licensed package, change the import to:
+  //   import { ... } from '@infragistics/igniteui-webcomponents';
+  import {
+    defineComponents,
+    IgcInputComponent,
+    IgcButtonComponent,
+    IgcIconComponent,
+    registerIconFromText,
+  } from 'igniteui-webcomponents';
+
+  defineComponents(IgcInputComponent, IgcButtonComponent, IgcIconComponent);
+
+  registerIconFromText(
+    'sidebar-filter-search',
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none"><path d="M1 3h14M4 8h8M7 13h2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>`,
+  );
+  registerIconFromText(
+    'sidebar-filter-clear',
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 14 14" fill="none"><path d="M2 2l10 10M12 2 2 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>`,
+  );
+
+  import './sidebar-filter';
+</script>
+
+<style>
+  /* Layout-only — the tree's structural styles live in docs-tree.css. */
+  sidebar-filter {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+  }
+
+  .sidebar-scroll {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    margin-inline-end: calc(-1 * var(--sl-sidebar-pad-x, 1rem));
+    padding-inline-end: var(--sl-sidebar-pad-x, 1rem);
+  }
+
+  /* [data-sidebar-filter-status] is from SidebarFilterInput → :global() required */
+  sidebar-filter :global([data-sidebar-filter-status]):not(:empty) {
+    display: block;
+    padding: 0.5rem;
+    font-size: var(--sl-text-sm, 0.875rem);
+    color: var(--sl-color-gray-3, #888);
+  }
+</style>

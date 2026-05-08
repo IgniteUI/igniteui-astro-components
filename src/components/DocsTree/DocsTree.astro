@@ -1,0 +1,63 @@
+---
+/**
+ * DocsTree — the base tree component shared by DocsSidebarIgc and DocsToc.
+ *
+ * Wraps <igc-tree>, registers the underlying web components, imports the
+ * single styling locus, and recursively renders nodes via DocsTreeItem.
+ *
+ * Variants are selected with `variant="sidebar" | "toc"` and styled by
+ * attribute selectors in `docs-tree.css`. Variant-specific label content
+ * (badges, carets) is supplied by the optional `renderLabel` prop.
+ *
+ * Active-state contract:
+ *   • Sidebar passes `activeId` and never mutates aria-current at runtime.
+ *   • Toc never passes `activeId`; its <docs-toc> wrapper owns aria-current
+ *     after hydration.
+ *   Passing both would flicker — see ./README.md.
+ */
+import type { TreeNode, TreeVariant } from './types';
+import DocsTreeItem from './DocsTreeItem.astro';
+import './docs-tree.css';
+
+interface Props {
+  nodes: TreeNode[];
+  variant: TreeVariant;
+  /** SSR-time active id; matched against TreeNode.id. */
+  activeId?: string;
+  /** Pass-through to <igc-tree>. Sidebar: true. Toc: omit. */
+  toggleNodeOnClick?: boolean;
+  /**
+   * Astro component rendering the label slot's inner content. Receives
+   * `{ node, depth, isLeaf, isActive }`. When omitted, the tree falls
+   * back to a plain `<span>{node.label}</span>`.
+   */
+  renderLabel?: any;
+}
+
+const { nodes, variant, activeId, toggleNodeOnClick, renderLabel } = Astro.props;
+---
+
+<igc-tree
+  data-variant={variant}
+  toggle-node-on-click={toggleNodeOnClick ? '' : undefined}
+>
+  {nodes.map((node) => (
+    <DocsTreeItem
+      node={node}
+      depth={0}
+      variant={variant}
+      activeId={activeId}
+      renderLabel={renderLabel}
+    />
+  ))}
+</igc-tree>
+
+<script>
+  import {
+    defineComponents,
+    IgcTreeComponent,
+    IgcTreeItemComponent,
+  } from 'igniteui-webcomponents';
+
+  defineComponents(IgcTreeComponent, IgcTreeItemComponent);
+</script>

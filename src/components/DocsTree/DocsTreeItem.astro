@@ -1,0 +1,84 @@
+---
+/**
+ * Recursive renderer for a single TreeNode.
+ *
+ * Three shapes a node can take:
+ *   1. Group     — no `href`, has `children`     → label is a <div slot="label">
+ *   2. Leaf      — has `href`, no `children`     → label is wrapped in <a slot="label">
+ *   3. Link+kids — has `href` AND `children`     → toc h2 with h3 children
+ *
+ * Always emits an empty <span slot="indicator"> so the variant CSS can show
+ * or hide the toggle indicator without leaving shadow-layout artifacts.
+ *
+ * Always sets `data-tree-id` and `data-depth`. Any extra `data-*` attributes
+ * come from `node.itemData` (kebab-cased keys).
+ */
+import type { TreeNode, TreeVariant } from './types';
+
+interface Props {
+  node: TreeNode;
+  depth: number;
+  variant: TreeVariant;
+  activeId?: string;
+  renderLabel?: any;
+}
+
+const { node, depth, variant, activeId, renderLabel: RenderLabel } = Astro.props;
+
+const hasChildren = !!(node.children && node.children.length > 0);
+const isLeaf      = !hasChildren;
+const isActive    = activeId !== undefined && node.id === activeId;
+
+// Fold itemData entries into a plain object of `data-*` props so Astro spreads
+// them onto <igc-tree-item>. Keys are camelCase → Astro converts to kebab.
+const dataAttrs: Record<string, string> = {};
+if (node.itemData) {
+  for (const [key, value] of Object.entries(node.itemData)) {
+    dataAttrs[`data-${key.replace(/[A-Z]/g, (m) => '-' + m.toLowerCase())}`] = value;
+  }
+}
+---
+
+<igc-tree-item
+  data-tree-id={node.id}
+  data-depth={String(depth)}
+  data-has-children={hasChildren ? '' : undefined}
+  expanded={node.expanded ? '' : undefined}
+  {...dataAttrs}
+>
+  <span slot="indicator"></span>
+
+  {node.href ? (
+    <a
+      slot="label"
+      href={node.href}
+      aria-current={isActive ? 'page' : undefined}
+      class="docs-tree-link"
+      {...node.linkAttrs}
+    >
+      {RenderLabel ? (
+        <RenderLabel node={node} depth={depth} isLeaf={isLeaf} isActive={isActive} />
+      ) : (
+        <span class="docs-tree-label">{node.label}</span>
+      )}
+    </a>
+  ) : (
+    <div slot="label" class="docs-tree-group">
+      {RenderLabel ? (
+        <RenderLabel node={node} depth={depth} isLeaf={isLeaf} isActive={isActive} />
+      ) : (
+        <span class="docs-tree-label">{node.label}</span>
+      )}
+    </div>
+  )}
+
+  {hasChildren && node.children!.map((child) => (
+    <Astro.self
+      node={child}
+      depth={depth + 1}
+      variant={variant}
+      activeId={activeId}
+      renderLabel={RenderLabel}
+    />
+  ))}
+</igc-tree-item>

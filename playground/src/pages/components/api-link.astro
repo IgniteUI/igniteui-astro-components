@@ -1,32 +1,45 @@
 ---
 import DocsLayout from '../../../../src/layouts/DocsLayout/DocsLayout.astro';
-import DocsSidebarIgc from '../../../../src/components/sidebar/DocsSidebarIgc.astro';
+import DocsSidebar from '../../../../src/components/DocsSidebar/DocsSidebar.astro';
+import DocsToc from '../../../../src/components/DocsToc/DocsToc.astro';
 import ApiLink from '../../../../src/components/mdx/ApiLink/ApiLink.astro';
 import { SITE_TITLE, SIDEBAR } from '../../site-config';
 
 const slug = 'components/api-link';
+
+const headings = [
+  { depth: 2, slug: 'class-link',     text: 'Class link' },
+  { depth: 2, slug: 'class-member',   text: 'Class member' },
+  { depth: 2, slug: 'function',       text: 'Function' },
+  { depth: 2, slug: 'type-alias',     text: 'Type alias' },
+  { depth: 2, slug: 'sub-package',    text: 'Sub-package' },
+  { depth: 2, slug: 'platform-env',   text: 'Platform env var' },
+];
 ---
 
 <DocsLayout title="ApiLink" siteTitle={SITE_TITLE} hasSidebar currentSlug={slug}>
-  <DocsSidebarIgc slot="sidebar" items={SIDEBAR} currentSlug={slug} />
+  <DocsSidebar slot="sidebar" items={SIDEBAR} currentSlug={slug} />
+  <DocsToc slot="toc" headings={headings} offsetTarget=".docs-subheader" />
   <main class="content">
     <h1>ApiLink</h1>
     <p>Renders an inline <code>&lt;a&gt;&lt;code&gt;</code> link to the platform-appropriate API page.</p>
-    <p>
-      Default class link: <ApiLink type="Toast" />
-    </p>
-    <p>
-      Class member: <ApiLink type="Toast" member="show" label="Show" />
-    </p>
-    <p>
-      Function (no prefix): <ApiLink kind="function" type="configureTheme" prefixed={false} />
-    </p>
-    <p>
-      Type alias: <ApiLink kind="type" type="AbsolutePosition" prefixed={false} />
-    </p>
-    <p>
-      Sub-package class: <ApiLink pkg="charts" type="CategoryChart" />
-    </p>
+
+    <h2 id="class-link">Class link</h2>
+    <p>Default: <ApiLink type="Toast" /></p>
+
+    <h2 id="class-member">Class member</h2>
+    <p><ApiLink type="Toast" member="show" label="Show" /></p>
+
+    <h2 id="function">Function</h2>
+    <p>Functions render without a class prefix: <ApiLink kind="function" type="configureTheme" prefixed={false} /></p>
+
+    <h2 id="type-alias">Type alias</h2>
+    <p><ApiLink kind="type" type="AbsolutePosition" prefixed={false} /></p>
+
+    <h2 id="sub-package">Sub-package</h2>
+    <p>Use the <code>pkg</code> prop to target a sub-package: <ApiLink pkg="charts" type="CategoryChart" /></p>
+
+    <h2 id="platform-env">Platform env var</h2>
     <p>Platform is set via <code>PLATFORM</code> env var in <code>astro.config.mjs</code> (defaults to <code>React</code>).</p>
   </main>
 </DocsLayout>

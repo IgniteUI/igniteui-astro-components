@@ -1,7 +1,7 @@
 /**
  * Sidebar data types — shared between the build-time TOC builder
  * (`src/sidebar.ts`) and the runtime sidebar components
- * (`src/components/sidebar/*`).
+ * (`src/components/DocsSidebar/*`).
  *
  * Single source of truth, no duplication.
  */

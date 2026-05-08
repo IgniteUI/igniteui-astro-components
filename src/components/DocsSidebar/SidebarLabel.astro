@@ -1,0 +1,40 @@
+---
+/**
+ * Label-slot renderer for DocsTree's sidebar variant.
+ *
+ * Receives `{ node, depth, isLeaf, isActive }` from DocsTreeItem.
+ * Branches on isLeaf:
+ *   • leaf  → label text + optional badge (from node.meta.badge)
+ *   • group → label text + caret SVG that rotates on [expanded]
+ *
+ * The outer container is the `<a class="docs-tree-link">` (leaves) or
+ * `<div class="docs-tree-group">` (groups) provided by DocsTreeItem.
+ * SidebarLabel only contributes the inner content.
+ */
+import type { TreeNode } from '../DocsTree/types';
+import type { SidebarBadge } from '../../lib/sidebar/types';
+
+interface Props {
+  node: TreeNode;
+  depth: number;
+  isLeaf: boolean;
+  isActive: boolean;
+}
+
+const { node, isLeaf } = Astro.props;
+const badge = (node.meta?.badge ?? null) as SidebarBadge | null;
+---
+
+{isLeaf ? (
+  <>
+    <span class="docs-tree-label">{node.label}</span>
+    {badge && <span class={`sl-badge ${badge.variant}`}>{badge.text}</span>}
+  </>
+) : (
+  <>
+    <span class="group-label-text">{node.label}</span>
+    <svg class="group-caret" viewBox="0 0 16 16" width="10" height="10" aria-hidden="true" focusable="false">
+      <path d="M4 2l8 6-8 6V2z" fill="currentColor" />
+    </svg>
+  </>
+)}

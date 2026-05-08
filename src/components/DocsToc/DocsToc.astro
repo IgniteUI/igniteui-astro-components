@@ -1,85 +1,47 @@
 ---
+/**
+ * DocsToc — "On this page" component built on the shared DocsTree.
+ *
+ * The <docs-toc> wrapper element owns the scroll-spy + click-pin logic
+ * and queries `a[href^="#"]` inside the rendered tree. The shared
+ * DocsTree owns the markup + visual language (variant="toc").
+ *
+ * Active state contract: this component never passes `activeId` to
+ * DocsTree — runtime scroll-spy mutates `aria-current="true"` instead.
+ */
 import type { MarkdownHeading } from 'astro';
-
-// ── Types ────────────────────────────────────────────────────────────────────
-
-interface TocItem {
-    depth: number;
-    slug: string;
-    text: string;
-    children: TocItem[];
-}
-
-type TocConfig =
-    | false
-    | { minHeadingLevel?: number; maxHeadingLevel?: number }
-    | undefined;
-
-// ── Tree builder ─────────────────────────────────────────────────────────────
-
-function injectChild(items: TocItem[], item: TocItem): void {
-    const last = items.at(-1);
-    if (!last || last.depth >= item.depth) {
-        items.push(item);
-        return;
-    }
-    injectChild(last.children, item);
-}
-
-function buildToc(headings: MarkdownHeading[], config: TocConfig): TocItem[] {
-    if (config === false) {
-        return [];
-    }
-    const min = (typeof config === 'object' ? config.minHeadingLevel : undefined) ?? 2;
-    const max = (typeof config === 'object' ? config.maxHeadingLevel : undefined) ?? 3;
-    const toc: TocItem[] = [];
-    for (const h of headings.filter(({ depth }) => depth >= min && depth <= max)) {
-        injectChild(toc, { ...h, children: [] });
-    }
-    return toc;
-}
-
-// ── Props ─────────────────────────────────────────────────────────────────────
-// Root call:      <DocsToc headings={…} title={…} tocConfig={…} />
-// Recursive call: <Astro.self _items={…} depth={…} />
+import DocsTree from '../DocsTree/DocsTree.astro';
+import { headingsToTreeNodes, type TocConfig } from './toTreeNodes';
 
 interface Props {
     headings?: MarkdownHeading[];
     tocConfig?: TocConfig;
     label?: string;
     offsetTarget?: string;
-    _items?: TocItem[];
-    depth?: number;
 }
 
-const { headings = [], tocConfig, label = 'On this page', offsetTarget, _items, depth = 0 } = Astro.props;
+const {
+    headings = [],
+    tocConfig,
+    label = 'On this page',
+    offsetTarget,
+} = Astro.props;
 
-const items: TocItem[] = depth === 0 ? buildToc(headings, tocConfig) : (_items ?? []);
+const nodes = headingsToTreeNodes(headings, tocConfig);
 ---
 
-{depth === 0 ? (
-    items.length > 0 && (
-        <docs-toc data-offset-target={offsetTarget}>
-            <nav aria-labelledby="toc-heading">
-                <h2 id="toc-heading">{label}</h2>
-                <Astro.self _items={items} depth={1} />
-            </nav>
-        </docs-toc>
-    )
-) : (
-    <ul class:list={['toc-list', `depth-${depth - 1}`]}>
-        {items.map((item) => (
-            <li>
-                <a href={`#${item.slug}`}><span>{item.text}</span></a>
-                {item.children.length > 0 && (
-                    <Astro.self _items={item.children} depth={depth + 1} />
-                )}
-            </li>
-        ))}
-    </ul>
+{nodes.length > 0 && (
+    <docs-toc data-offset-target={offsetTarget}>
+        <nav aria-labelledby="toc-heading">
+            <h2 id="toc-heading">{label}</h2>
+            <DocsTree nodes={nodes} variant="toc" />
+        </nav>
+    </docs-toc>
 )}
 
 <script>
+    type ExpandableEl = HTMLElement & { expanded: boolean };
+
     class DocsToc extends HTMLElement {
         private static readonly DEFAULT_THRESHOLD = 160;
 
@@ -87,6 +49,7 @@ const items: TocItem[] = depth === 0 ? buildToc(headings, tocConfig) : (_items ?
         private rafId: number | undefined;
         private headings: HTMLElement[] = [];
         private links: HTMLAnchorElement[] = [];
+        private parentItems: HTMLElement[] = [];
         private currentLink: HTMLAnchorElement | undefined;
         private offsetEl: Element | null = null;
         private resizeObserver: ResizeObserver | undefined;
@@ -127,6 +90,9 @@ const items: TocItem[] = depth === 0 ? buildToc(headings, tocConfig) : (_items ?
             this.headings = this.links
                 .map((link) => document.getElementById(decodeURIComponent(link.hash.slice(1))))
                 .filter((el): el is HTMLElement => el !== null);
+            this.parentItems = Array.from(
+                this.querySelectorAll<HTMLElement>('igc-tree-item[data-has-children]'),
+            );
 
             if (this.headings.length === 0) return;
 
@@ -190,17 +156,6 @@ const items: TocItem[] = depth === 0 ? buildToc(headings, tocConfig) : (_items ?
                 return;
             }
 
-            const scrollTop = window.scrollY;
-            const viewportH = window.innerHeight;
-            const docH = document.documentElement.scrollHeight;
-
-            // At the bottom of the page, the last heading wins — even if it
-            // never crossed the threshold (short trailing section).
-            if (scrollTop + viewportH >= docH - 2) {
-                this.setActive(this.headings.length - 1);
-                return;
-            }
-
             const threshold = this.computeThreshold();
             let activeIndex = -1;
             for (let i = 0; i < this.headings.length; i++) {
@@ -223,8 +178,11 @@ const items: TocItem[] = depth === 0 ? buildToc(headings, tocConfig) : (_items ?
 
             // Above the first heading: no link is active.
             if (activeIndex === -1) {
-                this.currentLink?.removeAttribute('aria-current');
-                this.currentLink = undefined;
+                if (this.currentLink) {
+                    this.currentLink.removeAttribute('aria-current');
+                    this.currentLink = undefined;
+                }
+                this.syncExpansion(undefined);
                 return;
             }
 
@@ -245,6 +203,36 @@ const items: TocItem[] = depth === 0 ? buildToc(headings, tocConfig) : (_items ?
             this.currentLink?.removeAttribute('aria-current');
             next.setAttribute('aria-current', 'true');
             this.currentLink = next;
+            this.syncExpansion(next);
+        }
+
+        /**
+         * Drive `expanded` on every parent <igc-tree-item> based on the
+         * active link's ancestry chain. The active item itself is included
+         * (so when an h2 with h3 children is active, its h3s become
+         * visible). Manual click-toggles by the user are intentionally
+         * overridden on the next scroll update — scrolling is the source
+         * of truth for the open section.
+         */
+        private syncExpansion(activeLink: HTMLAnchorElement | undefined) {
+            const activePath = new Set<Element>();
+            if (activeLink) {
+                let item: Element | null = activeLink.closest('igc-tree-item');
+                while (
+                    item &&
+                    item.tagName === 'IGC-TREE-ITEM' &&
+                    this.contains(item)
+                ) {
+                    activePath.add(item);
+                    item = item.parentElement?.closest('igc-tree-item') ?? null;
+                }
+            }
+            for (const el of this.parentItems) {
+                const wantOpen = activePath.has(el);
+                if ((el as ExpandableEl).expanded !== wantOpen) {
+                    (el as ExpandableEl).expanded = wantOpen;
+                }
+            }
         }
     }
 
@@ -296,7 +284,7 @@ const items: TocItem[] = depth === 0 ? buildToc(headings, tocConfig) : (_items ?
         }
     }
 
-    /* docs-toc and everything inside it is rendered by this component — scoped */
+    /* docs-toc layout — tree internals live in docs-tree.css */
     docs-toc {
         display: block;
     }
@@ -308,52 +296,5 @@ const items: TocItem[] = depth === 0 ? buildToc(headings, tocConfig) : (_items ?
         text-transform: uppercase;
         letter-spacing: 0.06em;
         color: var(--sl-color-gray-3, #888);
-    }
-
-    .toc-list {
-        margin: 0;
-        padding: 0;
-        list-style: none;
-    }
-
-    .toc-list li {
-        margin: 0;
-    }
-
-    .toc-list .toc-list {
-        margin-block-start: 0.125rem;
-        padding-inline-start: 0.75rem;
-    }
-
-    .toc-list a {
-        display: block;
-        padding: 0.25rem 0.5rem;
-        border-radius: 0.25rem;
-        font-size: var(--sl-text-sm, 0.875rem);
-        color: var(--sl-color-gray-4, #666);
-        text-decoration: none;
-        line-height: 1.4;
-        transition: color 0.15s, background-color 0.15s;
-    }
-
-    .toc-list a:hover {
-        color: var(--sl-color-text, inherit);
-        background-color: var(--sl-color-gray-1, #f5f5f5);
-        text-decoration: none;
-    }
-
-    .toc-list a[aria-current='true'] {
-        color: var(--sl-color-accent-high, #3b82f6);
-        font-weight: 600;
-        background-color: var(--sl-color-accent-low, #eff6ff);
-    }
-
-    .toc-list.depth-0 > li > a {
-        font-weight: 600;
-        color: var(--sl-color-text, inherit);
-    }
-
-    .toc-list.depth-0 > li > a:hover {
-        color: var(--sl-color-text, inherit);
     }
 </style>
