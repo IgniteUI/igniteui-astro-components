@@ -1,6 +1,6 @@
 # DocsTree
 
-Base tree component shared by `DocsSidebarIgc` and `DocsToc`. Wraps
+Base tree component shared by `DocsSidebar` and `DocsToc`. Wraps
 `<igc-tree>` from `igniteui-webcomponents` and recursively renders
 `<igc-tree-item>`s from a generic `TreeNode[]`.
 

@@ -1,6 +1,6 @@
 /**
  * Shared tree data shape for DocsTree — the base tree component that backs
- * both DocsSidebarIgc and DocsToc.
+ * both DocsSidebar and DocsToc.
  *
  * Consumers (DocsSidebar, DocsToc) keep their own domain types
  * (SidebarEntry, MarkdownHeading) and convert to TreeNode via small adapters

@@ -1,7 +1,7 @@
 /**
  * Adapter: SidebarEntry[] → TreeNode[] for the shared DocsTree component.
  *
- * Preserves the data-* attributes the sidebar-filter-igc custom element
+ * Preserves the data-* attributes the <sidebar-filter> custom element
  * relies on:
  *   • data-path       (every item)
  *   • data-group-key  (groups only)
