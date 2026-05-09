@@ -81,6 +81,17 @@ type HeadEntry = { tag: string; attrs?: Record<string, string | boolean | undefi
       });
     });
 
+    function updateSidebarBottom() {
+      var footer = document.querySelector('[data-docs-footer]');
+      if (!footer) return;
+      var visible = Math.max(0, window.innerHeight - footer.getBoundingClientRect().top);
+      document.documentElement.style.setProperty('--sl-sidebar-bottom', visible + 'px');
+    }
+    document.addEventListener('scroll', updateSidebarBottom, { passive: true });
+    window.addEventListener('resize', updateSidebarBottom);
+    document.addEventListener('astro:page-load', updateSidebarBottom);
+    updateSidebarBottom();
+
     function updateNavHeight() {
       var navChild = document.querySelector('[data-astro-transition-persist="global-nav-bar"] > *:first-child');
       if (!navChild) return;
@@ -121,7 +132,9 @@ type HeadEntry = { tag: string; attrs?: Record<string, string | boolean | undefi
       <slot name="toc" />
     </aside>
   </div>
-  <GlobalFooter />
+  <div data-docs-footer>
+    <GlobalFooter />
+  </div>
 </body>
 </html>
 
@@ -216,7 +229,7 @@ type HeadEntry = { tag: string; attrs?: Record<string, string | boolean | undefi
     visibility: var(--sl-sidebar-visibility, hidden);
     position: fixed;
     z-index: var(--sl-z-index-menu);
-    inset-block: calc(var(--sl-nav-height) + var(--docs-mobile-toggle-height)) 0;
+    inset-block: calc(var(--sl-nav-height) + var(--docs-mobile-toggle-height)) var(--sl-sidebar-bottom, 0px);
     inset-inline-start: 0;
     width: 100%;
     background-color: var(--sl-color-bg-sidebar);
@@ -253,6 +266,7 @@ type HeadEntry = { tag: string; attrs?: Record<string, string | boolean | undefi
       background-color: var(--sl-color-bg-sidebar);
       border-inline-end: 1px solid var(--sl-color-hairline-shade);
       inset-block-start: var(--sl-nav-height);
+      inset-block-end: var(--sl-sidebar-bottom, 0px);
     }
   }
 
