@@ -66,19 +66,18 @@ igc-tree-item::part(indicator) {
 }
 
 /*
- * Keyboard focus and SSR active state are gated on host-level state and
- * styled through the wrapper part:
- *   • :focus-visible — keyboard focus on the item host (roving tabindex
- *     means only one item is focused at a time; not used for mouse).
- *   • [active]       — DocsTreeItem sets the `active` attribute on
- *     <igc-tree-item> whenever activeId matches the node's id.
+ * Keyboard focus and active state are styled through the wrapper part:
+ *   • :focus-visible — keyboard focus on the item host.
+ *   • :has(a[aria-current]) — active page link (set at SSR time on the <a>).
+ *     Using aria-current instead of the igc `active` attribute avoids
+ *     triggering IgcTreeItemComponent.activeChange() during registration.
  */
 igc-tree-item:focus-visible::part(wrapper) {
   outline: 2px solid var(--sl-color-accent, #3b82f6);
   outline-offset: -2px;
   border-radius: var(--docs-tree-row-radius);
 }
-igc-tree-item[active]::part(wrapper) {
+igc-tree-item:has(a[aria-current])::part(wrapper) {
   border-radius: var(--docs-tree-row-radius);
   background: color-mix(in srgb, var(--sl-color-accent) 5%, transparent);
 }

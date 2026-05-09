@@ -10,8 +10,11 @@
  * Sets `data-tree-id`, `data-depth`, and `data-has-children` (when applicable).
  * Any extra `data-*` attributes come from `node.itemData` (kebab-cased keys).
  *
- * The native `active` attribute is set when `activeId` matches `node.id`,
- * which drives the `::part(wrapper active)` row highlight in docs-tree.css.
+ * The `active` attribute is intentionally NOT set on <igc-tree-item>:
+ * setting it triggers IgcTreeItemComponent.activeChange() synchronously
+ * during defineComponents(), before the tree is upgraded, crashing on
+ * `this.tree?.expandToItem`. Active-row highlight is CSS-driven via
+ * `igc-tree-item:has(a[aria-current])` instead.
  * The default expand indicator is hidden globally via `::part(indicator)`.
  */
 import type { TreeNode, TreeVariant } from './types';
@@ -45,7 +48,6 @@ if (node.itemData) {
   data-depth={String(depth)}
   data-has-children={hasChildren ? '' : undefined}
   expanded={node.expanded ? '' : undefined}
-  active={isActive ? '' : undefined}
   {...dataAttrs}
 >
   {node.href ? (
