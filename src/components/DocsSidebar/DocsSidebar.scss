@@ -1,0 +1,23 @@
+/* Layout-only — the tree's structural styles live in docs-tree.css. */
+sidebar-filter {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+.sidebar-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  margin-inline-end: calc(-1 * var(--sl-sidebar-pad-x, 1rem));
+  padding-inline-end: var(--sl-sidebar-pad-x, 1rem);
+}
+
+/* [data-sidebar-filter-status] is written by SidebarFilterInput */
+sidebar-filter [data-sidebar-filter-status]:not(:empty) {
+  display: block;
+  padding: 0.5rem;
+  font-size: var(--sl-text-sm, 0.875rem);
+  color: var(--sl-color-gray-3, #888);
+}

@@ -10,6 +10,7 @@
  */
 import { sidebar as sidebarData } from 'virtual:docs-template/site-meta';
 import SidebarFilterInput from './SidebarFilterInput.astro';
+import './DocsSidebar.scss';
 import SidebarLabel from './SidebarLabel.astro';
 import DocsTree from '../DocsTree/DocsTree.astro';
 import { toTreeNodes } from './toTreeNodes';
@@ -66,28 +67,3 @@ const activeId = normalizeSlug(currentSlug);
   import './sidebar-filter';
 </script>
 
-<style>
-  /* Layout-only — the tree's structural styles live in docs-tree.css. */
-  sidebar-filter {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    min-height: 0;
-  }
-
-  .sidebar-scroll {
-    flex: 1;
-    min-height: 0;
-    overflow-y: auto;
-    margin-inline-end: calc(-1 * var(--sl-sidebar-pad-x, 1rem));
-    padding-inline-end: var(--sl-sidebar-pad-x, 1rem);
-  }
-
-  /* [data-sidebar-filter-status] is from SidebarFilterInput → :global() required */
-  sidebar-filter :global([data-sidebar-filter-status]):not(:empty) {
-    display: block;
-    padding: 0.5rem;
-    font-size: var(--sl-text-sm, 0.875rem);
-    color: var(--sl-color-gray-3, #888);
-  }
-</style>

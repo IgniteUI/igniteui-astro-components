@@ -12,6 +12,7 @@
 import type { MarkdownHeading } from 'astro';
 import DocsTree from '../DocsTree/DocsTree.astro';
 import { headingsToTreeNodes, type TocConfig } from './toTreeNodes';
+import './DocsToc.scss';
 
 interface Props {
     headings?: MarkdownHeading[];
@@ -258,50 +259,3 @@ const nodes = headingsToTreeNodes(headings, tocConfig);
     });
 </script>
 
-<style>
-    :global(:root) {
-        --ig-toc-width: 24rem;
-    }
-
-    /* .toc-sidebar and .main-frame live in DocsLayout — use :global() */
-    :global(.toc-sidebar) {
-        display: none;
-    }
-
-    /* Hide the aside entirely when DocsToc has nothing to render */
-    :global(.toc-sidebar:not(:has(docs-toc))) {
-        display: none !important;
-    }
-
-    @media (min-width: 84rem) {
-        :global(.toc-sidebar) {
-            display: block;
-            position: fixed;
-            top: var(--sl-nav-height);
-            right: 0;
-            width: var(--ig-toc-width);
-            height: calc(100vh - var(--sl-nav-height) - var(--sl-sidebar-bottom, 0px));
-            overflow-y: auto;
-            padding: 1.5rem 1rem 1.5rem 1.25rem;
-            border-inline-start: 1px solid var(--sl-color-hairline-shade, #d0d0d0);
-        }
-
-        :global(.page:has(docs-toc) .main-frame) {
-            padding-inline-end: var(--ig-toc-width);
-        }
-    }
-
-    /* docs-toc layout — tree internals live in docs-tree.css */
-    docs-toc {
-        display: block;
-    }
-
-    docs-toc h2 {
-        margin: 0 0 0.75rem;
-        font-size: var(--sl-text-xs, 0.75rem);
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.06em;
-        color: var(--sl-color-gray-3, #888);
-    }
-</style>

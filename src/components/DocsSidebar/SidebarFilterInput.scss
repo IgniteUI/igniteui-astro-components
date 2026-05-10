@@ -1,0 +1,35 @@
+/* Sits above the scroll container — always visible, never scrolls. */
+.sidebar-filter-wrapper {
+  flex-shrink: 0;
+  margin-block-end: 0.5rem;
+  padding-block-end: 0.25rem;
+  background: var(--sl-color-bg-sidebar, var(--sl-color-bg));
+}
+
+igc-input {
+  display: block;
+  width: 100%;
+  --ig-size: 1;
+}
+
+igc-input::part(container) {
+  font-size: var(--sl-text-xs, 0.75rem);
+  font-family: inherit;
+}
+
+igc-input::part(input) {
+  font-size: var(--sl-text-xs, 0.75rem);
+  font-family: inherit;
+}
+
+igc-button[data-sidebar-filter-clear] {
+  --ig-size: 1;
+}
+
+.sidebar-filter-status {
+  margin: 0.25rem 0 0;
+  font-size: 0.7rem;
+  color: var(--sl-color-gray-3);
+  min-height: 1em;
+  padding-inline-start: 0.1rem;
+}
