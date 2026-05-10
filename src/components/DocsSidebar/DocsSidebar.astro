@@ -55,19 +55,13 @@ const activeId = normalizeSlug(currentSlug);
     IgcInputComponent,
     IgcButtonComponent,
     IgcIconComponent,
-    registerIconFromText,
   } from 'igniteui-webcomponents';
 
   defineComponents(IgcInputComponent, IgcButtonComponent, IgcIconComponent);
 
-  registerIconFromText(
-    'sidebar-filter-search',
-    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none"><path d="M1 3h14M4 8h8M7 13h2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>`,
-  );
-  registerIconFromText(
-    'sidebar-filter-clear',
-    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 14 14" fill="none"><path d="M2 2l10 10M12 2 2 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>`,
-  );
+  // Icons (sidebar-filter-search, sidebar-filter-clear) are registered via
+  // the icon registry which picks up all SVGs from src/assets/icons/.
+  import '../../scripts/icon-registry';
 
   import './sidebar-filter';
 </script>
