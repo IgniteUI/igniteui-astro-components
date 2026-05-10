@@ -3,16 +3,18 @@
  * DocsSubHeader
  *
  * A secondary fixed header bar rendered below the GlobalNavBar.
+ * Contains the search input and cross-product navigation links.
  *
  * Positioning (set in DocsLayout / custom.css):
  *   --docs-global-nav-height   height of the GlobalNavBar above (default 86px)
  *   --docs-subheader-height    height of this bar (default 40px)
+ *
+ * Note: The breadcrumb that previously lived in `.subheader-context` has been
+ * moved to the `DocsBreadcrumb` component, rendered inside the main frame.
  */
 import { platform as virtualPlatform } from 'virtual:docs-template/nav-html';
-import { productLinks, sidebar as sidebarData, title as siteTitle } from 'virtual:docs-template/site-meta';
+import { productLinks } from 'virtual:docs-template/site-meta';
 import Search from '../Search/Search.astro';
-import type { SidebarEntry } from '../../lib/sidebar/types';
-import { getBreadcrumb } from '../../lib/sidebar/helpers';
 
 interface ProductLink {
   label: string;
@@ -21,54 +23,21 @@ interface ProductLink {
 }
 
 interface Props {
-  /** Fallback title if the slug is not present in the sidebar tree. */
-  pageTitle?: string | null;
-  /** Current page slug — used to derive the breadcrumb from the sidebar tree. */
-  currentSlug?: string;
-  /**
-   * Override the site title shown on the left. Defaults to the virtual module value.
-   * Useful when consuming without `siteMetaIntegration`.
-   */
-  siteTitle?: string;
   /**
    * Override the cross-product navigation links. Defaults to the virtual module value.
    * Useful when consuming without `siteMetaIntegration`.
    */
   productLinks?: ProductLink[];
-  /**
-   * Override the sidebar tree used for breadcrumb generation.
-   * Defaults to the virtual module value.
-   */
-  sidebarItems?: SidebarEntry[];
 }
 
-const { pageTitle = '', currentSlug = '', siteTitle: siteTitleProp, productLinks: productLinksProp, sidebarItems } = Astro.props;
-const resolvedSiteTitle = siteTitleProp ?? siteTitle;
+const { productLinks: productLinksProp } = Astro.props;
 const currentPlatform = virtualPlatform ?? null;
 const resolvedLinks = (productLinksProp ?? productLinks) as ProductLink[];
 const filteredLinks = resolvedLinks.filter((l: ProductLink) => l.platform !== currentPlatform);
-
-// Breadcrumb of sidebar labels for the current page (root group dropped),
-// ending with the active item's own sidebar label. Falls back to `pageTitle`
-// if the slug is not in the sidebar tree.
-const resolvedSidebar = (sidebarItems ?? sidebarData) as SidebarEntry[];
-const sidebarCrumbs = currentSlug ? getBreadcrumb(resolvedSidebar, currentSlug) : [];
-const crumbs = sidebarCrumbs.length > 0 ? sidebarCrumbs : (pageTitle ? [pageTitle] : []);
 ---
 
 <docs-subheader-menu>
     <div class="docs-subheader">
-
-        <!-- Left: title area, takes all free space -->
-        <div class="subheader-context">
-            {resolvedSiteTitle && <span class="subheader-site-title">{resolvedSiteTitle}</span>}
-            {crumbs.map((label, i) => (
-                <>
-                    <span class="subheader-sep" aria-hidden="true">{i === 0 ? '-' : '/'}</span>
-                    <span class="subheader-crumb" title={label}>{label}</span>
-                </>
-            ))}
-        </div>
 
         <!-- Search -->
         <Search />
@@ -168,51 +137,6 @@ const crumbs = sidebarCrumbs.length > 0 ? sidebarCrumbs : (pageTitle ? [pageTitl
         background-color: var(--sl-color-bg-nav);
         border-bottom: 1px solid var(--sl-color-hairline-shade);
         overflow: visible;
-    }
-
-    /* ── Context (left) ────────────────────────────────────────────────────── */
-
-    .subheader-context {
-        flex: 1;
-        min-width: 0;
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        gap: 0.375rem;
-        overflow: hidden;
-    }
-
-    .subheader-site-title {
-        flex-shrink: 0;
-        font-size: 0.875rem;
-        font-weight: 600;
-        color: var(--sl-color-text-accent);
-        white-space: nowrap;
-    }
-
-    .subheader-page-title {
-        font-size: 0.875rem;
-        color: var(--sl-color-text);
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-
-    .subheader-crumb {
-        flex-shrink: 0;
-        font-size: 0.875rem;
-        color: var(--sl-color-gray-4);
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        max-width: 14rem;
-    }
-
-    .subheader-sep {
-        flex-shrink: 0;
-        color: var(--sl-color-gray-3);
-        font-size: 0.875rem;
-        user-select: none;
     }
 
     /* ── Right side: links ──────────────────────────────────────────────────── */

@@ -1,0 +1,107 @@
+---
+/**
+ * DocsBreadcrumb
+ *
+ * Renders the page breadcrumb trail inside the main content frame, above
+ * the page body. Shows the site title followed by the sidebar-derived crumbs
+ * for the current page.
+ *
+ * The crumb list is built from the sidebar tree via `getBreadcrumb`.
+ * Falls back to `pageTitle` when the current slug is not found in the tree.
+ *
+ * Props:
+ *   currentSlug   – slug of the current page (used for breadcrumb lookup)
+ *   pageTitle     – fallback label when slug is not in the sidebar tree
+ *   siteTitle     – override the site title; defaults to the virtual module value
+ *   sidebarItems  – override the sidebar tree; defaults to the virtual module value
+ */
+import { sidebar as sidebarData, title as siteTitleVirtual } from 'virtual:docs-template/site-meta';
+import { getBreadcrumb } from '../../lib/sidebar/helpers';
+import type { SidebarEntry } from '../../lib/sidebar/types';
+
+interface Props {
+  currentSlug?: string;
+  pageTitle?: string | null;
+  siteTitle?: string;
+  sidebarItems?: SidebarEntry[];
+}
+
+const { currentSlug = '', pageTitle = '', siteTitle: siteTitleProp, sidebarItems } = Astro.props;
+
+const resolvedSiteTitle = siteTitleProp ?? siteTitleVirtual;
+const resolvedSidebar   = (sidebarItems ?? sidebarData) as SidebarEntry[];
+const sidebarCrumbs     = currentSlug ? getBreadcrumb(resolvedSidebar, currentSlug) : [];
+const crumbs            = sidebarCrumbs.length > 0 ? sidebarCrumbs : (pageTitle ? [pageTitle] : []);
+---
+
+{(resolvedSiteTitle || crumbs.length > 0) && (
+  <nav class="docs-breadcrumb" aria-label="Breadcrumb">
+    <ol class="docs-breadcrumb-list">
+      {resolvedSiteTitle && (
+        <li class="docs-breadcrumb-item docs-breadcrumb-home">
+          <span>{resolvedSiteTitle}</span>
+        </li>
+      )}
+      {crumbs.map((label, i) => (
+        <li class="docs-breadcrumb-item">
+          <span class="docs-breadcrumb-sep" aria-hidden="true">
+            {i === 0 ? '–' : '/'}
+          </span>
+          <span class="docs-breadcrumb-crumb" title={label}>{label}</span>
+        </li>
+      ))}
+    </ol>
+  </nav>
+)}
+
+<style>
+  .docs-breadcrumb {
+    padding-inline: 1.5rem;
+    padding-block: 0.5rem 0;
+    border-bottom: 1px solid var(--sl-color-hairline);
+  }
+
+  .docs-breadcrumb-list {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.25rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    font-size: var(--sl-text-xs, 0.75rem);
+    color: var(--sl-color-gray-4);
+  }
+
+  .docs-breadcrumb-item {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+
+  .docs-breadcrumb-home {
+    font-weight: 600;
+    color: var(--sl-color-text-accent);
+    flex-shrink: 0;
+  }
+
+  .docs-breadcrumb-sep {
+    flex-shrink: 0;
+    color: var(--sl-color-gray-3);
+    user-select: none;
+  }
+
+  .docs-breadcrumb-crumb {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 18rem;
+  }
+
+  /* Last crumb = current page — emphasise slightly */
+  .docs-breadcrumb-item:last-child .docs-breadcrumb-crumb {
+    color: var(--sl-color-text);
+    font-weight: 500;
+  }
+</style>

@@ -3,6 +3,7 @@ import { ClientRouter } from 'astro:transitions';
 import GlobalNavBar from '../../components/GlobalNavBar/GlobalNavBar.astro';
 import GlobalFooter from '../../components/GlobalFooter/GlobalFooter.astro';
 import DocsSubHeader from '../../components/DocsSubHeader/DocsSubHeader.astro';
+import DocsBreadcrumb from '../../components/DocsBreadcrumb/DocsBreadcrumb.astro';
 import MobileSidebarToggle from '../../components/MobileSidebarToggle/MobileSidebarToggle.astro';
 import { widgetScriptSrc, platform as virtualPlatform } from 'virtual:docs-template/nav-html';
 import { title as siteTitle, headEntries } from 'virtual:docs-template/site-meta';
@@ -14,7 +15,7 @@ export interface Props {
   description?: string | null;
   keywords?: string | null;
   hasSidebar?: boolean;
-  /** Slug of the current page; used to compute breadcrumbs in the subheader. */
+  /** Slug of the current page; used to compute breadcrumbs in DocsBreadcrumb. */
   currentSlug?: string;
   /**
    * Override the site name shown in the <title> and sub-header.
@@ -101,7 +102,7 @@ type HeadEntry = { tag: string; attrs?: Record<string, string | boolean | undefi
 <body>
   {showGlobalNav && <GlobalNavBar />}
   <div style={`--docs-global-nav-height: ${showGlobalNav ? '4.7rem' : '0'}`} data-nav-height-wrapper>
-    <DocsSubHeader pageTitle={title} currentSlug={currentSlug} siteTitle={siteTitleProp} />
+    <DocsSubHeader />
   </div>
   <div class="page">
     {hasSidebar && (
@@ -115,6 +116,7 @@ type HeadEntry = { tag: string; attrs?: Record<string, string | boolean | undefi
       </nav>
     )}
     <div class="main-frame">
+      <DocsBreadcrumb pageTitle={title} currentSlug={currentSlug} siteTitle={siteTitleProp} />
       <slot />
     </div>
     <aside class="toc-sidebar">
