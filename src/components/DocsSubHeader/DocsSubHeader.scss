@@ -1,125 +1,73 @@
-docs-subheader-menu {
-  display: contents;
-}
-
-/* ── Fixed bar ─────────────────────────────────────────────────────────── */
+@use 'igniteui-theming/sass/typography' as *;
+@use '../../styles/global/breakpoints' as *;
 
 .docs-subheader {
-  position: fixed;
-  inset-inline-start: 0;
-  inset-block-start: var(--docs-global-nav-height, 4.7rem);
-  width: 100%;
-  height: var(--docs-subheader-height, 2.5rem);
-  z-index: calc(var(--sl-z-index-navbar) - 1);
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 0.75rem;
-  padding-inline: 1rem;
-  background-color: var(--sl-color-bg-nav);
-  border-bottom: 1px solid var(--sl-color-hairline-shade);
-  overflow: visible;
-}
-
-/* ── Right side: links ──────────────────────────────────────────────────── */
-
-.subheader-right {
-  flex-shrink: 0;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.subheader-links {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  flex-wrap: nowrap;
-  gap: 0;
-}
-
-.product-link {
-  font-size: 0.75rem;
-  color: var(--sl-color-gray-2);
-  text-decoration: none;
-  white-space: nowrap;
-  padding-inline: 0.25rem;
-  line-height: 1;
-  transition: color 0.15s;
-
-  &:hover,
-  &:focus-visible {
-    color: var(--sl-color-text-accent);
-    text-decoration: underline;
-  }
-}
-
-.product-sep {
-  flex-shrink: 0;
-  font-size: 0.6875rem;
-  color: var(--sl-color-gray-4);
-  padding-inline: 0.125rem;
-  line-height: 1;
-  user-select: none;
-}
-
-/* ── Mobile toggle (hidden on desktop) ─────────────────────────────────── */
-
-.subheader-toggle {
-  display: none;
-  flex-shrink: 0;
-  padding: 0.25rem;
-  background: none;
-  border: none;
-  border-radius: 0.25rem;
-  color: var(--sl-color-text);
-  cursor: pointer;
-  line-height: 0;
-}
-
-/* ══ Mobile (≤ 50rem) ══════════════════════════════════════════════════════ */
-
-@media (max-width: 50rem) {
-  .subheader-right {
-    display: none;
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 0.5rem;
-    padding: 0.75rem 1rem;
-    background-color: var(--sl-color-bg-nav);
-    border-bottom: 1px solid var(--sl-color-hairline-shade);
-    box-shadow: var(--sl-shadow-md);
-  }
-
-  docs-subheader-menu[aria-expanded='true'] .subheader-right {
-    display: flex;
-  }
-
-  .subheader-links {
-    flex-wrap: wrap;
-  }
-
-  .product-link {
-    font-size: 0.875rem;
-    padding-block: 0.25rem;
-  }
-
-  .subheader-toggle {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    &:hover,
-    &:focus-visible {
-      background-color: var(--sl-color-hairline);
-    }
-  }
-
-  docs-subheader-menu[aria-expanded='true'] .subheader-toggle .icon-open { display: none; }
-  docs-subheader-menu:not([aria-expanded='true']) .subheader-toggle .icon-close { display: none; }
+	position: sticky;
+	inset: 0;
+	display: grid;
+	grid-template-columns: var(--igd-page-layout-grid);
+	align-items: center;
+	width: 100%;
+	min-height: var(--igd-header-height);
+	grid-column: 1 / -1;
+	grid-row: 1;
+	border-block-end: var(--igd-app-outline);
+	z-index: 1;
+	background-color: var(--igd-layout-sections-bg);
+	
+	@media (min-width: #{$bp-tablet-max}) {
+		--igd-header-height: #{rem(75px)};
+	}
+	
+	.igd-logo {
+		display: flex;
+		align-items: center;
+		height: 100%;
+		
+		@media (min-width: #{$bp-mobile-horizontal-max}) {
+			padding-inline: var(--igd-padding-lg);
+		}
+		
+		svg {
+			min-width: rem(79px);
+			height: rem(22px);
+			opacity: 0;
+			transform: translateY(-4px);
+			transition: opacity 200ms ease, transform 200ms ease;
+			position: absolute;
+			
+			.logo-type {
+				fill: var(--igd-logo-type);
+			}
+		}
+		
+		h1 {
+			opacity: 1;
+			transform: translateY(0);
+			transition: opacity 200ms ease, transform 200ms ease;
+			margin: 0;
+		}
+		
+		border-inline-end: var(--igd-app-outline);
+	}
+	
+	// Logo area: text visible by default, logo hidden.
+	// When the GlobalNavBar scrolls out of view, .docs-subheader--pinned is added
+	// and the logo fades in while the text fades out.
+	&--pinned {
+		.igd-logo {
+			svg {
+				opacity: 1;
+				transform: translateY(0);
+				position: relative;
+			}
+			
+			h1 {
+				opacity: 0;
+				transform: translateY(4px);
+				position: absolute;
+				pointer-events: none;
+			}
+		}
+	}
 }

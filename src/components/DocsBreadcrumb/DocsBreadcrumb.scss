@@ -1,49 +1,53 @@
+@use 'igniteui-theming/sass/typography' as *;
+
 .docs-breadcrumb {
-  padding-inline: 1.5rem;
-  padding-block: 0.5rem 0;
-  border-bottom: 1px solid var(--sl-color-hairline);
+	padding: var(--igd-padding-sm);
+	padding-inline-start: calc(var(--igd-padding-sm) + rem(3px));
+	border-block-end: var(--igd-app-outline);
+	width: 100%;
+	background-color: var(--igd-layout-sections-bg);
 }
 
 .docs-breadcrumb-list {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.25rem;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  font-size: var(--sl-text-xs, 0.75rem);
-  color: var(--sl-color-gray-4);
+	@include type-style('subtitle-2') {
+		margin: 0;
+	};
+	
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: rem(4px);
+	list-style: none;
+	padding: 0;
+	color: var(--ig-gray-500);
 }
 
 .docs-breadcrumb-item {
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-  white-space: nowrap;
-  overflow: hidden;
+	display: flex;
+	align-items: center;
+	gap: rem(4px);
+	white-space: nowrap;
+	overflow: hidden;
 }
 
 .docs-breadcrumb-home {
-  font-weight: 600;
-  color: var(--sl-color-text-accent);
-  flex-shrink: 0;
+	font-weight: 600;
+	color: red;
+	flex-shrink: 0;
 }
 
 .docs-breadcrumb-sep {
-  flex-shrink: 0;
-  color: var(--sl-color-gray-3);
-  user-select: none;
+	flex-shrink: 0;
+	user-select: none;
 }
 
 .docs-breadcrumb-crumb {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 18rem;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	max-width: 18rem;
 }
 
 /* Last crumb = current page — emphasise slightly */
 .docs-breadcrumb-item:last-child .docs-breadcrumb-crumb {
-  color: var(--sl-color-text);
-  font-weight: 500;
+	font-weight: 500;
 }

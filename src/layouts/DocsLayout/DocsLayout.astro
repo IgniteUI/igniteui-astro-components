@@ -1,5 +1,9 @@
 ---
 import { ClientRouter } from 'astro:transitions';
+import '@fontsource-variable/instrument-sans/wght.css';
+import '@fontsource-variable/instrument-sans/wght-italic.css';
+import '@fontsource-variable/jetbrains-mono/wght.css';
+import '@fontsource-variable/jetbrains-mono/wght-italic.css';
 import GlobalNavBar from '../../components/GlobalNavBar/GlobalNavBar.astro';
 import GlobalFooter from '../../components/GlobalFooter/GlobalFooter.astro';
 import DocsSubHeader from '../../components/DocsSubHeader/DocsSubHeader.astro';
@@ -7,7 +11,7 @@ import DocsBreadcrumb from '../../components/DocsBreadcrumb/DocsBreadcrumb.astro
 import MobileSidebarToggle from '../../components/MobileSidebarToggle/MobileSidebarToggle.astro';
 import { widgetScriptSrc, platform as virtualPlatform } from 'virtual:docs-template/nav-html';
 import { title as siteTitle, headEntries } from 'virtual:docs-template/site-meta';
-import '../../styles/ig-theme.scss';
+import '../../styles/theme.scss';
 import '../../styles/custom.scss';
 import './DocsLayout.scss';
 
@@ -26,7 +30,7 @@ export interface Props {
   siteTitle?: string;
 }
 
-const { title, description, keywords, hasSidebar = true, currentSlug = '', siteTitle: siteTitleProp } = Astro.props;
+const { title, description, keywords, hasToc = true, hasSidebar = true, currentSlug = '', siteTitle: siteTitleProp } = Astro.props;
 const resolvedSiteTitle = siteTitleProp ?? siteTitle;
 const navTheme = (virtualPlatform ?? import.meta.env.VITE_NAV_THEME ?? 'igniteui') as string;
 const showGlobalNav = navTheme !== 'none';
@@ -101,30 +105,46 @@ type HeadEntry = { tag: string; attrs?: Record<string, string | boolean | undefi
   </script>
 </head>
 <body>
-  {showGlobalNav && <GlobalNavBar />}
-  <div style={`--docs-global-nav-height: ${showGlobalNav ? '4.7rem' : '0'}`} data-nav-height-wrapper>
-    <DocsSubHeader />
-  </div>
-  <div class="page">
-    {hasSidebar && (
-      <nav class="sidebar print:hidden" aria-label="Documentation navigation">
-        <MobileSidebarToggle />
-        <div class="sidebar-pane">
-          <div class="sidebar-content">
-            <slot name="sidebar" />
-          </div>
+    <!-- INFRAGISTICS HEADER/NAVIGATION -->
+    { showGlobalNav && <GlobalNavBar/> }
+
+    <!-- MAIN PAGE GRID LAYOUT -->
+    <!-- We don't set the CSS grid directly to the body -->
+    <!-- since it may lead to unexpected layout shift if element is dynamically added to the body-->
+
+    <!--
+     NOTE: In order not to override IG header and footer styles we are forced to put .ig-typography on
+     the .igd-page-layout not on the body.
+     Any igc component rendered dynamically on body level should have .ig-typography in order to have proper type styles.
+    -->
+    <div class="igd-page-layout ig-typography">
+        <!-- TODO: WE DONT NEED TO CALCULAtE THE IG HEADER HEIGHT ANYMORE - REMOVE IT -->
+        <DocsSubHeader style={ `--docs-global-nav-height: ${ showGlobalNav ? '4.7rem': '0' }` } data-nav-height-wrapper/>
+
+
+        { hasSidebar && (
+            <!--<MobileSidebarToggle/>-->
+            <slot name="sidebar"/>
+        ) }
+
+        <div class="igd-main-content">
+            <div class="igd-main-content__inner">
+                <div class="igd-main-content__page">
+                    <DocsBreadcrumb pageTitle={ title } currentSlug={ currentSlug } siteTitle={ siteTitleProp }/>
+                    <slot/>
+                </div>
+
+                { hasToc && (
+                    <aside>
+                        <slot name="toc"/>
+                    </aside>
+                ) }
+            </div>
         </div>
-      </nav>
-    )}
-    <div class="main-frame">
-      <DocsBreadcrumb pageTitle={title} currentSlug={currentSlug} siteTitle={siteTitleProp} />
-      <slot />
     </div>
-    <aside class="toc-sidebar">
-      <slot name="toc" />
-    </aside>
-  </div>
-  <GlobalFooter />
+
+    <!-- INFRAGISTICS FOOTER-->
+    <GlobalFooter/>
 </body>
 </html>
 

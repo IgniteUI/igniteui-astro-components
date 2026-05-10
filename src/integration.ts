@@ -712,6 +712,15 @@ export interface CreateDocsSiteOptions {
  * All individual helpers (`buildSidebarFromToc`, `staticImagesIntegration`,
  * `siteMetaIntegration`) remain independently importable for cases that
  * need finer control.
+ *
+ * ### Fonts
+ *
+ * `DocsLayout` imports **Instrument Sans Variable** (UI text) and
+ * **JetBrains Mono Variable** (code) directly from the `@fontsource-variable`
+ * npm packages — no CDN request is made at runtime. The CSS custom properties
+ * `--font-sans` and `--font-mono` are defined in `theme.scss` so components
+ * and consumers can reference or override them.
+ *
  * @param options - Configuration options.
  */
 export function createDocsSite(options: CreateDocsSiteOptions = {} as CreateDocsSiteOptions): ReturnType<typeof defineConfig> {

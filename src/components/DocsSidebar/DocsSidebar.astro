@@ -1,13 +1,13 @@
 ---
 /**
- * Docs sidebar — composes the shared DocsTree base with the sidebar
- * filter custom element and a SidebarLabel renderer (badges + caret).
- *
- * Public Props are unchanged from the previous implementation.
- *
- * Package: igniteui-webcomponents (public, MIT) — change the import path
- * in the <script> block below to use @infragistics/igniteui-webcomponents.
- */
+    * Docs sidebar — composes the shared DocsTree base with the sidebar
+    * filter custom element and a SidebarLabel renderer (badges + caret).
+    *
+    * Public Props are unchanged from the previous implementation.
+    *
+    * Package: igniteui-webcomponents (public, MIT) — change the import path
+    * in the <script> block below to use @infragistics/igniteui-webcomponents.
+    */
 import { sidebar as sidebarData } from 'virtual:docs-template/site-meta';
 import SidebarFilterInput from './SidebarFilterInput.astro';
 import './DocsSidebar.scss';
@@ -18,12 +18,12 @@ import type { SidebarEntry } from '../../lib/sidebar/types';
 import { normalizeSlug } from '../../lib/sidebar/helpers';
 
 interface Props {
-  currentSlug?: string;
-  /**
-   * Sidebar tree to render. Overrides the virtual module value when provided.
-   * Useful when consuming the component without `siteMetaIntegration`.
-   */
-  items?: SidebarEntry[];
+    currentSlug?: string;
+    /**
+     * Sidebar tree to render. Overrides the virtual module value when provided.
+     * Useful when consuming the component without `siteMetaIntegration`.
+     */
+    items?: SidebarEntry[];
 }
 
 const { currentSlug = '', items: itemsProp } = Astro.props;
@@ -32,38 +32,39 @@ const nodes = toTreeNodes(items, currentSlug);
 const activeId = normalizeSlug(currentSlug);
 ---
 
-<sidebar-filter id="docs-sidebar" data-no-results="No topics match">
-  <SidebarFilterInput />
-  <div class="sidebar-scroll" data-sidebar-scroll>
-    <DocsTree
-      nodes={nodes}
-      variant="sidebar"
-      activeId={activeId}
-      toggleNodeOnClick
-      ariaLabel="Sidebar navigation"
-      renderLabel={SidebarLabel}
-    />
-  </div>
+<sidebar-filter class="docs-sidebar" id="docs-sidebar" data-no-results="No topics match">
+    <SidebarFilterInput/>
+
+    <div class="sidebar-scroll" data-sidebar-scroll>
+        <DocsTree
+            nodes={ nodes }
+            variant="sidebar"
+            activeId={ activeId }
+            toggleNodeOnClick
+            ariaLabel="Sidebar navigation"
+            renderLabel={ SidebarLabel }
+        />
+    </div>
 </sidebar-filter>
 
 <script>
-  // Register Ignite UI Web Components used by the sidebar filter input.
-  // (DocsTree registers IgcTreeComponent / IgcTreeItemComponent itself.)
-  // To use the licensed package, change the import to:
-  //   import { ... } from '@infragistics/igniteui-webcomponents';
-  import {
-    defineComponents,
-    IgcInputComponent,
-    IgcButtonComponent,
-    IgcIconComponent,
-  } from 'igniteui-webcomponents';
+    // Register Ignite UI Web Components used by the sidebar filter input.
+    // (DocsTree registers IgcTreeComponent / IgcTreeItemComponent itself.)
+    // To use the licensed package, change the import to:
+    //   import { ... } from '@infragistics/igniteui-webcomponents';
+    import {
+        defineComponents,
+        IgcInputComponent,
+        IgcButtonComponent,
+        IgcIconComponent,
+    } from 'igniteui-webcomponents';
 
-  defineComponents(IgcInputComponent, IgcButtonComponent, IgcIconComponent);
+    defineComponents(IgcInputComponent, IgcButtonComponent, IgcIconComponent);
 
-  // Icons (sidebar-filter-search, sidebar-filter-clear) are registered via
-  // the icon registry which picks up all SVGs from src/assets/icons/.
-  import '../../scripts/icon-registry';
+    // Icons (sidebar-filter-search, sidebar-filter-clear) are registered via
+    // the icon registry which picks up all SVGs from src/assets/icons/.
+    import '../../scripts/icon-registry';
 
-  import './sidebar-filter';
+    import './sidebar-filter';
 </script>
 

@@ -32,7 +32,7 @@
 
   // Element selectors are never hashed by CSS Modules — no :global() needed.
   header {
-    position: fixed;
+    position: static;
     top: 0;
     left: 0;
     right: 0;
@@ -212,4 +212,9 @@
       margin-top: 10px;
     }
   }
+}
+
+// TODO NEED A WAY TO OVERRIDE THIS
+.globalnav__primary {
+	border-bottom: var(--igd-app-outline) !important;
 }

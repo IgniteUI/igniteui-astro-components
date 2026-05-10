@@ -1,0 +1,88 @@
+@use 'sass:map';
+@use 'igniteui-theming/sass/typography/functions' as *;
+@use 'igniteui-theming/sass/typography/presets/fluent' as fluent;
+
+$-h1: (
+	'font-family': var(--font-sans), 'font-size': rem(36px), 'font-weight': 600,
+	'font-style': normal, 'line-height': rem(40px), 'letter-spacing': normal,
+	'text-transform': none, 'margin-top':  0, 'margin-bottom':  rem(26px),
+);
+$-h2: (
+	'font-family': var(--font-sans), 'font-size': rem(28px), 'font-weight': 500,
+	'font-style': normal, 'line-height': rem(28px), 'letter-spacing': normal,
+	'text-transform': none, 'margin-top':  0, 'margin-bottom':  rem(26px),
+);
+$-h3: (
+	'font-family': var(--font-sans), 'font-size': rem(24px), 'font-weight': 600,
+	'font-style': normal, 'line-height': rem(24px), 'letter-spacing': normal,
+	'text-transform': none, 'margin-top':  0, 'margin-bottom':  rem(26px),
+);
+$-h4: (
+	'font-family': var(--font-sans), 'font-size': rem(20px), 'font-weight': 400,
+	'font-style': normal, 'line-height': rem(20px), 'letter-spacing': normal,
+	'text-transform': none, 'margin-top':  0, 'margin-bottom':  rem(26px),
+);
+$-h5: (
+	'font-family': var(--font-sans), 'font-size': rem(18px), 'font-weight': 500,
+	'font-style': normal, 'line-height': rem(18px), 'letter-spacing': normal,
+	'text-transform': none, 'margin-top':  0, 'margin-bottom':  rem(26px),
+);
+$-h6: (
+	'font-family': var(--font-sans), 'font-size': rem(16px), 'font-weight': 700,
+	'font-style': normal, 'line-height': rem(18px), 'letter-spacing': normal,
+	'text-transform': none, 'margin-top':  0, 'margin-bottom':  rem(26px),
+);
+$-body-1: (
+	'font-family': var(--font-sans), 'font-size': rem(16px), 'font-weight': 400,
+	'font-style': normal, 'line-height': rem(28px), 'letter-spacing': 0.44px,
+	'text-transform': none, 'margin-top':  0, 'margin-bottom':  rem(26px),
+);
+$-body-2: (
+	'font-family': var(--font-sans), 'font-size': rem(14px), 'font-weight': 500,
+	'font-style': normal, 'line-height': rem(20px), 'letter-spacing': 0.25px,
+	'text-transform': none, 'margin-top':  0, 'margin-bottom':  rem(26px),
+);
+$-subtitle-1: (
+	'font-family': var(--font-sans), 'font-size': rem(16px), 'font-weight': 400,
+	'font-style': normal, 'line-height': rem(24px), 'letter-spacing': 0.15px,
+	'text-transform': none, 'margin-top':  0, 'margin-bottom':  rem(26px),
+);
+$-subtitle-2: (
+	'font-family': var(--font-sans), 'font-size': rem(14px), 'font-weight': 600,
+	'font-style': normal, 'line-height': rem(24px), 'letter-spacing': 0.1px,
+	'text-transform': none, 'margin-top':  0, 'margin-bottom':  rem(26px),
+);
+$-small: (
+	'font-family': var(--font-sans), 'font-size': rem(12px), 'font-weight': 500,
+	'font-style': normal, 'line-height': rem(18px), 'letter-spacing': normal,
+	'text-transform': none, 'margin-top':  0, 'margin-bottom':  rem(26px),
+);
+$-code: (
+	'font-family': var(--font-mono),
+	'font-size': rem(14px), 'font-weight': 400,
+	'font-style': normal, 'line-height': rem(24px), 'letter-spacing': normal,
+	'text-transform': none, 'margin-top':  0, 'margin-bottom':  rem(26px),
+);
+$-overline: (
+	'font-family': var(--font-mono),
+	'font-size': rem(10px), 'font-weight': 400,
+	'font-style': normal, 'line-height': rem(20px), 'letter-spacing': rem(1.5px),
+	'text-transform': uppercase, 'margin-top':  0, 'margin-bottom':  rem(26px),
+);
+
+// Custom type scale
+$igd-type-scale: map.merge(fluent.$type-scale, (
+	'h1': $-h1,
+	'h2': $-h2,
+	'h3': $-h3,
+	'h4': $-h4,
+	'h5': $-h5,
+	'h6': $-h6,
+	'body-1': $-body-1,
+	'body-2': $-body-2,
+	'subtitle-1': $-subtitle-1,
+	'subtitle-2': $-subtitle-2,
+	'overline': $-overline,
+	'small': $-small,
+	'code': $-code,
+));

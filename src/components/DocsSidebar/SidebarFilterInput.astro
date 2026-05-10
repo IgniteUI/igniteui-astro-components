@@ -1,15 +1,14 @@
 ---
 /**
- * Filter input UI for the docs sidebar.
- * Markup-only — behavior lives in `./sidebar-filter.ts`.
- * Uses igc-input / igc-button / igc-icon from igniteui-webcomponents.
- * Icons are registered via the icon registry (src/scripts/icon-registry.ts).
- */
+    * Filter input UI for the docs sidebar.
+    * Markup-only — behavior lives in `./sidebar-filter.ts`.
+    * Uses igc-input / igc-button / igc-icon from igniteui-webcomponents.
+    * Icons are registered via the icon registry (src/scripts/icon-registry.ts).
+    */
 import './SidebarFilterInput.scss';
 ---
 
-<div class="sidebar-filter-wrapper" role="search" aria-label="Filter sidebar topics">
-  <igc-input
+<igc-input
     id="sidebar-filter-input"
     type="search"
     autocomplete="off"
@@ -18,21 +17,23 @@ import './SidebarFilterInput.scss';
     aria-label="Filter navigation topics"
     aria-controls="docs-sidebar"
     data-sidebar-filter-input
-  >
-    <igc-icon slot="prefix" name="filter" collection="docs" aria-hidden="true"></igc-icon>
+>
     <igc-button
-      slot="suffix"
-      variant="flat"
-      aria-label="Clear filter"
-      data-sidebar-filter-clear
-      hidden
-    ><igc-icon name="filter-clear" collection="docs" aria-hidden="true"></igc-icon></igc-button>
-  </igc-input>
-  <p
-    role="status"
+        slot="suffix"
+        variant="flat"
+        aria-label="Clear filter"
+        data-sidebar-filter-clear
+        hidden>
+
+        <igc-icon name="filter-clear" collection="docs" aria-hidden="true"></igc-icon>
+    </igc-button>
+    <igc-icon slot="suffix" name="filter" collection="docs" aria-hidden="true"></igc-icon>
+</igc-input>
+
+<p role="status"
     aria-atomic="true"
     class="sidebar-filter-status"
-    data-sidebar-filter-status
-  ></p>
-</div>
+    data-sidebar-filter-status>
+</p>
+
 
