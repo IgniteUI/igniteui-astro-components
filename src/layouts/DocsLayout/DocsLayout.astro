@@ -102,6 +102,38 @@ type HeadEntry = { tag: string; attrs?: Record<string, string | boolean | undefi
     updateNavHeight();
     var _navChild = document.querySelector('[data-astro-transition-persist="global-nav-bar"] > *:first-child');
     if (_navChild) new ResizeObserver(updateNavHeight).observe(_navChild);
+
+    // Clamp sidebar height so it never overlaps the footer.
+    var _cleanupSidebarHeights;
+    function initSidebarHeights() {
+      if (_cleanupSidebarHeights) _cleanupSidebarHeights();
+      var footer = document.querySelector('[data-igd-footer]');
+      if (!footer) return;
+      var sidebar = document.querySelector('.docs-sidebar');
+      if (!sidebar) return;
+      var rafId = 0;
+      function update() {
+        var footerTop = footer.getBoundingClientRect().top;
+        var sidebarTop = sidebar.getBoundingClientRect().top;
+        var maxH = Math.min(window.innerHeight - sidebarTop, footerTop - sidebarTop);
+        sidebar.style.maxHeight = Math.max(0, maxH) + 'px';
+      }
+      function schedule() {
+        if (rafId) return;
+        rafId = requestAnimationFrame(function() { update(); rafId = 0; });
+      }
+      window.addEventListener('scroll', schedule, { passive: true });
+      var ro = new ResizeObserver(schedule);
+      ro.observe(document.documentElement);
+      schedule();
+      _cleanupSidebarHeights = function() {
+        window.removeEventListener('scroll', schedule);
+        ro.disconnect();
+        cancelAnimationFrame(rafId);
+      };
+    }
+    document.addEventListener('astro:page-load', initSidebarHeights);
+    initSidebarHeights();
   </script>
 </head>
 <body>
@@ -141,10 +173,11 @@ type HeadEntry = { tag: string; attrs?: Record<string, string | boolean | undefi
                 ) }
             </div>
         </div>
-    </div>
 
-    <!-- INFRAGISTICS FOOTER-->
-    <GlobalFooter/>
+        <!-- Footer is inside the grid so the sidebar's sticky containing block extends through it.
+             The JS initSidebarHeights() clamps sidebar max-height to prevent visual overlap. -->
+        <GlobalFooter/>
+    </div>
 </body>
 </html>
 

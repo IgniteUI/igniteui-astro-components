@@ -2,7 +2,6 @@
 @use 'igniteui-theming/sass/typography/functions' as *;
 
 .igd-page-layout {
-	
 	display: grid;
 	grid-template-columns: var(--igd-page-layout-grid);
 	background: var(--igd-app-bg);

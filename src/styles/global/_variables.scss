@@ -1,5 +1,6 @@
 @use 'igniteui-theming/sass/typography' as *;
 @use 'palette' as *;
+@use 'breakpoints' as *;
 
 /* ============================================================
    CSS Custom Properties
@@ -31,6 +32,11 @@
 	--igd-sidebar-spacing: #{rem(46px)} #{rem(24px)};
 	
 	--igd-header-height: #{rem(50px)};
+	
+	@media (min-width: #{$bp-tablet-max}) {
+		--igd-header-height: #{rem(75px)};
+	}
+	
 	--sticky-sidebar-top: 0;
 	
 	--igd-members-spacing: var(--igd-border-radius) #{rem(16px)};

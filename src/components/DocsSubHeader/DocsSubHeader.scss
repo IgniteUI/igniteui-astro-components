@@ -15,10 +15,6 @@
 	z-index: 1;
 	background-color: var(--igd-layout-sections-bg);
 	
-	@media (min-width: #{$bp-tablet-max}) {
-		--igd-header-height: #{rem(75px)};
-	}
-	
 	.igd-logo {
 		display: flex;
 		align-items: center;

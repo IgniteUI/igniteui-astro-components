@@ -39,7 +39,7 @@ const isIgPlatform = !isAppBuilder;
 // For IG platforms, fetch footer HTML directly (cached per locale per build).
 const igNav = isIgPlatform ? await fetchIgNav(resolvedLang) : null;
 ---
-<div class={styles.footer}>
+<div class={styles.footer} data-igd-footer>
 
 {/* === IgniteUI / default Infragistics footer — fetched via fetchIgNav() === */}
 {

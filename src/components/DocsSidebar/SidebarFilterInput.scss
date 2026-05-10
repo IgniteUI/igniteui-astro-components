@@ -38,7 +38,7 @@ igc-button {
 		min-width: fit-content;
 	}
 	
-	// TODO I am unable to styles the input cant reach the part, go an issue in to the library.
+	// TODO I am unable to styles the input, can't reach the part, log an issue in to the library.
 	//&::part(input) {
 	//	padding-inline-start: 0;
 	//	padding-inline-end: rem(32px);
@@ -47,9 +47,13 @@ igc-button {
 
 .sidebar-filter-status {
 	@include type-style('body-2') {
-		margin: 0;
+		margin: 0 !important;
 	}
 	
 	color: light-dark(var(--ig-gray-600), var(--ig-gray-700));
 	padding: rem(16px) rem(24px);
+	
+	&:empty {
+		display: none;
+	}
 }
