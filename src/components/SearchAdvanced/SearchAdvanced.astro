@@ -79,39 +79,38 @@ const resolvedIndexUrl = indexUrl ?? `${import.meta.env.BASE_URL.replace(/\/?$/,
   <igc-dialog aria-label={placeholder} class="ig-search-dialog" hide-default-action close-on-outside-click>
     <div class="ig-search-shell">
       <header class="ig-search-header">
-        <div class="ig-search-input-row">
-          {showScope && (
-            <igc-select class="ig-search-scope" outlined aria-label="Search scope" value="current">
+        <igc-input
+          type="text"
+          class="ig-search-input"
+          placeholder={placeholder}
+          autocomplete="off"
+          outlined
+          aria-label={placeholder}
+        >
+          {showScope ? (
+            <igc-select slot="prefix" class="ig-search-scope" outlined aria-label="Search scope" value="current">
               <igc-select-item value="current">Current package</igc-select-item>
               <igc-select-item value="all">All packages</igc-select-item>
             </igc-select>
-          )}
-          <igc-input
-            type="text"
-            class="ig-search-input"
-            placeholder={placeholder}
-            autocomplete="off"
-            outlined
-            aria-label={placeholder}
-          >
+          ) : (
             <svg slot="prefix" aria-hidden="true" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
               <circle cx="11" cy="11" r="7"></circle>
               <path d="m20 20-3.5-3.5"></path>
             </svg>
-            <igc-icon-button slot="suffix" class="ig-search-clear" variant="flat" type="button" aria-label="Clear search" hidden>
-              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M6 6 18 18 M18 6 6 18"></path>
-              </svg>
-            </igc-icon-button>
-          </igc-input>
-        </div>
+          )}
+          <igc-icon-button slot="suffix" class="ig-search-clear" variant="flat" type="button" aria-label="Clear search" hidden>
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M6 6 18 18 M18 6 6 18"></path>
+            </svg>
+          </igc-icon-button>
+        </igc-input>
       </header>
 
-      <nav class="ig-search-tabs" role="tablist" aria-label="Result categories" hidden></nav>
+      <igc-tabs class="ig-search-tabs" activation="manual" hidden></igc-tabs>
 
       <div class="ig-search-status" aria-live="polite"></div>
 
-      <ol class="ig-search-results" role="list"></ol>
+      <igc-list class="ig-search-results"></igc-list>
     </div>
   </igc-dialog>
 </api-search-advanced>
@@ -141,6 +140,11 @@ const resolvedIndexUrl = indexUrl ?? `${import.meta.env.BASE_URL.replace(/\/?$/,
     IgcSelectComponent,
     IgcSelectItemComponent,
     IgcIconButtonComponent,
+    IgcTabsComponent,
+    IgcTabComponent,
+    IgcListComponent,
+    IgcListItemComponent,
+    IgcListHeaderComponent,
   } from 'igniteui-webcomponents';
 
   defineComponents(
@@ -149,6 +153,11 @@ const resolvedIndexUrl = indexUrl ?? `${import.meta.env.BASE_URL.replace(/\/?$/,
     IgcSelectComponent,
     IgcSelectItemComponent,
     IgcIconButtonComponent,
+    IgcTabsComponent,
+    IgcTabComponent,
+    IgcListComponent,
+    IgcListItemComponent,
+    IgcListHeaderComponent,
   );
 
   type IndexedPage = {
@@ -209,9 +218,9 @@ const resolvedIndexUrl = indexUrl ?? `${import.meta.env.BASE_URL.replace(/\/?$/,
     private input!: IgcInputComponent;
     private clearBtn!: IgcIconButtonComponent;
     private scopeSelect: IgcSelectComponent | null = null;
-    private tabsEl!: HTMLElement;
+    private tabsEl!: IgcTabsComponent;
     private statusEl!: HTMLElement;
-    private resultsEl!: HTMLOListElement;
+    private resultsEl!: HTMLElement;
     private indexPromise: Promise<IndexedPage[]> | null = null;
     private currentTab: string = 'all';
     private currentMatches: Map<string, Match[]> = new Map();
@@ -256,9 +265,9 @@ const resolvedIndexUrl = indexUrl ?? `${import.meta.env.BASE_URL.replace(/\/?$/,
       this.input     = this.querySelector<IgcInputComponent>('igc-input.ig-search-input')!;
       this.clearBtn  = this.querySelector<IgcIconButtonComponent>('.ig-search-clear')!;
       this.scopeSelect = this.querySelector<IgcSelectComponent>('igc-select.ig-search-scope');
-      this.tabsEl    = this.querySelector<HTMLElement>('.ig-search-tabs')!;
+      this.tabsEl    = this.querySelector<IgcTabsComponent>('igc-tabs.ig-search-tabs')!;
       this.statusEl  = this.querySelector<HTMLElement>('.ig-search-status')!;
-      this.resultsEl = this.querySelector<HTMLOListElement>('.ig-search-results')!;
+      this.resultsEl = this.querySelector<HTMLElement>('.ig-search-results')!;
 
       if (this.showScope) {
         this.detectCurrentContext();
@@ -300,13 +309,11 @@ const resolvedIndexUrl = indexUrl ?? `${import.meta.env.BASE_URL.replace(/\/?$/,
         this.onInput();
       });
 
-      this.tabsEl.addEventListener('click', (e) => {
-        const btn = (e.target as Element).closest<HTMLButtonElement>('button[data-tab]');
-        if (!btn) return;
-        const tab = btn.dataset.tab!;
-        if (tab === this.currentTab) return;
-        this.currentTab = tab;
-        this.renderTabs();
+      this.tabsEl.addEventListener('igcChange', (e) => {
+        const tab = (e as CustomEvent<IgcTabComponent>).detail;
+        const tabId = (tab as HTMLElement)?.dataset?.tabId || 'all';
+        if (tabId === this.currentTab) return;
+        this.currentTab = tabId;
         this.renderResults();
       });
 
@@ -330,7 +337,7 @@ const resolvedIndexUrl = indexUrl ?? `${import.meta.env.BASE_URL.replace(/\/?$/,
 
     private updateScopeOption() {
       if (!this.scopeSelect) return;
-      const item = this.scopeSelect.querySelector<IgcSelectItemComponent>('igc-select-item[value="current"]');
+      const item = this.scopeSelect.querySelector<HTMLElement & { value: string; disabled: boolean }>('igc-select-item[value="current"]');
       if (!item) return;
       if (this.currentPkg && this.currentVersion) {
         item.textContent = `${this.currentPkg} ${this.currentVersion}`;
@@ -617,19 +624,18 @@ const resolvedIndexUrl = indexUrl ?? `${import.meta.env.BASE_URL.replace(/\/?$/,
       }
 
       const tabsHtml: string[] = [];
-      tabsHtml.push(this.tabHtml('all', 'All', totalCount));
+      tabsHtml.push(this.tabHtml('all', 'All', totalCount, this.currentTab === 'all'));
       for (const cat of this.categories) {
         const count = this.currentMatches.get(cat.id)?.length ?? 0;
         if (count === 0) continue;
-        tabsHtml.push(this.tabHtml(cat.id, cat.label, count));
+        tabsHtml.push(this.tabHtml(cat.id, cat.label, count, this.currentTab === cat.id));
       }
       this.tabsEl.innerHTML = tabsHtml.join('');
       this.tabsEl.hidden = totalCount === 0;
     }
 
-    private tabHtml(id: string, label: string, count: number): string {
-      const active = id === this.currentTab;
-      return `<button type="button" role="tab" data-tab="${id}" aria-selected="${active}" class="ig-search-tab${active ? ' is-active' : ''}">${escapeHtml(label)}<span class="ig-search-tab-count">${count}</span></button>`;
+    private tabHtml(id: string, label: string, count: number, selected: boolean): string {
+      return `<igc-tab data-tab-id="${id}" label="${escapeHtml(label)}"${selected ? ' selected' : ''}><span slot="suffix" class="ig-search-tab-count">${count}</span></igc-tab>`;
     }
 
     private renderResults() {
@@ -654,14 +660,14 @@ const resolvedIndexUrl = indexUrl ?? `${import.meta.env.BASE_URL.replace(/\/?$/,
         for (const cat of this.categories) {
           const list = this.currentMatches.get(cat.id) ?? [];
           if (list.length === 0) continue;
-          rendered.push(`<li class="ig-search-section-header" aria-hidden="true">${escapeHtml(cat.label)}</li>`);
+          rendered.push(`<igc-list-header>${escapeHtml(cat.label)}</igc-list-header>`);
           const slice = list.slice(0, this.allTabLimit);
           for (const m of slice) rendered.push(this.matchHtml(m));
           if (list.length > slice.length) {
             rendered.push(
-              `<li class="ig-search-more"><button type="button" class="ig-search-more-btn" data-tab="${cat.id}">
+              `<igc-list-item class="ig-search-more"><button type="button" class="ig-search-more-btn" data-tab="${cat.id}">
                 Show all ${list.length} ${escapeHtml(cat.label.toLowerCase())}
-              </button></li>`
+              </button></igc-list-item>`
             );
           }
         }
@@ -674,8 +680,10 @@ const resolvedIndexUrl = indexUrl ?? `${import.meta.env.BASE_URL.replace(/\/?$/,
 
       this.resultsEl.querySelectorAll<HTMLButtonElement>('.ig-search-more-btn').forEach((btn) => {
         btn.addEventListener('click', () => {
-          this.currentTab = btn.dataset.tab!;
-          this.renderTabs();
+          const tabId = btn.dataset.tab!;
+          this.currentTab = tabId;
+          const tabEl = this.tabsEl.querySelector<HTMLElement>(`igc-tab[data-tab-id="${tabId}"]`);
+          if (tabEl) this.tabsEl.select(tabEl as any);
           this.renderResults();
           this.resultsEl.scrollTop = 0;
         });
@@ -689,12 +697,12 @@ const resolvedIndexUrl = indexUrl ?? `${import.meta.env.BASE_URL.replace(/\/?$/,
       const subtitle = isNameMatch || m.category === '__all__'
         ? `<span class="ig-search-kind">${escapeHtml(m.kindLabel)}</span><span class="ig-search-meta">${escapeHtml(m.metaLabel)}</span>`
         : `<span class="ig-search-kind">${escapeHtml(m.kindLabel)}</span><span class="ig-search-meta">in ${escapeHtml(m.pageName)}</span>`;
-      return `<li class="ig-search-result">
-        <a href="${m.url}" class="ig-search-link">
+      return `<igc-list-item>
+        <a href="${m.url}" class="ig-search-link" slot="title">
           <span class="ig-search-result-title">${highlightedName}</span>
-          <span class="ig-search-result-sub">${subtitle}</span>
         </a>
-      </li>`;
+        <span slot="subtitle" class="ig-search-result-sub">${subtitle}</span>
+      </igc-list-item>`;
     }
   }
 
@@ -758,6 +766,9 @@ const resolvedIndexUrl = indexUrl ?? `${import.meta.env.BASE_URL.replace(/\/?$/,
 
 <style>
 	api-search-advanced { display: contents; }
+
+	/* Hide dialog content before web components hydrate (prevents FOUC) */
+	igc-dialog:not(:defined) { display: none; }
 
 	button[data-open-modal] {
 		display: flex;
@@ -862,26 +873,19 @@ const resolvedIndexUrl = indexUrl ?? `${import.meta.env.BASE_URL.replace(/\/?$/,
 		flex-shrink: 0;
 	}
 
-	.ig-search-input-row {
-		display: flex;
-		align-items: stretch;
-		gap: 0.5rem;
-	}
-
-	/* ── Scope selector (igc-select) ──────────────────────────────── */
+	/* ── Scope selector (igc-select in prefix slot) ────────────── */
 	igc-select.ig-search-scope {
 		flex-shrink: 0;
 		max-width: 14rem;
-		min-width: 0;
+		min-width: 8rem;
 	}
 	@media (max-width: 32rem) {
-		igc-select.ig-search-scope { max-width: 9rem; }
+		igc-select.ig-search-scope { max-width: 9rem; min-width: 6rem; }
 	}
 
 	/* ── Search input (igc-input) ─────────────────────────────────── */
 	igc-input.ig-search-input {
-		flex: 1 1 auto;
-		min-width: 0;
+		width: 100%;
 	}
 
 	/* Clear icon-button in suffix slot */
@@ -892,48 +896,20 @@ const resolvedIndexUrl = indexUrl ?? `${import.meta.env.BASE_URL.replace(/\/?$/,
 		color: var(--sl-color-text, inherit);
 	}
 
-	/* ── Tabs ─────────────────────────────────────────────────────── */
-	.ig-search-tabs {
-		display: flex;
-		flex-wrap: nowrap;
-		gap: 0;
-		padding: 0 0.5rem;
+	/* ── Tabs (igc-tabs) ──────────────────────────────────────────── */
+	igc-tabs.ig-search-tabs {
+		flex: 0 0 auto;
+		overflow: hidden;
+		/* Only show the tab header strip; tab body panels are unused */
+		max-height: 2.75rem;
 		border-bottom: 1px solid var(--sl-color-gray-6, #f0f0f0);
-		overflow-x: auto;
-		min-height: 2.75rem;
-		align-items: stretch;
-		scrollbar-width: none;
-		-ms-overflow-style: none;
-		flex-shrink: 0;
-	}
-	.ig-search-tabs::-webkit-scrollbar { display: none; }
-	.ig-search-tab {
-		appearance: none;
-		background: transparent;
-		border: 0;
-		border-bottom: 2px solid transparent;
-		padding: 0.5rem 0.875rem;
-		color: var(--sl-color-gray-2, #555);
-		font-size: 0.875rem;
-		font-weight: 500;
-		cursor: pointer;
-		white-space: nowrap;
-		flex-shrink: 0;
-		display: flex;
-		align-items: center;
-		gap: 0.25rem;
-	}
-	.ig-search-tab:hover { color: var(--sl-color-text, inherit); }
-	.ig-search-tab.is-active {
-		color: var(--sl-color-text-accent, var(--sl-color-accent, #5a3eff));
-		border-bottom-color: var(--sl-color-text-accent, var(--sl-color-accent, #5a3eff));
 	}
 	.ig-search-tab-count {
 		color: var(--sl-color-gray-3, #888);
 		font-weight: 400;
 		font-size: 0.8rem;
+		margin-inline-start: 0.25rem;
 	}
-	.ig-search-tab.is-active .ig-search-tab-count { color: inherit; }
 
 	/* ── Status ───────────────────────────────────────────────────── */
 	.ig-search-status {
@@ -945,42 +921,25 @@ const resolvedIndexUrl = indexUrl ?? `${import.meta.env.BASE_URL.replace(/\/?$/,
 	}
 	.ig-search-status:empty { padding: 0; min-height: 0; }
 
-	/* ── Results ──────────────────────────────────────────────────── */
-	.ig-search-results {
-		list-style: none;
-		margin: 0;
-		padding: 0.5rem 0.5rem 1rem;
+	/* ── Results (igc-list) ───────────────────────────────────────── */
+	igc-list.ig-search-results {
 		overflow-y: auto;
 		flex: 1 1 auto;
 		min-height: 0;
+		padding: 0.5rem 0.5rem 1rem;
 	}
 
-	.ig-search-section-header {
+	igc-list.ig-search-results igc-list-header {
 		font-size: 0.75rem;
 		font-weight: 600;
 		text-transform: uppercase;
 		letter-spacing: 0.05em;
 		color: var(--sl-color-gray-3, #888);
-		padding: 0.75rem 0.75rem 0.25rem;
-		margin-top: 0.25rem;
-		border-bottom: 1px solid var(--sl-color-gray-6, #f1f1f1);
 	}
-	.ig-search-section-header:first-child { margin-top: 0; }
 
-	.ig-search-result { margin: 0; padding: 0; }
 	.ig-search-link {
-		display: flex;
-		flex-direction: column;
-		padding: 0.5rem 0.75rem;
-		gap: 0.125rem;
 		text-decoration: none;
 		color: inherit;
-		border-radius: 0.25rem;
-	}
-	.ig-search-link:hover,
-	.ig-search-link:focus-visible {
-		background-color: var(--sl-color-gray-6, rgba(0,0,0,0.04));
-		outline: none;
 	}
 	.ig-search-result-title {
 		font-size: 0.95rem;
@@ -1012,9 +971,7 @@ const resolvedIndexUrl = indexUrl ?? `${import.meta.env.BASE_URL.replace(/\/?$/,
 	}
 
 	.ig-search-more {
-		margin: 0.5rem 0;
 		text-align: center;
-		list-style: none;
 	}
 	.ig-search-more-btn {
 		appearance: none;
