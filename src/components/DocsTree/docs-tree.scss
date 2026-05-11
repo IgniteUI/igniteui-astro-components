@@ -1,0 +1,42 @@
+@use 'igniteui-theming/sass/typography/functions' as *;
+
+/*
+ * if we need to modify the toc or the sidebar in any way we can use:
+ *   [data-variant="sidebar"]
+ *   [data-variant="toc"]
+ *
+ * Designers tune values via the `--docs-tree-*` variables. Structural rules
+ * live below the variables; per-variant tweaks at the bottom.
+ *
+ * Layout rules that don't belong to the tree itself (sidebar-filter-igc,
+ * .sidebar-scroll, .toc-sidebar, docs-toc h2) stay in their owning component
+ * .astro files.
+ */
+
+igc-tree {
+	--ig-tree-background: transparent;
+	--ig-size: 1;
+}
+
+igc-tree-item::part(indicator) {
+	order: 2;
+	margin-inline: auto 0;
+}
+
+igc-tree-item[data-has-children] {
+	--igc-tree-indentation-size: 0;
+	
+	&::part(wrapper) {
+		padding-inline-start: rem(24px);
+		padding-inline-end: rem(8px);
+	}
+}
+
+igc-tree-item:not([data-has-children])::part(wrapper) {
+	--igc-tree-indentation-size: #{rem(44px)};
+	
+	padding-inline-start: 0;
+	padding-inline-end: rem(8px);
+}
+
+

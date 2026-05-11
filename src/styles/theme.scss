@@ -7,8 +7,8 @@
 // The actual @font-face rules come from @fontsource-variable (imported in DocsLayout.astro).
 :root {
 	--ig-theme: fluent;
-	--font-sans: 'Instrument Sans Variable', 'Segoe UI', system-ui, sans-serif;
-	--font-mono: 'JetBrains Mono Variable', 'Cascadia Code', 'Fira Code', monospace;
+	--font-sans: 'Instrument Sans Variable';
+	--font-mono: 'JetBrains Mono Variable'; // fallback should be 'Cascadia Code', 'Fira Code', monospace
 }
 
 @include sizing();
@@ -30,7 +30,7 @@ html {
 // stylesheets — setting font-family on html/body would override those
 // via inheritance. Scoping to .igd-page-layout keeps them isolated.
 .igd-page-layout {
-	font-family: var(--font-sans);
+	font-family: var(--font-sans), 'Segoe UI', system-ui, sans-serif;
 }
 
 .visually-hidden {
