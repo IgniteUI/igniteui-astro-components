@@ -1,7 +1,8 @@
 @use 'igniteui-theming/sass/typography' as *;
 
 .docs-breadcrumb {
-	padding: var(--igd-padding-sm);
+	padding-inline: var(--igd-padding-sm);
+	padding-block-end: 0;
 	padding-inline-start: calc(var(--igd-padding-sm) + rem(3px));
 	border-block-end: var(--igd-app-outline);
 	width: 100%;

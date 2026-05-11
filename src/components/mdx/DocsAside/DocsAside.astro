@@ -1,8 +1,4 @@
 ---
-import noteIcon    from './icons/note.svg?raw';
-import tipIcon     from './icons/tip.svg?raw';
-import cautionIcon from './icons/caution.svg?raw';
-import dangerIcon  from './icons/danger.svg?raw';
 import './DocsAside.scss';
 
 interface Props {
@@ -10,6 +6,7 @@ interface Props {
   title?: string;
   color?: string;
   class?: string;
+  /** Override icon name from the 'docs' collection. */
   icon?: string;
 }
 
@@ -23,10 +20,10 @@ const defaultLabels: Record<string, string> = {
 };
 
 const defaultIcons: Record<string, string> = {
-  note: noteIcon,
-  tip: tipIcon,
-  caution: cautionIcon,
-  danger: dangerIcon,
+  note: 'info',
+  tip: 'rocket',
+  caution: 'warning',
+  danger: 'warning',
 };
 
 const label = title ?? defaultLabels[type];
@@ -40,11 +37,18 @@ const inlineStyle = color ? `--aside-color: ${color};` : undefined;
   style={inlineStyle}
 >
   <p class="aside-title" aria-hidden="true">
-    {resolvedIcon && <span class="aside-icon" aria-hidden="true" set:html={resolvedIcon} />}
+    {resolvedIcon && <igc-icon class="aside-icon" name={resolvedIcon} collection="docs" aria-hidden="true"></igc-icon>}
     {label}
   </p>
   <section class="aside-content">
     <slot />
   </section>
 </aside>
+
+<script>
+  import { defineComponents, IgcIconComponent } from 'igniteui-webcomponents';
+  import '../../../scripts/icon-registry';
+
+  defineComponents(IgcIconComponent);
+</script>
 

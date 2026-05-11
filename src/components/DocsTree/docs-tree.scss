@@ -18,14 +18,46 @@ igc-tree {
 	--ig-size: 1;
 }
 
+igc-tree-item {
+	--background: transparent;
+	--foreground: light-dark(var(--ig-gray-600), var(--ig-gray-500));
+	--background-selected: transparent;
+	--background-active: transparent;
+	--foreground-active: var(--igd-accent);
+	--foreground-hover: var(--igd-accent);
+	--background-disabled: transparent;
+	--hover-color: transparent;
+	--hover-selected-color: transparentize;
+	
+	a {
+		display: flex;
+		align-items: center;
+		color: inherit;
+		text-decoration: none;
+		width: 100%;
+		height: 100%;
+	}
+	
+	cursor: default;
+	
+	&:hover,
+	&:focus {
+		> a {
+			color: var(--igd-accent);
+		}
+	}
+}
+
 igc-tree-item::part(indicator) {
 	order: 2;
 	margin-inline: auto 0;
 }
 
-igc-tree-item[data-has-children] {
+igc-tree-item[data-has-children][data-depth="0"] {
 	--igc-tree-indentation-size: 0;
-	
+}
+
+igc-tree-item[data-has-children] {
 	&::part(wrapper) {
 		padding-inline-start: rem(24px);
 		padding-inline-end: rem(8px);
@@ -37,6 +69,18 @@ igc-tree-item:not([data-has-children])::part(wrapper) {
 	
 	padding-inline-start: 0;
 	padding-inline-end: rem(8px);
+}
+
+/* TOC variant — active link highlighted by scroll-spy via aria-current="true". */
+igc-tree[data-variant='toc'] .docs-tree-link[aria-current='true'] {
+	color: var(--igd-accent);
+	font-weight: 600;
+}
+
+/* Filter visibility — driven by <sidebar-filter>. */
+// Removing thils will break the filter in the sidebar
+sidebar-filter[data-filtering] igc-tree[data-variant='sidebar'] igc-tree-item[data-path]:not([data-filter-match]) {
+	display: none;
 }
 
 

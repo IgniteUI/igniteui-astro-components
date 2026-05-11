@@ -18,7 +18,6 @@ const headings = [
 <DocsLayout title="DocsAside" siteTitle={SITE_TITLE} hasSidebar currentSlug={slug}>
   <DocsSidebar slot="sidebar" items={SIDEBAR} currentSlug={slug} />
   <DocsToc slot="toc" headings={headings} offsetTarget=".docs-subheader" />
-  <main class="content">
     <h1>DocsAside</h1>
     <p>
       Styled callout blocks for notes, tips, cautions, and danger notices.
@@ -68,9 +67,4 @@ const headings = [
     <DocsAside type="tip" icon="">
       This tip has no icon - pass <code>icon=""</code> to suppress it.
     </DocsAside>
-  </main>
 </DocsLayout>
-
-<style>
-  .content { max-width: 60rem; margin: 0 auto; padding: 2rem 1.5rem; }
-</style>

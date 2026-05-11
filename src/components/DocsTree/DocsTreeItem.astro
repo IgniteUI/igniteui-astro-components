@@ -15,8 +15,7 @@
  * during defineComponents(), before the tree is upgraded, crashing on
  * `this.tree?.expandToItem`. Active-row highlight is CSS-driven via
  * `igc-tree-item:has(a[aria-current])` instead.
- * For group nodes the expand indicator slot is filled with an <igc-icon> (chevron)
- * so the native indicator position and click-to-expand behaviour are preserved.
+ * The default expand indicator is hidden globally via `::part(indicator)`.
  */
 import type { TreeNode, TreeVariant } from './types';
 
@@ -51,9 +50,6 @@ if (node.itemData) {
   expanded={node.expanded ? '' : undefined}
   {...dataAttrs}
 >
-  {hasChildren && (
-    <igc-icon slot="indicator" name="chevron" collection="docs" aria-hidden="true"></igc-icon>
-  )}
   {node.href ? (
     <a
       slot="label"

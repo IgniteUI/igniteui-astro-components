@@ -104,10 +104,12 @@ type HeadEntry = { tag: string; attrs?: Record<string, string | boolean | undefi
     if (_navChild) new ResizeObserver(updateNavHeight).observe(_navChild);
 
     // Clamp sidebar height so it never overlaps the footer.
+    // Uses the direct-child footer of .igd-page-layout to avoid matching
+    // any example/demo footers rendered inside page content (e.g. /nav-bar).
     var _cleanupSidebarHeights;
     function initSidebarHeights() {
       if (_cleanupSidebarHeights) _cleanupSidebarHeights();
-      var footer = document.querySelector('[data-igd-footer]');
+      var footer = document.querySelector('.igd-page-layout > [data-igd-footer]');
       if (!footer) return;
       var sidebar = document.querySelector('.docs-sidebar');
       if (!sidebar) return;
@@ -123,11 +125,15 @@ type HeadEntry = { tag: string; attrs?: Record<string, string | boolean | undefi
         rafId = requestAnimationFrame(function() { update(); rafId = 0; });
       }
       window.addEventListener('scroll', schedule, { passive: true });
+      // ResizeObserver covers content-driven layout changes; the resize event
+      // covers viewport-only changes such as DevTools docking/undocking.
+      window.addEventListener('resize', schedule, { passive: true });
       var ro = new ResizeObserver(schedule);
       ro.observe(document.documentElement);
       schedule();
       _cleanupSidebarHeights = function() {
         window.removeEventListener('scroll', schedule);
+        window.removeEventListener('resize', schedule);
         ro.disconnect();
         cancelAnimationFrame(rafId);
       };
@@ -162,8 +168,10 @@ type HeadEntry = { tag: string; attrs?: Record<string, string | boolean | undefi
         <div class="igd-main-content">
             <div class="igd-main-content__inner">
                 <div class="igd-main-content__page">
-                    <DocsBreadcrumb pageTitle={ title } currentSlug={ currentSlug } siteTitle={ siteTitleProp }/>
-                    <slot/>
+                    <main class="igd-main-content__markdown">
+                        <DocsBreadcrumb pageTitle={ title } currentSlug={ currentSlug } siteTitle={ siteTitleProp }/>
+                        <slot/>
+                    </main>
                 </div>
 
                 { hasToc && (

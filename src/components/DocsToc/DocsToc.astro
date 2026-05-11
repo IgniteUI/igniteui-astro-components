@@ -33,8 +33,8 @@ const nodes = headingsToTreeNodes(headings, tocConfig);
 
 {nodes.length > 0 && (
     <docs-toc class="toc-sidebar" data-offset-target={offsetTarget}>
+        <h2 class="toc-sidebar__heading" id="toc-heading">{label}</h2>
         <nav aria-labelledby="toc-heading">
-            <h2 id="toc-heading">{label}</h2>
             <DocsTree nodes={nodes} variant="toc" />
         </nav>
     </docs-toc>

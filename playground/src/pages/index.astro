@@ -16,73 +16,61 @@ const headings = [
 
 <DocsLayout title="Playground" siteTitle={ SITE_TITLE } hasSidebar currentSlug="">
     <DocsSidebar slot="sidebar" items={ SIDEBAR } currentSlug=""/>
+    <h1>igniteui-astro-components playground</h1>
+    <p>
+        This is a local sandbox for the components shipped from
+        <code>../src</code>. Use the sidebar to explore the dedicated demo
+        pages for each component.
+    </p>
 
-    <main class="content">
-        <h1>igniteui-astro-components playground</h1>
-        <p>
-            This is a local sandbox for the components shipped from
-            <code>../src</code>. Use the sidebar to explore the dedicated demo
-            pages for each component.
-        </p>
+    <h2 id="pages">Pages</h2>
 
-        <h2 id="pages">Pages</h2>
+    <h3 id="layout-components">Layout components</h3>
+    <ul>
+        <li><a href="/components/sidebar">Sidebar</a> — classic <code>&lt;details&gt;</code>-based sidebar with
+            filter input.
+        </li>
+        <li><a href="/components/sidebar-igc">Sidebar (igc-tree)</a> — same sidebar built with <code>igniteui-webcomponents</code>
+            igc-tree.
+        </li>
+        <li><a href="/components/docs-toc">DocsToc</a> — "On this page" table of contents with scroll-spy.</li>
+    </ul>
 
-        <h3 id="layout-components">Layout components</h3>
-        <ul>
-            <li><a href="/components/sidebar">Sidebar</a> — classic <code>&lt;details&gt;</code>-based sidebar with
-                filter input.
-            </li>
-            <li><a href="/components/sidebar-igc">Sidebar (igc-tree)</a> — same sidebar built with <code>igniteui-webcomponents</code>
-                igc-tree.
-            </li>
-            <li><a href="/components/docs-toc">DocsToc</a> — "On this page" table of contents with scroll-spy.</li>
-        </ul>
+    <h3 id="navigation-components">Navigation components</h3>
+    <ul>
+        <li><a href="/components/nav-bar">Global nav &amp; footer</a> — top navigation bar and site footer.</li>
+    </ul>
 
-        <h3 id="navigation-components">Navigation components</h3>
-        <ul>
-            <li><a href="/components/nav-bar">Global nav &amp; footer</a> — top navigation bar and site footer.</li>
-        </ul>
+    <h3 id="mdx-components">MDX components</h3>
+    <ul>
+        <li><a href="/components/api-link">ApiLink</a> — inline link to an API reference entry.</li>
+        <li><a href="/components/api-ref">ApiRef</a> — full API reference block.</li>
+        <li><a href="/components/docs-aside">DocsAside</a> — note, tip, caution, and danger callout blocks.</li>
+        <li><a href="/components/platform-block">PlatformBlock</a> — conditionally renders content per platform.
+        </li>
+    </ul>
 
-        <h3 id="mdx-components">MDX components</h3>
-        <ul>
-            <li><a href="/components/api-link">ApiLink</a> — inline link to an API reference entry.</li>
-            <li><a href="/components/api-ref">ApiRef</a> — full API reference block.</li>
-            <li><a href="/components/docs-aside">DocsAside</a> — note, tip, caution, and danger callout blocks.</li>
-            <li><a href="/components/platform-block">PlatformBlock</a> — conditionally renders content per platform.
-            </li>
-        </ul>
+    <h2 id="how-it-works">How it works</h2>
+    <p>
+        The playground uses the prop-driven pattern: sidebar data, product links,
+        and the site title are defined in
+        <code>playground/src/site-config.ts</code> and passed directly as props
+        to <code>DocsLayout</code> and <code>DocsSidebar</code> — no
+        <code>siteMetaIntegration</code> required.
+    </p>
+    <p>
+        The virtual module stubs in <code>astro.config.mjs</code> are still
+        present to satisfy the module resolver, but the <code>sidebar</code>,
+        <code>title</code>, and <code>productLinks</code> values they export are
+        intentionally empty — the real data flows through props.
+    </p>
 
-        <h2 id="how-it-works">How it works</h2>
-        <p>
-            The playground uses the prop-driven pattern: sidebar data, product links,
-            and the site title are defined in
-            <code>playground/src/site-config.ts</code> and passed directly as props
-            to <code>DocsLayout</code> and <code>DocsSidebar</code> — no
-            <code>siteMetaIntegration</code> required.
-        </p>
-        <p>
-            The virtual module stubs in <code>astro.config.mjs</code> are still
-            present to satisfy the module resolver, but the <code>sidebar</code>,
-            <code>title</code>, and <code>productLinks</code> values they export are
-            intentionally empty — the real data flows through props.
-        </p>
-
-        <h3 id="adding-a-demo-page">Adding a demo page</h3>
-        <p>
-            Create a new <code>.astro</code> file under
-            <code>playground/src/pages/components/</code>, import
-            <code>DocsLayout</code> and the component under test from
-            <code>../../../../src/</code>, and add a link to the list above.
-        </p>
-    </main>
-
+    <h3 id="adding-a-demo-page">Adding a demo page</h3>
+    <p>
+        Create a new <code>.astro</code> file under
+        <code>playground/src/pages/components/</code>, import
+        <code>DocsLayout</code> and the component under test from
+        <code>../../../../src/</code>, and add a link to the list above.
+    </p>
     <DocsToc slot="toc" headings={ headings } offsetTarget=".docs-subheader"/>
 </DocsLayout>
-
-<style>
-    .content {
-        max-width: 60rem;
-        margin: 0 auto;
-        padding: var(--igd-page-padding);
-    }
-</style>

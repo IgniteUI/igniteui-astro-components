@@ -111,3 +111,10 @@
 	padding-inline: rem(70px) rem(32px);
 	position: relative;
 }
+
+.content {
+	max-width: 60rem;
+	margin: 0 auto;
+	padding-inline: var(--igd-page-padding);
+	padding-block-end: var(--igd-page-padding);
+}
