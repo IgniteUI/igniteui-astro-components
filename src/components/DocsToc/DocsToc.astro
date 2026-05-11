@@ -50,7 +50,6 @@ const nodes = headingsToTreeNodes(headings, tocConfig);
         private rafId: number | undefined;
         private headings: HTMLElement[] = [];
         private links: HTMLAnchorElement[] = [];
-        private parentItems: HTMLElement[] = [];
         private currentLink: HTMLAnchorElement | undefined;
         private offsetEl: Element | null = null;
         private resizeObserver: ResizeObserver | undefined;
@@ -98,9 +97,6 @@ const nodes = headingsToTreeNodes(headings, tocConfig);
             this.headings = this.links
                 .map((link) => document.getElementById(decodeURIComponent(link.hash.slice(1))))
                 .filter((el): el is HTMLElement => el !== null);
-            this.parentItems = Array.from(
-                this.querySelectorAll<HTMLElement>('igc-tree-item[data-has-children]'),
-            );
 
             if (this.headings.length === 0) return;
 
@@ -184,13 +180,14 @@ const nodes = headingsToTreeNodes(headings, tocConfig);
                 }
             }
 
-            // Above the first heading: no link is active.
+            // Above the first heading: clear aria-current. We do NOT
+            // collapse anything previously expanded — the toc is
+            // additive (expand on enter, never auto-collapse).
             if (activeIndex === -1) {
                 if (this.currentLink) {
                     this.currentLink.removeAttribute('aria-current');
                     this.currentLink = undefined;
                 }
-                this.syncExpansion(undefined);
                 return;
             }
 
@@ -215,31 +212,25 @@ const nodes = headingsToTreeNodes(headings, tocConfig);
         }
 
         /**
-         * Drive `expanded` on every parent <igc-tree-item> based on the
-         * active link's ancestry chain. The active item itself is included
-         * (so when an h2 with h3 children is active, its h3s become
-         * visible). Manual click-toggles by the user are intentionally
-         * overridden on the next scroll update — scrolling is the source
-         * of truth for the open section.
+         * Additive expansion: walk up from the active anchor through
+         * every ancestor <igc-tree-item> (including the active item
+         * itself when it has children) and ensure each is `expanded`.
+         * Items outside the active path are left untouched, so
+         * previously visited sections stay open as the user scrolls
+         * past or back. Sections the user has never reached stay
+         * collapsed.
          */
-        private syncExpansion(activeLink: HTMLAnchorElement | undefined) {
-            const activePath = new Set<Element>();
-            if (activeLink) {
-                let item: Element | null = activeLink.closest('igc-tree-item');
-                while (
-                    item &&
-                    item.tagName === 'IGC-TREE-ITEM' &&
-                    this.contains(item)
-                ) {
-                    activePath.add(item);
-                    item = item.parentElement?.closest('igc-tree-item') ?? null;
+        private syncExpansion(activeLink: HTMLAnchorElement) {
+            let item: Element | null = activeLink.closest('igc-tree-item');
+            while (
+                item &&
+                item.tagName === 'IGC-TREE-ITEM' &&
+                this.contains(item)
+            ) {
+                if (!(item as ExpandableEl).expanded) {
+                    (item as ExpandableEl).expanded = true;
                 }
-            }
-            for (const el of this.parentItems) {
-                const wantOpen = activePath.has(el);
-                if ((el as ExpandableEl).expanded !== wantOpen) {
-                    (el as ExpandableEl).expanded = wantOpen;
-                }
+                item = item.parentElement?.closest('igc-tree-item') ?? null;
             }
         }
     }
