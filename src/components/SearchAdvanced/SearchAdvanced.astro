@@ -30,7 +30,17 @@ export interface SearchTab {
 export interface Props {
   /** CSS class for the outer element */
   class?: string;
-  /** URL (or path) to the JSON search index. Defaults to `${BASE_URL}api-search-index.json` */
+  /**
+   * URL (or path) to the search index.
+   *
+   * Supports two modes:
+   * - **Single file**: URL pointing to a JSON file with a `{ pages: [...] }` shape.
+   * - **Manifest**: URL pointing to a `manifest.json` with a `{ files: [...] }` shape.
+   *   Each listed file is fetched relative to the manifest URL and their pages
+   *   are merged. This supports incremental / per-version builds.
+   *
+   * Defaults to `${BASE_URL}api-search-index/manifest.json`.
+   */
   indexUrl?: string;
   /** Search input placeholder. Defaults to "Search" */
   placeholder?: string;
@@ -52,7 +62,7 @@ const {
 } = Astro.props;
 
 const ctrlKey = 'Ctrl';
-const resolvedIndexUrl = indexUrl ?? `${import.meta.env.BASE_URL.replace(/\/?$/, '/')}api-search-index.json`;
+const resolvedIndexUrl = indexUrl ?? `${import.meta.env.BASE_URL.replace(/\/?$/, '/')}api-search-index/manifest.json`;
 ---
 
 <api-search-advanced
@@ -355,13 +365,34 @@ const resolvedIndexUrl = indexUrl ?? `${import.meta.env.BASE_URL.replace(/\/?$/,
 
     private loadIndex(): Promise<IndexedPage[]> {
       if (this.indexPromise) return this.indexPromise;
-      this.indexPromise = fetch(this.indexUrl)
-        .then((r) => {
-          if (!r.ok) throw new Error(`HTTP ${r.status}`);
-          return r.json();
-        })
-        .then((data) => Array.isArray(data?.pages) ? data.pages as IndexedPage[] : []);
+      this.indexPromise = this.fetchIndex();
       return this.indexPromise;
+    }
+
+    private async fetchIndex(): Promise<IndexedPage[]> {
+      const r = await fetch(this.indexUrl);
+      if (!r.ok) throw new Error(`HTTP ${r.status}`);
+      const data = await r.json();
+
+      // Single-file format: { pages: [...] }
+      if (Array.isArray(data?.pages)) {
+        return data.pages as IndexedPage[];
+      }
+
+      // Manifest format: { files: ["pkg/version.json", ...] }
+      if (Array.isArray(data?.files)) {
+        const baseUrl = this.indexUrl.replace(/[^/]*$/, '');
+        const fetches = (data.files as string[]).map(async (file: string) => {
+          const res = await fetch(`${baseUrl}${file}`);
+          if (!res.ok) return [];
+          const d = await res.json();
+          return Array.isArray(d?.pages) ? d.pages as IndexedPage[] : [];
+        });
+        const results = await Promise.all(fetches);
+        return results.flat();
+      }
+
+      return [];
     }
 
     private onInput() {
