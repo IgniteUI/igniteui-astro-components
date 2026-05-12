@@ -20,7 +20,7 @@ const headings = [
   <DocsToc slot="toc" headings={headings} offsetTarget=".docs-subheader" />
     <h1>DocsAside</h1>
     <p>
-      Styled callout blocks for notes, tips, cautions, and danger notices.
+      Styled callout blocks for notes, tips, warnings, and danger notices.
       Each variant has a type-specific color accent and inline SVG icon.
     </p>
 
@@ -34,8 +34,8 @@ const headings = [
       This is a <strong>tip</strong>. Use it to share helpful shortcuts or best practices.
     </DocsAside>
 
-    <DocsAside type="caution">
-      This is a <strong>caution</strong>. Use it to warn about potential pitfalls or breaking changes.
+    <DocsAside type="warning">
+      This is a <strong>warning</strong>. Use it to warn about potential pitfalls or breaking changes.
     </DocsAside>
 
     <DocsAside type="danger">
@@ -44,7 +44,7 @@ const headings = [
 
     <h2 id="custom-title">Custom title</h2>
 
-    <DocsAside type="caution" title="Breaking change in v3">
+    <DocsAside type="warning" title="Breaking change in v3">
       The <code>foo</code> prop has been removed. Migrate to <code>bar</code> before upgrading.
     </DocsAside>
 
