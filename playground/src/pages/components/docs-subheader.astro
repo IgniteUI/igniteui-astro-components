@@ -2,6 +2,8 @@
 import DocsLayout from '../../../../src/layouts/DocsLayout/DocsLayout.astro';
 import DocsSidebar from '../../../../src/components/DocsSidebar/DocsSidebar.astro';
 import DocsToc from '../../../../src/components/DocsToc/DocsToc.astro';
+import DocsSubHeader from '../../../../src/components/DocsSubHeader/DocsSubHeader.astro';
+import SearchAdvanced from '../../../../src/components/SearchAdvanced/SearchAdvanced.astro';
 import { SITE_TITLE, SIDEBAR, PRODUCT_LINKS, SEARCH_TABS, PACKAGES, VERSIONS } from '../../site-config';
 
 const slug = 'components/docs-subheader';
@@ -17,22 +19,14 @@ const headings = [
 ];
 ---
 
-<DocsLayout
-  title="DocsSubHeader"
-  siteTitle={SITE_TITLE}
-  hasSidebar
-  currentSlug={slug}
-  searchTabs={SEARCH_TABS} searchShowScope={true}
-  packages={[...PACKAGES]}
-  selectedPackage={PACKAGES[0]}
-  packageLabel="Package"
-  versions={[...VERSIONS]}
-  selectedVersion={VERSIONS[0]}
-  versionLabel="Version"
-  showThemeToggle={true}
-  productLinks={PRODUCT_LINKS}
-  advancedSearch={true}
->
+<DocsLayout title="DocsSubHeader" siteTitle={SITE_TITLE} hasSidebar currentSlug={slug}>
+  <DocsSubHeader slot="subheader" pageTitle="DocsSubHeader" currentSlug={slug} siteTitle={SITE_TITLE}
+    productLinks={PRODUCT_LINKS} showThemeToggle={true}
+    packages={[...PACKAGES]} selectedPackage={PACKAGES[0]} packageLabel="Package"
+    versions={[...VERSIONS]} selectedVersion={VERSIONS[0]} versionLabel="Version"
+  >
+    <SearchAdvanced slot="search" tabs={SEARCH_TABS} showScope={true} />
+  </DocsSubHeader>
   <DocsSidebar slot="sidebar" items={SIDEBAR} currentSlug={slug} />
   <DocsToc slot="toc" headings={headings} offsetTarget=".docs-subheader" />
 
