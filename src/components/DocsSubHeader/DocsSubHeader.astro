@@ -40,9 +40,39 @@ interface Props {
    * Defaults to the virtual module value.
    */
   sidebarItems?: SidebarEntry[];
+  /** Package names for the package selector dropdown. When omitted the selector is hidden. */
+  packages?: string[];
+  /** Currently selected package (must match one of `packages`). */
+  selectedPackage?: string;
+  /** Label rendered before the package selector. Defaults to `'Package'`. */
+  packageLabel?: string;
+  /** Version labels for the version selector dropdown. When omitted the selector is hidden. */
+  versions?: string[];
+  /** Currently selected version (must match one of `versions`). */
+  selectedVersion?: string;
+  /** Label rendered before the version selector. Defaults to `'Version'`. */
+  versionLabel?: string;
+  /** Show a light/dark theme toggle button. */
+  showThemeToggle?: boolean;
+  /** `localStorage` key for persisting the theme. Defaults to `'docs-theme'`. */
+  themeStorageKey?: string;
 }
 
-const { pageTitle = '', currentSlug = '', siteTitle: siteTitleProp, productLinks: productLinksProp, sidebarItems } = Astro.props;
+const {
+  pageTitle = '',
+  currentSlug = '',
+  siteTitle: siteTitleProp,
+  productLinks: productLinksProp,
+  sidebarItems,
+  packages,
+  selectedPackage,
+  packageLabel = 'Package',
+  versions,
+  selectedVersion,
+  versionLabel = 'Version',
+  showThemeToggle = false,
+  themeStorageKey = 'docs-theme',
+} = Astro.props;
 const resolvedSiteTitle = siteTitleProp ?? siteTitle;
 const currentPlatform = virtualPlatform ?? null;
 const resolvedLinks = (productLinksProp ?? productLinks) as ProductLink[];
@@ -70,11 +100,39 @@ const crumbs = sidebarCrumbs.length > 0 ? sidebarCrumbs : (pageTitle ? [pageTitl
             ))}
         </div>
 
-        <!-- Search -->
-        <Search />
+        <!-- Search (overridable via named slot) -->
+        <slot name="search"><Search /></slot>
 
-        <!-- Right: product links. Desktop: flex row. Mobile: absolute dropdown. -->
+        <!-- Package selector (optional) -->
+        {packages && packages.length > 0 && (
+            <div class="selector-group">
+                <igc-select id="package-select" outlined value={selectedPackage} aria-label={packageLabel}>
+                    {packages.map((p) => (
+                        <igc-select-item value={p}>{p}</igc-select-item>
+                    ))}
+                </igc-select>
+            </div>
+        )}
+
+        <!-- Version selector (optional) -->
+        {versions && versions.length > 0 && (
+            <div class="selector-group">
+                <igc-select id="version-select" outlined value={selectedVersion} aria-label={versionLabel}>
+                    {versions.map((v) => (
+                        <igc-select-item value={v}>{v}</igc-select-item>
+                    ))}
+                </igc-select>
+            </div>
+        )}
+
+        <!-- Right: theme toggle + product links. Desktop: flex row. Mobile: absolute dropdown. -->
         <div class="subheader-right" id="docs-subheader-panel">
+            {showThemeToggle && (
+                <igc-icon-button class="subheader-theme-toggle" variant="flat" data-theme-toggle data-theme-key={themeStorageKey} aria-label="Toggle theme" title="Toggle light/dark theme">
+                    <svg class="theme-icon-light" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+                    <svg class="theme-icon-dark" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+                </igc-icon-button>
+            )}
             {filteredLinks.length > 0 && (
                 <div class="subheader-links">
                     {filteredLinks.map((link, i) => (
@@ -139,11 +197,34 @@ const crumbs = sidebarCrumbs.length > 0 ? sidebarCrumbs : (pageTitle ? [pageTitl
                 document.addEventListener('click', (e: MouseEvent) => {
                     if (!this.contains(e.target as Node)) setExpanded(false);
                 });
+
+                // Theme toggle
+                const themeBtn = this.querySelector<HTMLElement>('[data-theme-toggle]');
+                if (themeBtn) {
+                    themeBtn.addEventListener('click', () => {
+                        const current = document.documentElement.getAttribute('data-theme');
+                        const next = current === 'dark' ? 'light' : 'dark';
+                        document.documentElement.setAttribute('data-theme', next);
+                        const key = themeBtn.dataset.themeKey || 'docs-theme';
+                        try { localStorage.setItem(key, next); } catch (_) {}
+                    });
+                }
             }
         }
 
         customElements.define('docs-subheader-menu', DocsSubHeaderMenu);
     }
+</script>
+
+<script>
+    import {
+        defineComponents,
+        IgcSelectComponent,
+        IgcSelectItemComponent,
+        IgcIconButtonComponent,
+    } from 'igniteui-webcomponents';
+
+    defineComponents(IgcSelectComponent, IgcSelectItemComponent, IgcIconButtonComponent);
 </script>
 
 <style>
@@ -215,6 +296,32 @@ const crumbs = sidebarCrumbs.length > 0 ? sidebarCrumbs : (pageTitle ? [pageTitl
         user-select: none;
     }
 
+    /* ── Selectors (optional) ──────────────────────────────────────────────── */
+
+    .selector-group {
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+        white-space: nowrap;
+    }
+
+    .selector-group igc-select {
+        min-width: 100px;
+        --ig-size: 1;
+    }
+
+    /* ── Theme toggle (optional) ────────────────────────────────────────────── */
+
+    .subheader-theme-toggle {
+        --ig-size: 1;
+        color: var(--sl-color-text);
+    }
+
+    .subheader-theme-toggle .theme-icon-dark { display: none; }
+    :global([data-theme='dark']) .subheader-theme-toggle .theme-icon-light { display: none; }
+    :global([data-theme='dark']) .subheader-theme-toggle .theme-icon-dark { display: block; }
+
     /* ── Right side: links ──────────────────────────────────────────────────── */
 
     .subheader-right {
@@ -275,6 +382,8 @@ const crumbs = sidebarCrumbs.length > 0 ? sidebarCrumbs : (pageTitle ? [pageTitl
     /* ══ Mobile (≤ 50rem) ══════════════════════════════════════════════════════ */
 
     @media (max-width: 50rem) {
+        .selector-group { display: none; }
+
         .subheader-right {
             display: none;
             position: absolute;

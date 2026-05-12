@@ -405,6 +405,10 @@ const resolvedIndexUrl = indexUrl ?? `${import.meta.env.BASE_URL.replace(/\/?$/,
       const q = raw.trim().toLowerCase();
       this.currentQuery = q;
       this.clearBtn.hidden = !raw;
+      // igc-input uses [slot="suffix"]:not([hidden]) to show the suffix container.
+      // It doesn't observe attribute mutations on slotted elements, so we must
+      // force a re-render whenever the clear button's visibility changes.
+      (this.input as unknown as { requestUpdate(): void }).requestUpdate?.();
 
       if (!q) {
         await this.runBrowse();
