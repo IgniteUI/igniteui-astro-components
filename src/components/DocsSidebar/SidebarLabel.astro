@@ -5,7 +5,7 @@
  * Receives `{ node, depth, isLeaf, isActive }` from DocsTreeItem.
  * Branches on isLeaf:
  *   • leaf  → label text + optional badge (from node.meta.badge)
- *   • group → label text + caret SVG that rotates on [expanded]
+ *   • group → label text only (the caret lives in the native indicator slot of igc-tree-item)
  *
  * The outer container is the `<a class="docs-tree-link">` (leaves) or
  * `<div class="docs-tree-group">` (groups) provided by DocsTreeItem.
@@ -31,10 +31,5 @@ const badge = (node.meta?.badge ?? null) as SidebarBadge | null;
     {badge && <span class={`sl-badge ${badge.variant}`}>{badge.text}</span>}
   </>
 ) : (
-  <>
-    <span class="group-label-text">{node.label}</span>
-    <svg class="group-caret" viewBox="0 0 16 16" width="10" height="10" aria-hidden="true" focusable="false">
-      <path d="M4 2l8 6-8 6V2z" fill="currentColor" />
-    </svg>
-  </>
+  <span class="group-label-text">{node.label}</span>
 )}

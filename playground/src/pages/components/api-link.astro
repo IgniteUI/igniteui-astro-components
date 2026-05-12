@@ -29,7 +29,6 @@ const headings = [
   </DocsSubHeader>
   <DocsSidebar slot="sidebar" items={SIDEBAR} currentSlug={slug} />
   <DocsToc slot="toc" headings={headings} offsetTarget=".docs-subheader" />
-  <main class="content">
     <h1>ApiLink</h1>
     <p>Renders an inline <code>&lt;a&gt;&lt;code&gt;</code> link to the platform-appropriate API page.</p>
 
@@ -50,9 +49,4 @@ const headings = [
 
     <h2 id="platform-env">Platform env var</h2>
     <p>Platform is set via <code>PLATFORM</code> env var in <code>astro.config.mjs</code> (defaults to <code>React</code>).</p>
-  </main>
 </DocsLayout>
-
-<style>
-  .content { max-width: 60rem; margin: 0 auto; padding: 2rem 1.5rem; }
-</style>

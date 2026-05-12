@@ -15,6 +15,7 @@
  * when a separate demosBaseUrl is present in the environment config.
  */
 import { getPlatformContext, getEnvVars } from '../../../lib/platform-context.ts';
+import './Sample.scss';
 
 interface Props {
     src: string;
@@ -108,35 +109,3 @@ const exampleTabId = `${widgetId}-example`;
   </>
 )}
 
-<style>
-  .full-screen-btn {
-    display: inline-flex;
-    align-items: center;
-    font-size: 0.8rem;
-    font-weight: 400;
-    color: #fff;
-    border: 0;
-    text-transform: uppercase;
-    padding: 0.5rem 1rem;
-    margin: 1.5rem 0;
-    outline-style: none;
-    transition: all 0.25s ease-out;
-    background: #0099ff;
-    cursor: pointer;
-  }
-  .full-screen-btn:hover,
-  .full-screen-btn:focus {
-    color: white;
-    box-shadow: 0 5px 5px -3px rgba(0,0,0,.26), 0 8px 10px 1px rgba(0,0,0,.12), 0 3px 14px 2px rgba(0,0,0,.08);
-  }
-  .full-screen-btn::before {
-    content: "";
-    display: inline-block;
-    width: 1.75rem;
-    height: 1.75rem;
-    margin-right: 0.5rem;
-    background-image: url("/images/general/fullscreen-white-18dp.svg");
-    background-size: 100%;
-    background-repeat: no-repeat;
-  }
-</style>

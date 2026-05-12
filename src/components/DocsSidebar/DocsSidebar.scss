@@ -1,0 +1,18 @@
+@use 'igniteui-theming/sass/typography' as *;
+
+.docs-sidebar {
+	display: flex;
+	flex-direction: column;
+	z-index: 0;
+	border-inline-end: var(--igd-app-outline);
+	padding-inline: var(--igd-padding-lg);
+	padding-block: calc(var(--igd-padding-lg) + rem(14px));
+	background-color: var(--igd-layout-sections-bg);
+	overflow-y: auto;
+	position: sticky;
+	top: var(--igd-header-height);
+	height: calc(100dvh - var(--igd-header-height));
+	max-height: 100dvh;
+	align-self: start;
+	gap: rem(24px);
+}

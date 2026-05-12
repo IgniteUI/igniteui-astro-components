@@ -1,0 +1,131 @@
+@use 'igniteui-theming' as *;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Handmade palettes — all primary / secondary / gray shades are explicit so
+// you can tune each stop individually. Surface, info, success, warn, and error
+// are auto-generated from their base colours via shades().
+//
+// Gray progression:
+//   light →  50 = near-white  …  900 = near-black  (standard)
+//   dark  →  50 = darkest     …  900 = lightest     (inverted, for contrast)
+// ─────────────────────────────────────────────────────────────────────────────
+
+// ── Light ─────────────────────────────────────────────────────────────────────
+
+$light-palette: (
+  'primary': (
+    '50':  #E6F2FF,  '50-contrast':  adaptive-contrast(#E6F2FF),  '50-raw':  #E6F2FF,
+    '100': #CCE4FF,  '100-contrast': adaptive-contrast(#CCE4FF),  '100-raw': #CCE4FF,
+    '200': #99C9FF,  '200-contrast': adaptive-contrast(#99C9FF),  '200-raw': #99C9FF,
+    '300': #66ADFF,  '300-contrast': adaptive-contrast(#66ADFF),  '300-raw': #66ADFF,
+    '400': #3392FF,  '400-contrast': adaptive-contrast(#3392FF),  '400-raw': #3392FF,
+    '500': #0176FF,  '500-contrast': adaptive-contrast(#0176FF),  '500-raw': #0176FF,
+    '600': #006AE6,  '600-contrast': adaptive-contrast(#006AE6),  '600-raw': #006AE6,
+    '700': #005DCC,  '700-contrast': adaptive-contrast(#005DCC),  '700-raw': #005DCC,
+    '800': #004699,  '800-contrast': adaptive-contrast(#004699),  '800-raw': #004699,
+    '900': #002B5C,  '900-contrast': adaptive-contrast(#002B5C),  '900-raw': #002B5C,
+    'A100': #C8DEFF, 'A100-contrast': adaptive-contrast(#C8DEFF), 'A100-raw': #C8DEFF,
+    'A200': #8BBEFF, 'A200-contrast': adaptive-contrast(#8BBEFF), 'A200-raw': #8BBEFF,
+    'A400': #2E7FFF, 'A400-contrast': adaptive-contrast(#2E7FFF), 'A400-raw': #2E7FFF,
+    'A700': #0050D6, 'A700-contrast': adaptive-contrast(#0050D6), 'A700-raw': #0050D6,
+  ),
+  'secondary': (
+	    '50':  #FFF0EB,  '50-contrast':  adaptive-contrast(#FFF0EB),  '50-raw':  #FFF0EB,
+	    '100': #FFE1D6,  '100-contrast': adaptive-contrast(#FFE1D6),  '100-raw': #FFE1D6,
+	    '200': #FFC3AD,  '200-contrast': adaptive-contrast(#FFC3AD),  '200-raw': #FFC3AD,
+	    '300': #FFA685,  '300-contrast': adaptive-contrast(#FFA685),  '300-raw': #FFA685,
+	    '400': #FF885C,  '400-contrast': adaptive-contrast(#FF885C),  '400-raw': #FF885C,
+	    '500': #F95924,  '500-contrast': adaptive-contrast(#F95924),  '500-raw': #F95924,
+	    '600': #E04F1F,  '600-contrast': adaptive-contrast(#E04F1F),  '600-raw': #E04F1F,
+	    '700': #C6451B,  '700-contrast': adaptive-contrast(#C6451B),  '700-raw': #C6451B,
+	    '800': #933313,  '800-contrast': adaptive-contrast(#933313),  '800-raw': #933313,
+	    '900': #5A1F0C,  '900-contrast': adaptive-contrast(#5A1F0C),  '900-raw': #5A1F0C,
+	    'A100': #FFD0C0, 'A100-contrast': adaptive-contrast(#FFD0C0), 'A100-raw': #FFD0C0,
+	    'A200': #FFAA88, 'A200-contrast': adaptive-contrast(#FFAA88), 'A200-raw': #FFAA88,
+	    'A400': #FF6B45, 'A400-contrast': adaptive-contrast(#FF6B45), 'A400-raw': #FF6B45,
+	    'A700': #FF4D25, 'A700-contrast': adaptive-contrast(#FF4D25), 'A700-raw': #FF4D25,
+  ),
+  'gray': (
+		'50':  #FCFCFC,  '50-contrast':  adaptive-contrast(#FCFCFC),  '50-raw':  #FCFCFC,
+		'100': #F3F6FA,  '100-contrast': adaptive-contrast(#F3F6FA),  '100-raw': #F3F6FA,
+		'200': #E5EBF3,  '200-contrast': adaptive-contrast(#E5EBF3),  '200-raw': #E5EBF3,
+		'300': #D2DBE8,  '300-contrast': adaptive-contrast(#D2DBE8),  '300-raw': #D2DBE8,
+		'400': #A9B8CC,  '400-contrast': adaptive-contrast(#A9B8CC),  '400-raw': #A9B8CC,
+		'500': #7D91AB,  '500-contrast': adaptive-contrast(#7D91AB),  '500-raw': #7D91AB,
+		'600': #556C86,  '600-contrast': adaptive-contrast(#556C86),  '600-raw': #556C86,
+		'700': #344B65,  '700-contrast': adaptive-contrast(#344B65),  '700-raw': #344B65,
+		'800': #1A314A,  '800-contrast': adaptive-contrast(#1A314A),  '800-raw': #1A314A,
+		'900': #00142B,  '900-contrast': adaptive-contrast(#00142B),  '900-raw': #00142B,
+  ),
+  'surface': shades('surface', #fafafa,  ('50','100','200','300','400','500','600','700','800','900','A100','A200','A400','A700')),
+  'info':    shades('info',    #1151C1,  ('50','100','200','300','400','500','600','700','800','900','A100','A200','A400','A700')),
+  'success': shades('success', #028A54,  ('50','100','200','300','400','500','600','700','800','900','A100','A200','A400','A700')),
+  'warn':    shades('warn',    #faa419,  ('50','100','200','300','400','500','600','700','800','900','A100','A200','A400','A700')),
+  'error':   shades('error',   #ff134a,  ('50','100','200','300','400','500','600','700','800','900','A100','A200','A400','A700')),
+  '_meta': ('variant': light),
+);
+
+// ── Dark ──────────────────────────────────────────────────────────────────────
+// Primary and secondary are identical to light (chromatic colors never invert).
+// Gray is inverted: 50 = darkest, 900 = lightest.
+
+$dark-palette: (
+  'primary': (
+		'50':  #E6F2FF,  '50-contrast':  adaptive-contrast(#E6F2FF),  '50-raw':  #E6F2FF,
+		'100': #CCE4FF,  '100-contrast': adaptive-contrast(#CCE4FF),  '100-raw': #CCE4FF,
+		'200': #99C9FF,  '200-contrast': adaptive-contrast(#99C9FF),  '200-raw': #99C9FF,
+		'300': #66ADFF,  '300-contrast': adaptive-contrast(#66ADFF),  '300-raw': #66ADFF,
+		'400': #3392FF,  '400-contrast': adaptive-contrast(#3392FF),  '400-raw': #3392FF,
+		'500': #0176FF,  '500-contrast': adaptive-contrast(#0176FF),  '500-raw': #0176FF,
+		'600': #006AE6,  '600-contrast': adaptive-contrast(#006AE6),  '600-raw': #006AE6,
+		'700': #005DCC,  '700-contrast': adaptive-contrast(#005DCC),  '700-raw': #005DCC,
+		'800': #004699,  '800-contrast': adaptive-contrast(#004699),  '800-raw': #004699,
+		'900': #002B5C,  '900-contrast': adaptive-contrast(#002B5C),  '900-raw': #002B5C,
+		'A100': #C8DEFF, 'A100-contrast': adaptive-contrast(#C8DEFF), 'A100-raw': #C8DEFF,
+		'A200': #8BBEFF, 'A200-contrast': adaptive-contrast(#8BBEFF), 'A200-raw': #8BBEFF,
+		'A400': #2E7FFF, 'A400-contrast': adaptive-contrast(#2E7FFF), 'A400-raw': #2E7FFF,
+		'A700': #0050D6, 'A700-contrast': adaptive-contrast(#0050D6), 'A700-raw': #0050D6,
+  ),
+  'secondary': (
+		'50':  #FFF0EB,  '50-contrast':  adaptive-contrast(#FFF0EB),  '50-raw':  #FFF0EB,
+		'100': #FFE1D6,  '100-contrast': adaptive-contrast(#FFE1D6),  '100-raw': #FFE1D6,
+		'200': #FFC3AD,  '200-contrast': adaptive-contrast(#FFC3AD),  '200-raw': #FFC3AD,
+		'300': #FFA685,  '300-contrast': adaptive-contrast(#FFA685),  '300-raw': #FFA685,
+		'400': #FF885C,  '400-contrast': adaptive-contrast(#FF885C),  '400-raw': #FF885C,
+		'500': #F95924,  '500-contrast': adaptive-contrast(#F95924),  '500-raw': #F95924,
+		'600': #E04F1F,  '600-contrast': adaptive-contrast(#E04F1F),  '600-raw': #E04F1F,
+		'700': #C6451B,  '700-contrast': adaptive-contrast(#C6451B),  '700-raw': #C6451B,
+		'800': #933313,  '800-contrast': adaptive-contrast(#933313),  '800-raw': #933313,
+		'900': #5A1F0C,  '900-contrast': adaptive-contrast(#5A1F0C),  '900-raw': #5A1F0C,
+	    'A100': #FFD0C0, 'A100-contrast': adaptive-contrast(#FFD0C0), 'A100-raw': #FFD0C0,
+	    'A200': #FFAA88, 'A200-contrast': adaptive-contrast(#FFAA88), 'A200-raw': #FFAA88,
+	    'A400': #FF6B45, 'A400-contrast': adaptive-contrast(#FF6B45), 'A400-raw': #FF6B45,
+	    'A700': #FF4D25, 'A700-contrast': adaptive-contrast(#FF4D25), 'A700-raw': #FF4D25,
+  ),
+  'gray': (
+		'50':  #00142B,  '50-contrast':  adaptive-contrast(#00142B),  '50-raw':  #00142B,
+		'100': #1A314A,  '100-contrast': adaptive-contrast(#1A314A),  '100-raw': #1A314A,
+		'200': #344B65,  '200-contrast': adaptive-contrast(#344B65),  '200-raw': #344B65,
+		'300': #556C86,  '300-contrast': adaptive-contrast(#556C86),  '300-raw': #556C86,
+		'400': #7D91AB,  '400-contrast': adaptive-contrast(#7D91AB),  '400-raw': #7D91AB,
+		'500': #A9B8CC,  '500-contrast': adaptive-contrast(#A9B8CC),  '500-raw': #A9B8CC,
+		'600': #D2DBE8,  '600-contrast': adaptive-contrast(#D2DBE8),  '600-raw': #D2DBE8,
+		'700': #E5EBF3,  '700-contrast': adaptive-contrast(#E5EBF3),  '700-raw': #E5EBF3,
+		'800': #F3F6FA,  '800-contrast': adaptive-contrast(#F3F6FA),  '800-raw': #F3F6FA,
+		'900': #FCFCFC,  '900-contrast': adaptive-contrast(#FCFCFC),  '900-raw': #FCFCFC,
+  ),
+  'surface': shades('surface', #111111,  ('50','100','200','300','400','500','600','700','800','900','A100','A200','A400','A700')),
+  'info':    shades('info',    #1151C1,  ('50','100','200','300','400','500','600','700','800','900','A100','A200','A400','A700')),
+  'success': shades('success', #028A54,  ('50','100','200','300','400','500','600','700','800','900','A100','A200','A400','A700')),
+  'warn':    shades('warn',    #faa419,  ('50','100','200','300','400','500','600','700','800','900','A100','A200','A400','A700')),
+  'error':   shades('error',   #ff134a,  ('50','100','200','300','400','500','600','700','800','900','A100','A200','A400','A700')),
+  '_meta': ('variant': dark),
+);
+
+[data-theme='light'] {
+	@include palette($light-palette);
+}
+
+[data-theme='dark'] {
+	@include palette($dark-palette);
+}

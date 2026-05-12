@@ -17,7 +17,7 @@
  */
 import type { TreeNode, TreeVariant } from './types';
 import DocsTreeItem from './DocsTreeItem.astro';
-import './docs-tree.css';
+import './docs-tree.scss';
 
 interface Props {
   nodes: TreeNode[];
@@ -60,7 +60,21 @@ const { nodes, variant, activeId, toggleNodeOnClick, ariaLabel, renderLabel } = 
     defineComponents,
     IgcTreeComponent,
     IgcTreeItemComponent,
+    IgcIconComponent,
   } from 'igniteui-webcomponents';
+  import '../../scripts/icon-registry';
 
-  defineComponents(IgcTreeComponent, IgcTreeItemComponent);
+  defineComponents(IgcTreeComponent, IgcTreeItemComponent, IgcIconComponent);
+
+  function selectActiveTreeItem() {
+    customElements.whenDefined('igc-tree-item').then(() => {
+      document.querySelectorAll<IgcTreeItemComponent>('igc-tree-item').forEach((item) => {
+        const isActive = !!item.querySelector('a[aria-current="page"]');
+        item.selected = isActive;
+      });
+    });
+  }
+
+  selectActiveTreeItem();
+  document.addEventListener('astro:page-load', selectActiveTreeItem);
 </script>

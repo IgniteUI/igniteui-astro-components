@@ -1,0 +1,57 @@
+---
+/**
+ * DocsBreadcrumb
+ *
+ * Renders the page breadcrumb trail inside the main content frame, above
+ * the page body. Shows the site title followed by the sidebar-derived crumbs
+ * for the current page.
+ *
+ * The crumb list is built from the sidebar tree via `getBreadcrumb`.
+ * Falls back to `pageTitle` when the current slug is not found in the tree.
+ *
+ * Props:
+ *   currentSlug   – slug of the current page (used for breadcrumb lookup)
+ *   pageTitle     – fallback label when slug is not in the sidebar tree
+ *   siteTitle     – override the site title; defaults to the virtual module value
+ *   sidebarItems  – override the sidebar tree; defaults to the virtual module value
+ */
+import { sidebar as sidebarData, title as siteTitleVirtual } from 'virtual:docs-template/site-meta';
+import { getBreadcrumb } from '../../lib/sidebar/helpers';
+import type { SidebarEntry } from '../../lib/sidebar/types';
+import './DocsBreadcrumb.scss';
+
+interface Props {
+  currentSlug?: string;
+  pageTitle?: string | null;
+  siteTitle?: string;
+  sidebarItems?: SidebarEntry[];
+}
+
+const { currentSlug = '', pageTitle = '', siteTitle: siteTitleProp, sidebarItems } = Astro.props;
+
+const resolvedSiteTitle = siteTitleProp ?? siteTitleVirtual;
+const resolvedSidebar   = (sidebarItems ?? sidebarData) as SidebarEntry[];
+const sidebarCrumbs     = currentSlug ? getBreadcrumb(resolvedSidebar, currentSlug) : [];
+const crumbs            = sidebarCrumbs.length > 0 ? sidebarCrumbs : (pageTitle ? [pageTitle] : []);
+---
+
+{(resolvedSiteTitle || crumbs.length > 0) && (
+<nav class="docs-breadcrumb" aria-label="Breadcrumb">
+    <ol class="docs-breadcrumb-list">
+        { resolvedSiteTitle && (
+            <li class="docs-breadcrumb-item docs-breadcrumb-home">
+                <span>{ resolvedSiteTitle }</span>
+                <span class="docs-breadcrumb-sep" aria-hidden="true">
+                /
+                </span>
+            </li>
+        ) }
+        { crumbs.map((label, i) => (
+            <li class="docs-breadcrumb-item">
+                <span class="docs-breadcrumb-crumb" title={ label }>{ label }</span>
+            </li>
+        )) }
+    </ol>
+</nav>
+)}
+

@@ -1,6 +1,6 @@
 # DocsAside
 
-Renders a styled callout block (note, tip, caution, or danger) with a type-specific icon, color accent, and accessible label. Use it in MDX pages to surface important information inline.
+Renders a styled callout block (note, tip, warning, or danger) with a type-specific icon, color accent, and accessible label. Use it in MDX pages to surface important information inline.
 
 ## Import
 
@@ -12,8 +12,8 @@ import DocsAside from 'igniteui-astro-components/components/mdx/DocsAside.astro'
 
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
-| `type` | `'note' \| 'tip' \| 'caution' \| 'danger'` | `'note'` | Semantic variant — controls the color accent and default icon. |
-| `title` | `string` | auto | Override the heading text. Defaults to the capitalised `type` name (`Note`, `Tip`, `Caution`, `Danger`). |
+| `type` | `'note' \| 'tip' \| 'warning' \| 'danger'` | `'note'` | Semantic variant — controls the color accent and default icon. |
+| `title` | `string` | auto | Override the heading text. Defaults to the capitalised `type` name (`Note`, `Tip`, `Warning`, `Danger`). |
 | `color` | `string` | — | Override the accent color via the `--aside-color` CSS custom property. Accepts any valid CSS color value. |
 | `icon` | `string` | auto | Override the icon with raw SVG markup. Pass an empty string `""` to suppress the icon entirely. |
 | `class` | `string` | — | Additional CSS class(es) to add to the `<aside>` element. |
@@ -31,8 +31,8 @@ import DocsAside from 'igniteui-astro-components/components/mdx/DocsAside.astro'
   Use keyboard shortcuts to speed up your workflow.
 </DocsAside>
 
-{/* Caution with custom title */}
-<DocsAside type="caution" title="Breaking change">
+{/* Warning with custom title */}
+<DocsAside type="warning" title="Breaking change">
   The `foo` prop was removed in v2. Use `bar` instead.
 </DocsAside>
 
@@ -58,7 +58,7 @@ import DocsAside from 'igniteui-astro-components/components/mdx/DocsAside.astro'
 |--------|-------------|---------------|
 | `note` | Blue | Note |
 | `tip` | Green | Tip |
-| `caution` | Amber | Caution |
+| `warning` | Amber | Warning |
 | `danger` | Red | Danger |
 
 ## Icons

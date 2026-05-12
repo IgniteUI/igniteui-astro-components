@@ -7,20 +7,20 @@ import SearchAdvanced from '../../../src/components/SearchAdvanced/SearchAdvance
 import { SITE_TITLE, SIDEBAR, PRODUCT_LINKS, SEARCH_TABS, PACKAGES, VERSIONS } from '../site-config';
 
 const headings = [
-  { depth: 2, slug: 'pages', text: 'Pages' },
-  { depth: 3, slug: 'layout-components', text: 'Layout components' },
-  { depth: 3, slug: 'navigation-components', text: 'Navigation components' },
-  { depth: 3, slug: 'mdx-components', text: 'MDX components' },
-  { depth: 2, slug: 'how-it-works', text: 'How it works' },
-  { depth: 3, slug: 'adding-a-demo-page', text: 'Adding a demo page' },
+    { depth: 2, slug: 'pages', text: 'Pages' },
+    { depth: 3, slug: 'layout-components', text: 'Layout components' },
+    { depth: 3, slug: 'navigation-components', text: 'Navigation components' },
+    { depth: 3, slug: 'mdx-components', text: 'MDX components' },
+    { depth: 2, slug: 'how-it-works', text: 'How it works' },
+    { depth: 3, slug: 'adding-a-demo-page', text: 'Adding a demo page' },
 ];
 ---
 
-<DocsLayout title="Playground" siteTitle={SITE_TITLE} hasSidebar currentSlug="">
-  <DocsSubHeader slot="subheader" pageTitle="Playground" currentSlug="" siteTitle={SITE_TITLE}
-    productLinks={PRODUCT_LINKS} showThemeToggle={true}
-    packages={[...PACKAGES]} selectedPackage={PACKAGES[0]}
-    versions={[...VERSIONS]} selectedVersion={VERSIONS[0]}
+<DocsLayout title="Playground" siteTitle={ SITE_TITLE } hasSidebar currentSlug="">
+  <DocsSubHeader slot="subheader" pageTitle="Playground" currentSlug="" siteTitle={ SITE_TITLE }
+    productLinks={ PRODUCT_LINKS } showThemeToggle={true}
+    packages={ [...PACKAGES] } selectedPackage={ PACKAGES[0] }
+    versions={ [...VERSIONS] } selectedVersion={ VERSIONS[0] }
   >
     <SearchAdvanced slot="search" tabs={SEARCH_TABS} showScope={true} />
   </DocsSubHeader>
@@ -30,71 +30,60 @@ const headings = [
   <main class="content">
     <h1>igniteui-astro-components playground</h1>
     <p>
-      This is a local sandbox for the components shipped from
-      <code>../src</code>. Use the sidebar to explore the dedicated demo
-      pages for each component.
+        This is a local sandbox for the components shipped from
+        <code>../src</code>. Use the sidebar to explore the dedicated demo
+        pages for each component.
     </p>
 
     <h2 id="pages">Pages</h2>
 
     <h3 id="layout-components">Layout components</h3>
     <ul>
-      <li><a href="/components/sidebar">Sidebar</a> — classic <code>&lt;details&gt;</code>-based sidebar with filter input.</li>
-      <li><a href="/components/sidebar-igc">Sidebar (igc-tree)</a> — same sidebar built with <code>igniteui-webcomponents</code> igc-tree.</li>
-      <li><a href="/components/docs-toc">DocsToc</a> — "On this page" table of contents with scroll-spy.</li>
+        <li><a href="/components/sidebar">Sidebar</a> — classic <code>&lt;details&gt;</code>-based sidebar with
+            filter input.
+        </li>
+        <li><a href="/components/sidebar-igc">Sidebar (igc-tree)</a> — same sidebar built with <code>igniteui-webcomponents</code>
+            igc-tree.
+        </li>
+        <li><a href="/components/docs-toc">DocsToc</a> — "On this page" table of contents with scroll-spy.</li>
     </ul>
 
     <h3 id="navigation-components">Navigation components</h3>
     <ul>
-      <li><a href="/components/nav-bar">Global nav &amp; footer</a> — top navigation bar and site footer.</li>
-      <li><a href="/components/docs-subheader">DocsSubHeader</a> — secondary fixed bar with breadcrumb, search, package/version selectors, theme toggle, and product links.</li>
+        <li><a href="/components/nav-bar">Global nav &amp; footer</a> — top navigation bar and site footer.</li>
+        <li><a href="/components/docs-subheader">DocsSubHeader</a> — secondary fixed bar with breadcrumb, search, package/version selectors, theme toggle, and product links.</li>
     </ul>
 
     <h3 id="mdx-components">MDX components</h3>
     <ul>
-      <li><a href="/components/api-link">ApiLink</a> — inline link to an API reference entry.</li>
-      <li><a href="/components/api-ref">ApiRef</a> — full API reference block.</li>
-      <li><a href="/components/docs-aside">DocsAside</a> — note, tip, caution, and danger callout blocks.</li>
-      <li><a href="/components/platform-block">PlatformBlock</a> — conditionally renders content per platform.</li>
+        <li><a href="/components/api-link">ApiLink</a> — inline link to an API reference entry.</li>
+        <li><a href="/components/api-ref">ApiRef</a> — full API reference block.</li>
+        <li><a href="/components/docs-aside">DocsAside</a> — note, tip, warning, and danger callout blocks.</li>
+        <li><a href="/components/platform-block">PlatformBlock</a> — conditionally renders content per platform.
+        </li>
     </ul>
 
     <h2 id="how-it-works">How it works</h2>
     <p>
-      The playground uses the prop-driven pattern: sidebar data, product links,
-      and the site title are defined in
-      <code>playground/src/site-config.ts</code> and passed directly as props
-      to <code>DocsLayout</code> and <code>DocsSidebar</code> — no
-      <code>siteMetaIntegration</code> required.
+        The playground uses the prop-driven pattern: sidebar data, product links,
+        and the site title are defined in
+        <code>playground/src/site-config.ts</code> and passed directly as props
+        to <code>DocsLayout</code> and <code>DocsSidebar</code> — no
+        <code>siteMetaIntegration</code> required.
     </p>
     <p>
-      The virtual module stubs in <code>astro.config.mjs</code> are still
-      present to satisfy the module resolver, but the <code>sidebar</code>,
-      <code>title</code>, and <code>productLinks</code> values they export are
-      intentionally empty — the real data flows through props.
+        The virtual module stubs in <code>astro.config.mjs</code> are still
+        present to satisfy the module resolver, but the <code>sidebar</code>,
+        <code>title</code>, and <code>productLinks</code> values they export are
+        intentionally empty — the real data flows through props.
     </p>
 
     <h3 id="adding-a-demo-page">Adding a demo page</h3>
     <p>
-      Create a new <code>.astro</code> file under
-      <code>playground/src/pages/components/</code>, import
-      <code>DocsLayout</code> and the component under test from
-      <code>../../../../src/</code>, and add a link to the list above.
+        Create a new <code>.astro</code> file under
+        <code>playground/src/pages/components/</code>, import
+        <code>DocsLayout</code> and the component under test from
+        <code>../../../../src/</code>, and add a link to the list above.
     </p>
-  </main>
+    <DocsToc slot="toc" headings={ headings } offsetTarget=".docs-subheader"/>
 </DocsLayout>
-
-<style>
-  .content {
-    max-width: 60rem;
-    margin: 0 auto;
-    padding: 2rem 1.5rem 4rem;
-  }
-  .content h1 { margin-top: 0; }
-  .content code {
-    background: var(--sl-color-bg-inline-code);
-    padding: 0.1em 0.35em;
-    border-radius: 0.25em;
-    font-size: 0.9em;
-  }
-  .content ul { line-height: 1.8; }
-</style>

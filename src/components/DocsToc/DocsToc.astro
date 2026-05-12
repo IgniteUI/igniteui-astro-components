@@ -12,6 +12,7 @@
 import type { MarkdownHeading } from 'astro';
 import DocsTree from '../DocsTree/DocsTree.astro';
 import { headingsToTreeNodes, type TocConfig } from './toTreeNodes';
+import './DocsToc.scss';
 
 interface Props {
     headings?: MarkdownHeading[];
@@ -31,9 +32,9 @@ const nodes = headingsToTreeNodes(headings, tocConfig);
 ---
 
 {nodes.length > 0 && (
-    <docs-toc data-offset-target={offsetTarget}>
+    <docs-toc class="toc-sidebar" data-offset-target={offsetTarget}>
+        <h2 class="toc-sidebar__heading" id="toc-heading">{label}</h2>
         <nav aria-labelledby="toc-heading">
-            <h2 id="toc-heading">{label}</h2>
             <DocsTree nodes={nodes} variant="toc" />
         </nav>
     </docs-toc>
@@ -49,7 +50,6 @@ const nodes = headingsToTreeNodes(headings, tocConfig);
         private rafId: number | undefined;
         private headings: HTMLElement[] = [];
         private links: HTMLAnchorElement[] = [];
-        private parentItems: HTMLElement[] = [];
         private currentLink: HTMLAnchorElement | undefined;
         private offsetEl: Element | null = null;
         private resizeObserver: ResizeObserver | undefined;
@@ -92,14 +92,15 @@ const nodes = headingsToTreeNodes(headings, tocConfig);
             this.querySelectorAll('a[aria-current]').forEach(
                 (a) => a.removeAttribute('aria-current'),
             );
+            // Clear any stale selected state on tree items.
+            this.querySelectorAll('igc-tree-item').forEach((item) => {
+                (item as HTMLElement & { selected: boolean }).selected = false;
+            });
 
             this.links = Array.from(this.querySelectorAll<HTMLAnchorElement>('a[href^="#"]'));
             this.headings = this.links
                 .map((link) => document.getElementById(decodeURIComponent(link.hash.slice(1))))
                 .filter((el): el is HTMLElement => el !== null);
-            this.parentItems = Array.from(
-                this.querySelectorAll<HTMLElement>('igc-tree-item[data-has-children]'),
-            );
 
             if (this.headings.length === 0) return;
 
@@ -135,6 +136,10 @@ const nodes = headingsToTreeNodes(headings, tocConfig);
 
             this.bindOffsetTarget();
             this.update();
+            // Safari: getBoundingClientRect() may not reflect final layout
+            // during the first rAF (before first paint). Schedule one extra
+            // update so the initial active item is always correct.
+            requestAnimationFrame(() => this.update());
         }
 
         private bindOffsetTarget() {
@@ -183,14 +188,10 @@ const nodes = headingsToTreeNodes(headings, tocConfig);
                 }
             }
 
-            // Above the first heading: no link is active.
+            // Above the first heading: default to the first item so there
+            // is always an active entry when at the top of the page.
             if (activeIndex === -1) {
-                if (this.currentLink) {
-                    this.currentLink.removeAttribute('aria-current');
-                    this.currentLink = undefined;
-                }
-                this.syncExpansion(undefined);
-                return;
+                activeIndex = 0;
             }
 
             this.setActive(activeIndex);
@@ -207,38 +208,39 @@ const nodes = headingsToTreeNodes(headings, tocConfig);
         private setActive(index: number) {
             const next = this.links[index];
             if (!next || next === this.currentLink) return;
+
+            const prevItem = this.currentLink?.closest<HTMLElement & { selected: boolean }>('igc-tree-item');
+            if (prevItem) prevItem.selected = false;
             this.currentLink?.removeAttribute('aria-current');
+
             next.setAttribute('aria-current', 'true');
+            const nextItem = next.closest<HTMLElement & { selected: boolean }>('igc-tree-item');
+            if (nextItem) nextItem.selected = true;
+
             this.currentLink = next;
             this.syncExpansion(next);
         }
 
         /**
-         * Drive `expanded` on every parent <igc-tree-item> based on the
-         * active link's ancestry chain. The active item itself is included
-         * (so when an h2 with h3 children is active, its h3s become
-         * visible). Manual click-toggles by the user are intentionally
-         * overridden on the next scroll update — scrolling is the source
-         * of truth for the open section.
+         * Additive expansion: walk up from the active anchor through
+         * every ancestor <igc-tree-item> (including the active item
+         * itself when it has children) and ensure each is `expanded`.
+         * Items outside the active path are left untouched, so
+         * previously visited sections stay open as the user scrolls
+         * past or back. Sections the user has never reached stay
+         * collapsed.
          */
-        private syncExpansion(activeLink: HTMLAnchorElement | undefined) {
-            const activePath = new Set<Element>();
-            if (activeLink) {
-                let item: Element | null = activeLink.closest('igc-tree-item');
-                while (
-                    item &&
-                    item.tagName === 'IGC-TREE-ITEM' &&
-                    this.contains(item)
-                ) {
-                    activePath.add(item);
-                    item = item.parentElement?.closest('igc-tree-item') ?? null;
+        private syncExpansion(activeLink: HTMLAnchorElement) {
+            let item: Element | null = activeLink.closest('igc-tree-item');
+            while (
+                item &&
+                item.tagName === 'IGC-TREE-ITEM' &&
+                this.contains(item)
+            ) {
+                if (!(item as ExpandableEl).expanded) {
+                    (item as ExpandableEl).expanded = true;
                 }
-            }
-            for (const el of this.parentItems) {
-                const wantOpen = activePath.has(el);
-                if ((el as ExpandableEl).expanded !== wantOpen) {
-                    (el as ExpandableEl).expanded = wantOpen;
-                }
+                item = item.parentElement?.closest('igc-tree-item') ?? null;
             }
         }
     }
@@ -258,50 +260,3 @@ const nodes = headingsToTreeNodes(headings, tocConfig);
     });
 </script>
 
-<style>
-    :global(:root) {
-        --ig-toc-width: 24rem;
-    }
-
-    /* .toc-sidebar and .main-frame live in DocsLayout — use :global() */
-    :global(.toc-sidebar) {
-        display: none;
-    }
-
-    /* Hide the aside entirely when DocsToc has nothing to render */
-    :global(.toc-sidebar:not(:has(docs-toc))) {
-        display: none !important;
-    }
-
-    @media (min-width: 84rem) {
-        :global(.toc-sidebar) {
-            display: block;
-            position: fixed;
-            top: var(--sl-nav-height);
-            right: 0;
-            width: var(--ig-toc-width);
-            height: calc(100vh - var(--sl-nav-height) - var(--sl-sidebar-bottom, 0px));
-            overflow-y: auto;
-            padding: 1.5rem 1rem 1.5rem 1.25rem;
-            border-inline-start: 1px solid var(--sl-color-hairline-shade, #d0d0d0);
-        }
-
-        :global(.page:has(docs-toc) .main-frame) {
-            padding-inline-end: var(--ig-toc-width);
-        }
-    }
-
-    /* docs-toc layout — tree internals live in docs-tree.css */
-    docs-toc {
-        display: block;
-    }
-
-    docs-toc h2 {
-        margin: 0 0 0.75rem;
-        font-size: var(--sl-text-xs, 0.75rem);
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.06em;
-        color: var(--sl-color-gray-3, #888);
-    }
-</style>

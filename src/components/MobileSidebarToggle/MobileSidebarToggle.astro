@@ -6,6 +6,8 @@
  * Props:
  *   label  – visible button text (e.g. group name). Default: 'Components List'.
  */
+import './MobileSidebarToggle.scss';
+
 interface Props {
   label?: string;
 }
@@ -63,50 +65,3 @@ const { label = "Components List" } = Astro.props;
   });
 </script>
 
-<style is:global>
-  .mobile-sidebar-toggle {
-      position: fixed;
-      top: var(--sl-nav-height);
-      inset-inline-start: 0;
-      z-index: calc(var(--sl-z-index-navbar) - 2);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      width: 100%;
-      height: var(--docs-mobile-toggle-height);
-      padding: 0 var(--sl-sidebar-pad-x, 1rem);
-      background: var(--sl-color-bg-sidebar);
-      border: none;
-      border-bottom: 1px solid var(--sl-color-hairline-shade);
-      cursor: pointer;
-      color: var(--sl-color-text-accent);
-      font-size: 0.7rem;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-    }
-
-    .mobile-sidebar-toggle_chevron {
-      flex-shrink: 0;
-      transition: transform 0.2s ease;
-    }
-
-    .mobile-sidebar-toggle[aria-expanded="true"]
-      .mobile-sidebar-toggle_chevron {
-      transform: rotate(180deg);
-    }
-
-    [data-mobile-menu-expanded] {
-      overflow: hidden;
-    }
-
-    @media (min-width: 50rem) {
-      .mobile-sidebar-toggle {
-        display: none;
-      }
-
-      [data-mobile-menu-expanded] {
-        overflow: auto;
-      }
-    }
-</style>
