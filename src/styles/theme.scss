@@ -20,11 +20,8 @@
 	$type-scale: $igd-type-scale
 );
 
-html {
-	// Smooth scroll for TOC anchor navigation.
-	// prefers-reduced-motion respected: browsers override this automatically.
-	scroll-behavior: smooth;
-}
+// scroll-behavior is applied via JS (astro:page-load) so it is not active
+// during the browser's initial scroll-position restoration on page refresh.
 
 // Scope our brand font to the docs content area only.
 // The IG nav and footer have their own font-family rules in their CDN
@@ -44,12 +41,21 @@ html {
 	left: 0;
 }
 
-// PREVENT FOUC (Flash of Unstyled Content) for Ignite UI Web Components
-igc-badge:not(:defined),
-igc-icon:not(:defined),
-igc-accordion:not(:defined),
-igc-select:not(:defined),
-igc-input:not(:defined) {
+// PREVENT FOUC (Flash of Unstyled Content) for Ignite UI Web Components.
+// The :not(:defined) pseudo-class matches any custom element that has not yet
+// been upgraded by the browser. Using opacity (not display/visibility) keeps
+// the element in the layout flow so there is no shift once it becomes defined.
+:is(
+	igc-accordion,
+	igc-badge,
+	igc-button,
+	igc-icon,
+	igc-icon-button,
+	igc-input,
+	igc-select,
+	igc-tree,
+	igc-tree-item
+):not(:defined) {
 	opacity: 0;
 }
 

@@ -62,7 +62,22 @@ type HeadEntry = { tag: string; attrs?: Record<string, string | boolean | undefi
       document.documentElement.setAttribute('data-theme', 'light');
     });
 
-    // Preserve dynamically-injected <style> tags across View Transitions
+    // Enable smooth scrolling only after the page is fully loaded so the
+    // browser's scroll-position restoration on refresh is instant (no visible
+    // animated scroll). Remove it before a View Transition swap so navigation
+    // between pages is also instant, then re-enable after the new page loads.
+    document.addEventListener('astro:page-load', function () {
+      document.documentElement.style.scrollBehavior = 'smooth';
+    });
+    document.addEventListener('astro:before-swap', function () {
+      document.documentElement.style.removeProperty('scroll-behavior');
+    });
+
+    // Preserve dynamically-injected <style> tags across View Transitions.
+    // Only styles added by JS at runtime (e.g. the IG nav widget) need
+    // preserving — Astro re-injects its own component styles on every page
+    // automatically. Tagging the initial styles caused duplicates: the
+    // preserved copy + the freshly-injected copy from the new page.
     var _styleIndex = 0;
     function tagStyle(style) {
       var isAstroStyle = Array.from(style.attributes).some(function (a) { return a.name.startsWith('data-astro'); });
@@ -70,7 +85,6 @@ type HeadEntry = { tag: string; attrs?: Record<string, string | boolean | undefi
         style.setAttribute('data-vt-preserved', String(++_styleIndex));
       }
     }
-    document.head.querySelectorAll('style').forEach(tagStyle);
     new MutationObserver(function (mutations) {
       mutations.forEach(function (m) {
         m.addedNodes.forEach(function (node) {
