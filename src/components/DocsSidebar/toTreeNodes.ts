@@ -21,7 +21,11 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const linkHref = (slug: string, trailingSlash: boolean): string => {
   const normalized = normalizeSlug(slug);
   const suffix = trailingSlash ? '/' : '';
-  return normalized ? `${base}/${normalized}${suffix}` : `${base}/`;
+  if (!normalized) {
+    // Root (docs index): ensure href is at least '/' when base is empty.
+    return `${base}${suffix}` || '/';
+  }
+  return `${base}/${normalized}${suffix}`;
 };
 
 const toNode = (

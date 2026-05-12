@@ -57,7 +57,7 @@ import path from 'node:path';
 import { createIndex as pagefindCreateIndex } from 'pagefind';
 import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'astro/config';
-import type { AstroIntegration } from 'astro';
+import type { AstroIntegration, AstroConfig } from 'astro';
 import mdx from '@astrojs/mdx';
 import {
     buildLlmsTxt, buildLlmsMetaMap, getBroadSectionsForPlatform, toUrlSlug,
@@ -212,20 +212,23 @@ export function siteMetaIntegration({
 
     // Navigation buckets for this platform — stripped from ancestor paths during label generation.
     const broadSections = getBroadSectionsForPlatform(effectivePlatform);
-    const moduleCode = `export const title = ${JSON.stringify(title)};
+    // Captured from astro:config:done; used to generate llms.txt content and virtual module.
+    let configuredSite = '';
+    let configuredTrailingSlash: AstroConfig['trailingSlash'] = 'ignore';
+
+    const getSiteMetaCode = () => `export const title = ${JSON.stringify(title)};
 export const sidebar = ${JSON.stringify(sidebar ?? [])};
 export const productLinks = ${JSON.stringify(productLinks)};
 export const headEntries = ${JSON.stringify(head ?? [])};
+export const trailingSlash = ${JSON.stringify(configuredTrailingSlash)};
 `;
-
-    // Captured from astro:config:done; used to generate llms.txt content.
-    let configuredSite = '';
 
     return {
         name: 'docs-template:site-meta',
         hooks: {
             'astro:config:done'({ config }) {
                 configuredSite = (config.site?.toString() ?? '').replace(/\/$/, '');
+                configuredTrailingSlash = config.trailingSlash;
             },
             'astro:config:setup'({ updateConfig, injectRoute }) {
                 injectRoute({
@@ -283,7 +286,7 @@ export const headEntries = ${JSON.stringify(head ?? [])};
                                 if (id === navVirtualId) return navResolvedId;
                             },
                             async load(id: string) {
-                                if (id === resolvedId) return moduleCode;
+                                if (id === resolvedId) return getSiteMetaCode();
                                 if (id !== navResolvedId) return;
 
                                 // Return cached module code — fetched at most once per build.
