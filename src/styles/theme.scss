@@ -62,3 +62,25 @@
 igc-icon {
 	padding: 0;
 }
+
+// Global scrollbar styling.
+// scrollbar-width / scrollbar-color: standards-based (Firefox, Chrome 121+).
+// ::-webkit-scrollbar-*: legacy WebKit/Blink fallback (older Chrome/Safari/Edge).
+* {
+	scrollbar-width: thin;
+	scrollbar-color: light-dark(var(--ig-gray-300), var(--ig-gray-800)) transparent;
+}
+
+::-webkit-scrollbar {
+	width: rem(5px);
+	height: rem(5px);
+}
+
+::-webkit-scrollbar-track {
+	background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+	background-color: light-dark(var(--ig-gray-300), var(--ig-gray-800));
+	border-radius: rem(5px);
+}
