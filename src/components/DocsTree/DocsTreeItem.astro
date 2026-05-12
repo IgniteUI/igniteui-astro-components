@@ -64,6 +64,7 @@ if (node.itemData) {
           ) : (
             <span class="docs-tree-label">{node.label}</span>
           )}
+          {hasChildren && <igc-icon name="chevron" collection="docs" class="tree-expand-icon"></igc-icon>}
       </div>
   ) : (
     <div slot="label" class="docs-tree-group">
@@ -72,6 +73,7 @@ if (node.itemData) {
       ) : (
         <span class="docs-tree-label">{node.label}</span>
       )}
+      <igc-icon name="chevron" collection="docs" class="tree-expand-icon"></igc-icon>
     </div>
   )}
 

@@ -136,6 +136,10 @@ const nodes = headingsToTreeNodes(headings, tocConfig);
 
             this.bindOffsetTarget();
             this.update();
+            // Safari: getBoundingClientRect() may not reflect final layout
+            // during the first rAF (before first paint). Schedule one extra
+            // update so the initial active item is always correct.
+            requestAnimationFrame(() => this.update());
         }
 
         private bindOffsetTarget() {
@@ -184,17 +188,10 @@ const nodes = headingsToTreeNodes(headings, tocConfig);
                 }
             }
 
-            // Above the first heading: clear aria-current. We do NOT
-            // collapse anything previously expanded — the toc is
-            // additive (expand on enter, never auto-collapse).
+            // Above the first heading: default to the first item so there
+            // is always an active entry when at the top of the page.
             if (activeIndex === -1) {
-                if (this.currentLink) {
-                    this.currentLink.removeAttribute('aria-current');
-                    const item = this.currentLink.closest<HTMLElement & { selected: boolean }>('igc-tree-item');
-                    if (item) item.selected = false;
-                    this.currentLink = undefined;
-                }
-                return;
+                activeIndex = 0;
             }
 
             this.setActive(activeIndex);

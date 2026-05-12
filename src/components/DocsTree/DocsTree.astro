@@ -60,9 +60,11 @@ const { nodes, variant, activeId, toggleNodeOnClick, ariaLabel, renderLabel } = 
     defineComponents,
     IgcTreeComponent,
     IgcTreeItemComponent,
+    IgcIconComponent,
   } from 'igniteui-webcomponents';
+  import '../../scripts/icon-registry';
 
-  defineComponents(IgcTreeComponent, IgcTreeItemComponent);
+  defineComponents(IgcTreeComponent, IgcTreeItemComponent, IgcIconComponent);
 
   function selectActiveTreeItem() {
     customElements.whenDefined('igc-tree-item').then(() => {
