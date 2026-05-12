@@ -10,7 +10,7 @@
  *     This paragraph only appears in Angular and React docs.
  *   </PlatformBlock>
  */
-import { getPlatformContext } from '../../../lib/platform-context';
+import type { PlatformContext } from '../../../lib/types';
 
 interface Props {
     /** Comma-separated list of platform names to show content for. */
@@ -19,6 +19,6 @@ interface Props {
 
 const { for: forProp } = Astro.props;
 const allowed = forProp.split(',').map((s) => s.trim());
-const { name } = getPlatformContext();
+const { name } = Astro.locals.platformContext as PlatformContext;
 ---
 {allowed.includes(name) && <slot />}

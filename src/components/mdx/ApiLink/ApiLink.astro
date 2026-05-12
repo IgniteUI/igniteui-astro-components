@@ -38,7 +38,7 @@
  *   <ApiLink kind="enum" type="CalendarSelection" />
  *   → <a href="…/enums/igniteui-react.igrcalendarselection.html">…</a>
  */
-import { getPlatformContext } from '../../../lib/platform-context.ts';
+import type { PlatformContext } from '../../../lib/types.ts';
 
 type ApiKind = 'class' | 'interface' | 'enum' | 'type' | 'variable' | 'function';
 
@@ -89,7 +89,7 @@ const KIND_SEGMENT: Record<ApiKind, string> = {
 };
 
 const { type, kind = 'class', member, pkg = 'core', label, prefixed = true, suffix = true } = Astro.props;
-const { prefix, apiPackages } = getPlatformContext();
+const { prefix, apiPackages } = Astro.locals.platformContext as PlatformContext;
 
 const pkgConfig  = apiPackages[pkg] ?? apiPackages['core'];
 const baseType   = prefixed ? `${prefix}${type}` : type;

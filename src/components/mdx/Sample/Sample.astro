@@ -14,7 +14,7 @@
  * DV samples (charts/, gauges/, maps/, excel/) automatically use dvDemosBaseUrl
  * when a separate demosBaseUrl is present in the environment config.
  */
-import { getPlatformContext, getEnvVars } from '../../../lib/platform-context.ts';
+import type { PlatformContext } from '../../../lib/types.ts';
 
 interface Props {
     src: string;
@@ -33,8 +33,8 @@ interface Props {
 }
 
 const { src, height = 400, alt = '', lob = false, dv = false, crm = false, iframeOnly = false, fullscreenBtn = false } = Astro.props;
-const { name, lower } = getPlatformContext();
-const env = getEnvVars();
+const { name, lower } = Astro.locals.platformContext as PlatformContext;
+const env = Astro.locals.envVars ?? {};
 
 // DV samples (charts, gauges, maps, excel) use dvDemosBaseUrl when available.
 const DV_PREFIXES = ['gauges/', 'maps/', 'excel/', 'charts/'];
