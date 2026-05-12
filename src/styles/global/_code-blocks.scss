@@ -1,0 +1,77 @@
+@use 'igniteui-theming' as *;
+
+/* ============================================================
+   Code Blocks (Shiki dual-theme)
+   Shiki emits CSS variables per span:
+     --shiki-light / --shiki-light-bg  (default, inline style)
+     --shiki-dark  / --shiki-dark-bg   (need CSS to activate)
+   ============================================================ */
+
+.shiki {
+	border: 1px solid light-dark(var(--ig-gray-200), var(--ig-primary-900));
+	margin-bottom: rem(26px);
+}
+
+pre.shiki {
+    overflow-x: auto;
+    max-width: 100%;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+	border-radius: var(--igd-border-radius);
+	padding: 1rem 1.25rem;
+}
+
+pre.shiki code {
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+/* ── Light mode (default) ───────────────────────────────────
+   Shiki's inline style already sets color:var(--shiki-light).
+   Only strip the per-span background so the pre bg shows.     */
+:root:not([data-theme='dark']) pre.shiki code span {
+    background-color: transparent !important;
+}
+
+/* ── Dark mode ──────────────────────────────────────────────
+   Override Shiki's inline light-colour styles with dark vars. */
+[data-theme='dark'] pre.shiki {
+    background-color: var(--shiki-dark-bg) !important;
+}
+
+[data-theme='dark'] pre.shiki code span {
+    color: var(--shiki-dark) !important;
+    background-color: var(--shiki-dark-bg, transparent) !important;
+    font-style: var(--shiki-dark-font-style) !important;
+    font-weight: var(--shiki-dark-font-weight) !important;
+    text-decoration: var(--shiki-dark-text-decoration) !important;
+}
+
+/* Copy button */
+pre.shiki {
+    position: relative; /* ensure anchor for absolute button */
+}
+
+pre.shiki igc-icon-button.copy-btn {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+
+    --ig-icon-button-foreground: var(--ig-gray-600);
+    --ig-icon-button-foreground-hover: var(--igd-accent);
+    --ig-icon-button-background: transparent;
+    --ig-icon-button-background-hover: transparent;
+    --ig-icon-button-background-focus: transparent;
+    --ig-icon-button-border-color: transparent;
+    --ig-icon-button-border-color-hover: transparent;
+}
+
+pre.shiki:hover igc-icon-button.copy-btn,
+pre.shiki:focus-within igc-icon-button.copy-btn,
+pre.shiki igc-icon-button.copy-btn:focus {
+    opacity: 1;
+}
+
+

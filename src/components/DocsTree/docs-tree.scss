@@ -1,0 +1,185 @@
+@use 'igniteui-theming/sass/typography' as *;
+
+/*
+ * if we need to modify the toc or the sidebar in any way we can use:
+ *   [data-variant="sidebar"]
+ *   [data-variant="toc"]
+ *
+ * Designers tune values via the `--docs-tree-*` variables. Structural rules
+ * live below the variables; per-variant tweaks at the bottom.
+ *
+ * Layout rules that don't belong to the tree itself (sidebar-filter-igc,
+ * .sidebar-scroll, .toc-sidebar, docs-toc h2) stay in their owning component
+ * .astro files.
+ */
+
+igc-tree {
+--ig-tree-background: transparent;
+--ig-size: 1;
+
+position: relative;
+
+&::before {
+content: '';
+position: absolute;
+position-anchor: --selected-tree-item;
+top: anchor(top);
+height: anchor-size(height);
+inset-inline-start: 0;
+width: rem(1px);
+background-color: var(--igd-accent);
+transition: top 0.2s ease, height 0.2s ease;
+display: none;
+z-index: 1;
+}
+
+&::after {
+content: '';
+position: absolute;
+width: rem(1px);
+inset-inline-start: 0;
+top: 0;
+z-index: 0;
+height: 100%;
+background: light-dark(var(--ig-gray-200), var(--ig-gray-300));
+}
+
+&:has(igc-tree-item[selected])::before {
+display: block;
+}
+}
+
+/* Sidebar: only leaf items get selected, so item height = single row */
+igc-tree[data-variant='sidebar'] igc-tree-item[selected] {
+anchor-name: --selected-tree-item;
+}
+
+/* TOC: groups can be selected (h2 with h3 children); anchor to the label div
+   so height tracks only the row, not the expanded children below */
+igc-tree[data-variant='toc'] igc-tree-item[selected] > [slot='label'] {
+anchor-name: --selected-tree-item;
+}
+
+igc-tree-item {
+--igc-tree-indentation-size: #{rem(20px)};
+
+--background: transparent;
+--foreground: light-dark(var(--ig-gray-600), var(--ig-gray-500));
+--background-selected: transparent;
+--background-active: transparent;
+--foreground-active: var(--igd-accent);
+--foreground-hover: var(--igd-accent);
+--background-disabled: transparent;
+--hover-color: transparent;
+--hover-selected-color: transparent;
+--background-active-selected: transparent;
+--foreground-selected: var(--igd-accent);
+--foreground-active-selected: var(--igd-accent);
+
+a {
+position: absolute;
+inset: 0;
+align-items: center;
+color: inherit;
+text-decoration: none;
+width: 100%;
+height: 100%;
+
+&:focus {
+outline: none;
+}
+}
+
+cursor: default;
+
+&:hover,
+&:focus {
+> a {
+color: var(--igd-accent);
+}
+}
+}
+
+igc-tree-item::part(wrapper) {
+@include type-style('body-2') {
+margin-block: 0;
+};
+padding-inline-start: rem(24px);
+padding-inline-end: rem(8px);
+}
+
+igc-tree-item::part(focused) {
+box-shadow: none;
+}
+
+igc-tree-item::part(indicator) {
+display: none;
+}
+
+igc-tree-item::part(label) {
+width: 100%;
+}
+
+igc-tree-item[data-has-children] > [slot='label'] {
+display: flex;
+align-items: center;
+width: 100%;
+}
+
+.tree-expand-icon {
+margin-inline-start: auto;
+flex-shrink: 0;
+color: inherit;
+transform: rotate(-90deg);
+transition: transform 0.2s ease;
+}
+
+igc-tree-item[aria-expanded='true'] .tree-expand-icon {
+transform: rotate(0deg);
+color: var(--igd-accent);
+}
+
+igc-tree-item[data-has-children][data-depth='0'] {
+--igc-tree-indentation-size: 0;
+}
+
+igc-tree-item[data-has-children] {
+--foreground: light-dark(var(--ig-gray-900), var(--ig-gray-50));
+--foreground-selected: light-dark(var(--ig-gray-900), var(--ig-gray-50));
+--foreground-active-selected: light-dark(var(--ig-gray-900), var(--ig-gray-50));
+--foreground-active: light-dark(var(--ig-gray-900), var(--ig-gray-50));
+--foreground-hover: light-dark(var(--ig-gray-900), var(--ig-gray-50));
+}
+
+/* Hover accent applies to any linked item (leaf in sidebar, all items in TOC) */
+.docs-tree-link:hover ~ .docs-tree-label {
+color: var(--igd-accent);
+}
+
+igc-tree[data-variant='sidebar'] {
+igc-tree-item[data-has-children] {
+--foreground: light-dark(var(--ig-gray-900), var(--ig-gray-50));
+--foreground-selected: light-dark(var(--ig-gray-900), var(--ig-gray-50));
+--foreground-active-selected: light-dark(var(--ig-gray-900), var(--ig-gray-50));
+--foreground-active: light-dark(var(--ig-gray-900), var(--ig-gray-50));
+--foreground-hover: light-dark(var(--ig-gray-900), var(--ig-gray-50));
+}
+}
+
+igc-tree[data-variant='toc'] {
+/* No expand/collapse icons in the TOC — all items are links */
+.tree-expand-icon {
+display: none;
+}
+}
+
+/* TOC variant — active link highlighted by scroll-spy via aria-current="true". */
+igc-tree[data-variant='toc'] .docs-tree-link[aria-current='true'] {
+color: var(--igd-accent);
+}
+
+/* Filter visibility — driven by <sidebar-filter>. */
+// Removing this will break the filter in the sidebar
+sidebar-filter[data-filtering] igc-tree[data-variant='sidebar'] igc-tree-item[data-path]:not([data-filter-match]) {
+display: none;
+}

@@ -79,6 +79,27 @@ import 'igniteui-astro-components/styles/ig-theme.scss';
 
 ---
 
+## Fonts
+
+`createDocsSite` (and the playground) configure **Instrument Sans** and **JetBrains Mono** via [Astro's built-in font API](https://docs.astro.build/en/guides/fonts/) (stable since Astro 6). This is better than a `<link>` to Google Fonts because fonts are downloaded and self-hosted at build time — no third-party CDN request, no user data sent to Google, faster load (one fewer network round-trip), and an auto-generated fallback stack that prevents layout shift (CLS).
+
+`DocsLayout` injects the `@font-face` declarations and `<link rel="preload">` tags into `<head>` via the `<Font>` component, and references the fonts through the CSS custom properties `var(--font-sans)` and `var(--font-mono)`.
+
+> **Not using `createDocsSite`?** Add the font configuration manually to your own `astro.config.*`:
+>
+> ```ts
+> import { defineConfig, fontProviders } from 'astro/config';
+>
+> export default defineConfig({
+>   fonts: [
+>     { provider: fontProviders.google(), name: 'Instrument Sans', cssVariable: '--font-sans', weights: ['400..700'], styles: ['normal', 'italic'] },
+>     { provider: fontProviders.google(), name: 'JetBrains Mono',  cssVariable: '--font-mono', weights: ['100..800'], styles: ['normal', 'italic'] },
+>   ],
+> });
+> ```
+
+---
+
 ## Prop-driven usage (without `siteMetaIntegration`)
 
 By default, `DocsLayout`, `DocsSidebar`, and `DocsSubHeader` read their data (site title, sidebar tree, product links) from the `virtual:docs-template/site-meta` virtual module that is provided by `siteMetaIntegration` / `createDocsSite`.

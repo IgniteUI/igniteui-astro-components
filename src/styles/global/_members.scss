@@ -1,0 +1,85 @@
+@use 'igniteui-theming' as *;
+
+/* ============================================================
+   API Members
+   Styles for member articles (properties, methods, accessors,
+   events), headings, badges, inheritance tree, and metadata.
+
+   WHY GLOBAL: These styles target `section > article`,
+   `.member-badge`, `.inheritance-tree`, and `.inherited-from`
+   which are rendered across all 5 detail page templates
+   (classes, interfaces, functions, types, variables). While
+   AnchoredName.astro renders `.member-badge`, the surrounding
+   article/section structure lives directly in each page
+   template, so no single component fully owns these styles.
+   Once a shared detail page layout component exists, this file
+   should be moved there.
+   ============================================================ */
+
+/* Inheritance tree */
+.inheritance-tree {
+    margin-top: 0.5em;
+}
+
+.inheritance-tree-item {
+    display: flex;
+    align-items: center;
+    font-family: var(--sl-font-mono, monospace), sans-serif;
+    font-size: 1em;
+    line-height: 1.7;
+    white-space: pre;
+    margin-top: 0.1em;
+}
+
+.inheritance-tree-item .inheritance-arrow {
+    margin-right: 0.5em;
+    margin-top: 0.1em;
+    color: #888;
+    font-size: 1.1em;
+}
+
+.inheritance-tree-item.last strong {
+    font-weight: bold;
+}
+
+/* "Inherited from" metadata line shown under member headings */
+.inherited-from {
+	display: flex;
+	align-items: center;
+	gap: rem(8px);
+	padding: rem(8px) rem(16px);
+	color: var(--igd-accent);
+	border: rem(1px) solid light-dark(var(--ig-primary-500), var(--ig-primary-800));
+	border-radius: rem(4px);
+	
+	strong {
+		font-weight: 400;
+	}
+	
+	a {
+	
+		text-decoration: underline;
+	}
+}
+
+/* Visual separation between member articles */
+section > article {
+    margin-block: var(--igd-page-padding);
+	
+	> * {
+		margin-block-end: rem(26px);
+	}
+}
+
+.member-badge {
+	@include type-style('body-1') {
+		margin: 0;
+	};
+	
+    display: inline-block;
+    color: light-dark(var(--ig-secondary-800), var(--ig-secondary-200));
+    background:  light-dark(var(--ig-secondary-100), var(--ig-secondary-900));
+    border: rem(1px) solid  light-dark(var(--ig-secondary-300),var(--ig-secondary-700));
+    padding: var(--igd-members-spacing);
+    border-radius: rem(4px);
+}

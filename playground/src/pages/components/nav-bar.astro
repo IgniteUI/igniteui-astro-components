@@ -19,7 +19,6 @@ const headings = [
 <DocsLayout title="Global Nav & Footer" siteTitle={SITE_TITLE} hasSidebar currentSlug={slug}>
   <DocsSidebar slot="sidebar" items={SIDEBAR} currentSlug={slug} />
   <DocsToc slot="toc" headings={headings} offsetTarget=".docs-subheader" />
-  <main class="content">
     <h1>Global nav &amp; footer</h1>
     <p>
       <code>DocsLayout</code> already mounts <code>GlobalNavBar</code>
@@ -34,10 +33,4 @@ const headings = [
 
     <h3 id="theme-igniteui-footer">Inline footer (theme="igniteui")</h3>
     <GlobalFooter theme="igniteui" />
-  </main>
 </DocsLayout>
-
-<style>
-  .content { max-width: 60rem; margin: 0 auto; padding: 2rem 1.5rem; }
-  h3 { margin-top: 2rem; }
-</style>

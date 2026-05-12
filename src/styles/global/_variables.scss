@@ -1,0 +1,71 @@
+@use 'igniteui-theming/sass/typography' as *;
+@use 'palette' as *;
+@use 'breakpoints' as *;
+
+/* ============================================================
+   CSS Custom Properties
+   Global design tokens: widths, heights, and theme-aware colors.
+   ============================================================ */
+
+/* DOCS PALETTE */
+:root {
+	--igd-font-sans: "Instrument Sans", "Segoe UI", system-ui, sans-serif;
+	--igd-font-mono: "JetBrains Mono", "Fira Code", "Cascadia Code", monospace;
+
+	// Those are the real igniteui logo type colors not related to the palette
+	--igd-logo-type: light-dark(#27265f, #fff);
+	
+	--igd-accent: var(--ig-primary-500);
+	--igd-illustration: var(--igd-accent);
+	--igd-on-accent: var(--ig-primary-500-contrast);
+	--igd-border-radius: #{rem(4px)};
+	
+	--igd-app-bg: light-dark(var(--ig-surface-50), #0A0B10);
+	--igd-on-app-bg: light-dark(var(--ig-surface-900-contrast), var(--ig-surface-50-contrast));
+	
+	--igd-layout-sections-bg: var(--igd-app-bg);
+	--igd-app-outline-color: light-dark(var(--ig-gray-400), var(--igd-accent));
+	--igd-app-outline-size: #{rem(1px)};
+	--igd-app-outline-style: solid;
+	--igd-app-outline: var(--igd-app-outline-size) var(--igd-app-outline-style) var(--igd-app-outline-color);
+
+	--igd-sidebar-spacing: #{rem(46px)} #{rem(24px)};
+	
+	--igd-header-height: #{rem(50px)};
+	
+	@media (min-width: #{$bp-tablet-max}) {
+		--igd-header-height: #{rem(75px)};
+	}
+	
+	--sticky-sidebar-top: 0;
+	
+	--igd-members-spacing: var(--igd-border-radius) #{rem(16px)};
+	
+	--igd-page-layout-grid: #{minmax(rem(300px), rem(400px)) 1fr};
+	--igd-page-padding: #{rem(50px)};
+	
+	// Padding
+	--igd-padding-sm: #{rem(16px)};
+	--igd-padding-md: #{rem(24px)};
+	--igd-padding-lg: #{rem(32px)};
+}
+
+[data-theme] {
+	--igd-updated-bg:     light-dark(#EAF6FE, #0D1E38);
+	--igd-updated-color:  light-dark(#1151C1, #6B9FE8);
+	--igd-updated-border: light-dark(#BAE2F5, #1E3D6A);
+	
+	--igd-new-bg:         light-dark(#EAFEF6, #0A2A1C);
+	--igd-new-color:      light-dark(#028A54, #3DBF85);
+	--igd-new-border:     light-dark(#BAF5D7, #154A30);
+	
+	--igd-preview-bg:     light-dark(#FEF5EA, #2D1507);
+	--igd-preview-color:  light-dark(#AF390A, #E06030);
+	--igd-preview-border: light-dark(#F5C8BA, #5C2810);
+	
+	--igd-premium-color:  light-dark(#A065FF, #B585FF);
+	--igd-premium-bg:     light-dark(#F3EEFF, #1E1030);
+	--igd-premium-border: light-dark(#D4B8FF, #5A3A99);
+	
+	--igd-expantion-panel-color: light-dark(var(--ig-secondary-500), var(--ig-secondary-500));
+}
