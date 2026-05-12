@@ -2,7 +2,7 @@
 import './DocsAside.scss';
 
 interface Props {
-  type?: 'note' | 'tip' | 'caution' | 'danger';
+  type?: 'note' | 'tip' | 'warning' | 'danger';
   title?: string;
   color?: string;
   class?: string;
@@ -15,14 +15,14 @@ const { type = 'note', title, color, icon, class: className } = Astro.props;
 const defaultLabels: Record<string, string> = {
   note: 'Note',
   tip: 'Tip',
-  caution: 'Caution',
+  warning: 'Warning',
   danger: 'Danger',
 };
 
 const defaultIcons: Record<string, string> = {
   note: 'info',
   tip: 'rocket',
-  caution: 'warning',
+  warning: 'warning',
   danger: 'warning',
 };
 
