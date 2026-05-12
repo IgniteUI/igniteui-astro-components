@@ -102,14 +102,19 @@
 	gap: var(--ig-padding);
 	background-color: var(--igd-layout-sections-bg);
 	border-inline: var(--igd-app-outline);
+	width: clamp(rem(300px), 100%, rem(940px));
+	margin-inline-start: auto;
 }
 
 .igd-main-content__inner {
 	display: flex;
 	gap: rem(70px);
-	margin: 0 auto;
 	padding-inline: rem(70px) rem(32px);
 	position: relative;
+	
+	aside {
+		margin-inline-end: auto;
+	}
 }
 
 .content {

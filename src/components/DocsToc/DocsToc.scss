@@ -10,7 +10,7 @@
 	top: var(--igd-header-height);
 	max-width: var(--ig-toc-width);
 	width: 100%;
-	min-width: min-content;
+	min-width: rem(280px);
 	max-height: calc(100vh - var(--igd-header-height));
 	overflow-y: auto;
 	padding: rem(46px) rem(24px);

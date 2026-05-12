@@ -12,6 +12,11 @@ igc-input {
 	--ig-flat-button-focus-background: transparent;
 	--ig-flat-button-icon-color-hover: var(--igd-accent);
 	--ig-flat-button-icon-color-focus: var(--igd-accent);
+	
+	igc-icon {
+		width: rem(24px);
+		aspect-ratio: 1;
+	}
 }
 
 igc-input::part(input) {
@@ -23,7 +28,8 @@ igc-input::part(input) {
 igc-input::part(container) {
 	border-inline: 0;
 	border-block-start: 0;
-	border-block-end: rem(1px) solid light-dark(var(--ig-gray-400), var(--ig-gray-700));
+	border-block-end: rem(1px) solid light-dark(var(--ig-gray-200), var(--ig-gray-300));
+	
 	border-radius: 0;
 	padding-inline-start: rem(16px);
 	padding-inline-end: rem(8px);
@@ -60,9 +66,4 @@ igc-button {
 	&:empty {
 		display: none;
 	}
-}
-
-igc-icon {
-	width: rem(24px);
-	aspect-ratio: 1;
 }

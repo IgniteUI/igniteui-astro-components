@@ -1,12 +1,9 @@
 @use 'igniteui-theming/sass/typography' as *;
 
 .docs-breadcrumb {
-	padding-inline: var(--igd-padding-sm);
-	padding-block-end: 0;
-	padding-inline-start: calc(var(--igd-padding-sm) + rem(3px));
-	border-block-end: var(--igd-app-outline);
 	width: 100%;
-	background-color: var(--igd-layout-sections-bg);
+	padding: 0;
+	margin-block-end: rem(26px);
 }
 
 .docs-breadcrumb-list {

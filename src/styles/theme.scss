@@ -14,6 +14,7 @@
 @include sizing();
 @include spacing();
 @include elevations($material-elevations);
+
 @include typography(
 	$font-family: '"Instrument Sans Variable", "Segoe UI", system-ui, sans-serif',
 	$type-scale: $igd-type-scale

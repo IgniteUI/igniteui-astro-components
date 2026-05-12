@@ -1,4 +1,4 @@
-@use 'igniteui-theming/sass/typography/functions' as *;
+@use 'igniteui-theming/sass/typography' as *;
 
 /*
  * if we need to modify the toc or the sidebar in any way we can use:
@@ -16,9 +16,35 @@
 igc-tree {
 	--ig-tree-background: transparent;
 	--ig-size: 1;
+	
+	position: relative;
+	border-inline-start: rem(1px) solid light-dark(var(--ig-gray-200), var(--ig-gray-300));
+	
+	&::before {
+		content: '';
+		position: absolute;
+		position-anchor: --selected-tree-item;
+		top: anchor(top);
+		height: anchor-size(height);
+		left: -1px;
+		width: 2px;
+		background-color: var(--igd-accent);
+		transition: top 0.2s ease, height 0.2s ease;
+		display: none;
+	}
+
+	&:has(igc-tree-item[selected])::before {
+		display: block;
+	}
+}
+
+igc-tree-item[selected] {
+	anchor-name: --selected-tree-item;
 }
 
 igc-tree-item {
+	--igc-tree-indentation-size: #{rem(20px)};
+	
 	--background: transparent;
 	--foreground: light-dark(var(--ig-gray-600), var(--ig-gray-500));
 	--background-selected: transparent;
@@ -27,15 +53,23 @@ igc-tree-item {
 	--foreground-hover: var(--igd-accent);
 	--background-disabled: transparent;
 	--hover-color: transparent;
-	--hover-selected-color: transparentize;
+	--hover-selected-color: transparent;
+	--background-active-selected: transparent;
+	--foreground-selected: var(--igd-accent);
+	--foreground-active-selected: var(--igd-accent);
 	
 	a {
-		display: flex;
+		position: absolute;
+		inset: 0;
 		align-items: center;
 		color: inherit;
 		text-decoration: none;
 		width: 100%;
 		height: 100%;
+		
+		&:focus {
+			outline: none;
+		}
 	}
 	
 	cursor: default;
@@ -48,33 +82,63 @@ igc-tree-item {
 	}
 }
 
+igc-tree-item::part(wrapper) {
+	@include type-style('body-2') {
+		margin-block: 0;
+	};
+	padding-inline-start: rem(24px);
+	padding-inline-end: rem(8px);
+}
+
+
+igc-tree-item::part(focused) {
+	box-shadow: none;
+}
+
 igc-tree-item::part(indicator) {
 	order: 2;
 	margin-inline: auto 0;
 }
 
-igc-tree-item[data-has-children][data-depth="0"] {
+igc-tree-item[aria-expanded='true']::part(indicator) {
+	--ig-icon-color: var(--igd-accent);
+}
+
+igc-tree-item[data-has-children][data-depth='0'] {
 	--igc-tree-indentation-size: 0;
 }
 
 igc-tree-item[data-has-children] {
-	&::part(wrapper) {
-		padding-inline-start: rem(24px);
-		padding-inline-end: rem(8px);
+	--foreground: light-dark(var(--ig-gray-900), var(--ig-gray-50));
+	--foreground-selected: light-dark(var(--ig-gray-900), var(--ig-gray-50));
+	--foreground-active-selected: light-dark(var(--ig-gray-900), var(--ig-gray-50));
+	--foreground-active: light-dark(var(--ig-gray-900), var(--ig-gray-50));
+	--foreground-hover: light-dark(var(--ig-gray-900), var(--ig-gray-50));
+}
+
+igc-tree[data-variant='sidebar'] {
+	.docs-tree-link:hover + span {
+		color: var(--igd-accent);
+	}
+	
+	igc-tree-item[data-has-children] {
+		--foreground: light-dark(var(--ig-gray-900), var(--ig-gray-50));
+		--foreground-selected: light-dark(var(--ig-gray-900), var(--ig-gray-50));
+		--foreground-active-selected: light-dark(var(--ig-gray-900), var(--ig-gray-50));
+		--foreground-active: light-dark(var(--ig-gray-900), var(--ig-gray-50));
+		--foreground-hover: light-dark(var(--ig-gray-900), var(--ig-gray-50));
 	}
 }
 
-igc-tree-item:not([data-has-children])::part(wrapper) {
-	--igc-tree-indentation-size: #{rem(44px)};
+igc-tree[data-variant='toc'] {
+	igc-tree-item[data-has-children] {
 	
-	padding-inline-start: 0;
-	padding-inline-end: rem(8px);
+	}
 }
 
 /* TOC variant — active link highlighted by scroll-spy via aria-current="true". */
 igc-tree[data-variant='toc'] .docs-tree-link[aria-current='true'] {
 	color: var(--igd-accent);
-	font-weight: 600;
 }
 
 /* Filter visibility — driven by <sidebar-filter>. */

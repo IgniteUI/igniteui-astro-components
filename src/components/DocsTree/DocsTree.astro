@@ -63,4 +63,16 @@ const { nodes, variant, activeId, toggleNodeOnClick, ariaLabel, renderLabel } = 
   } from 'igniteui-webcomponents';
 
   defineComponents(IgcTreeComponent, IgcTreeItemComponent);
+
+  function selectActiveTreeItem() {
+    customElements.whenDefined('igc-tree-item').then(() => {
+      document.querySelectorAll<IgcTreeItemComponent>('igc-tree-item').forEach((item) => {
+        const isActive = !!item.querySelector('a[aria-current="page"]');
+        item.selected = isActive;
+      });
+    });
+  }
+
+  selectActiveTreeItem();
+  document.addEventListener('astro:page-load', selectActiveTreeItem);
 </script>

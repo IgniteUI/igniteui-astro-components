@@ -36,22 +36,22 @@ const crumbs            = sidebarCrumbs.length > 0 ? sidebarCrumbs : (pageTitle 
 ---
 
 {(resolvedSiteTitle || crumbs.length > 0) && (
-  <nav class="docs-breadcrumb" aria-label="Breadcrumb">
+<nav class="docs-breadcrumb" aria-label="Breadcrumb">
     <ol class="docs-breadcrumb-list">
-      {resolvedSiteTitle && (
-        <li class="docs-breadcrumb-item docs-breadcrumb-home">
-          <span>{resolvedSiteTitle}</span>
-        </li>
-      )}
-      {crumbs.map((label, i) => (
-        <li class="docs-breadcrumb-item">
-          <span class="docs-breadcrumb-sep" aria-hidden="true">
-            {i === 0 ? '–' : '/'}
-          </span>
-          <span class="docs-breadcrumb-crumb" title={label}>{label}</span>
-        </li>
-      ))}
+        { resolvedSiteTitle && (
+            <li class="docs-breadcrumb-item docs-breadcrumb-home">
+                <span>{ resolvedSiteTitle }</span>
+                <span class="docs-breadcrumb-sep" aria-hidden="true">
+                /
+                </span>
+            </li>
+        ) }
+        { crumbs.map((label, i) => (
+            <li class="docs-breadcrumb-item">
+                <span class="docs-breadcrumb-crumb" title={ label }>{ label }</span>
+            </li>
+        )) }
     </ol>
-  </nav>
+</nav>
 )}
 
