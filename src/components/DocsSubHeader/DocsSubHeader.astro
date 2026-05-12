@@ -89,16 +89,19 @@ const sidebarCrumbs = currentSlug ? getBreadcrumb(resolvedSidebar, currentSlug) 
 const crumbs = sidebarCrumbs.length > 0 ? sidebarCrumbs : (pageTitle ? [pageTitle] : []);
 ---
 
-<docs-subheader-menu class="docs-subheader">
+<docs-subheader-menu>
+    <div class="docs-subheader">
     <div class="igd-logo">
         <Fragment set:html={logoRaw} />
         <h1 class="ig-typography__body-2">IgniteUI</h1>
     </div>
 
+    <div class="subheader-body">
+
     <!-- Left: title area, takes all free space -->
     <div class="subheader-context">
         {resolvedSiteTitle && <span class="subheader-site-title">{resolvedSiteTitle}</span>}
-        {crumbs.map((label, i) => (
+        {crumbs.map((label: string, i: number) => (
             <>
                 <span class="subheader-sep" aria-hidden="true">{i === 0 ? '-' : '/'}</span>
                 <span class="subheader-crumb" title={label}>{label}</span>
@@ -168,7 +171,10 @@ const crumbs = sidebarCrumbs.length > 0 ? sidebarCrumbs : (pageTitle ? [pageTitl
             <line x1="18" y1="6"  x2="6"  y2="18" />
             <line x1="6"  y1="6"  x2="18" y2="18" />
         </svg>
-    </button>
+        </button>
+
+    </div>{/* subheader-body */}
+    </div>{/* docs-subheader */}
 </docs-subheader-menu>
 
 <script>
@@ -236,23 +242,16 @@ const crumbs = sidebarCrumbs.length > 0 ? sidebarCrumbs : (pageTitle ? [pageTitl
         display: contents;
     }
 
-    /* ── Fixed bar ─────────────────────────────────────────────────────────── */
+    /* ── Body: flex row occupying grid column 2 ────────────────────────────── */
 
-    .docs-subheader {
-        position: fixed;
-        inset-inline-start: 0;
-        inset-block-start: var(--docs-global-nav-height, 4.7rem);
-        width: 100%;
-        height: var(--docs-subheader-height, 2.5rem);
-        z-index: calc(var(--sl-z-index-navbar) - 1);
+    .subheader-body {
         display: flex;
         flex-direction: row;
         align-items: center;
         gap: 0.75rem;
         padding-inline: 1rem;
-        background-color: var(--sl-color-bg-nav);
-        border-bottom: 1px solid var(--sl-color-hairline-shade);
         overflow: visible;
+        min-width: 0;
     }
 
     /* ── Context (left) ────────────────────────────────────────────────────── */
