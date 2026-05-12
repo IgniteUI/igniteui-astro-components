@@ -16,7 +16,6 @@ const headings = [
 <DocsLayout title="Sidebar" siteTitle={SITE_TITLE} hasSidebar currentSlug={slug}>
   <DocsSidebar slot="sidebar" items={SIDEBAR} currentSlug={slug} />
   <DocsToc slot="toc" headings={headings} offsetTarget=".docs-subheader" />
-  <main class="content">
     <h1>Sidebar</h1>
 
     <h2 id="rendering">Rendering</h2>
@@ -40,9 +39,4 @@ const headings = [
       The filter input matches against item labels: matching items stay
       visible; non-matching ones get <code>display:none</code>.
     </p>
-  </main>
 </DocsLayout>
-
-<style>
-  .content { max-width: 60rem; margin: 0 auto; padding: 2rem 1.5rem; }
-</style>

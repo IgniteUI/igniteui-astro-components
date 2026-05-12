@@ -1,0 +1,125 @@
+@use '../../styles/global/breakpoints' as *;
+@use 'igniteui-theming/sass/typography/functions' as *;
+
+.igd-page-layout {
+	display: grid;
+	grid-template-columns: var(--igd-page-layout-grid);
+	background: var(--igd-app-bg);
+	color: var(--igd-on-app-bg);
+	margin: 0;
+	z-index: 0;
+	
+	@media (min-width: #{$bp-tablet-min}) {
+		justify-content: center;
+		padding-inline: 0;
+	}
+	
+	@media (max-width: #{$bp-mobile-horizontal-max}) {
+		padding-inline: rem(32px);
+	}
+	
+	&:not(:has(.igd-right-sidebar)) {
+		.igd-main-pane {
+			> main {
+				margin: 0
+			}
+		}
+	}
+}
+
+.igd-main-content {
+	display: grid;
+	padding-inline: rem(32px);
+	position: relative;
+	
+	@media (min-width: #{$bp-tablet-min}) {
+		padding-inline: 0;
+	}
+	
+	@media (max-width: #{$bp-mobile-horizontal-max}) {
+		padding-inline: rem(32px);
+	}
+	
+	&:not(:has(.igd-right-sidebar)) {
+		.igd-main-pane {
+			> main {
+				margin: 0
+			}
+		}
+	}
+	
+	// ── Static square grid background ────────────────────────────────────────────
+	// Pure CSS: two repeating-linear-gradients intersected via mask-composite
+	// create 4×4px squares at a 35px grid pitch.
+	// A radial vignette mask (3rd layer) fades them toward the edges.
+	&::before {
+		content: '';
+		position: absolute;
+		inset: 0;
+		inset-block-start: 0;
+		pointer-events: none;
+		user-select: none;
+		z-index: 0;
+		
+		$pitch: 35px;
+		$sq:     3px;
+		$pad:   15.5px;
+		
+		background-color: light-dark(var(--ig-gray-500), var(--igd-accent));
+		
+		// Three mask layers, all intersected:
+		//   vignette ∩ horizontal-strips ∩ vertical-strips → squares that fade at the edges
+		mask-image:
+			// 1. Vignette — opaque center, transparent at edges
+			radial-gradient(ellipse 80% 80% at 50% 40%, black 40%, transparent 100%),
+				// 2. Horizontal 4px bands at 35px pitch  (repeating-linear 0deg = top-to-bottom)
+			repeating-linear-gradient(0deg,
+			transparent 0,           transparent #{$pad},
+			black        #{$pad},    black        #{$pad + $sq},
+			transparent  #{$pad + $sq}, transparent #{$pitch}
+			),
+				// 3. Vertical 4px bands at 35px pitch  (repeating-linear 90deg = left-to-right)
+			repeating-linear-gradient(90deg,
+			transparent 0,           transparent #{$pad},
+			black        #{$pad},    black        #{$pad + $sq},
+			transparent  #{$pad + $sq}, transparent #{$pitch}
+			);
+		
+		mask-size: 100% 100%, #{$pitch} #{$pitch}, #{$pitch} #{$pitch};
+		mask-composite: intersect, intersect;
+		-webkit-mask-composite: source-in, source-in;
+		
+		opacity: .5;
+		
+		@media (max-width: #{$bp-mobile-max}) {
+			display: none;
+		}
+	}
+}
+
+.igd-main-content__page {
+	display: grid;
+	gap: var(--ig-padding);
+	background-color: var(--igd-layout-sections-bg);
+	border-inline: var(--igd-app-outline);
+	width: clamp(rem(300px), 100%, rem(940px));
+	margin-inline-start: auto;
+}
+
+.igd-main-content__inner {
+	display: flex;
+	gap: rem(70px);
+	padding-inline: rem(70px) rem(32px);
+	position: relative;
+	
+	aside {
+		margin-inline-end: auto;
+	}
+}
+
+.content {
+	max-width: 60rem;
+	margin: 0 auto;
+	padding-inline: var(--igd-page-padding);
+	padding-block-end: var(--igd-page-padding);
+}

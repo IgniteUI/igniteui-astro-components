@@ -1,0 +1,58 @@
+@use 'igniteui-theming' as *;
+@use 'igniteui-theming/sass/typography/presets' as *;
+@use 'igniteui-theming/sass/elevations/presets' as *;
+@use 'global' as *;
+
+// Define font CSS custom properties so components can reference or override them.
+// The actual @font-face rules come from @fontsource-variable (imported in DocsLayout.astro).
+:root {
+	--ig-theme: fluent;
+	--font-sans: 'Instrument Sans Variable';
+	--font-mono: 'JetBrains Mono Variable'; // fallback should be 'Cascadia Code', 'Fira Code', monospace
+}
+
+@include sizing();
+@include spacing();
+@include elevations($material-elevations);
+
+@include typography(
+	$font-family: '"Instrument Sans Variable", "Segoe UI", system-ui, sans-serif',
+	$type-scale: $igd-type-scale
+);
+
+html {
+	// Smooth scroll for TOC anchor navigation.
+	// prefers-reduced-motion respected: browsers override this automatically.
+	scroll-behavior: smooth;
+}
+
+// Scope our brand font to the docs content area only.
+// The IG nav and footer have their own font-family rules in their CDN
+// stylesheets — setting font-family on html/body would override those
+// via inheritance. Scoping to .igd-page-layout keeps them isolated.
+.igd-page-layout {
+	font-family: var(--font-sans), 'Segoe UI', system-ui, sans-serif;
+}
+
+.visually-hidden {
+	visibility: hidden;
+	opacity: 0;
+	position: absolute;
+	user-select: none;
+	pointer-events: none;
+	top: 0;
+	left: 0;
+}
+
+// PREVENT FOUC (Flash of Unstyled Content) for Ignite UI Web Components
+igc-badge:not(:defined),
+igc-icon:not(:defined),
+igc-accordion:not(:defined),
+igc-select:not(:defined),
+igc-input:not(:defined) {
+	opacity: 0;
+}
+
+igc-icon {
+	padding: 0;
+}

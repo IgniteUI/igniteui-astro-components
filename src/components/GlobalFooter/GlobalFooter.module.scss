@@ -7,6 +7,7 @@
 
 .footer {
   --footer-bg: #f8f8f8;
+  grid-column: 1 / -1;
 
   // Element selector — not hashed by CSS Modules.
   footer {

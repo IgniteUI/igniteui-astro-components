@@ -16,7 +16,6 @@ const headings = [
 <DocsLayout title="PlatformBlock" siteTitle={SITE_TITLE} hasSidebar currentSlug={slug}>
   <DocsSidebar slot="sidebar" items={SIDEBAR} currentSlug={slug} />
   <DocsToc slot="toc" headings={headings} offsetTarget=".docs-subheader" />
-  <main class="content">
     <h1>PlatformBlock</h1>
     <p>Only the block matching the current <code>PLATFORM</code> env var renders.</p>
 
@@ -40,7 +39,3 @@ const headings = [
     </PlatformBlock>
   </main>
 </DocsLayout>
-
-<style>
-  .content { max-width: 60rem; margin: 0 auto; padding: 2rem 1.5rem; }
-</style>

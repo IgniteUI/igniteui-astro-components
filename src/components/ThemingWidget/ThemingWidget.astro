@@ -24,6 +24,7 @@
 
 import { themeApiUrl } from 'virtual:docs-template/nav-html';
 import type { NavLang } from '../../platform.ts';
+import './ThemingWidget.scss';
 
 interface Props {
   language?: NavLang;
@@ -145,8 +146,3 @@ const lang = language === 'jp' ? 'ja' : undefined;
   initThemingWidget();
 </script>
 
-<style>
-  .theming-widget-container {
-    display: block;
-  }
-</style>

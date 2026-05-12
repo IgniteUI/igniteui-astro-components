@@ -1,0 +1,69 @@
+@use 'igniteui-theming/sass/typography' as *;
+@use '../../styles/global/breakpoints' as *;
+
+.docs-subheader {
+	position: sticky;
+	inset: 0;
+	display: grid;
+	grid-template-columns: var(--igd-page-layout-grid);
+	align-items: center;
+	width: 100%;
+	min-height: var(--igd-header-height);
+	grid-column: 1 / -1;
+	grid-row: 1;
+	border-block-end: var(--igd-app-outline);
+	z-index: 1;
+	background-color: var(--igd-layout-sections-bg);
+	
+	.igd-logo {
+		display: flex;
+		align-items: center;
+		height: 100%;
+		
+		@media (min-width: #{$bp-mobile-horizontal-max}) {
+			padding-inline: var(--igd-padding-lg);
+		}
+		
+		svg {
+			min-width: rem(79px);
+			height: rem(22px);
+			opacity: 0;
+			transform: translateY(-4px);
+			transition: opacity 200ms ease, transform 200ms ease;
+			position: absolute;
+			
+			.logo-type {
+				fill: var(--igd-logo-type);
+			}
+		}
+		
+		h1 {
+			opacity: 1;
+			transform: translateY(0);
+			transition: opacity 200ms ease, transform 200ms ease;
+			margin: 0;
+		}
+		
+		border-inline-end: var(--igd-app-outline);
+	}
+	
+	// Logo area: text visible by default, logo hidden.
+	// When the GlobalNavBar scrolls out of view, .docs-subheader--pinned is added
+	// and the logo fades in while the text fades out.
+	&--pinned {
+		.igd-logo {
+			svg {
+				opacity: 1;
+				transform: translateY(0);
+				position: relative;
+			}
+			
+			h1 {
+				opacity: 0;
+				transform: translateY(4px);
+				position: absolute;
+				pointer-events: none;
+			}
+		}
+	}
+}

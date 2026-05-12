@@ -51,19 +51,21 @@ if (node.itemData) {
   {...dataAttrs}
 >
   {node.href ? (
-    <a
-      slot="label"
-      href={node.href}
-      aria-current={isActive ? 'page' : undefined}
-      class="docs-tree-link"
-      {...node.linkAttrs}
-    >
-      {RenderLabel ? (
-        <RenderLabel node={node} depth={depth} isLeaf={isLeaf} isActive={isActive} />
-      ) : (
-        <span class="docs-tree-label">{node.label}</span>
-      )}
-    </a>
+      <div slot="label">
+        <!--  The anchor is used only for navigation purpose it behave as an overlay on the ::part(wrapper) -->
+        <a
+          href={node.href}
+          aria-current={isActive ? 'page' : undefined}
+          class="docs-tree-link"
+          {...node.linkAttrs}
+        ></a>
+          {RenderLabel ? (
+            <RenderLabel node={node} depth={depth} isLeaf={isLeaf} isActive={isActive} />
+          ) : (
+            <span class="docs-tree-label">{node.label}</span>
+          )}
+          {hasChildren && <igc-icon name="chevron" collection="docs" class="tree-expand-icon"></igc-icon>}
+      </div>
   ) : (
     <div slot="label" class="docs-tree-group">
       {RenderLabel ? (
@@ -71,6 +73,7 @@ if (node.itemData) {
       ) : (
         <span class="docs-tree-label">{node.label}</span>
       )}
+      <igc-icon name="chevron" collection="docs" class="tree-expand-icon"></igc-icon>
     </div>
   )}
 

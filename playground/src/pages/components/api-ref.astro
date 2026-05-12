@@ -18,7 +18,6 @@ const headings = [
 <DocsLayout title="ApiRef" siteTitle={SITE_TITLE} hasSidebar currentSlug={slug}>
   <DocsSidebar slot="sidebar" items={SIDEBAR} currentSlug={slug} />
   <DocsToc slot="toc" headings={headings} offsetTarget=".docs-subheader" />
-  <main class="content">
     <h1>ApiRef</h1>
     <p>Renders the &quot;API References&quot; section listing one or more types.</p>
 
@@ -33,9 +32,4 @@ const headings = [
 
     <h2 id="charts-sub-package">Charts sub-package</h2>
     <ApiRef pkg="charts" types={["CategoryChart", "FinancialChart"]} />
-  </main>
 </DocsLayout>
-
-<style>
-  .content { max-width: 60rem; margin: 0 auto; padding: 2rem 1.5rem; }
-</style>
