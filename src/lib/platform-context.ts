@@ -114,9 +114,9 @@ const PLATFORMS: Record<PlatformName, PlatformContext> = {
         productName: 'Ignite UI for React',
         productSpinal: 'ignite-ui-react',
         apiPackages: {
-            core:        { docRoot: 'https://staging.infragistics.com/react-apis-new/react/igniteui-react/19.5.1', packageId: 'igniteui-react', noPackagePrefix: true, preserveCase: true },
+            core:        { docRoot: 'https://staging.infragistics.com/react-apis-new/react/igniteui-react/latest', packageId: 'igniteui-react', noPackagePrefix: true, preserveCase: true },
             charts:      { docRoot: 'https://staging.infragistics.com/react-apis-new/react/igniteui-react-charts/latest', packageId: 'igniteui-react-charts', noPackagePrefix: true, preserveCase: true, classSuffix: 'Component' },
-            grids:       { docRoot: 'https://staging.infragistics.com/react-apis-new/react/igniteui-react-grids/19.5.1', packageId: 'igniteui-react-grids', noPackagePrefix: true, preserveCase: true },
+            grids:       { docRoot: 'https://staging.infragistics.com/react-apis-new/react/igniteui-react-grids/latest', packageId: 'igniteui-react-grids', noPackagePrefix: true, preserveCase: true },
             gauges:      { docRoot: 'https://staging.infragistics.com/react-apis-new/react/igniteui-react-gauges/latest', packageId: 'igniteui-react-gauges', noPackagePrefix: true, preserveCase: true, classSuffix: 'Component' },
             maps:        { docRoot: 'https://staging.infragistics.com/react-apis-new/react/igniteui-react-maps/latest',        packageId: 'igniteui-react-maps',        noPackagePrefix: true, preserveCase: true, classSuffix: 'Component' },
             inputs:      { docRoot: 'https://staging.infragistics.com/react-apis-new/react/igniteui-react-inputs/latest',      packageId: 'igniteui-react-inputs',      noPackagePrefix: true, preserveCase: true },
@@ -124,7 +124,7 @@ const PLATFORMS: Record<PlatformName, PlatformContext> = {
             excel:       { docRoot: 'https://staging.infragistics.com/react-apis-new/react/igniteui-react-excel/latest',       packageId: 'igniteui-react-excel',       noPackagePrefix: true, preserveCase: true },
             spreadsheet: { docRoot: 'https://staging.infragistics.com/react-apis-new/react/igniteui-react-spreadsheet/latest', packageId: 'igniteui-react-spreadsheet', noPackagePrefix: true, preserveCase: true, classSuffix: 'Component' },
             datasources: { docRoot: 'https://staging.infragistics.com/react-apis-new/react/igniteui-react-datasources/latest', packageId: 'igniteui-react-datasources', noPackagePrefix: true, preserveCase: true },
-            'grid-lite': { docRoot: 'https://staging.infragistics.com/react-apis-new/react/igniteui-react-grids/19.5.1',       packageId: 'igniteui-react-grids',       noPackagePrefix: true, preserveCase: true },
+            'grid-lite': { docRoot: 'https://staging.infragistics.com/react-apis-new/react/igniteui-react-grids/latest',       packageId: 'igniteui-react-grids',       noPackagePrefix: true, preserveCase: true },
         },
         packages: {
             common: '@infragistics/igniteui-react',
@@ -178,14 +178,14 @@ const PLATFORMS: Record<PlatformName, PlatformContext> = {
         productName: 'Ignite UI for Blazor',
         productSpinal: 'ignite-ui-blazor',
         apiPackages: {
-            core:        { docRoot: 'https://staging.infragistics.com/blazor-apis-new/blazor/IgniteUI.Blazor/25.1.x', packageId: 'IgniteUI.Blazor', noPackagePrefix: true, preserveCase: true, pascalCaseMembers: true },
-            charts:      { docRoot: 'https://staging.infragistics.com/blazor-apis-new/blazor/IgniteUI.Blazor/25.1.x', packageId: 'IgniteUI.Blazor', noPackagePrefix: true, preserveCase: true, pascalCaseMembers: true },
-            grids:       { docRoot: 'https://staging.infragistics.com/blazor-apis-new/blazor/IgniteUI.Blazor/25.1.x', packageId: 'IgniteUI.Blazor', noPackagePrefix: true, preserveCase: true, pascalCaseMembers: true },
-            gauges:      { docRoot: 'https://staging.infragistics.com/blazor-apis-new/blazor/IgniteUI.Blazor/25.1.x', packageId: 'IgniteUI.Blazor', noPackagePrefix: true, preserveCase: true, pascalCaseMembers: true },
-            maps:        { docRoot: 'https://staging.infragistics.com/blazor-apis-new/blazor/IgniteUI.Blazor/25.1.x', packageId: 'IgniteUI.Blazor', noPackagePrefix: true, preserveCase: true, pascalCaseMembers: true },
-            excel:       { docRoot: 'https://staging.infragistics.com/blazor-apis-new/blazor/IgniteUI.Blazor.Documents.Excel/25.1.x', packageId: 'IgniteUI.Blazor.Documents.Excel', noPackagePrefix: true, preserveCase: true, pascalCaseMembers: true },
-            spreadsheet: { docRoot: 'https://staging.infragistics.com/blazor-apis-new/blazor/IgniteUI.Blazor/25.1.x',         packageId: 'IgniteUI.Blazor',         noPackagePrefix: true, preserveCase: true, pascalCaseMembers: true },
-            'grid-lite': { docRoot: 'https://staging.infragistics.com/blazor-apis-new/blazor/IgniteUI.Blazor.GridLite/25.1.x', packageId: 'IgniteUI.Blazor.GridLite', noPackagePrefix: true, preserveCase: true, pascalCaseMembers: true },
+            core:        { docRoot: 'https://staging.infragistics.com/blazor-apis-new/blazor/IgniteUI.Blazor/latest', packageId: 'IgniteUI.Blazor', noPackagePrefix: true, preserveCase: true, pascalCaseMembers: true },
+            charts:      { docRoot: 'https://staging.infragistics.com/blazor-apis-new/blazor/IgniteUI.Blazor/latest', packageId: 'IgniteUI.Blazor', noPackagePrefix: true, preserveCase: true, pascalCaseMembers: true },
+            grids:       { docRoot: 'https://staging.infragistics.com/blazor-apis-new/blazor/IgniteUI.Blazor/latest', packageId: 'IgniteUI.Blazor', noPackagePrefix: true, preserveCase: true, pascalCaseMembers: true },
+            gauges:      { docRoot: 'https://staging.infragistics.com/blazor-apis-new/blazor/IgniteUI.Blazor/latest', packageId: 'IgniteUI.Blazor', noPackagePrefix: true, preserveCase: true, pascalCaseMembers: true },
+            maps:        { docRoot: 'https://staging.infragistics.com/blazor-apis-new/blazor/IgniteUI.Blazor/latest', packageId: 'IgniteUI.Blazor', noPackagePrefix: true, preserveCase: true, pascalCaseMembers: true },
+            excel:       { docRoot: 'https://staging.infragistics.com/blazor-apis-new/blazor/IgniteUI.Blazor.Documents.Excel/latest', packageId: 'IgniteUI.Blazor.Documents.Excel', noPackagePrefix: true, preserveCase: true, pascalCaseMembers: true },
+            spreadsheet: { docRoot: 'https://staging.infragistics.com/blazor-apis-new/blazor/IgniteUI.Blazor/latest',         packageId: 'IgniteUI.Blazor',         noPackagePrefix: true, preserveCase: true, pascalCaseMembers: true },
+            'grid-lite': { docRoot: 'https://staging.infragistics.com/blazor-apis-new/blazor/IgniteUI.Blazor.GridLite/latest', packageId: 'IgniteUI.Blazor.GridLite', noPackagePrefix: true, preserveCase: true, pascalCaseMembers: true },
         },
         packages: {
             common: 'IgniteUI.Blazor',
@@ -231,7 +231,20 @@ export function getPlatformContext(): PlatformContext {
         } catch { /* use default */ }
     }
 
-    _ctx = PLATFORMS[name];
+    const mode = process.env.DOCS_ENV ?? process.env.NODE_ENV ?? 'development';
+    const apiHost = mode === 'production'
+        ? 'https://www.infragistics.com'
+        : 'https://staging.infragistics.com';
+    const base = PLATFORMS[name];
+    _ctx = {
+        ...base,
+        apiPackages: Object.fromEntries(
+            Object.entries(base.apiPackages).map(([key, pkg]) => [
+                key,
+                { ...pkg, docRoot: pkg.docRoot.replace('https://staging.infragistics.com', apiHost) },
+            ])
+        ),
+    };
     return _ctx;
 }
 
@@ -288,7 +301,8 @@ export function getEnvVars(): Record<string, string> {
     // Fallback: read samplesBrowsers directly from docConfig.json — no generate step needed.
     // This is the only source needed in a full-MDX build where generate.mjs is not run.
     try {
-        const docConfig = JSON.parse(fs.readFileSync(path.resolve(process.cwd(), 'docConfig.json'), 'utf-8'));
+        const projectRoot = process.env.DOCS_PROJECT_ROOT ?? process.cwd();
+        const docConfig = JSON.parse(fs.readFileSync(path.resolve(projectRoot, 'docConfig.json'), 'utf-8'));
         const demosUrl: string = docConfig[name]?.samplesBrowsers?.[mode]
             ?? docConfig[name]?.samplesBrowsers?.['development']
             ?? '';
