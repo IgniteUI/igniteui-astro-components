@@ -3,9 +3,11 @@ import { ClientRouter } from 'astro:transitions';
 import GlobalNavBar from '../../components/GlobalNavBar/GlobalNavBar.astro';
 import GlobalFooter from '../../components/GlobalFooter/GlobalFooter.astro';
 import DocsSubHeader from '../../components/DocsSubHeader/DocsSubHeader.astro';
+import SearchAdvanced from '../../components/SearchAdvanced/SearchAdvanced.astro';
 import MobileSidebarToggle from '../../components/MobileSidebarToggle/MobileSidebarToggle.astro';
 import { widgetScriptSrc, platform as virtualPlatform } from 'virtual:docs-template/nav-html';
 import { title as siteTitle, headEntries } from 'virtual:docs-template/site-meta';
+import type { SidebarEntry } from '../../lib/sidebar/types';
 import '../../styles/ig-theme.scss';
 import '../../styles/custom.scss';
 
@@ -22,9 +24,56 @@ export interface Props {
    * Useful when consuming without `siteMetaIntegration`.
    */
   siteTitle?: string;
+  // ── DocsSubHeader pass-through props ──────────────────────────────────────
+  /** Package names for the package selector. When omitted the selector is hidden. */
+  packages?: string[];
+  /** Currently selected package. */
+  selectedPackage?: string;
+  /** Label before the package selector. Defaults to `'Package'`. */
+  packageLabel?: string;
+  /** Version labels for the version selector. When omitted the selector is hidden. */
+  versions?: string[];
+  /** Currently selected version. */
+  selectedVersion?: string;
+  /** Label before the version selector. Defaults to `'Version'`. */
+  versionLabel?: string;
+  /** Show a light/dark theme toggle button. */
+  showThemeToggle?: boolean;
+  /** `localStorage` key for persisting the theme. Defaults to `'docs-theme'`. */
+  themeStorageKey?: string;
+  /** Override the cross-product navigation links shown in the subheader. */
+  productLinks?: { label: string; href: string; platform?: string }[];
+  /** Override the sidebar tree used for breadcrumb generation. */
+  sidebarItems?: SidebarEntry[];
+  /** Replace the default Search with SearchAdvanced in the subheader. */
+  advancedSearch?: boolean;
+  /** Tab categories for SearchAdvanced (passed through when advancedSearch is true). */
+  searchTabs?: import('../../components/SearchAdvanced/SearchAdvanced.astro').SearchTab[];
+  /** Show scope selector in SearchAdvanced. Defaults to false. */
+  searchShowScope?: boolean;
 }
 
-const { title, description, keywords, hasSidebar = true, currentSlug = '', siteTitle: siteTitleProp } = Astro.props;
+const {
+  title,
+  description,
+  keywords,
+  hasSidebar = true,
+  currentSlug = '',
+  siteTitle: siteTitleProp,
+  packages,
+  selectedPackage,
+  packageLabel,
+  versions,
+  selectedVersion,
+  versionLabel,
+  showThemeToggle,
+  themeStorageKey,
+  productLinks,
+  sidebarItems,
+  advancedSearch = false,
+  searchTabs = [],
+  searchShowScope = false,
+} = Astro.props;
 const resolvedSiteTitle = siteTitleProp ?? siteTitle;
 const navTheme = (virtualPlatform ?? import.meta.env.VITE_NAV_THEME ?? 'igniteui') as string;
 const showGlobalNav = navTheme !== 'none';
@@ -101,7 +150,23 @@ type HeadEntry = { tag: string; attrs?: Record<string, string | boolean | undefi
 <body>
   {showGlobalNav && <GlobalNavBar />}
   <div style={`--docs-global-nav-height: ${showGlobalNav ? '4.7rem' : '0'}`} data-nav-height-wrapper>
-    <DocsSubHeader pageTitle={title} currentSlug={currentSlug} siteTitle={siteTitleProp} />
+    <DocsSubHeader
+      pageTitle={title}
+      currentSlug={currentSlug}
+      siteTitle={siteTitleProp}
+      packages={packages}
+      selectedPackage={selectedPackage}
+      packageLabel={packageLabel}
+      versions={versions}
+      selectedVersion={selectedVersion}
+      versionLabel={versionLabel}
+      showThemeToggle={showThemeToggle}
+      themeStorageKey={themeStorageKey}
+      productLinks={productLinks}
+      sidebarItems={sidebarItems}
+    >
+      {advancedSearch && <SearchAdvanced slot="search" tabs={searchTabs} showScope={searchShowScope} />}
+    </DocsSubHeader>
   </div>
   <div class="page">
     {hasSidebar && (

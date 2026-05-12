@@ -2,7 +2,7 @@
 import DocsLayout from '../../../src/layouts/DocsLayout/DocsLayout.astro';
 import DocsSidebar from '../../../src/components/DocsSidebar/DocsSidebar.astro';
 import DocsToc from '../../../src/components/DocsToc/DocsToc.astro';
-import { SITE_TITLE, SIDEBAR, PRODUCT_LINKS } from '../site-config';
+import { SITE_TITLE, SIDEBAR, PRODUCT_LINKS, SEARCH_TABS, PACKAGES, VERSIONS } from '../site-config';
 
 const headings = [
   { depth: 2, slug: 'pages', text: 'Pages' },
@@ -14,7 +14,11 @@ const headings = [
 ];
 ---
 
-<DocsLayout title="Playground" siteTitle={SITE_TITLE} hasSidebar currentSlug="">
+<DocsLayout title="Playground" siteTitle={SITE_TITLE} hasSidebar currentSlug=""
+  productLinks={PRODUCT_LINKS} showThemeToggle={true}
+  advancedSearch={true} searchTabs={SEARCH_TABS} searchShowScope={true}
+  packages={[...PACKAGES]} selectedPackage={PACKAGES[0]}
+  versions={[...VERSIONS]} selectedVersion={VERSIONS[0]}>
   <DocsSidebar slot="sidebar" items={SIDEBAR} currentSlug="" />
   <DocsToc slot="toc" headings={headings} offsetTarget=".docs-subheader" />
 
@@ -38,6 +42,7 @@ const headings = [
     <h3 id="navigation-components">Navigation components</h3>
     <ul>
       <li><a href="/components/nav-bar">Global nav &amp; footer</a> — top navigation bar and site footer.</li>
+      <li><a href="/components/docs-subheader">DocsSubHeader</a> — secondary fixed bar with breadcrumb, search, package/version selectors, theme toggle, and product links.</li>
     </ul>
 
     <h3 id="mdx-components">MDX components</h3>

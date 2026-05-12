@@ -2,7 +2,7 @@
 import DocsLayout from '../../../../src/layouts/DocsLayout/DocsLayout.astro';
 import DocsSidebar from '../../../../src/components/DocsSidebar/DocsSidebar.astro';
 import DocsToc from '../../../../src/components/DocsToc/DocsToc.astro';
-import { SITE_TITLE, SIDEBAR } from '../../site-config';
+import { SITE_TITLE, SIDEBAR, PRODUCT_LINKS, SEARCH_TABS, PACKAGES, VERSIONS } from '../../site-config';
 
 const slug = 'components/docs-toc';
 
@@ -28,7 +28,11 @@ const headings = [
 ];
 ---
 
-<DocsLayout title="DocsToc" siteTitle={SITE_TITLE} hasSidebar currentSlug={slug}>
+<DocsLayout title="DocsToc" siteTitle={SITE_TITLE} hasSidebar currentSlug={slug}
+  productLinks={PRODUCT_LINKS} showThemeToggle={true}
+  advancedSearch={true} searchTabs={SEARCH_TABS} searchShowScope={true}
+  packages={[...PACKAGES]} selectedPackage={PACKAGES[0]}
+  versions={[...VERSIONS]} selectedVersion={VERSIONS[0]}>
   <DocsSidebar slot="sidebar" items={SIDEBAR} currentSlug={slug} />
   <DocsToc slot="toc" headings={headings} offsetTarget=".docs-subheader" />
 

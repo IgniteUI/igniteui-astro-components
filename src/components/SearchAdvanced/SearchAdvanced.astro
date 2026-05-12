@@ -197,6 +197,7 @@ const resolvedIndexUrl = indexUrl ?? `${import.meta.env.BASE_URL.replace(/\/?$/,
     typeWeight: number;
     kindLabel: string;
     metaLabel: string;
+    packageLabel: string;
   };
 
   const PAGE_KIND_LABEL: Record<string, string> = {
@@ -485,6 +486,7 @@ const resolvedIndexUrl = indexUrl ?? `${import.meta.env.BASE_URL.replace(/\/?$/,
             typeWeight: pageWeight,
             kindLabel: PAGE_KIND_LABEL[page.k] || page.k,
             metaLabel: meta,
+            packageLabel: meta,
           });
         }
 
@@ -502,6 +504,7 @@ const resolvedIndexUrl = indexUrl ?? `${import.meta.env.BASE_URL.replace(/\/?$/,
             typeWeight: pageWeight,
             kindLabel: KIND_CODE_TO_LABEL[kindCode] || kindCode,
             metaLabel: `${page.n} \u00b7 ${page.g}`,
+            packageLabel: meta,
           });
         }
       }
@@ -567,6 +570,7 @@ const resolvedIndexUrl = indexUrl ?? `${import.meta.env.BASE_URL.replace(/\/?$/,
               typeWeight: pageWeight,
               kindLabel: PAGE_KIND_LABEL[page.k] || page.k,
               metaLabel: meta,
+              packageLabel: meta,
             });
           }
 
@@ -584,6 +588,7 @@ const resolvedIndexUrl = indexUrl ?? `${import.meta.env.BASE_URL.replace(/\/?$/,
               typeWeight: pageWeight,
               kindLabel: PAGE_KIND_LABEL[page.k] || page.k,
               metaLabel: meta,
+              packageLabel: meta,
             });
           }
         }
@@ -607,6 +612,7 @@ const resolvedIndexUrl = indexUrl ?? `${import.meta.env.BASE_URL.replace(/\/?$/,
               typeWeight: pageWeight,
               kindLabel: KIND_CODE_TO_LABEL[kindCode] || kindCode,
               metaLabel: `${page.n} \u00b7 ${page.g}`,
+              packageLabel: meta,
             });
           } else if (this.categories.length === 0) {
             // No tabs configured — all results go into one bucket
@@ -622,6 +628,7 @@ const resolvedIndexUrl = indexUrl ?? `${import.meta.env.BASE_URL.replace(/\/?$/,
               typeWeight: pageWeight,
               kindLabel: KIND_CODE_TO_LABEL[kindCode] || kindCode,
               metaLabel: `${page.n} \u00b7 ${page.g}`,
+              packageLabel: meta,
             });
           }
         }
@@ -730,8 +737,8 @@ const resolvedIndexUrl = indexUrl ?? `${import.meta.env.BASE_URL.replace(/\/?$/,
       const nameCategories = this.categories.filter(c => c.kindCodes.includes('__name__'));
       const isNameMatch = nameCategories.some(c => c.id === m.category);
       const subtitle = isNameMatch || m.category === '__all__'
-        ? `<span class="ig-search-kind">${escapeHtml(m.kindLabel)}</span><span class="ig-search-meta">${escapeHtml(m.metaLabel)}</span>`
-        : `<span class="ig-search-kind">${escapeHtml(m.kindLabel)}</span><span class="ig-search-meta">in ${escapeHtml(m.pageName)}</span>`;
+        ? `<span class="ig-search-kind">${escapeHtml(m.packageLabel)}</span>`
+        : `<span class="ig-search-kind">${escapeHtml(m.packageLabel)}</span><span class="ig-search-meta">in ${escapeHtml(m.pageName)}</span>`;
       return `<igc-list-item>
         <a href="${m.url}" class="ig-search-link" slot="title">
           <span class="ig-search-result-title">${highlightedName}</span>
@@ -997,12 +1004,11 @@ const resolvedIndexUrl = indexUrl ?? `${import.meta.env.BASE_URL.replace(/\/?$/,
 	.ig-search-kind {
 		display: inline-block;
 		padding: 0 0.375rem;
-		background: var(--sl-color-gray-6, rgba(0,0,0,0.06));
+		background: var(--sl-color-gray-1, rgba(0,0,0,0.04));
 		border-radius: 0.25rem;
 		font-size: 0.7rem;
-		text-transform: uppercase;
 		letter-spacing: 0.04em;
-		font-weight: 600;
+		font-weight: 500;
 	}
 
 	.ig-search-more {

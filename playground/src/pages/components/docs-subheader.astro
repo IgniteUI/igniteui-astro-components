@@ -1,0 +1,112 @@
+---
+import DocsLayout from '../../../../src/layouts/DocsLayout/DocsLayout.astro';
+import DocsSidebar from '../../../../src/components/DocsSidebar/DocsSidebar.astro';
+import DocsToc from '../../../../src/components/DocsToc/DocsToc.astro';
+import { SITE_TITLE, SIDEBAR, PRODUCT_LINKS, SEARCH_TABS, PACKAGES, VERSIONS } from '../../site-config';
+
+const slug = 'components/docs-subheader';
+
+const headings = [
+  { depth: 2, slug: 'features',          text: 'Features shown above' },
+  { depth: 3, slug: 'breadcrumb',        text: 'Breadcrumb' },
+  { depth: 3, slug: 'advanced-search',   text: 'Advanced search' },
+  { depth: 3, slug: 'package-selector',  text: 'Package selector' },
+  { depth: 3, slug: 'version-selector',  text: 'Version selector' },
+  { depth: 3, slug: 'theme-toggle',      text: 'Theme toggle' },
+  { depth: 3, slug: 'product-links',     text: 'Product links' },
+];
+---
+
+<DocsLayout
+  title="DocsSubHeader"
+  siteTitle={SITE_TITLE}
+  hasSidebar
+  currentSlug={slug}
+  searchTabs={SEARCH_TABS} searchShowScope={true}
+  packages={[...PACKAGES]}
+  selectedPackage={PACKAGES[0]}
+  packageLabel="Package"
+  versions={[...VERSIONS]}
+  selectedVersion={VERSIONS[0]}
+  versionLabel="Version"
+  showThemeToggle={true}
+  productLinks={PRODUCT_LINKS}
+  advancedSearch={true}
+>
+  <DocsSidebar slot="sidebar" items={SIDEBAR} currentSlug={slug} />
+  <DocsToc slot="toc" headings={headings} offsetTarget=".docs-subheader" />
+
+  <main class="content">
+    <h1>DocsSubHeader</h1>
+    <p>
+      The subheader bar above this content is rendered with all available
+      props enabled. Each feature can be toggled independently via the
+      <code>DocsLayout</code> props which are forwarded to
+      <code>DocsSubHeader</code>.
+    </p>
+
+    <h2 id="features">Features shown above</h2>
+
+    <h3 id="breadcrumb">Breadcrumb</h3>
+    <p>
+      The left side derives a breadcrumb from the <code>currentSlug</code>
+      prop by walking the sidebar tree. The crumb trail reads
+      <em>Components / DocsSubHeader</em> for this page.
+      Pass <code>sidebarItems</code> to override the tree used for resolution.
+    </p>
+
+    <h3 id="advanced-search">Advanced search</h3>
+    <p>
+      Setting <code>advancedSearch</code> on <code>DocsLayout</code> (or
+      placing <code>&lt;SearchAdvanced slot="search" /&gt;</code> directly on
+      <code>DocsSubHeader</code>) replaces the default <code>Search</code>
+      button with the tabbed <code>SearchAdvanced</code> dialog. It loads a
+      JSON index from <code>indexUrl</code> and supports configurable tab
+      categories, a scope selector, and a per-category result limit.
+    </p>
+
+    <h3 id="package-selector">Package selector</h3>
+    <p>
+      Pass a <code>packages</code> array and an optional
+      <code>selectedPackage</code> to render an <code>igc-select</code>
+      dropdown. The label can be customised with <code>packageLabel</code>
+      (defaults to <code>"Package"</code>).
+    </p>
+
+    <h3 id="version-selector">Version selector</h3>
+    <p>
+      Pass a <code>versions</code> array and an optional
+      <code>selectedVersion</code> to render a second <code>igc-select</code>
+      dropdown. The label can be customised with <code>versionLabel</code>
+      (defaults to <code>"Version"</code>).
+    </p>
+
+    <h3 id="theme-toggle">Theme toggle</h3>
+    <p>
+      Set <code>showThemeToggle</code> to <code>true</code> to render a
+      sun/moon icon button that toggles <code>data-theme</code> between
+      <code>light</code> and <code>dark</code>. The chosen value is persisted
+      in <code>localStorage</code> under the key specified by
+      <code>themeStorageKey</code> (defaults to <code>"docs-theme"</code>).
+    </p>
+
+    <h3 id="product-links">Product links</h3>
+    <p>
+      Cross-product links are rendered on the right side of the bar. Pass
+      <code>productLinks</code> directly (as done here via
+      <code>PRODUCT_LINKS</code> from <code>site-config.ts</code>) or let
+      them come from the <code>virtual:docs-template/site-meta</code> virtual
+      module. Links whose <code>platform</code> matches the current build
+      platform are automatically hidden.
+    </p>
+  </main>
+</DocsLayout>
+
+<style>
+  .content {
+    max-width: 60rem;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 4rem;
+  }
+  h3 { margin-top: 1.75rem; }
+</style>
