@@ -93,13 +93,13 @@ const crumbs = sidebarCrumbs.length > 0 ? sidebarCrumbs : (pageTitle ? [pageTitl
     <div class="docs-subheader">
     <div class="igd-logo">
         <Fragment set:html={logoRaw} />
-        <h1 class="ig-typography__body-2">IgniteUI</h1>
+        <h1 class="ig-typography__body-2">{resolvedSiteTitle}</h1>
     </div>
 
     <div class="subheader-body">
 
     <!-- Left: title area, takes all free space -->
-    <div class="subheader-context">
+    <!-- <div class="subheader-context">
         {resolvedSiteTitle && <span class="subheader-site-title">{resolvedSiteTitle}</span>}
         {crumbs.map((label: string, i: number) => (
             <>
@@ -107,7 +107,7 @@ const crumbs = sidebarCrumbs.length > 0 ? sidebarCrumbs : (pageTitle ? [pageTitl
                 <span class="subheader-crumb" title={label}>{label}</span>
             </>
         ))}
-    </div>
+    </div> -->
 
     <!-- Search (overridable via named slot) -->
     <slot name="search"><Search /></slot>

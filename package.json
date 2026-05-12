@@ -68,7 +68,7 @@
     "./lib/platform-context": "./src/lib/platform-context.ts",
     "./plugins/remark-docfx": "./src/plugins/remark-docfx.ts",
     "./styles/custom.scss": "./src/styles/custom.scss",
-    "./styles/ig-theme.scss": "./src/styles/ig-theme.scss",
+    "./styles/theme.scss": "./src/styles/theme.scss",
     "./package.json": "./package.json"
   },
   "peerDependencies": {
