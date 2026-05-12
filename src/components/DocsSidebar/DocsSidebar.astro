@@ -53,12 +53,13 @@ const activeId = normalizeSlug(currentSlug);
     //   import { ... } from '@infragistics/igniteui-webcomponents';
     import {
         defineComponents,
+        IgcBadgeComponent,
         IgcInputComponent,
         IgcButtonComponent,
         IgcIconComponent,
     } from 'igniteui-webcomponents';
 
-    defineComponents(IgcInputComponent, IgcButtonComponent, IgcIconComponent);
+    defineComponents(IgcBadgeComponent, IgcInputComponent, IgcButtonComponent, IgcIconComponent);
 
     // Icons (sidebar-filter-search, sidebar-filter-clear) are registered via
     // the icon registry which picks up all SVGs from src/assets/icons/.

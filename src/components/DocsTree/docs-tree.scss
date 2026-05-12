@@ -18,7 +18,7 @@ igc-tree {
 	--ig-size: 1;
 	
 	position: relative;
-	
+
 	&::before {
 		content: '';
 		position: absolute;
@@ -62,7 +62,6 @@ igc-tree[data-variant='toc'] igc-tree-item[selected] > [slot='label'] {
 
 igc-tree-item {
 	--igc-tree-indentation-size: #{rem(20px)};
-	
 	--background: transparent;
 	--foreground: light-dark(var(--ig-gray-600), var(--ig-gray-500));
 	--background-selected: transparent;
@@ -75,6 +74,7 @@ igc-tree-item {
 	--background-active-selected: transparent;
 	--foreground-selected: var(--igd-accent);
 	--foreground-active-selected: var(--igd-accent);
+	
 	
 	a {
 		position: absolute;
@@ -119,6 +119,7 @@ igc-tree-item::part(indicator) {
 
 igc-tree-item::part(label) {
 	width: 100%;
+	max-height: 100%;
 }
 
 igc-tree-item[data-has-children] {
@@ -131,7 +132,7 @@ igc-tree-item[data-has-children] {
 
 .tree-expand-icon {
 	margin-inline-start: auto;
-	margin-inline-end: rem(4px);
+	//margin-inline-end: rem(4px);
 	flex-shrink: 0;
 	color: inherit;
 	transform: rotate(-90deg);
@@ -157,12 +158,18 @@ igc-tree-item[data-has-children] {
 	--foreground-hover: light-dark(var(--ig-gray-900), var(--ig-gray-50));
 }
 
+.docs-tree-label {
+	white-space: normal;
+}
+
 /* Hover accent applies to any linked item (leaf in sidebar, all items in TOC) */
 .docs-tree-link:hover ~ .docs-tree-label {
 	color: var(--igd-accent);
 }
 
 igc-tree[data-variant='sidebar'] {
+	overflow: hidden;
+	
 	igc-tree-item[data-has-children] {
 		--foreground: light-dark(var(--ig-gray-900), var(--ig-gray-50));
 		--foreground-selected: light-dark(var(--ig-gray-900), var(--ig-gray-50));

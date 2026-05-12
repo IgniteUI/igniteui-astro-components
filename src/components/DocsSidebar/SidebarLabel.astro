@@ -27,8 +27,10 @@ const badge = (node.meta?.badge ?? null) as SidebarBadge | null;
 
 {isLeaf ? (
   <>
-    <span class="docs-tree-label">{node.label}</span>
-    {badge && <span class={`sl-badge ${badge.variant}`}>{badge.text}</span>}
+    <div class="igd-lable-and-badge">
+        <span class="docs-tree-label">{node.label}</span>
+        {badge && <igc-badge class={`sidebar-badge ${badge.variant}`}>{badge.text}</igc-badge>}
+    </div>
   </>
 ) : (
   <span class="group-label-text">{node.label}</span>

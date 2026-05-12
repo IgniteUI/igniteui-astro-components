@@ -8,11 +8,63 @@
 	padding-inline: var(--igd-padding-lg);
 	padding-block: calc(var(--igd-padding-lg) + rem(14px));
 	background-color: var(--igd-layout-sections-bg);
-	overflow-y: auto;
 	position: sticky;
 	top: var(--igd-header-height);
 	height: calc(100dvh - var(--igd-header-height));
 	max-height: 100dvh;
 	align-self: start;
 	gap: rem(24px);
+}
+
+.sidebar-scroll {
+	overflow-y: auto;
+	scrollbar-gutter: stable;
+}
+
+igc-badge.sidebar-badge {
+	margin-inline-start: auto;
+	flex-shrink: 0;
+	font-size: rem(10px);
+	font-weight: 600;
+	letter-spacing: 0.04em;
+
+	&.updated {
+		--ig-badge-background: var(--igd-updated-bg);
+		--ig-badge-color: var(--igd-updated-color);
+		outline: rem(1px) solid var(--igd-updated-border);
+	}
+
+	&.new {
+		--ig-badge-background: var(--igd-new-bg);
+		--ig-badge-color: var(--igd-new-color);
+		outline: rem(1px) solid var(--igd-new-border);
+	}
+
+	&.preview {
+		--ig-badge-background: var(--igd-preview-bg);
+		--ig-badge-color: var(--igd-preview-color);
+		outline: rem(1px) solid var(--igd-preview-border);
+	}
+
+	&.premium {
+		--ig-badge-background: var(--igd-premium-bg);
+		--ig-badge-color: var(--igd-premium-color);
+		outline: rem(1px) solid var(--igd-premium-border);
+	}
+
+	&.default {
+		--ig-badge-background: light-dark(var(--ig-gray-100), var(--ig-gray-800));
+		--ig-badge-color: light-dark(var(--ig-gray-700), var(--ig-gray-300));
+		outline: rem(1px) solid light-dark(var(--ig-gray-300), var(--ig-gray-600));
+	}
+}
+
+.igd-lable-and-badge {
+	display: flex;
+	align-items: center;
+	gap: rem(4px);
+	
+	igc-badge {
+		margin-inline-start: auto;
+	}
 }
