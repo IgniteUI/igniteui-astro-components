@@ -47,6 +47,7 @@
 	display: flex;
 	align-items: center;
 	margin-inline-start: auto;
+	gap: rem(4px);
 
 	span {
 		@include type-style('detail-1', false) {

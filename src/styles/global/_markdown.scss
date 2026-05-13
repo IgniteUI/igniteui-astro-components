@@ -5,6 +5,7 @@
 // Read the generated --ig-* vars directly to avoid the warning.
 .igd-main-content__markdown {
 	padding: var(--igd-page-padding);
+	min-width: 0;
 	
 	pre,
 	code {
@@ -34,12 +35,14 @@
 		li {
 			@include type-style('body-1') {
 				margin: 0;
-			};
+			}
+		;
 			
 			> strong {
 				@include type-style('subtitle-2') {
 					margin: 0;
-				};
+				}
+			;
 			}
 			
 			color: var(--ig-gray-700);
@@ -50,7 +53,7 @@
 			}
 		}
 		
-		p,h1,h2,h3,h4,h5,h6:only-child {
+		p, h1, h2, h3, h4, h5, h6:only-child {
 			margin: 0;
 		}
 		
@@ -118,27 +121,63 @@
 		margin-bottom: rem(26px)
 	}
 	
-	image, table {
-		width: 100%;
-	}
-	
 	image {
+		width: 100%;
 		max-width: 100%;
 		aspect-ratio: 1;
 	}
+}
+
+// Scroll container — wraps every <table> (injected by rehypeTableWrapper).
+// Technique from https://piccalil.li/blog/styling-tables-the-modern-css-way/
+.igd-table-wrapper {
+	overflow: auto;
+	max-height: var(--igd-table-max-height);
+	border: rem(1px) solid var(--igd-table-border-color);
 	
-	
-	> .igd-table,
-	> table {
-		font-family: Arial, Helvetica, sans-serif;
+	table {
+		font-family: inherit;
 		border-collapse: collapse;
-		width: 100%;
+		
+		// Ensure the table is at least as wide as its container but can grow
+		// wider for many columns — enabling horizontal scroll in the wrapper.
+		width: max(max-content, 100%);
 		color: var(--igd-table-fg);
 		
+		th {
+			white-space: nowrap;
+		}
+		
 		td, th {
-			border: rem(1px) solid var(--igd-table-border-color);
+			// Only row borders — no column dividers.
+			border-block: rem(1px) solid var(--igd-table-border-color);
+			border-inline: none;
 			padding-block: rem(16px);
 			padding-inline: rem(24px);
+			vertical-align: baseline;
+		}
+		
+		// First row: no top border — the wrapper provides it.
+		thead tr:first-child th,
+		tbody tr:first-child td,
+		tbody tr:first-child th {
+			border-block-start: none;
+		}
+		
+		// Last row: no bottom border — the wrapper provides it.
+		tbody tr:last-child td,
+		tbody tr:last-child th,
+		tfoot tr:last-child td,
+		tfoot tr:last-child th {
+			border-block-end: none;
+		}
+		
+		thead th {
+			vertical-align: bottom;
+			
+			// Remove the cell's own bottom border — the ::after pseudo-element
+			// on the sticky rule below provides the single 2px line.
+			border-block-end: none;
 		}
 		
 		// ZEBRA EFFECT, by default there is no zebra!
@@ -146,7 +185,7 @@
 			background-color: var(--igd-table-bg);
 		}
 		
-		tr:nth-child(even){
+		tr:nth-child(even) {
 			background-color: var(--igd-tabe-row-even-bg);
 		}
 		
@@ -156,8 +195,61 @@
 		
 		th {
 			text-align: left;
-			background-color: (--igd-table-header-bg);
+			background-color: var(--igd-table-header-bg);
 			color: var(--igd-table-header-fg);
+		}
+		
+		// Sticky header row
+		thead th {
+			position: sticky;
+			top: 0;
+			z-index: 2;
+			
+			// ::before for the bottom border so it doesn't conflict with the
+			// ::after column separator on th:first-child (both are the same element).
+			&::before {
+				content: '';
+				position: absolute;
+				inset-block-end: 0;
+				inset-inline-start: 0;
+				width: 100%;
+				height: var(--igd-table-pinned-border-size);
+				background: var(--igd-table-border-color);
+			}
+		}
+		
+		// Sticky first column
+		th:first-child {
+			// Each cell needs its own background so content doesn't bleed through.
+			background-color: var(--igd-table-header-bg);
+		}
+		
+		td:first-child {
+			// Each cell needs its own background so content doesn't bleed through.
+			background-color: var(--igd-table-bg);
+		}
+		
+		th:first-child,
+		td:first-child {
+			position: sticky;
+			inset-inline-start: 0;
+			
+			&::after {
+				content: '';
+				position: absolute;
+				inset-block-start: 0;
+				inset-inline-end: 0;
+				width: var(--igd-table-pinned-border-size);
+				height: 100%;
+				background: var(--igd-table-border-color);
+			}
+		}
+		
+		// Sticky first header cell sits above both axes — needs header background.
+		thead th:first-child,
+		tfoot th:first-child {
+			background-color: var(--igd-table-header-bg);
+			z-index: 3;
 		}
 	}
 }

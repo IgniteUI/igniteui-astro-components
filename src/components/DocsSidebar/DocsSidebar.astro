@@ -40,7 +40,9 @@ const activeId = normalizeSlug(currentSlug);
 ---
 
 <sidebar-filter class="docs-sidebar" id="docs-sidebar" data-no-results="No topics match">
-    <SidebarFilterInput/>
+    <div class="sidebar-gutter">
+        <SidebarFilterInput/>
+    </div>
     <div class="sidebar-scroll" data-sidebar-scroll>
         <DocsTree
             nodes={ nodes }

@@ -29,6 +29,16 @@
 		transition: transform 250ms ease, box-shadow 250ms ease;
 		box-shadow: none;
 	}
+	
+	.sidebar-gutter {
+		overflow-y: hidden;
+		scrollbar-gutter: stable;
+		
+		// This Makes sure the input border is visible
+		// This is the height of the input in fluent theme + 8px padding
+		// TODO this can be made smart using a css variable to override the original height of the input and used here
+		min-height: rem(40px);
+	}
 }
 
 // Overlay backdrop — only visible on tablet when sidebar is open.

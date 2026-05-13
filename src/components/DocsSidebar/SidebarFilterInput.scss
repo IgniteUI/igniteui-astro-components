@@ -32,6 +32,11 @@ igc-input::part(container) {
 	
 	border-radius: 0;
 	padding-inline: rem(16px);
+	
+	// TODO make this more stable using css vars
+	// padding-inline-end is 8px(padding) - 5px(scrollbar width)
+	padding-inline-end: rem(3px);
+	
 	padding-block-end: rem(8px);
 	
 	&::before {
