@@ -1,3 +1,14 @@
+import type { PlatformContext } from './lib/types.ts';
+
+declare global {
+  namespace App {
+    interface Locals {
+      platformContext?: PlatformContext;
+      envVars?: Record<string, string>;
+    }
+  }
+}
+
 declare module 'virtual:docs-template/site-meta' {
   export const sidebar: { label: string; slug?: string; items?: unknown[] }[];
   export const title: string;
@@ -13,6 +24,8 @@ declare module 'virtual:docs-template/site-meta' {
     attrs?: Record<string, string | boolean | undefined>;
     content?: string;
   }>;
+  /** Astro trailingSlash config value: 'always' | 'never' | 'ignore'. */
+  export const trailingSlash: 'always' | 'never' | 'ignore';
 }
 
 import type { NavLang, NavTheme } from './platform.ts';
