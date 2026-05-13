@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mock Demo</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #f0f4ff 0%, #e8f0fe 100%);
+      color: #333;
+      gap: 1rem;
+    }
+    .badge {
+      background: #4c6ef5;
+      color: #fff;
+      border-radius: 999px;
+      padding: 0.25rem 0.75rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+    h1 { font-size: 1.5rem; font-weight: 700; color: #1a1a2e; }
+    p  { font-size: 0.9rem; color: #666; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+    }
+    .cell {
+      background: #fff;
+      border: 1px solid #dde3f0;
+      border-radius: 6px;
+      padding: 0.5rem 1rem;
+      font-size: 0.8rem;
+      color: #555;
+    }
+    .cell:first-child { color: #4c6ef5; font-weight: 600; }
+  </style>
+</head>
+<body>
+  <span class="badge">Live Demo</span>
+  <h1>Mock Sample Component</h1>
+  <p>This placeholder represents an embedded demo iframe.</p>
+  <div class="grid">
+    <div class="cell">Column A</div>
+    <div class="cell">Column B</div>
+    <div class="cell">Column C</div>
+    <div class="cell">Row 1</div>
+    <div class="cell">Row 1</div>
+    <div class="cell">Row 1</div>
+    <div class="cell">Row 2</div>
+    <div class="cell">Row 2</div>
+    <div class="cell">Row 2</div>
+  </div>
+</body>
+</html>

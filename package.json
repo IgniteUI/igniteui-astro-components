@@ -65,7 +65,7 @@
     "./components/mdx/Sample.astro": "./src/components/mdx/Sample/Sample.astro",
     "./lib/sidebar/types": "./src/lib/sidebar/types.ts",
     "./lib/sidebar/helpers": "./src/lib/sidebar/helpers.ts",
-    "./lib/platform-context": "./src/lib/platform-context.ts",
+    "./lib/types": "./src/lib/types.ts",
     "./plugins/remark-docfx": "./src/plugins/remark-docfx.ts",
     "./styles/custom.scss": "./src/styles/custom.scss",
     "./styles/ig-theme.scss": "./src/styles/ig-theme.scss",

@@ -1,0 +1,121 @@
+---
+/**
+ * Playground-only component that renders a fully pre-baked Sample widget shell.
+ * All tabs are server-rendered so the playground does not need a real demos server.
+ * sample-widget.ts wires tab switching and copy buttons on the client.
+ */
+
+interface CodeTab {
+    label: string;
+    lang:  string;
+    content: string;
+}
+
+interface Props {
+    id: string;
+    src?: string;
+    height?: number;
+    alt?: string;
+    tabs?: CodeTab[];
+}
+
+const { id, src = '/mock-demo', height = 400, alt = 'React Example', tabs } = Astro.props;
+
+const exampleTabId = `${id}-example`;
+
+const defaultTabs: CodeTab[] = [
+    {
+        label: 'TSX',
+        lang:  'tsx',
+        content: `import React from 'react';
+import { IgrGrid, IgrColumn, IgrGridModule } from 'igniteui-react-grids';
+import 'igniteui-react-grids/grids/themes/light/bootstrap.css';
+import './GridSample.css';
+
+IgrGridModule.register();
+
+const DATA = [
+  { ID: 1, Name: 'Alice Johnson', Age: 32, City: 'London',  Role: 'Engineer'  },
+  { ID: 2, Name: 'Bob Martinez',  Age: 28, City: 'Berlin',  Role: 'Designer'  },
+  { ID: 3, Name: 'Carol Zhang',   Age: 35, City: 'Tokyo',   Role: 'Manager'   },
+  { ID: 4, Name: 'David Kim',     Age: 41, City: 'Seoul',   Role: 'Architect' },
+  { ID: 5, Name: 'Eve Mueller',   Age: 29, City: 'Vienna',  Role: 'Engineer'  },
+];
+
+export default function GridSample() {
+  return (
+    <div className="grid-wrapper">
+      <IgrGrid data={DATA} height="340px" width="100%" primaryKey="ID">
+        <IgrColumn field="ID"   header="ID"   dataType="number" width="80px"  />
+        <IgrColumn field="Name" header="Name" sortable={true}   width="180px" />
+        <IgrColumn field="Age"  header="Age"  dataType="number" width="100px" />
+        <IgrColumn field="City" header="City" sortable={true}   width="140px" />
+        <IgrColumn field="Role" header="Role" sortable={true}                 />
+      </IgrGrid>
+    </div>
+  );
+}`,
+    },
+    {
+        label: 'CSS',
+        lang:  'css',
+        content: `.grid-wrapper {
+  padding: 16px;
+}`,
+    },
+];
+
+const resolvedTabs: CodeTab[] = tabs ?? defaultTabs;
+
+function tabId(index: number) { return `${id}-code-${index}`; }
+---
+
+<div class="code-view"
+     id={id}
+     data-iframe-src={src}
+     data-demos-base-url=""
+     data-github-src={src.replace(/^\//, '')}
+     data-platform="react">
+
+  <div class="code-view-navbar">
+    <div class="code-view-tab--active" data-tab-id={exampleTabId}>EXAMPLE</div>
+    {resolvedTabs.map((tab, i) => (
+      <div class="code-view-tab" data-tab-id={tabId(i)}>{tab.label}</div>
+    ))}
+    <span class="fs-button-container" title="Expand to fullscreen"></span>
+  </div>
+
+  <div class="code-views-container">
+
+    <div id={exampleTabId}
+         class="sample-container code-view-tab-content loading"
+         style={`height: ${height}px`}>
+      <iframe
+        data-src={src}
+        title={alt}
+        style="width: 100%; height: 100%;"
+        frameborder="0"
+        seamless
+      ></iframe>
+    </div>
+
+    {resolvedTabs.map((tab, i) => (
+      <div id={tabId(i)} class="code-view-tab-content" style="display: none">
+        <pre class="code-wrapper"><code class={`language-${tab.lang}`}>{tab.content}</code><button class="cv-hljs-code-copy hidden">COPY CODE</button></pre>
+      </div>
+    ))}
+
+  </div>
+
+  <div class="editing-buttons-container">
+    <span class="editing-label">Edit in: </span>
+    <button class="codesandbox-btn">CodeSandbox</button>
+    <button class="stackblitz-btn">StackBlitz</button>
+  </div>
+
+</div>
+
+<script>
+  import { initSampleWidgets } from '../../../src/scripts/sample-widget';
+  document.addEventListener('astro:page-load', initSampleWidgets);
+</script>

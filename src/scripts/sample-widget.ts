@@ -466,6 +466,25 @@ export function initSampleWidgets(): void {
         // Wire click handler onto the pre-rendered EXAMPLE tab.
         exampleTab?.addEventListener('click', () => activateTab(exampleTab));
 
+        // Wire pre-rendered code tabs (e.g. MockSample in the playground).
+        navbar.querySelectorAll<HTMLElement>('.code-view-tab').forEach(tab => {
+            tab.addEventListener('click', () => activateTab(tab));
+        });
+        container.querySelectorAll<HTMLElement>('.code-wrapper').forEach(pre => {
+            const btn  = pre.querySelector<HTMLButtonElement>('.cv-hljs-code-copy');
+            const code = pre.querySelector<HTMLElement>('code');
+            if (!btn || !code) return;
+            pre.addEventListener('mouseenter', () => btn.classList.remove('hidden'));
+            pre.addEventListener('mouseleave', () => btn.classList.add('hidden'));
+            btn.addEventListener('click', () => {
+                navigator.clipboard.writeText(code.textContent ?? '').then(() => {
+                    const orig = btn.textContent!;
+                    btn.textContent = 'COPIED!';
+                    setTimeout(() => { btn.textContent = orig; }, 1500);
+                });
+            });
+        });
+
         // Fullscreen button: open the iframe URL in a new tab.
         if (fsBtn && iframe) {
             fsBtn.addEventListener('click', () => {
