@@ -33,6 +33,8 @@ export const SIDEBAR: SidebarEntry[] = [
       { label: 'Nav Bar', slug: 'components/nav-bar' },
       { label: 'DocsSubHeader', slug: 'components/docs-subheader' },
       { label: 'DocsToc', slug: 'components/docs-toc' },
+      { label: 'Search', slug: 'components/search' },
+      { label: 'SearchAdvanced', slug: 'components/search-advanced' },
       {
         label: 'MDX Helpers',
         collapsed: true,
