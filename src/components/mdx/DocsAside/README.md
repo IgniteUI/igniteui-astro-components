@@ -1,6 +1,6 @@
 # DocsAside
 
-Renders a styled callout block (note, tip, warning, or danger) with a type-specific icon, color accent, and accessible label. Use it in MDX pages to surface important information inline.
+Renders a styled callout block (note, info, warning, or danger) with a type-specific icon, color accent, and accessible label. Use it in MDX pages to surface important information inline.
 
 ## Import
 
@@ -12,8 +12,8 @@ import DocsAside from 'igniteui-astro-components/components/mdx/DocsAside.astro'
 
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
-| `type` | `'note' \| 'tip' \| 'warning' \| 'danger'` | `'note'` | Semantic variant — controls the color accent and default icon. |
-| `title` | `string` | auto | Override the heading text. Defaults to the capitalised `type` name (`Note`, `Tip`, `Warning`, `Danger`). |
+| `type` | `'note' \| 'info' \| 'warning' \| 'danger'` | `'note'` | Semantic variant — controls the color accent and default icon. |
+| `title` | `string` | auto | Override the heading text. Defaults to the capitalised `type` name (`Note`, `Info`, `Warning`, `Danger`). |
 | `color` | `string` | — | Override the accent color via the `--aside-color` CSS custom property. Accepts any valid CSS color value. |
 | `icon` | `string` | auto | Override the icon with raw SVG markup. Pass an empty string `""` to suppress the icon entirely. |
 | `class` | `string` | — | Additional CSS class(es) to add to the `<aside>` element. |
@@ -26,8 +26,8 @@ import DocsAside from 'igniteui-astro-components/components/mdx/DocsAside.astro'
   This is a general note.
 </DocsAside>
 
-{/* Tip variant */}
-<DocsAside type="tip">
+{/* Info variant */}
+<DocsAside type="info">
   Use keyboard shortcuts to speed up your workflow.
 </DocsAside>
 
@@ -47,8 +47,8 @@ import DocsAside from 'igniteui-astro-components/components/mdx/DocsAside.astro'
 </DocsAside>
 
 {/* No icon */}
-<DocsAside type="tip" icon="">
-  This tip has no icon.
+<DocsAside type="info" icon="">
+  This info has no icon.
 </DocsAside>
 ```
 
@@ -56,8 +56,8 @@ import DocsAside from 'igniteui-astro-components/components/mdx/DocsAside.astro'
 
 | `type` | Accent color | Default title |
 |--------|-------------|---------------|
-| `note` | Blue | Note |
-| `tip` | Green | Tip |
+| `note` | Gray | Note |
+| `info` | Blue | Info |
 | `warning` | Amber | Warning |
 | `danger` | Red | Danger |
 
