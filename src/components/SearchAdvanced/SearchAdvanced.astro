@@ -62,12 +62,21 @@ const {
 } = Astro.props;
 
 const ctrlKey = 'Ctrl';
-const resolvedIndexUrl = indexUrl ?? `${import.meta.env.BASE_URL.replace(/\/?$/, '/')}api-search-index/manifest.json`;
+// Strip any origin (scheme + host) from BASE_URL so only the path prefix is
+// used. When Astro builds in SSG mode the Node.js process may have
+// process.env.BASE_URL set to a full URL (e.g. "http://localhost:4567") which
+// leaks into import.meta.env.BASE_URL for server-side template expressions and
+// causes the data attributes to embed an absolute origin that breaks previews.
+const rawBase = import.meta.env.BASE_URL ?? '/';
+const basePath = (() => {
+  try { return new URL(rawBase).pathname; } catch { return rawBase; }
+})().replace(/\/?$/, '/');
+const resolvedIndexUrl = indexUrl ?? `${basePath}api-search-index/manifest.json`;
 ---
 
 <api-search-advanced
   class={className}
-  data-base={import.meta.env.BASE_URL.replace(/\/?$/, '/')}
+  data-base={basePath}
   data-index-url={resolvedIndexUrl}
   data-tabs={JSON.stringify(tabs)}
   data-all-tab-limit={allTabLimit}
