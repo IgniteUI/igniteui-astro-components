@@ -19,11 +19,6 @@ const { lang } = Astro.props as Props;
 
 const resolvedLang = lang;
 
-const isJa = resolvedLang === 'jp';
-const isKr = resolvedLang === 'kr';
-
-const igBase = isJa ? 'https://jp.infragistics.com' : 'https://www.infragistics.com';
-
 // Fetch nav HTML directly (cached per locale per build).
 const igNav = await fetchIgNav(resolvedLang);
 ---
@@ -35,44 +30,4 @@ const igNav = await fetchIgNav(resolvedLang);
 <div class={styles.navBar} transition:persist="global-nav-bar">
   {/* IG nav — fetched directly via fetchIgNav(); falls back to static markup */}
   {igNav?.prefetched && <Fragment set:html={igNav.headerHtml} />}
-
-  {/* Static fallback — rendered when the fetch is unavailable (offline build) */}
-  {!igNav?.prefetched && (
-  <header id="header" class="globalnav" data-nav-auto-init="false">
-    <section id="header-wrap" class="globalnav__container" data-default-height="175" data-sticky-height="60">
-      <section class="globalnav__primary clearfix">
-        <div class="globalnav__wrapper">
-          <div class="globalnav__brand">
-            <a href={igBase}>
-              <img class="globalnav__logo" src="https://static.infragistics.com/marketing/Website/products/ignite-ui/ignite-ui-logo.svg" alt="Infragistics Logo" />
-            </a>
-          </div>
-          <nav class="globalnav__nav">
-            {isJa ? (
-              <ul class="globalnav__menu">
-                <li class="globalnav__item"><a class="globalnav__link" href="https://jp.infragistics.com/products">製品</a></li>
-                <li class="globalnav__item"><a class="globalnav__link" href="https://jp.infragistics.com/community/blogs">ブログ</a></li>
-                <li class="globalnav__item"><a class="globalnav__link" href="https://jp.infragistics.com/support">サポート</a></li>
-              </ul>
-            ) : isKr ? (
-              <ul class="globalnav__menu">
-                <li class="globalnav__item"><a class="globalnav__link" href="https://www.infragistics.com/products">제품</a></li>
-                <li class="globalnav__item"><a class="globalnav__link" href="https://www.infragistics.com/community/blogs">블로그</a></li>
-                <li class="globalnav__item"><a class="globalnav__link" href="https://www.infragistics.com/support">지원</a></li>
-              </ul>
-            ) : (
-              <ul class="globalnav__menu">
-                <li class="globalnav__item"><a class="globalnav__link" href="https://www.infragistics.com/products">Products</a></li>
-                <li class="globalnav__item"><a class="globalnav__link" href="https://www.infragistics.com/community/blogs">Blog</a></li>
-                <li class="globalnav__item"><a class="globalnav__link" href="https://www.infragistics.com/support">Support</a></li>
-              </ul>
-            )}
-          </nav>
-          <div class="globalnav__overlay"></div>
-        </div>
-      </section>
-    </section>
-  </header>
-  )}
-
 </div>
