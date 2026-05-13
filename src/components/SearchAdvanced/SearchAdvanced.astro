@@ -421,7 +421,7 @@ const resolvedIndexUrl = indexUrl ?? `${basePath}api-search-index/manifest.json`
       (this.input as unknown as { requestUpdate(): void }).requestUpdate?.();
 
       if (!q) {
-        await this.runBrowse();
+        this.clearResults();
         return;
       }
 
@@ -444,6 +444,13 @@ const resolvedIndexUrl = indexUrl ?? `${basePath}api-search-index/manifest.json`
       }
       this.renderTabs();
       this.renderResults();
+    }
+
+    private clearResults() {
+      this.statusEl.textContent = '';
+      this.tabsEl.hidden = true;
+      this.resultsEl.innerHTML = '';
+      this.currentMatches = new Map();
     }
 
     private async runBrowse() {
