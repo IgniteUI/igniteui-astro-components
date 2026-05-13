@@ -3,10 +3,9 @@
 Reusable [Astro](https://astro.build) components, layouts, integrations, and
 utilities used to build Infragistics / Ignite UI documentation sites.
 
-This package replaces the default [Starlight](https://starlight.astro.build)
-chrome (navbar, sidebar, search, page frame, MDX components) with
-project-specific implementations while keeping the integration story simple
-for consumer repos.
+This package provides the navbar, sidebar, search, page frame, and MDX
+components for Infragistics documentation sites, keeping the integration
+story simple for consumer repos.
 
 > **Status:** internal — published from this repo as a parallel copy of the
 > components living in `docs-template`. Both trees are kept in sync until
@@ -73,7 +72,7 @@ export { default as Sample }       from 'igniteui-astro-components/components/md
 Pull in the base styles once (e.g. from your root layout or `astro.config`):
 
 ```ts
-import 'igniteui-astro-components/styles/custom.css';
+import 'igniteui-astro-components/styles/custom.scss';
 import 'igniteui-astro-components/styles/ig-theme.scss';
 ```
 
@@ -234,7 +233,7 @@ const sidebar: SidebarEntry[] = [/* … your tree … */];
 
 | Export | Purpose | Docs |
 | --- | --- | --- |
-| `…/components/GlobalNavBar.astro` | IG / AppBuilder global navigation bar | [README](src/components/GlobalNavBar/README.md) |
+| `…/components/GlobalNavBar.astro` | IG global navigation bar | [README](src/components/GlobalNavBar/README.md) |
 | `…/components/GlobalFooter.astro` | IG global footer | [README](src/components/GlobalFooter/README.md) |
 | `…/components/DocsSubHeader.astro` | Secondary fixed bar — site title + breadcrumb + product links + search | [README](src/components/DocsSubHeader/README.md) |
 | `…/components/Search.astro` | Pagefind-powered full-text search modal | [README](src/components/Search/README.md) |
@@ -272,13 +271,15 @@ const sidebar: SidebarEntry[] = [/* … your tree … */];
 | `…/content` | Content collection helpers |
 | `…/content-config` | Default content collection schema |
 | `…/llms` | `llms.txt` manifest generator |
-| `…/plugins/remark-docfx` | Remark plugin for docfx-flavored Markdown quirks |
+| `…/plugins/remark-env-vars` | Remark plugin — `{Environment.X}` token substitution |
+| `…/plugins/remark-md-links` | Remark plugin — `.md` → slug link rewriting + `DOCS_BASE` prepending |
+| `…/plugins/remark-html-transforms` | Remark plugin — divider→`<hr>`, code lang normalization, img src fixes |
 
 ### Styles
 
 | Export | Purpose |
 | --- | --- |
-| `…/styles/custom.css` | Base tokens + sidebar/code-view/sample styles |
+| `…/styles/custom.scss` | Base tokens + sidebar/sample styles |
 | `…/styles/ig-theme.scss` | IG color palette mapped to design tokens |
 
 ---

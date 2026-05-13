@@ -1,6 +1,6 @@
 # GlobalFooter
 
-Renders the platform-appropriate global footer in the light DOM. Supports the same platform themes as `GlobalNavBar`.
+Renders the global footer in the light DOM.
 
 ## Import
 
@@ -10,16 +10,13 @@ import GlobalFooter from 'igniteui-astro-components/components/GlobalFooter.astr
 
 ## Props
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `theme` | `NavTheme` | virtual module value | Override the platform theme for this instance. |
-| `lang` | `NavLang` | virtual module value | Override the locale (`'en'` \| `'jp'` \| `'kr'`). |
+| Prop | Type | Description |
+|------|------|-------------|
+| `lang` | `NavLang` | **Required.** Locale — `'en'` \| `'jp'` \| `'kr'`. |
 
 ## Behaviour
 
-- **Pre-build path** — renders pre-fetched footer HTML when available.
-- **Static fallback** — falls back to a minimal server-side footer in dev.
-- Separate from Starlight's own Footer override. If you are using Starlight, mount this component *inside* the Starlight Footer override so both footers appear in the correct order.
+- Fetches the IG footer HTML at build time via `fetchIgNav(lang)`.
 
 ## Example
 
@@ -27,9 +24,9 @@ import GlobalFooter from 'igniteui-astro-components/components/GlobalFooter.astr
 ---
 import GlobalFooter from 'igniteui-astro-components/components/GlobalFooter.astro';
 ---
-<GlobalFooter />
+<GlobalFooter lang="en" />
 ```
 
 ## Configuration
 
-Same as `GlobalNavBar` — set `platform` and `navLang` in `createDocsSite()`.
+Same as `GlobalNavBar` — `lang` is provided automatically by `DocsLayout` from `navLang` in `virtual:docs-template/site-meta`.

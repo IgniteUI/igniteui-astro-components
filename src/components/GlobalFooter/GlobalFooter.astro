@@ -2,88 +2,38 @@
 /**
  * GlobalFooter
  *
- * Renders the platform-appropriate global footer directly in the light DOM.
- * This component is separate from Starlight's own Footer override (which
- * provides the "Edit this page" link and pagination). Mount it INSIDE the
- * Starlight Footer override to place it below the docs navigation footer.
+ * Renders the IG global footer directly in the light DOM.
  *
  * Props:
- *   theme – product theme (default: 'angular')
- *   lang  – locale       (default: 'en')
+ *   lang – locale (default: 'en')
  */
 interface Props {
-  /** Override the platform for this instance. Defaults to virtual module value. */
-  theme?: NavTheme;
-  /** Override the locale. Defaults to virtual module navLang. */
-  lang?: NavLang;
+  lang: NavLang;
 }
 
-import {
-  platform as virtualPlatform,
-  navLang as virtualNavLang,
-  abPrefetched, abFooterHtml, abFooterUtilsHtml, abFooterCopyrightHtml, abContactSalesHtml,
-} from 'virtual:docs-template/nav-html';
 import { fetchIgNav } from '../../lib/nav-helpers.ts';
 import styles from './GlobalFooter.module.scss';
-import type { NavLang, NavTheme } from '../../platform.ts';
+import type { NavLang } from '../../platform.ts';
 
-const { theme, lang } = Astro.props as Props;
+interface Props {
+  lang: NavLang;
+}
 
-// Props override the virtual module values (allows per-page overrides)
-const resolvedPlatform = theme ?? virtualPlatform ?? 'igniteui';
-const resolvedLang = (lang ?? virtualNavLang ?? 'en') as NavLang;
+const { lang } = Astro.props as Props;
 
-const isAppBuilder = resolvedPlatform === 'appbuilder';
-const isIgPlatform = !isAppBuilder;
+const resolvedLang = lang;
 
-// For IG platforms, fetch footer HTML directly (cached per locale per build).
-const igNav = isIgPlatform ? await fetchIgNav(resolvedLang) : null;
+// Fetch footer HTML directly (cached per locale per build).
+const igNav = await fetchIgNav(resolvedLang);
 ---
 <div class={styles.footer} data-igd-footer>
 
 {/* === IgniteUI / default Infragistics footer — fetched via fetchIgNav() === */}
 {
-  isIgPlatform && igNav?.prefetched && (
+  igNav?.prefetched && (
     <>
       <Fragment set:html={igNav.uiFooterHtml} />
       {igNav.footerHtml && <Fragment set:html={igNav.footerHtml} />}
-    </>
-  )
-}
-
-{/* === AppBuilder footer (prebuild) === */}
-{
-  isAppBuilder && abPrefetched && (
-    <>
-      {abContactSalesHtml && <Fragment set:html={abContactSalesHtml} />}
-      <Fragment set:html={abFooterHtml} />
-      {abFooterUtilsHtml && <Fragment set:html={abFooterUtilsHtml} />}
-      {abFooterCopyrightHtml && <Fragment set:html={abFooterCopyrightHtml} />}
-
-      <script is:inline>
-        window.addEventListener('load', function () {
-          if (window.leadTracker && typeof window.leadTracker.execute === 'function') {
-            window.leadTracker.execute({
-              macro: 'LeadTracker', lang: 'en',
-              leadFormID: 'lead-form_2',
-              reaptchaKey: '6Lc-MFAaAAAAAIWi7UOrSUfUZnVmDUSsXjzS4BgY',
-              redirectUrl: '', thankYouMessage: '1',
-              formContainerId: 'modal-contact-sales-pricing',
-              productCode: 'B7', leadProductCode: '', packageName: '',
-              productResourceType: '', osSupport: '', installerType: '',
-              eventTypeParam: 'contact sales', eventDetailParam: 'form submitted',
-              prohibitFreeMail: true, showRequestDemo: false,
-              googleEventType: 'Form Submit',
-              googleEventLabel: 'Slingshot - Contact Sales Pricing',
-              googleEventTypeDownload: '', googleEventLabelDownload: '',
-              zoomWebinarId: ''
-            });
-          }
-          if (window.customModal && typeof window.customModal.init === 'function') {
-            window.customModal.init();
-          }
-        });
-      </script>
     </>
   )
 }

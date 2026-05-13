@@ -10,7 +10,7 @@ import DocsSubHeader from '../../components/DocsSubHeader/DocsSubHeader.astro';
 import DocsBreadcrumb from '../../components/DocsBreadcrumb/DocsBreadcrumb.astro';
 import MobileSidebarToggle from '../../components/MobileSidebarToggle/MobileSidebarToggle.astro';
 import { widgetScriptSrc, platform as virtualPlatform } from 'virtual:docs-template/nav-html';
-import { title as siteTitle, headEntries } from 'virtual:docs-template/site-meta';
+import { title as siteTitle, headEntries, navLang } from 'virtual:docs-template/site-meta';
 import '../../styles/theme.scss';
 import '../../styles/custom.scss';
 import './DocsLayout.scss';
@@ -56,7 +56,6 @@ type HeadEntry = { tag: string; attrs?: Record<string, string | boolean | undefi
   <ClientRouter />
   <script is:inline>
     // Force light theme on load and after every View Transitions swap
-    try { localStorage.setItem('starlight-theme', 'light'); } catch (_) {}
     document.documentElement.setAttribute('data-theme', 'light');
     document.addEventListener('astro:after-swap', function () {
       document.documentElement.setAttribute('data-theme', 'light');
@@ -144,7 +143,7 @@ type HeadEntry = { tag: string; attrs?: Record<string, string | boolean | undefi
 </head>
 <body>
     <!-- INFRAGISTICS HEADER/NAVIGATION -->
-    { showGlobalNav && <GlobalNavBar/> }
+    { showGlobalNav && <GlobalNavBar lang={navLang}/> }
 
     <!-- MAIN PAGE GRID LAYOUT -->
     <!-- We don't set the CSS grid directly to the body -->
@@ -184,7 +183,7 @@ type HeadEntry = { tag: string; attrs?: Record<string, string | boolean | undefi
 
         <!-- Footer is inside the grid so the sidebar's sticky containing block extends through it.
              The JS initSidebarHeights() clamps sidebar max-height to prevent visual overlap. -->
-        <GlobalFooter/>
+        <GlobalFooter lang={navLang}/>
     </div>
 </body>
 </html>

@@ -1,7 +1,7 @@
 /**
  * integration.ts
  *
- * Shared configuration helpers for Astro + Starlight docs sites.
+ * Shared configuration helpers for Astro docs sites.
  * All functions are independently usable; `createDocsSite` is the
  * convenience wrapper that composes them all.
  *
@@ -13,10 +13,10 @@
  *     site:  'https://my-org.github.io/my-docs',
  *     title: 'My Library',
  *     description: 'Reference docs for My Library.',
- *     platform: 'angular',   // drives CDN head entries + nav prefetch
+ *     platform: 'angular',   // drives CDN head entries
  *     navLang: 'en',         // 'en' | 'jp' | 'kr'
  *     source: {
- *       tocPath:  './my-docs/toc.yml',
+ *       tocPath:  './my-docs/toc.json',
  *       docsDir:  './my-docs/en/components',
  *       imagesDir: './my-docs/en/images',   // omit to skip image serving
  *     },
@@ -24,10 +24,6 @@
  *     head: [                                   // extra <head> entries after platform ones
  *       { tag: 'link', attrs: { rel: 'stylesheet', href: '...' } },
  *     ],
- *     // Extra Starlight options (logo, social, editLink, customCss, …)
- *     starlight: {
- *       logo: { src: './public/favicon.svg' },
- *     },
  *     // Extra Astro options (markdown, image, build, …)
  *     markdown: { remarkPlugins: [] },
  *   });
@@ -41,7 +37,6 @@
  *   export default defineConfig({
  *     integrations: [
  *       siteMetaIntegration({ title: 'My Library', description: 'Reference docs.' }),
- *       starlight({ sidebar }),
  *       staticImagesIntegration('/abs/path/to/my-docs/images'),
  *     ],
  *   });
@@ -64,20 +59,18 @@ import {
     type LlmsMeta, type LlmsSet, type SidebarItem,
 } from './llms.ts';
 import { buildSidebarFromToc } from './sidebar';
-import { getNavConfig, getPlatformHead } from './platform';
+import { getPlatformHead } from './platform';
 import type { HeadEntry, PlatformKey, NavLang } from './platform.ts';
-import { remarkDocfx, rehypeCodeView } from './plugins/remark-docfx';
-import { stripScripts, absolutifyNavUrls, extractOuterHtml } from './lib/nav-helpers.ts';
+import { remarkEnvVars } from './plugins/remark-env-vars';
+import { remarkMdLinks } from './plugins/remark-md-links';
+import { remarkHtmlTransforms } from './plugins/remark-html-transforms';
 
 /** Build / deployment mode. Drives env-var `DOCS_BUILD_MODE`. */
 export type DocsMode = 'development' | 'staging' | 'production';
 
-/** Module-level cache so the nav URL is fetched at most once per build. */
-let _navHtmlCache: string | null = null;
-
 /**
  * Read `themeApiUrl` and `themingWidgetVersion` from the project's
- * environment.json at build time. Mirrors the lookup order in remark-docfx.ts
+ * environment.json at build time. Uses the same lookup order as remark-env-vars.ts
  * so both always resolve from the same file.
  */
 function readThemingEnv(sourcePath: string | undefined, envKey: string): {
@@ -142,10 +135,6 @@ export interface SiteMetaOptions {
      * module and rendered by `DocsLayout.astro`.
      */
     head?: HeadEntry[];
-    /** @deprecated Use `platform` instead. */
-    prefetchNav?: boolean;
-    /** @deprecated Use `platform: 'appbuilder'` instead. */
-    prefetchAppBuilderNav?: boolean;
 }
 
 /**
@@ -188,8 +177,6 @@ export function siteMetaIntegration({
     llmsSets = [],
     productLinks = [],
     head = [],
-    prefetchNav = false,
-    prefetchAppBuilderNav = false,
 }: SiteMetaOptions = {} as SiteMetaOptions): AstroIntegration {
     const llmsMetaMap = docsDir
         ? buildLlmsMetaMap(docsDir, sidebar ?? [])
@@ -201,17 +188,8 @@ export function siteMetaIntegration({
     const navVirtualId = 'virtual:docs-template/nav-html';
     const navResolvedId = '\0' + navVirtualId;
 
-    // Resolve effective platform: explicit `platform` option wins; fall back to
-    // deprecated boolean flags for backwards compatibility.
-    const effectivePlatform: PlatformKey | null =
-        platform ??
-        (prefetchAppBuilderNav ? 'appbuilder' : null) ??
-        (prefetchNav ? 'angular' : null);
-
-    const { navType, navUrl } = getNavConfig(effectivePlatform, navLang);
-
-    // Navigation buckets for this platform — stripped from ancestor paths during label generation.
-    const broadSections = getBroadSectionsForPlatform(effectivePlatform);
+    // Navigation buckets for this platform.
+    const broadSections = getBroadSectionsForPlatform(platform ?? null);
     // Captured from astro:config:done; used to generate llms.txt content and virtual module.
     let configuredSite = '';
     // Cached virtual module source — built once in astro:config:done after
@@ -228,6 +206,7 @@ export const sidebar = ${JSON.stringify(sidebar ?? [])};
 export const productLinks = ${JSON.stringify(productLinks)};
 export const headEntries = ${JSON.stringify(head ?? [])};
 export const trailingSlash = ${JSON.stringify(config.trailingSlash)};
+export const navLang = ${JSON.stringify(navLang)};
 `;
             },
             'astro:config:setup'({ updateConfig, injectRoute }) {
@@ -247,19 +226,6 @@ export const trailingSlash = ${JSON.stringify(config.trailingSlash)};
                     prerender: true,
                 });
 
-                // Vite alias: redirect @astrojs/starlight/components to our compat shim so
-                // MDX files that import Starlight UI components continue to build without the
-                // Starlight integration being active.
-                const compatIndex = fileURLToPath(new URL('./compat/starlight-components/index.ts', import.meta.url));
-                updateConfig({
-                    vite: {
-                        resolve: {
-                            alias: [
-                                { find: '@astrojs/starlight/components', replacement: compatIndex },
-                            ],
-                        },
-                    },
-                });
 
                 // Configure Sass loadPaths so bare `highlight.js/scss/vs2015`
                 // imports in the platform theme files resolve from node_modules.
@@ -285,12 +251,9 @@ export const trailingSlash = ${JSON.stringify(config.trailingSlash)};
                                 if (id === virtualId) return resolvedId;
                                 if (id === navVirtualId) return navResolvedId;
                             },
-                            async load(id: string) {
+                            load(id: string) {
                                 if (id === resolvedId) return siteMetaCode;
                                 if (id !== navResolvedId) return;
-
-                                // Return cached module code — fetched at most once per build.
-                                if (_navHtmlCache) return _navHtmlCache;
 
                                 // ── Theming env ──────────────────────────────────────────────
                                 const envKey = process.env.DOCS_ENV ?? process.env.NODE_ENV ?? 'production';
@@ -299,93 +262,11 @@ export const trailingSlash = ${JSON.stringify(config.trailingSlash)};
                                     ? `https://cdn-na.infragistics.com/igniteui/theming-widget/${widgetVersion}/igniteui-theming-widget.js`
                                     : '';
 
-                                let headerHtml = '';
-                                let uiFooterHtml = '';
-                                let footerHtml = '';
-
-                                // ── IG nav prefetch ──────────────────────────────────────────
-                                if (navType === 'infragistics' && navUrl) {
-                                    try {
-                                        const res = await fetch(navUrl, {
-                                            credentials: 'omit',
-                                            signal: AbortSignal.timeout(15_000),
-                                        });
-                                        if (res.ok) {
-                                            const html = await res.text();
-                                            const igBase = navLang === 'jp' ? 'https://jp.infragistics.com' : 'https://www.infragistics.com';
-                                            headerHtml = absolutifyNavUrls(stripScripts(extractOuterHtml(html, '<header[^>]+id="header"')), igBase);
-                                            uiFooterHtml = absolutifyNavUrls(stripScripts(extractOuterHtml(html, '<footer[^>]+class="[^"]*\\bui-footer\\b')), igBase);
-                                            footerHtml = absolutifyNavUrls(stripScripts(extractOuterHtml(html, '<footer[^>]+id="footer"')), igBase);
-                                            // Strip the hello-bar promotional strip
-                                            headerHtml = headerHtml.replace(
-                                                /<div[^>]+id="hello-bar"[\s\S]*?<\/div>\s*/i, ''
-                                            );
-                                        } else {
-                                            console.warn(`[docs-template] Navigation fetch returned ${res.status} — falling back to empty markup.`);
-                                        }
-                                    } catch (err: unknown) {
-                                        console.warn(`[docs-template] Could not fetch navigation HTML: ${(err as Error).message} — falling back to empty markup.`);
-                                    }
-                                }
-
-                                // ── AppBuilder nav prefetch ──────────────────────────────────
-                                let abHeaderHtml = '';
-                                let abFooterHtml = '';
-                                let abFooterUtilsHtml = '';
-                                let abFooterCopyrightHtml = '';
-                                let abContactSalesHtml = '';
-
-                                if (navType === 'appbuilder' && navUrl) {
-                                    try {
-                                        const abRes = await fetch(navUrl, {
-                                            credentials: 'omit',
-                                            signal: AbortSignal.timeout(15_000),
-                                        });
-                                        if (abRes.ok) {
-                                            const abRaw = await abRes.text();
-                                            // Endpoint may return JSON { header, footer } or a full HTML page.
-                                            let parsed = false;
-                                            try {
-                                                const data = JSON.parse(abRaw) as { header?: string; footer?: string };
-                                                if (data.header || data.footer) {
-                                                    abHeaderHtml = data.header ?? '';
-                                                    abFooterHtml = data.footer ?? '';
-                                                    parsed = true;
-                                                }
-                                            } catch { /* not JSON — fall through to HTML extraction */ }
-
-                                            if (!parsed) {
-                                                abHeaderHtml = extractOuterHtml(abRaw, '<header');
-                                                abFooterHtml = extractOuterHtml(abRaw, '<footer');
-                                                abFooterUtilsHtml = extractOuterHtml(abRaw, '<[a-z][a-z0-9]*[^>]+class="[^"]*\\bfooter-utils\\b');
-                                                abFooterCopyrightHtml = extractOuterHtml(abRaw, '<[a-z][a-z0-9]*[^>]+class="[^"]*\\bfooter-copyright\\b');
-                                                abContactSalesHtml = extractOuterHtml(abRaw, '<[a-z][a-z0-9]*[^>]+id="contactSales"');
-                                            }
-                                        } else {
-                                            console.warn(`[docs-template] AppBuilder nav fetch returned ${abRes.status} — falling back to runtime loading.`);
-                                        }
-                                    } catch (err: unknown) {
-                                        console.warn(`[docs-template] Could not prefetch AppBuilder navigation: ${(err as Error).message} — falling back to runtime loading.`);
-                                    }
-                                }
-
-                                _navHtmlCache = [
-                                    `export const platform = ${JSON.stringify(effectivePlatform ?? null)};`,
-                                    `export const navLang = ${JSON.stringify(navLang)};`,
+                                return [
+                                    `export const platform = ${JSON.stringify(platform ?? null)};`,
                                     `export const themeApiUrl = ${JSON.stringify(themeApiUrl)};`,
                                     `export const widgetScriptSrc = ${JSON.stringify(widgetScriptSrc)};`,
-                                    `export const prefetched = ${JSON.stringify(!!headerHtml)};`,
-                                    `export const headerHtml = ${JSON.stringify(headerHtml)};`,
-                                    `export const uiFooterHtml = ${JSON.stringify(uiFooterHtml)};`,
-                                    `export const footerHtml = ${JSON.stringify(footerHtml)};`,
-                                    `export const abPrefetched = ${JSON.stringify(!!abHeaderHtml)};`,
-                                    `export const abHeaderHtml = ${JSON.stringify(abHeaderHtml)};`,
-                                    `export const abFooterHtml = ${JSON.stringify(abFooterHtml)};`,
-                                    `export const abFooterUtilsHtml = ${JSON.stringify(abFooterUtilsHtml)};`,
-                                    `export const abFooterCopyrightHtml = ${JSON.stringify(abFooterCopyrightHtml)};`,
-                                    `export const abContactSalesHtml = ${JSON.stringify(abContactSalesHtml)};`,
                                 ].join('\n');
-                                return _navHtmlCache;
                             },
                         }],
                     },
@@ -700,17 +581,12 @@ export interface CreateDocsSiteOptions {
     productLinks?: ProductLink[];
     /** Extra Astro integrations appended after the built-in ones. */
     integrations?: AstroIntegration[];
-    /**
-     * @deprecated Starlight has been removed. This option is ignored.
-     * Use `head` for extra head entries and `integrations` for extra integrations.
-     */
-    starlight?: Record<string, unknown>;
     /** Any remaining keys are spread into `defineConfig` (markdown, image, build, …). */
     [key: string]: unknown;
 }
 
 /**
- * Creates a complete Astro config for a standard Starlight docs site.
+ * Creates a complete Astro config for a docs site.
  *
  * All individual helpers (`buildSidebarFromToc`, `staticImagesIntegration`,
  * `siteMetaIntegration`) remain independently importable for cases that
@@ -759,7 +635,7 @@ export function createDocsSite(options: CreateDocsSiteOptions = {} as CreateDocs
     if (!process.env.DOCS_ENV) {
         process.env.DOCS_ENV = mode;
     }
-    // Expose the platform so remark-docfx can set data-platform on widgets it generates.
+    // Expose the platform so plugins can set data-platform on widgets they generate.
     if (platform) {
         process.env.DOCS_PLATFORM = platform;
     }
@@ -823,11 +699,12 @@ export function createDocsSite(options: CreateDocsSiteOptions = {} as CreateDocs
         markdown: {
             ...(astroExtra as any).markdown,
             remarkPlugins: [
-                remarkDocfx,
+                remarkEnvVars,
+                remarkMdLinks,
+                remarkHtmlTransforms,
                 ...((astroExtra as any).markdown?.remarkPlugins ?? []),
             ],
             rehypePlugins: [
-                rehypeCodeView,
                 ...((astroExtra as any).markdown?.rehypePlugins ?? []),
             ],
         },
