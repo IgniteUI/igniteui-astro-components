@@ -170,14 +170,15 @@ type HeadEntry = { tag: string; attrs?: Record<string, string | boolean | undefi
      Any igc component rendered dynamically on body level should have .ig-typography in order to have proper type styles.
     -->
     <div class="igd-page-layout ig-typography">
-        <!-- TODO: WE DONT NEED TO CALCULAtE THE IG HEADER HEIGHT ANYMORE - REMOVE IT -->
-        <DocsSubHeader style={ `--docs-global-nav-height: ${ showGlobalNav ? '4.7rem': '0' }` } data-nav-height-wrapper/>
-
+        <DocsSubHeader data-nav-height-wrapper/>
 
         { hasSidebar && (
             <!--<MobileSidebarToggle/>-->
             <slot name="sidebar"/>
         ) }
+
+        <!-- Mobile TOC trigger row — only visible on mobile, provided by the page -->
+        <slot name="mobile-toc" />
 
         <div class="igd-main-content">
             <div class="igd-main-content__inner">

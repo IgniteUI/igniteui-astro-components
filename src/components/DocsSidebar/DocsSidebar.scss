@@ -1,11 +1,12 @@
 @use 'igniteui-theming/sass/typography' as *;
+@use '../../styles/global/breakpoints' as *;
 
 .docs-sidebar {
 	display: flex;
 	flex-direction: column;
 	z-index: 0;
 	border-inline-end: var(--igd-app-outline);
-	padding-inline: var(--igd-padding-lg);
+	padding-inline: var(--igd-padding-md);
 	padding-block: calc(var(--igd-padding-lg) + rem(14px));
 	background-color: var(--igd-layout-sections-bg);
 	position: sticky;
@@ -14,6 +15,53 @@
 	max-height: 100dvh;
 	align-self: start;
 	gap: rem(24px);
+
+	// On tablet: sidebar becomes a fixed overlay, hidden off-screen by default.
+	@media (max-width: #{$bp-tablet-max}) {
+		position: fixed;
+		inset-block: var(--igd-header-height) 0;
+		inset-inline-start: 0;
+		height: auto;
+		max-height: none;
+		width: min(rem(360px), 85vw);
+		z-index: 100;
+		transform: translateX(-100%);
+		transition: transform 250ms ease, box-shadow 250ms ease;
+		box-shadow: none;
+	}
+}
+
+// Overlay backdrop — only visible on tablet when sidebar is open.
+.docs-sidebar-backdrop {
+	display: none;
+
+	@media (max-width: #{$bp-tablet-max}) {
+		display: block;
+		position: fixed;
+		inset: 0;
+		z-index: 99;
+		background: rgba(0, 0, 0, 0.4);
+		opacity: 0;
+		pointer-events: none;
+		transition: opacity 250ms ease;
+	}
+}
+
+// Open state — driven by data-sidebar-open on <body>
+body[data-sidebar-open] {
+	@media (max-width: #{$bp-tablet-max}) {
+		overflow: hidden;
+
+		.docs-sidebar {
+			transform: translateX(0);
+			box-shadow: var(--ig-elevation-8);
+		}
+
+		.docs-sidebar-backdrop {
+			opacity: 1;
+			pointer-events: auto;
+		}
+	}
 }
 
 .sidebar-scroll {
@@ -21,43 +69,58 @@
 	scrollbar-gutter: stable;
 }
 
-igc-badge.sidebar-badge {
-	margin-inline-start: auto;
-	flex-shrink: 0;
-	font-size: rem(10px);
-	font-weight: 600;
-	letter-spacing: 0.04em;
-
-	&.updated {
-		--ig-badge-background: var(--igd-updated-bg);
-		--ig-badge-color: var(--igd-updated-color);
-		outline: rem(1px) solid var(--igd-updated-border);
+.sidebar-badge {
+	--border-radius: #{rem(4px)};
+	--elevation: none;
+	
+	&::part(base) {
+		@include type-style('overline') {
+			margin: 0;
+		};
+		
+		border-radius: var(--border-radius);
+		border-width: rem(1px);
+		border-style: solid;
+		border-color: var(--border-color);
+	}
+	
+	&[variant="primary"] {
+		--background-color: var(--igd-updated-bg);
+		--text-color: var(--igd-updated-color);
+		--icon-color: var(--igd-updated-color);
+		--border-color: var(--igd-updated-border);
 	}
 
-	&.new {
-		--ig-badge-background: var(--igd-new-bg);
-		--ig-badge-color: var(--igd-new-color);
-		outline: rem(1px) solid var(--igd-new-border);
+	&[variant="valid"] {
+		--background-color: var(--igd-new-bg);
+		--text-color: var(--igd-new-color);
+		--icon-color: var(--igd-new-color);
+		--border-color: var(--igd-new-border);
 	}
 
-	&.preview {
-		--ig-badge-background: var(--igd-preview-bg);
-		--ig-badge-color: var(--igd-preview-color);
-		outline: rem(1px) solid var(--igd-preview-border);
+	&[variant="invalid"] {
+		--background-color: var(--igd-preview-bg);
+		--text-color: var(--igd-preview-color);
+		--icon-color: var(--igd-preview-color);
+		--border-color: var(--igd-preview-border);
+	}
+	
+	
+	&[variant="info"] {
+		--background-color: var(--igd-premium-bg);
+		--text-color: var(--igd-premium-color);
+		--icon-color: var(--igd-premium-color);
+		--border-color: var(--igd-premium-border);
 	}
 
-	&.premium {
-		--ig-badge-background: var(--igd-premium-bg);
-		--ig-badge-color: var(--igd-premium-color);
-		outline: rem(1px) solid var(--igd-premium-border);
-	}
-
-	&.default {
-		--ig-badge-background: light-dark(var(--ig-gray-100), var(--ig-gray-800));
-		--ig-badge-color: light-dark(var(--ig-gray-700), var(--ig-gray-300));
-		outline: rem(1px) solid light-dark(var(--ig-gray-300), var(--ig-gray-600));
-	}
+	//&.default {
+	//	--ig-badge-background: light-dark(var(--ig-gray-100), var(--ig-gray-800));
+	//	--ig-badge-color: light-dark(var(--ig-gray-700), var(--ig-gray-300));
+	//	outline: rem(1px) solid light-dark(var(--ig-gray-300), var(--ig-gray-600));
+	//}
 }
+
+
 
 .igd-lable-and-badge {
 	display: flex;

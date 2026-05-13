@@ -2,53 +2,58 @@
 import './DocsAside.scss';
 
 interface Props {
-  type?: 'note' | 'tip' | 'warning' | 'danger';
-  title?: string;
-  color?: string;
-  class?: string;
-  /** Override icon name from the 'docs' collection. */
-  icon?: string;
+    type?: 'note' | 'info' | 'warning';
+    title?: string;
+    color?: string;
+    class?: string;
+    /** Override icon name from the 'docs' collection. */
+    icon?: string;
 }
 
-const { type = 'note', title, color, icon, class: className } = Astro.props;
+const { type = 'note', title, icon, class: className } = Astro.props;
 
 const defaultLabels: Record<string, string> = {
-  note: 'Note',
-  tip: 'Tip',
-  warning: 'Warning',
-  danger: 'Danger',
+    note: 'Note',
+    info: 'Info',
+    warning: 'Warning',
 };
 
 const defaultIcons: Record<string, string> = {
-  note: 'info',
-  tip: 'rocket',
-  warning: 'warning',
-  danger: 'warning',
+    note: 'note',
+    info: 'info',
+    warning: 'warning',
 };
 
 const label = title ?? defaultLabels[type];
-const resolvedIcon = icon !== undefined ? icon : defaultIcons[type];
-const inlineStyle = color ? `--aside-color: ${color};` : undefined;
+const resolvedIcon = icon!==undefined ? icon: defaultIcons[type];
 ---
 
-<aside
-  class:list={['aside', `aside--${type}`, className]}
-  aria-label={label}
-  style={inlineStyle}
+<div
+    class:list={ ['igd-aside', `igd-aside--${ type }`, className] }
+    aria-label={ label }
+    role="note"
 >
-  <p class="aside-title" aria-hidden="true">
-    {resolvedIcon && <igc-icon class="aside-icon" name={resolvedIcon} collection="docs" aria-hidden="true"></igc-icon>}
-    {label}
-  </p>
-  <section class="aside-content">
-    <slot />
-  </section>
-</aside>
+    { resolvedIcon &&
+        <igc-icon
+            class="igd-aside__icon"
+            name={ resolvedIcon }
+            collection="docs"
+            aria-hidden="true"></igc-icon>
+    }
+
+    <span class="igd-aside__title" aria-hidden="true">
+        { label }
+    </span>
+
+    <div class="igd-aside__content">
+        <slot/>
+    </div>
+</div>
 
 <script>
-  import { defineComponents, IgcIconComponent } from 'igniteui-webcomponents';
-  import '../../../scripts/icon-registry';
+    import { defineComponents, IgcIconComponent } from 'igniteui-webcomponents';
+    import '../../../scripts/icon-registry';
 
-  defineComponents(IgcIconComponent);
+    defineComponents(IgcIconComponent);
 </script>
 

@@ -117,4 +117,47 @@
 	.lead {
 		margin-bottom: rem(26px)
 	}
+	
+	image, table {
+		width: 100%;
+	}
+	
+	image {
+		max-width: 100%;
+		aspect-ratio: 1;
+	}
+	
+	
+	> .igd-table,
+	> table {
+		font-family: Arial, Helvetica, sans-serif;
+		border-collapse: collapse;
+		width: 100%;
+		color: var(--igd-table-fg);
+		
+		td, th {
+			border: rem(1px) solid var(--igd-table-border-color);
+			padding-block: rem(16px);
+			padding-inline: rem(24px);
+		}
+		
+		// ZEBRA EFFECT, by default there is no zebra!
+		tr {
+			background-color: var(--igd-table-bg);
+		}
+		
+		tr:nth-child(even){
+			background-color: var(--igd-tabe-row-even-bg);
+		}
+		
+		tr:hover {
+			background-color: var(--igd-tabe-row-hover-bg);
+		}
+		
+		th {
+			text-align: left;
+			background-color: (--igd-table-header-bg);
+			color: var(--igd-table-header-fg);
+		}
+	}
 }

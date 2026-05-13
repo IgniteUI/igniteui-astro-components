@@ -46,6 +46,7 @@
     "./components/Search.astro": "./src/components/Search/Search.astro",
     "./components/ThemingWidget.astro": "./src/components/ThemingWidget/ThemingWidget.astro",
     "./components/MobileSidebarToggle.astro": "./src/components/MobileSidebarToggle/MobileSidebarToggle.astro",
+    "./components/MobileTocToggle.astro": "./src/components/MobileTocToggle/MobileTocToggle.astro",
     "./components/DocsToc.astro": "./src/components/DocsToc/DocsToc.astro",
     "./components/DocsSidebar/DocsSidebar.astro": "./src/components/DocsSidebar/DocsSidebar.astro",
     "./components/DocsSidebar/SidebarFilterInput.astro": "./src/components/DocsSidebar/SidebarFilterInput.astro",

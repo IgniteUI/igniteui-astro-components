@@ -162,8 +162,9 @@ igc-tree-item[data-has-children] {
 	white-space: normal;
 }
 
-/* Hover accent applies to any linked item (leaf in sidebar, all items in TOC) */
-.docs-tree-link:hover ~ .docs-tree-label {
+/* Hover accent applies to leaf items (sidebar) and all linked items (TOC) */
+.docs-tree-link:hover ~ .docs-tree-label,
+igc-tree-item:not([data-has-children]):hover .docs-tree-label {
 	color: var(--igd-accent);
 }
 
@@ -183,6 +184,10 @@ igc-tree[data-variant='toc'] {
 	/* TOC variant — active link highlighted by scroll-spy via aria-current="true". */
 	.docs-tree-link[aria-current='true'] {
 		color: var(--igd-accent);
+		
+		+ .docs-tree-label {
+			color: var(--igd-accent);
+		}
 	}
 	
 	/* No expand/collapse icons in the TOC — all items are links */

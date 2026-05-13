@@ -48,9 +48,7 @@
 	--igd-padding-sm: #{rem(16px)};
 	--igd-padding-md: #{rem(24px)};
 	--igd-padding-lg: #{rem(32px)};
-}
-
-[data-theme] {
+	
 	--igd-updated-bg:     light-dark(#EAF6FE, #0D1E38);
 	--igd-updated-color:  light-dark(#1151C1, #6B9FE8);
 	--igd-updated-border: light-dark(#BAE2F5, #1E3D6A);
@@ -68,4 +66,41 @@
 	--igd-premium-border: light-dark(#D4B8FF, #5A3A99);
 	
 	--igd-expantion-panel-color: light-dark(var(--ig-secondary-500), var(--ig-secondary-500));
+	
+	
+	// ASIDE MDX
+	--igd-aside-padding: #{rem(16px)};
+	--igd-aside-row-gap: #{rem(16px)};
+	--igd-aside-column-gap: #{rem(16px)};
+	--igd-aside-border-width: #{rem(2px)};
+	--igd-aside-border-radius: 0;
+	--igd-aside-margin-bottom: #{rem(26px)};
+	--igd-aside-border-style: solid;
+	
+	--igd-aside-info-title: light-dark(var(--ig-primary-700), var(--ig-primary-400));
+	--igd-aside-info-content: light-dark(var(--ig-primary-800), var(--ig-primary-200));
+	--igd-aside-info-icon: light-dark(var(--ig-primary-700), var(--ig-primary-400));
+	--igd-aside-info-bg: transparent;
+	--igd-aside-info-border: light-dark(var(--ig-primary-700), var(--ig-primary-400));
+	
+	--igd-aside-warning-title: light-dark(var(--ig-secondary-700), var(--ig-secondary-400));
+	--igd-aside-warning-content: light-dark(var(--ig-secondary-700), var(--ig-secondary-300));
+	--igd-aside-warning-icon: light-dark(var(--ig-secondary-700), var(--ig-secondary-400));
+	--igd-aside-warning-bg: transparent;
+	--igd-aside-warning-border: light-dark(var(--ig-secondary-700), var(--ig-secondary-400));
+	
+	--igd-aside-note-title: light-dark(var(--ig-gray-700), var(--ig-gray-400));
+	--igd-aside-note-content: light-dark(var(--ig-gray-800), var(--ig-gray-200));
+	--igd-aside-note-icon: light-dark(var(--ig-gray-700), var(--ig-gray-400));
+	--igd-aside-note-bg: transparent;
+	--igd-aside-note-border: light-dark(var(--ig-gray-700), var(--ig-gray-400));
+	
+	// TABLES
+	--igd-table-fg: light-dark(var(--ig-gray-900), var(--ig-gray-900));
+	--igd-table-bg: transparent;
+	--igd-tabe-even-row-bg: var(--igd-table-bg);
+	--igd-table-border-color: light-dark(var(--ig-gray-200), var(--ig-gray-200));
+	
+	--igd-table-header-bg: light-dark(var(--ig-gray-700), var(--ig-gray-400));
+	--igd-table-header-fg: light-dark(var(--ig-gray-700), var(--ig-gray-400));
 }

@@ -106,15 +106,15 @@
 	margin-inline-start: auto;
 }
 
+.igd-main-content__page + aside {
+	margin-inline-end: auto;
+}
+
 .igd-main-content__inner {
 	display: flex;
 	gap: rem(70px);
 	padding-inline: rem(70px) rem(32px);
 	position: relative;
-	
-	aside {
-		margin-inline-end: auto;
-	}
 }
 
 .content {

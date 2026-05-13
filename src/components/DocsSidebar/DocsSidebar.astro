@@ -45,6 +45,7 @@ const activeId = normalizeSlug(currentSlug);
         />
     </div>
 </sidebar-filter>
+<div class="docs-sidebar-backdrop" id="docs-sidebar-backdrop" aria-hidden="true"></div>
 
 <script>
     // Register Ignite UI Web Components used by the sidebar filter input.
@@ -66,5 +67,14 @@ const activeId = normalizeSlug(currentSlug);
     import '../../scripts/icon-registry';
 
     import './sidebar-filter';
+
+    // Close the sidebar overlay when the backdrop is clicked.
+    document.addEventListener('click', (e) => {
+        if ((e.target as Element | null)?.closest('#docs-sidebar-backdrop')) {
+            document.body.removeAttribute('data-sidebar-open');
+            const toggle = document.querySelector<HTMLElement>('[data-sidebar-toggle]');
+            toggle?.setAttribute('aria-expanded', 'false');
+        }
+    });
 </script>
 

@@ -7,11 +7,10 @@
  */
 
 export type SidebarBadgeVariant =
-  | 'note'
-  | 'danger'
-  | 'success'
-  | 'caution'
-  | 'tip'
+  | 'updated'
+  | 'new'
+  | 'preview'
+  | 'premium'
   | 'default';
 
 export interface SidebarBadge {
