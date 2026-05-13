@@ -44,6 +44,7 @@
     "./components/GlobalFooter.astro": "./src/components/GlobalFooter/GlobalFooter.astro",
     "./components/DocsSubHeader.astro": "./src/components/DocsSubHeader/DocsSubHeader.astro",
     "./components/Search.astro": "./src/components/Search/Search.astro",
+    "./components/SearchAdvanced.astro": "./src/components/SearchAdvanced/SearchAdvanced.astro",
     "./components/ThemingWidget.astro": "./src/components/ThemingWidget/ThemingWidget.astro",
     "./components/MobileSidebarToggle.astro": "./src/components/MobileSidebarToggle/MobileSidebarToggle.astro",
     "./components/DocsToc.astro": "./src/components/DocsToc/DocsToc.astro",
@@ -67,7 +68,7 @@
     "./lib/types": "./src/lib/types.ts",
     "./plugins/remark-docfx": "./src/plugins/remark-docfx.ts",
     "./styles/custom.scss": "./src/styles/custom.scss",
-    "./styles/ig-theme.scss": "./src/styles/ig-theme.scss",
+    "./styles/theme.scss": "./src/styles/theme.scss",
     "./package.json": "./package.json"
   },
   "peerDependencies": {

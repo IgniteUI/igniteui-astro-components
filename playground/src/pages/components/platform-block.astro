@@ -3,7 +3,9 @@ import DocsLayout from '../../../../src/layouts/DocsLayout/DocsLayout.astro';
 import DocsSidebar from '../../../../src/components/DocsSidebar/DocsSidebar.astro';
 import DocsToc from '../../../../src/components/DocsToc/DocsToc.astro';
 import PlatformBlock from '../../../../src/components/mdx/PlatformBlock/PlatformBlock.astro';
-import { SITE_TITLE, SIDEBAR } from '../../site-config';
+import DocsSubHeader from '../../../../src/components/DocsSubHeader/DocsSubHeader.astro';
+import SearchAdvanced from '../../../../src/components/SearchAdvanced/SearchAdvanced.astro';
+import { SITE_TITLE, SIDEBAR, PRODUCT_LINKS, SEARCH_TABS, PACKAGES, VERSIONS } from '../../site-config';
 
 const slug = 'components/platform-block';
 
@@ -14,6 +16,13 @@ const headings = [
 ---
 
 <DocsLayout title="PlatformBlock" siteTitle={SITE_TITLE} hasSidebar currentSlug={slug}>
+  <DocsSubHeader slot="subheader" pageTitle="PlatformBlock" currentSlug={slug} siteTitle={SITE_TITLE}
+    productLinks={PRODUCT_LINKS} showThemeToggle={true}
+    packages={[...PACKAGES]} selectedPackage={PACKAGES[0]}
+    versions={[...VERSIONS]} selectedVersion={VERSIONS[0]}
+  >
+    <SearchAdvanced slot="search" tabs={SEARCH_TABS} showScope={true} />
+  </DocsSubHeader>
   <DocsSidebar slot="sidebar" items={SIDEBAR} currentSlug={slug} />
   <DocsToc slot="toc" headings={headings} offsetTarget=".docs-subheader" />
     <h1>PlatformBlock</h1>

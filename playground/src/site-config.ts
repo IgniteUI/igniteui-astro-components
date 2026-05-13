@@ -6,6 +6,7 @@
  * usage pattern: no virtual module or siteMetaIntegration required at runtime.
  */
 import type { SidebarEntry } from '../../src/lib/sidebar/types';
+import type { SearchTab } from '../../src/components/SearchAdvanced/SearchAdvanced.astro';
 
 export const SITE_TITLE = 'Components Playground';
 
@@ -30,7 +31,10 @@ export const SIDEBAR: SidebarEntry[] = [
     items: [
       { label: 'Sidebar', slug: 'components/sidebar' },
       { label: 'Nav Bar', slug: 'components/nav-bar' },
+      { label: 'DocsSubHeader', slug: 'components/docs-subheader' },
       { label: 'DocsToc', slug: 'components/docs-toc' },
+      { label: 'Search', slug: 'components/search' },
+      { label: 'SearchAdvanced', slug: 'components/search-advanced' },
       {
         label: 'MDX Helpers',
         collapsed: true,
@@ -51,3 +55,18 @@ export const SIDEBAR: SidebarEntry[] = [
     ],
   },
 ];
+
+export const SEARCH_TABS: SearchTab[] = [
+  { id: 'components', label: 'Components',  kindCodes: ['__name__'] },
+  { id: 'members',    label: 'Members',     kindCodes: ['p', 'a', 'm', 'e', 'c'] },
+  { id: 'enums',      label: 'Enums',       kindCodes: ['__name__'] },
+];
+
+export const PACKAGES = [
+  '@igniteui/angular',
+  '@igniteui/react',
+  '@igniteui/web-components',
+  '@igniteui/blazor',
+] as const;
+
+export const VERSIONS = ['18.x', '17.x', '16.x', '15.x'] as const;

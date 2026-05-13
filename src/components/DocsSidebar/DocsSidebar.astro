@@ -24,6 +24,8 @@ interface Props {
    * Useful when consuming the component without `siteMetaIntegration`.
    */
   items?: SidebarEntry[];
+  /** Show the filter input above the tree. Defaults to true. */
+  showFilter?: boolean;
   /**
    * Append trailing slash to sidebar links.
    * Defaults to the value derived from the site's `trailingSlash` Astro config
@@ -33,14 +35,14 @@ interface Props {
 }
 
 const useTrailingSlash = configuredTrailingSlash !== 'never';
-const { currentSlug = '', items: itemsProp, trailingSlash = useTrailingSlash } = Astro.props;
+const { currentSlug = '', items: itemsProp, showFilter = true, trailingSlash = useTrailingSlash } = Astro.props;
 const items = (itemsProp ?? sidebarData) as SidebarEntry[];
 const nodes = toTreeNodes(items, currentSlug, { trailingSlash });
 const activeId = normalizeSlug(currentSlug);
 ---
 
 <sidebar-filter class="docs-sidebar" id="docs-sidebar" data-no-results="No topics match">
-    <SidebarFilterInput/>
+    { showFilter && <SidebarFilterInput/> }
     <div class="sidebar-scroll" data-sidebar-scroll>
         <DocsTree
             nodes={ nodes }
@@ -73,4 +75,10 @@ const activeId = normalizeSlug(currentSlug);
 
     import './sidebar-filter';
 </script>
+
+{ showFilter === false && (
+  <style is:global>
+    #docs-sidebar [data-sidebar-filter-status] { display: none; }
+  </style>
+) }
 
