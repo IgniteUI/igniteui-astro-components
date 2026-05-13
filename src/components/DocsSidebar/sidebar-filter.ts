@@ -30,6 +30,9 @@ const SCROLL_SELECTOR = '[data-sidebar-scroll]';
 const ITEM_SELECTOR   = 'igc-tree-item[data-path]';
 const GROUP_SELECTOR  = 'igc-tree-item[data-group-key]';
 
+/** Frames over which `withDocumentScrollLocked` pins scrollY. ~250ms @ 60fps — long enough to interrupt the browser's smooth-scroll animation no matter which frame it starts on. */
+const SCROLL_LOCK_FRAMES = 15;
+
 let _isClientSideNav = false;
 
 // ── Storage helpers ──────────────────────────────────────────────────────────
@@ -158,11 +161,32 @@ class SidebarFilter extends HTMLElement {
 
   private onFilterInput = (): void => {
     safeSet(FILTER_KEY, this.input.value);
-    this.applyFilter(this.input.value, 'user');
+    this.withDocumentScrollLocked(() => this.applyFilter(this.input.value, 'user'));
   };
 
+  /**
+   * Pin scrollY across fn(). Chrome-only workaround: typing in a
+   * sticky-contained input triggers a browser-internal scroll that ignores
+   * `scroll-margin` / `overflow-anchor`, animated by global
+   * `scroll-behavior: smooth`. No CSS fix; snap back for a short window.
+   */
+  private withDocumentScrollLocked(fn: () => void): void {
+    const savedY = window.scrollY;
+    fn();
+    let framesLeft = SCROLL_LOCK_FRAMES;
+    const pin = (): void => {
+      if (window.scrollY !== savedY) {
+        window.scrollTo({ top: savedY, behavior: 'instant' as ScrollBehavior });
+      }
+      if (--framesLeft > 0) requestAnimationFrame(pin);
+    };
+    pin();
+  }
+
   private onFilterKeydown = (e: KeyboardEvent): void => {
-    if (e.key === 'Escape' && this.input.value) this.resetFilter();
+    this.withDocumentScrollLocked(() => {
+      if (e.key === 'Escape' && this.input.value) this.resetFilter();
+    });
   };
 
   private onClearClick = (): void => {
@@ -381,10 +405,12 @@ class SidebarFilter extends HTMLElement {
   }
 
   private resetFilter(): void {
-    this.input.value = '';
-    this.syncClearButton('');
-    safeRemove(FILTER_KEY);
-    this.exitFilterMode();
+    this.withDocumentScrollLocked(() => {
+      this.input.value = '';
+      this.syncClearButton('');
+      safeRemove(FILTER_KEY);
+      this.exitFilterMode();
+    });
   }
 }
 
