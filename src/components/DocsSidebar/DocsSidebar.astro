@@ -8,7 +8,7 @@
  * Package: igniteui-webcomponents (public, MIT) — change the import path
  * in the <script> block below to use @infragistics/igniteui-webcomponents.
  */
-import { sidebar as sidebarData } from 'virtual:docs-template/site-meta';
+import { sidebar as sidebarData, trailingSlash as configuredTrailingSlash } from 'virtual:docs-template/site-meta';
 import SidebarFilterInput from './SidebarFilterInput.astro';
 import './DocsSidebar.scss';
 import SidebarLabel from './SidebarLabel.astro';
@@ -26,11 +26,18 @@ interface Props {
   items?: SidebarEntry[];
   /** Show the filter input above the tree. Defaults to true. */
   showFilter?: boolean;
+  /**
+   * Append trailing slash to sidebar links.
+   * Defaults to the value derived from the site's `trailingSlash` Astro config
+   * (exposed via the virtual module). Falls back to `true` if not configured.
+   */
+  trailingSlash?: boolean;
 }
 
-const { currentSlug = '', items: itemsProp, showFilter = true } = Astro.props;
+const useTrailingSlash = configuredTrailingSlash !== 'never';
+const { currentSlug = '', items: itemsProp, showFilter = true, trailingSlash = useTrailingSlash } = Astro.props;
 const items = (itemsProp ?? sidebarData) as SidebarEntry[];
-const nodes = toTreeNodes(items, currentSlug);
+const nodes = toTreeNodes(items, currentSlug, { trailingSlash });
 const activeId = normalizeSlug(currentSlug);
 ---
 

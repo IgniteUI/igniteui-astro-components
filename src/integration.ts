@@ -212,20 +212,23 @@ export function siteMetaIntegration({
 
     // Navigation buckets for this platform — stripped from ancestor paths during label generation.
     const broadSections = getBroadSectionsForPlatform(effectivePlatform);
-    const moduleCode = `export const title = ${JSON.stringify(title)};
-export const sidebar = ${JSON.stringify(sidebar ?? [])};
-export const productLinks = ${JSON.stringify(productLinks)};
-export const headEntries = ${JSON.stringify(head ?? [])};
-`;
-
-    // Captured from astro:config:done; used to generate llms.txt content.
+    // Captured from astro:config:done; used to generate llms.txt content and virtual module.
     let configuredSite = '';
+    // Cached virtual module source — built once in astro:config:done after
+    // trailingSlash is known and reused on every subsequent Vite load() call.
+    let siteMetaCode = '';
 
     return {
         name: 'docs-template:site-meta',
         hooks: {
             'astro:config:done'({ config }) {
                 configuredSite = (config.site?.toString() ?? '').replace(/\/$/, '');
+                siteMetaCode = `export const title = ${JSON.stringify(title)};
+export const sidebar = ${JSON.stringify(sidebar ?? [])};
+export const productLinks = ${JSON.stringify(productLinks)};
+export const headEntries = ${JSON.stringify(head ?? [])};
+export const trailingSlash = ${JSON.stringify(config.trailingSlash)};
+`;
             },
             'astro:config:setup'({ updateConfig, injectRoute }) {
                 injectRoute({
@@ -283,7 +286,7 @@ export const headEntries = ${JSON.stringify(head ?? [])};
                                 if (id === navVirtualId) return navResolvedId;
                             },
                             async load(id: string) {
-                                if (id === resolvedId) return moduleCode;
+                                if (id === resolvedId) return siteMetaCode;
                                 if (id !== navResolvedId) return;
 
                                 // Return cached module code — fetched at most once per build.

@@ -64,6 +64,7 @@ export const title = '';
 export const sidebar = [];
 export const productLinks = [];
 export const headEntries = ${JSON.stringify(platformHeadEntries)};
+export const trailingSlash = 'ignore';
         `;
       }
       if (id === resolved(navHtmlId)) {
