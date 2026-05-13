@@ -24,16 +24,18 @@ interface Props {
    * Useful when consuming the component without `siteMetaIntegration`.
    */
   items?: SidebarEntry[];
+  /** Show the filter input above the tree. Defaults to true. */
+  showFilter?: boolean;
 }
 
-const { currentSlug = '', items: itemsProp } = Astro.props;
+const { currentSlug = '', items: itemsProp, showFilter = true } = Astro.props;
 const items = (itemsProp ?? sidebarData) as SidebarEntry[];
 const nodes = toTreeNodes(items, currentSlug);
 const activeId = normalizeSlug(currentSlug);
 ---
 
 <sidebar-filter class="docs-sidebar" id="docs-sidebar" data-no-results="No topics match">
-    <SidebarFilterInput/>
+    { showFilter && <SidebarFilterInput/> }
     <div class="sidebar-scroll" data-sidebar-scroll>
         <DocsTree
             nodes={ nodes }
@@ -66,4 +68,10 @@ const activeId = normalizeSlug(currentSlug);
 
     import './sidebar-filter';
 </script>
+
+{ showFilter === false && (
+  <style is:global>
+    #docs-sidebar [data-sidebar-filter-status] { display: none; }
+  </style>
+) }
 

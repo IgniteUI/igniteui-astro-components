@@ -104,6 +104,7 @@ type FilterInputEl = HTMLElement & { value: string; focus(): void };
 type FilterClearEl = HTMLElement & { hidden: boolean };
 
 class SidebarFilter extends HTMLElement {
+  private hasFilter = false;
   private input!:    FilterInputEl;
   private clearBtn!: FilterClearEl;
   private status!:   HTMLElement;
@@ -122,11 +123,15 @@ class SidebarFilter extends HTMLElement {
     const input    = this.querySelector<FilterInputEl>('[data-sidebar-filter-input]');
     const clearBtn = this.querySelector<FilterClearEl>('[data-sidebar-filter-clear]');
     const status   = this.querySelector<HTMLElement>('[data-sidebar-filter-status]');
-    if (!input || !clearBtn || !status) return;
+    const hasFilter = !!(input && clearBtn && status);
+    this.hasFilter = hasFilter;
 
-    this.input    = input;
-    this.clearBtn = clearBtn;
-    this.status   = status;
+    if (hasFilter) {
+      this.input    = input;
+      this.clearBtn = clearBtn;
+      this.status   = status;
+    }
+
     this.scrollEl = this.querySelector<HTMLElement>(SCROLL_SELECTOR);
     this.items    = [...this.querySelectorAll<HTMLElement>(ITEM_SELECTOR)];
     this.groups   = [...this.querySelectorAll<HTMLElement>(GROUP_SELECTOR)];
@@ -138,7 +143,7 @@ class SidebarFilter extends HTMLElement {
       safeSet(DETAILS_KEY, collectExpandedKeys(this).join('\n'));
     }
 
-    this.bindEvents();
+    if (hasFilter) this.bindEvents(); else this.bindTreeEvents();
     this.restoreOnConnect();
   }
 
@@ -150,6 +155,11 @@ class SidebarFilter extends HTMLElement {
     this.input.addEventListener('keydown',  this.onFilterKeydown);
     this.clearBtn.addEventListener('click', this.onClearClick);
 
+    this.bindTreeEvents();
+  }
+
+  /** Bind only the tree expand/collapse events (no filter input). */
+  private bindTreeEvents(): void {
     // igcItemExpanded / igcItemCollapsed are dispatched on <igc-tree> with
     // the igc-tree-item instance in event.detail — NOT in e.target.
     this.addEventListener('igcItemExpanded',  this.onItemToggle as EventListener);
@@ -209,14 +219,16 @@ class SidebarFilter extends HTMLElement {
     const isClientNav = _isClientSideNav;
     _isClientSideNav  = false;
 
-    const saved = isClientNav ? safeGet(FILTER_KEY) : '';
-    if (!isClientNav) safeRemove(FILTER_KEY);
+    if (this.hasFilter) {
+      const saved = isClientNav ? safeGet(FILTER_KEY) : '';
+      if (!isClientNav) safeRemove(FILTER_KEY);
 
-    if (saved) {
-      this.input.value = saved;
-      this.applyFilter(saved, 'restore');
-    } else {
-      this.syncClearButton('');
+      if (saved) {
+        this.input.value = saved;
+        this.applyFilter(saved, 'restore');
+      } else {
+        this.syncClearButton('');
+      }
     }
 
     this.restoreScroll(isClientNav);
@@ -373,10 +385,12 @@ class SidebarFilter extends HTMLElement {
   // ── UI sync ──────────────────────────────────────────────────────────────
 
   private updateStatus(state: 'no-match' | null): void {
+    if (!this.hasFilter) return;
     this.status.textContent = state === 'no-match' ? (this.dataset.noResults ?? 'No topics match') : '';
   }
 
   private syncClearButton(value: string): void {
+    if (!this.hasFilter) return;
     this.clearBtn.hidden = value.length === 0;
   }
 
