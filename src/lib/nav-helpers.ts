@@ -10,8 +10,13 @@
  *   - components/GlobalFooter/GlobalFooter.astro
  */
 
-import { JSDOM } from 'jsdom';
+import { createRequire } from 'node:module';
 import type { NavLang } from '../platform.ts';
+
+// createRequire anchored to this file so it always resolves jsdom from
+// igniteui-astro-components/node_modules, regardless of where the consumer
+// project has its node_modules.
+const _require = createRequire(import.meta.url);
 
 // ---------------------------------------------------------------------------
 // Low-level HTML helpers
@@ -19,11 +24,13 @@ import type { NavLang } from '../platform.ts';
 
 /**
  * Strip all <script> tags from an HTML string using a DOM parser.
- * The nav HTML fetched from infragistics.com may contain inline or external
- * scripts that don't belong in the docs page.  Platform-specific scripts are
- * already injected cleanly via getPlatformHead().
+ *
+ * Uses createRequire so Vite/Rollup cannot statically trace the jsdom import —
+ * jsdom is resolved at Node runtime and never bundled into the prerender chunk.
  */
 export function stripScripts(html: string): string {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { JSDOM } = _require('jsdom') as typeof import('jsdom');
     const dom = new JSDOM(html);
     const { document } = dom.window;
     document.querySelectorAll('script').forEach((el: Element) => el.remove());
