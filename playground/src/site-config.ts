@@ -48,7 +48,7 @@ export const SIDEBAR: SidebarEntry[] = [
     label: 'Reference',
     collapsed: true,
     items: [
-      { label: 'Changelog', slug: 'changelog', badge: { text: 'Beta', variant: 'caution' } },
+      { label: 'Changelog', slug: 'changelog', badge: { text: 'Beta', variant: 'new' } },
     ],
   },
 ];

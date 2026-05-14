@@ -93,35 +93,6 @@ body[data-sidebar-open] {
 		border-style: solid;
 		border-color: var(--border-color);
 	}
-	
-	&[variant="primary"] {
-		--background-color: var(--igd-updated-bg);
-		--text-color: var(--igd-updated-color);
-		--icon-color: var(--igd-updated-color);
-		--border-color: var(--igd-updated-border);
-	}
-
-	&[variant="valid"] {
-		--background-color: var(--igd-new-bg);
-		--text-color: var(--igd-new-color);
-		--icon-color: var(--igd-new-color);
-		--border-color: var(--igd-new-border);
-	}
-
-	&[variant="invalid"] {
-		--background-color: var(--igd-preview-bg);
-		--text-color: var(--igd-preview-color);
-		--icon-color: var(--igd-preview-color);
-		--border-color: var(--igd-preview-border);
-	}
-	
-	
-	&[variant="info"] {
-		--background-color: var(--igd-premium-bg);
-		--text-color: var(--igd-premium-color);
-		--icon-color: var(--igd-premium-color);
-		--border-color: var(--igd-premium-border);
-	}
 
 	//&.default {
 	//	--ig-badge-background: light-dark(var(--ig-gray-100), var(--ig-gray-800));
@@ -130,7 +101,34 @@ body[data-sidebar-open] {
 	//}
 }
 
+.updated {
+	--background-color: var(--igd-updated-bg);
+	--text-color: var(--igd-updated-color);
+	--icon-color: var(--igd-updated-color);
+	--border-color: var(--igd-updated-border);
+}
 
+.new {
+	--background-color: var(--igd-new-bg);
+	--text-color: var(--igd-new-color);
+	--icon-color: var(--igd-new-color);
+	--border-color: var(--igd-new-border);
+}
+
+.preview {
+	--background-color: var(--igd-preview-bg);
+	--text-color: var(--igd-preview-color);
+	--icon-color: var(--igd-preview-color);
+	--border-color: var(--igd-preview-border);
+}
+
+
+.premium {
+	--background-color: var(--igd-premium-bg);
+	--text-color: var(--igd-premium-color);
+	--icon-color: var(--igd-premium-color);
+	--border-color: var(--igd-premium-border);
+}
 
 .igd-lable-and-badge {
 	display: flex;

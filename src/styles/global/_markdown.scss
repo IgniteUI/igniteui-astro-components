@@ -11,7 +11,9 @@
 	code {
 		@include type-style('code', false) {
 			margin: 0;
-		}
+		};
+		
+		margin-block-end: rem(26px);
 	}
 	
 	ul {
@@ -121,10 +123,11 @@
 		margin-bottom: rem(26px)
 	}
 	
-	image {
+	img {
 		width: 100%;
 		max-width: 100%;
 		aspect-ratio: 1;
+		margin-block-end: rem(26px);
 	}
 }
 

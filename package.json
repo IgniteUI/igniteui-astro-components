@@ -67,6 +67,7 @@
     "./lib/sidebar/helpers": "./src/lib/sidebar/helpers.ts",
     "./lib/types": "./src/lib/types.ts",
     "./plugins/remark-docfx": "./src/plugins/remark-docfx.ts",
+    "./plugins/rehype-table-wrapper": "./src/plugins/rehype-table-wrapper.ts",
     "./styles/custom.scss": "./src/styles/custom.scss",
     "./styles/ig-theme.scss": "./src/styles/ig-theme.scss",
     "./package.json": "./package.json"

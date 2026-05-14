@@ -174,7 +174,7 @@ function addFooter(
     onCodeSandbox:  (() => void) | null,
 ): void {
     const footer     = document.createElement('div');
-    footer.className = 'editing-buttons-container';
+    footer.className = 'igd-code-view__footer-actions';
 
     const label       = document.createElement('span');
     label.className   = 'editing-label';
