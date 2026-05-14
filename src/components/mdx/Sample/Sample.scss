@@ -3,11 +3,10 @@
 igc-tabs {
 	position: relative;
 	z-index: 0;
-	
 	width: 100%;
 	
 	&::part(inner) {
-		width: 100%;
+		flex-grow: 1;
 	}
 	
 	--item-text-color: var(--ig-gray-800);
@@ -35,7 +34,42 @@ igc-tabs {
 	}
 }
 
+igc-tab {
+	.code-wrapper {
+		position: relative;
+		border-radius: 0;
+		margin: 0;
+		border: none;
+		border-top: rem(1px) solid var(--ig-gray-300);
+		max-height: rem(400px);
+		overflow: auto;
+		overscroll-behavior: contain;
+
+		pre {
+			margin: 0;
+			padding: rem(32px);
+			border: none
+		}
+
+		.cv-hljs-code-copy {
+			position: absolute;
+			top: rem(16px);
+			right: rem(16px);
+			opacity: 0;
+			transition: opacity 0.2s ease;
+			pointer-events: none;
+		}
+
+		&:hover .cv-hljs-code-copy,
+		&:focus-within .cv-hljs-code-copy {
+			opacity: 1;
+			pointer-events: auto;
+		}
+	}
+}
+
 // TODO Log issue in the component this is not suppose to be affected by the ig-typography
+
 igc-tab::part(content) {
 	@include type-style('subtitle-1') {
 		margin: 0;
@@ -61,6 +95,8 @@ igc-tab::part(tab-header) {
 	
 	position: relative;
 	border: rem(1px) solid var(--ig-gray-300);
+	min-height: rem(320px);
+	overflow: hidden scroll;
 
 	.sample-loading-indicator {
 		position: absolute;
@@ -88,11 +124,6 @@ igc-tab::part(tab-header) {
 	border-block-start: rem(1px) solid var(--ig-gray-300);
 }
 
-.igd-code-view__header-actions {
-	height: var(--sample-container-header-height);
-	border-block-end: rem(1px) solid var(--ig-gray-300);
-}
-
 .igd-code-view__header-actions,
 .igd-code-view__footer-actions {
 	display: flex;
@@ -116,6 +147,8 @@ igc-button[variant='outlined'] {
 		--hover-foreground: var(--igd-accent);
 		--focus-foreground: var(--igd-accent);
 		--active-foreground: var(--igd-accent);
+		--focus-hover-foreground: var(--igd-accent);
+		--focus-visible-foreground: var(--igd-accent);
 		
 		--icon-color: light-dark(var(--ig-gray-900), var(--ig-gray-200));
 		--icon-color-hover: var(--igd-accent);
@@ -123,18 +156,33 @@ igc-button[variant='outlined'] {
 		--hover-background: transparent;
 		--focus-background: transparent;
 		--active-background: transparent;
-		
 		--focus-hover-background: transparent;
-		--focus-hover-foreground: transparent;
-		--focus-visible-foreground: transparent;
 		--focus-visible-background: transparent;
 		
 		--border-radius: #{rem(4px)};
+		
+		&::after {
+			display: none;
+		}
 	}
+}
+
+.igd-code-view__header-actions {
+	position: sticky;
+	top: 0;
+	height: var(--sample-container-header-height);
+	border-block-end: rem(1px) solid var(--ig-gray-300);
+	background-color: var(--igd-layout-sections-bg);
 }
 
 igc-button {
 	&::part(base) {
 		padding-inline: rem(16px);
+	}
+}
+
+.editing-label {
+	@include type-style('body-2') {
+		margin: 0;
 	}
 }

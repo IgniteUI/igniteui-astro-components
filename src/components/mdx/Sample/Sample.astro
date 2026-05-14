@@ -88,7 +88,7 @@ const exampleTabId = `${widgetId}-example`;
            data-github-src={ githubSrc }
            data-platform={ lower }>
           <div class="igd-code-view__inner">
-              <igc-tabs id={ `${ widgetId }-tabs` }>
+              <igc-tabs id={ `${ widgetId }-tabs` } alignment="start">
                   <igc-tab id={ exampleTabId } label="EXAMPLE" selected>
                       <div class="igd-sample-container loading" aria-busy="true" style={ `height: ${ height }px` }>
                           <igc-circular-progress indeterminate class="sample-loading-indicator" aria-label="Loading sample"></igc-circular-progress>

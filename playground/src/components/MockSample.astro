@@ -82,7 +82,7 @@ function tabId(index: number) { return `${id}-code-${index}`; }
 
 
     <div class="igd-code-view__inner">
-        <igc-tabs id={`${id}-tabs`}>
+        <igc-tabs id={`${id}-tabs`} alignment="start">
             <igc-tab id={exampleTabId} label="EXAMPLE" selected>
                 <div class="igd-code-view__header-actions">
                     <igc-icon-button variant="outlined" class="igd-full-screen-btn"
@@ -104,7 +104,10 @@ function tabId(index: number) { return `${id}-code-${index}`; }
             </igc-tab>
             {resolvedTabs.map((tab, i) => (
                     <igc-tab id={tabId(i)} label={tab.label}>
-                        <pre class="code-wrapper"><code class={`language-${tab.lang}`}>{tab.content}</code><button class="cv-hljs-code-copy hidden">COPY CODE</button></pre>
+                        <div class="code-wrapper">
+                            <pre><code class={`language-${tab.lang}`}>{tab.content}</code></pre>
+                            <igc-icon-button variant="outlined" aria-label="Copy code" class="cv-hljs-code-copy"><igc-icon name="copy" collection="docs"></igc-icon></igc-icon-button>
+                        </div>
                     </igc-tab>
             ))}
         </igc-tabs>

@@ -124,31 +124,39 @@ function addCodeTab(
     const tab = document.createElement('igc-tab');
     tab.setAttribute('label', file.fileHeader.toUpperCase());
 
-    const pre     = document.createElement('pre');
-    pre.className = 'code-wrapper';
+    const wrapper = document.createElement('div');
+    wrapper.className = 'code-wrapper';
 
-    const code       = document.createElement('code');
+    const pre  = document.createElement('pre');
+    const code = document.createElement('code');
     code.className   = `language-${lang}`;
     code.textContent = file.content;
+    pre.appendChild(code);
 
-    const copyBtn       = document.createElement('igc-button') as HTMLElement;
+    const copyBtn = document.createElement('igc-icon-button') as HTMLElement;
     copyBtn.setAttribute('variant', 'outlined');
-    copyBtn.className   = 'cv-hljs-code-copy hidden';
-    copyBtn.textContent = 'COPY CODE';
+    copyBtn.setAttribute('aria-label', 'Copy code');
+    copyBtn.className = 'cv-hljs-code-copy';
+
+    const copyIcon = document.createElement('igc-icon');
+    copyIcon.setAttribute('name', 'copy');
+    copyIcon.setAttribute('collection', 'docs');
+    copyBtn.appendChild(copyIcon);
+
     copyBtn.addEventListener('click', () => {
         navigator.clipboard.writeText(file.content).then(() => {
-            const orig = copyBtn.textContent!;
-            copyBtn.textContent = 'COPIED!';
-            setTimeout(() => { copyBtn.textContent = orig; }, 1500);
+            copyIcon.setAttribute('name', 'check');
+            copyBtn.setAttribute('aria-label', 'Code copied');
+            setTimeout(() => {
+                copyIcon.setAttribute('name', 'copy');
+                copyBtn.setAttribute('aria-label', 'Copy code');
+            }, 1500);
         });
     });
 
-    pre.addEventListener('mouseenter', () => copyBtn.classList.remove('hidden'));
-    pre.addEventListener('mouseleave', () => copyBtn.classList.add('hidden'));
-
-    pre.appendChild(code);
-    pre.appendChild(copyBtn);
-    tab.appendChild(pre);
+    wrapper.appendChild(pre);
+    wrapper.appendChild(copyBtn);
+    tab.appendChild(wrapper);
     igcTabs.appendChild(tab);
 
     if (typeof (window as any).hljs !== 'undefined') {
@@ -442,16 +450,14 @@ export function initSampleWidgets(): void {
 
         // Wire copy buttons for pre-rendered code tabs (e.g. MockSample in playground).
         widget.querySelectorAll<HTMLElement>('.code-wrapper').forEach(pre => {
-            const btn  = pre.querySelector<HTMLButtonElement>('.cv-hljs-code-copy');
+            const btn  = pre.querySelector<HTMLElement>('.cv-hljs-code-copy');
+            const icon = btn?.querySelector<HTMLElement>('igc-icon');
             const code = pre.querySelector<HTMLElement>('code');
             if (!btn || !code) return;
-            pre.addEventListener('mouseenter', () => btn.classList.remove('hidden'));
-            pre.addEventListener('mouseleave', () => btn.classList.add('hidden'));
             btn.addEventListener('click', () => {
                 navigator.clipboard.writeText(code.textContent ?? '').then(() => {
-                    const orig = btn.textContent!;
-                    btn.textContent = 'COPIED!';
-                    setTimeout(() => { btn.textContent = orig; }, 1500);
+                    icon?.setAttribute('name', 'check');
+                    setTimeout(() => { icon?.setAttribute('name', 'copy'); }, 1500);
                 });
             });
         });

@@ -53,10 +53,7 @@ igc-select::part(base) {
 
 
 igc-icon-button {
-	igc-icon {
-		--size: #{rem(14px)};
-	}
-	
+
 	--ig-flat-icon-button-foreground: var(--ig-gray-900);
 	--ig-flat-icon-button-hover-foreground: var(--ig-gray-900);
 	--ig-flat-icon-button-focus-foreground: var(--ig-gray-900);
