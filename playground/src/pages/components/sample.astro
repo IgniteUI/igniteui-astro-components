@@ -48,29 +48,10 @@ export class GridSampleComponent {
     lang: 'html',
     content: `<div class="grid__wrapper">
   <igx-grid [data]="data" height="340px" width="100%">
-    <igx-column
-      field="ID"
-      header="ID"
-      dataType="number"
-      width="80px">
-    </igx-column>
-    <igx-column
-      field="Name"
-      header="Name"
-      sortable="true"
-      width="200px">
-    </igx-column>
-    <igx-column
-      field="City"
-      header="City"
-      sortable="true"
-      width="160px">
-    </igx-column>
-    <igx-column
-      field="Role"
-      header="Role"
-      sortable="true">
-    </igx-column>
+    <igx-column field="ID"   header="ID"   dataType="number" width="80px"></igx-column>
+    <igx-column field="Name" header="Name" sortable="true"   width="200px"></igx-column>
+    <igx-column field="City" header="City" sortable="true"   width="160px"></igx-column>
+    <igx-column field="Role" header="Role" sortable="true"></igx-column>
   </igx-grid>
 </div>`,
   },
@@ -80,18 +61,128 @@ export class GridSampleComponent {
     content: `.grid__wrapper {
     padding-top: 16px;
     margin: 0 16px;
-}
-
-.grid-controls {
-    display: flex;
-    flex-flow: column nowrap;
-    justify-content: space-between;
-    margin: 0 16px 24px;
-
-    igx-switch {
-        margin-top: 24px;
-    }
 }`,
+  },
+  {
+    label: 'MODULE',
+    lang: 'typescript',
+    content: `import { NgModule } from '@angular/core';
+import { BrowserModule } from '@angular/platform-browser';
+import { IgxGridModule } from 'igniteui-angular';
+import { GridSampleComponent } from './grid-sample.component';
+
+@NgModule({
+  declarations: [GridSampleComponent],
+  imports: [BrowserModule, IgxGridModule],
+  bootstrap: [GridSampleComponent],
+})
+export class AppModule {}`,
+  },
+  {
+    label: 'APP.ROUTES',
+    lang: 'typescript',
+    content: `import { Routes } from '@angular/router';
+import { GridSampleComponent } from './grid-sample/grid-sample.component';
+
+export const routes: Routes = [
+  { path: '', component: GridSampleComponent },
+];`,
+  },
+  {
+    label: 'MAIN.TS',
+    lang: 'typescript',
+    content: `import { bootstrapApplication } from '@angular/platform-browser';
+import { AppComponent } from './app/app.component';
+import { appConfig } from './app/app.config';
+
+bootstrapApplication(AppComponent, appConfig).catch(console.error);`,
+  },
+  {
+    label: 'APP.CONFIG',
+    lang: 'typescript',
+    content: `import { ApplicationConfig } from '@angular/core';
+import { provideRouter } from '@angular/router';
+import { routes } from './app.routes';
+
+export const appConfig: ApplicationConfig = {
+  providers: [provideRouter(routes)],
+};`,
+  },
+  {
+    label: 'ENVIRONMENT',
+    lang: 'typescript',
+    content: `export const environment = {
+  production: false,
+  apiUrl: 'https://api.example.com',
+  licenseKey: 'YOUR_LICENSE_KEY',
+};`,
+  },
+  {
+    label: 'GRID.SERVICE',
+    lang: 'typescript',
+    content: `import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+
+@Injectable({ providedIn: 'root' })
+export class GridService {
+  constructor(private http: HttpClient) {}
+
+  getData(): Observable<any[]> {
+    return this.http.get<any[]>('/api/data');
+  }
+}`,
+  },
+  {
+    label: 'PIPE',
+    lang: 'typescript',
+    content: `import { Pipe, PipeTransform } from '@angular/core';
+
+@Pipe({ name: 'currency', standalone: true })
+export class CurrencyFormatPipe implements PipeTransform {
+  transform(value: number, symbol = '$'): string {
+    return symbol + value.toFixed(2);
+  }
+}`,
+  },
+  {
+    label: 'DIRECTIVES',
+    lang: 'typescript',
+    content: `import { Directive, ElementRef, HostListener } from '@angular/core';
+
+@Directive({ selector: '[appHighlight]', standalone: true })
+export class HighlightDirective {
+  constructor(private el: ElementRef) {}
+
+  @HostListener('mouseenter') onEnter() {
+    this.el.nativeElement.style.backgroundColor = 'lightyellow';
+  }
+
+  @HostListener('mouseleave') onLeave() {
+    this.el.nativeElement.style.backgroundColor = '';
+  }
+}`,
+  },
+  {
+    label: 'SPEC',
+    lang: 'typescript',
+    content: `import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { GridSampleComponent } from './grid-sample.component';
+
+describe('GridSampleComponent', () => {
+  let fixture: ComponentFixture<GridSampleComponent>;
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [GridSampleComponent],
+    }).compileComponents();
+    fixture = TestBed.createComponent(GridSampleComponent);
+  });
+
+  it('should create', () => {
+    expect(fixture.componentInstance).toBeTruthy();
+  });
+});`,
   },
 ];
 ---

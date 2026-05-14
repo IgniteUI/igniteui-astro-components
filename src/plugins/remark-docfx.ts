@@ -129,12 +129,11 @@ function buildWidgetHtml(
     (demosBase ? ` data-demos-base-url="${demosBase}"` : '') +
     (githubSrc ? ` data-github-src="${githubSrc}"`    : '') +
     ` data-platform="${platform}">` +
-    `<div class="code-view-navbar">` +
-    `<div class="code-view-tab code-view-tab--active" data-tab-id="${tabId}">EXAMPLE</div>` +
+    `<div class="code-view-tab" data-tab-id="${tabId}">EXAMPLE</div>` +
     `<span class="fs-button-container" title="Expand to fullscreen"></span>` +
     `</div>` +
     `<div class="code-views-container">` +
-    `<div id="${tabId}" class="sample-container code-view-tab-content loading" style="height: ${height}">` +
+    `<div id="${tabId}" class="igd-sample-container code-view-tab-content loading" style="height: ${height}">` +
     `<iframe data-src="${src}" title="${safeAlt}" style="width: 100%; height: 100%;" frameborder="0" seamless=""></iframe>` +
     `</div>` +
     `</div>` +
@@ -258,7 +257,6 @@ export function rehypeCodeView() {
       node.children = [
         {
           type: 'element', tagName: 'div',
-          properties: { className: ['code-view-navbar'] },
           children: [
             {
               type: 'element', tagName: 'div',
@@ -280,7 +278,7 @@ export function rehypeCodeView() {
               type: 'element', tagName: 'div',
               properties: {
                 id: tabId,
-                className: ['sample-container', 'code-view-tab-content', 'loading'],
+                className: ['igd-sample-container', 'code-view-tab-content', 'loading'],
                 style: `height: ${height}`,
               },
               children: [

@@ -19,6 +19,9 @@ interface Props {
     tabs?: CodeTab[];
 }
 
+import stackblitzSvgRaw from '../../../src/assets/logos/stackblitz.svg?raw';
+import codeSandboxSvgRaw from '../../../src/assets/logos/code-sandbox.svg?raw';
+
 const { id, src = '/mock-demo', height = 400, alt = 'React Example', tabs } = Astro.props;
 
 const exampleTabId = `${id}-example`;
@@ -70,49 +73,52 @@ const resolvedTabs: CodeTab[] = tabs ?? defaultTabs;
 function tabId(index: number) { return `${id}-code-${index}`; }
 ---
 
-<div class="code-view"
+<div class="igd-code-view"
      id={id}
      data-iframe-src={src}
      data-demos-base-url=""
      data-github-src={src.replace(/^\//, '')}
      data-platform="react">
 
-  <div class="code-view-navbar">
-    <div class="code-view-tab--active" data-tab-id={exampleTabId}>EXAMPLE</div>
-    {resolvedTabs.map((tab, i) => (
-      <div class="code-view-tab" data-tab-id={tabId(i)}>{tab.label}</div>
-    ))}
-    <span class="fs-button-container" title="Expand to fullscreen"></span>
+
+    <div class="igd-code-view__inner">
+        <igc-tabs id={`${id}-tabs`}>
+            <igc-tab id={exampleTabId} label="EXAMPLE" selected>
+                <div class="igd-code-view__header-actions">
+                    <igc-icon-button variant="outlined" class="igd-full-screen-btn"
+                         name="enter-fullscreen" collection="docs"
+                         aria-label="Expand to fullscreen">
+                    </igc-icon-button>
+                </div>
+                <div class="igd-sample-container loading" aria-busy="true" style={`height: ${height}px`}>
+                    <igc-circular-progress indeterminate class="sample-loading-indicator" aria-label="Loading sample"></igc-circular-progress>
+                    <iframe
+                            data-src={src}
+                            title={alt}
+                            style="width: 100%; height: 100%;"
+                            frameborder="0"
+                            seamless
+                            aria-hidden="true"
+                    ></iframe>
+                </div>
+            </igc-tab>
+            {resolvedTabs.map((tab, i) => (
+                    <igc-tab id={tabId(i)} label={tab.label}>
+                        <pre class="code-wrapper"><code class={`language-${tab.lang}`}>{tab.content}</code><button class="cv-hljs-code-copy hidden">COPY CODE</button></pre>
+                    </igc-tab>
+            ))}
+        </igc-tabs>
   </div>
 
-  <div class="code-views-container">
-
-    <div id={exampleTabId}
-         class="sample-container code-view-tab-content loading"
-         style={`height: ${height}px`}>
-      <iframe
-        data-src={src}
-        title={alt}
-        style="width: 100%; height: 100%;"
-        frameborder="0"
-        seamless
-      ></iframe>
-    </div>
-
-    {resolvedTabs.map((tab, i) => (
-      <div id={tabId(i)} class="code-view-tab-content" style="display: none">
-        <pre class="code-wrapper"><code class={`language-${tab.lang}`}>{tab.content}</code><button class="cv-hljs-code-copy hidden">COPY CODE</button></pre>
-      </div>
-    ))}
-
-  </div>
-
-  <div class="editing-buttons-container">
+  <div class="igd-code-view__footer-actions">
     <span class="editing-label">Edit in: </span>
-    <button class="codesandbox-btn">CodeSandbox</button>
-    <button class="stackblitz-btn">StackBlitz</button>
+    <igc-button variant="outlined" class="stackblitz-btn igd-edit-in-btn" aria-label="Edit in StackBlitz">
+        <Fragment set:html={stackblitzSvgRaw} />
+    </igc-button>
+    <igc-button variant="outlined" class="codesandbox-btn igd-edit-in-btn" aria-label="Edit in CodeSandbox">
+        <Fragment set:html={codeSandboxSvgRaw} />
+    </igc-button>
   </div>
-
 </div>
 
 <script>

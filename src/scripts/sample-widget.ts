@@ -7,13 +7,20 @@
  * This module handles the dynamic parts:
  *   – Serial iframe loading (one at a time, IntersectionObserver-based)
  *   – Code-tab fetching and rendering (Angular JSON or xplat JSON)
- *   – Tab switching between EXAMPLE and code views
+ *   – Tab switching via <igc-tabs> / <igc-tab> web components
  *   – Live-editing footer (StackBlitz / CodeSandbox)
  *
- * Selector: `.code-view[data-platform]`
+ * Selector: `.igd-code-view[data-platform]`
  *   This distinguishes pre-rendered Sample.astro widgets from `.ig-code-view`
  *   elements that come from the docfx pipeline (handled by code-view.js).
  */
+
+import { defineComponents, IgcTabsComponent, IgcTabComponent, IgcButtonComponent, IgcIconButtonComponent, IgcIconComponent, IgcCircularProgressComponent } from 'igniteui-webcomponents';
+defineComponents(IgcTabsComponent, IgcTabComponent, IgcButtonComponent, IgcIconButtonComponent, IgcIconComponent, IgcCircularProgressComponent);
+
+import './icon-registry';
+import stackblitzSvg from '../assets/logos/stackblitz.svg?raw';
+import codeSandboxSvg from '../assets/logos/code-sandbox.svg?raw';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -49,9 +56,7 @@ interface WidgetContext {
     iframeSrc:    string;
     demosBaseUrl: string;
     widgetIndex:  number;
-    navbar:       HTMLElement;
-    container:    HTMLElement;
-    activateTab:  (tab: HTMLElement) => void;
+    igcTabs:      HTMLElement;
     githubSrc:    string;
 }
 
@@ -108,70 +113,26 @@ function replaceRelativeAssetUrls(files: SampleFile[], demosBaseUrl: string): vo
     });
 }
 
-// ─── Tab Switching ────────────────────────────────────────────────────────────
-
-/**
- * Returns an `activateTab` callback that mirrors the original buildShell closure.
- * Operates purely on the pre-rendered HTML — no DOM construction needed.
- */
-function buildActivateTab(
-    navbar:       HTMLElement,
-    container:    HTMLElement,
-    fsBtn:        HTMLElement | null,
-    exampleTabId: string,
-): (tab: HTMLElement) => void {
-    return function activateTab(tab: HTMLElement) {
-        navbar.querySelectorAll<HTMLElement>('.code-view-tab, .code-view-tab--active').forEach(t => {
-            t.classList.remove('code-view-tab--active');
-            t.classList.add('code-view-tab');
-        });
-        container.querySelectorAll<HTMLElement>('.code-view-tab-content').forEach(c => {
-            c.style.display = 'none';
-        });
-        tab.classList.remove('code-view-tab');
-        tab.classList.add('code-view-tab--active');
-        const pane = container.querySelector<HTMLElement>('#' + tab.dataset.tabId);
-        if (pane) pane.style.display = '';
-        if (fsBtn) {
-            fsBtn.style.visibility = tab.dataset.tabId === exampleTabId ? 'visible' : 'hidden';
-        }
-    };
-}
-
 // ─── Code Tab Rendering ───────────────────────────────────────────────────────
 
 function addCodeTab(
-    navbar:      HTMLElement,
-    container:   HTMLElement,
-    activateTab: (tab: HTMLElement) => void,
-    widgetIndex: number,
-    file:        SampleFile,
-    tabIndex:    number,
+    igcTabs: HTMLElement,
+    file:    SampleFile,
 ): void {
-    const lang  = file.fileExtension === 'js' ? 'javascript' : (file.fileExtension || 'text');
-    const tabId = `cv-${widgetIndex}-code-${tabIndex}`;
+    const lang = file.fileExtension === 'js' ? 'javascript' : (file.fileExtension || 'text');
 
-    const tab         = document.createElement('div');
-    tab.className     = 'code-view-tab';
-    tab.textContent   = file.fileHeader.toUpperCase();
-    tab.dataset.tabId = tabId;
-    tab.addEventListener('click', () => activateTab(tab));
-    // Insert before the last child (the fullscreen span stays last in the navbar).
-    navbar.insertBefore(tab, navbar.lastElementChild);
-
-    const pane         = document.createElement('div');
-    pane.id            = tabId;
-    pane.className     = 'code-view-tab-content';
-    pane.style.display = 'none';
+    const tab = document.createElement('igc-tab');
+    tab.setAttribute('label', file.fileHeader.toUpperCase());
 
     const pre     = document.createElement('pre');
     pre.className = 'code-wrapper';
 
-    const code          = document.createElement('code');
-    code.className      = `language-${lang}`;
-    code.textContent    = file.content;
+    const code       = document.createElement('code');
+    code.className   = `language-${lang}`;
+    code.textContent = file.content;
 
-    const copyBtn       = document.createElement('button');
+    const copyBtn       = document.createElement('igc-button') as HTMLElement;
+    copyBtn.setAttribute('variant', 'outlined');
     copyBtn.className   = 'cv-hljs-code-copy hidden';
     copyBtn.textContent = 'COPY CODE';
     copyBtn.addEventListener('click', () => {
@@ -187,8 +148,8 @@ function addCodeTab(
 
     pre.appendChild(code);
     pre.appendChild(copyBtn);
-    pane.appendChild(pre);
-    container.appendChild(pane);
+    tab.appendChild(pre);
+    igcTabs.appendChild(tab);
 
     if (typeof (window as any).hljs !== 'undefined') {
         (window as any).hljs.highlightElement(code);
@@ -212,19 +173,21 @@ function addFooter(
     footer.appendChild(label);
 
     if ((!explicitEditor || explicitEditor === 'stackblitz') && onStackblitz) {
-        const btn            = document.createElement('button');
-        btn.className        = 'stackblitz-btn';
-        btn.textContent      = 'StackBlitz';
-        btn.style.fontWeight = '500';
+        const btn = document.createElement('igc-button') as HTMLElement;
+        btn.setAttribute('variant', 'outlined');
+        btn.setAttribute('aria-label', 'Edit in StackBlitz');
+        btn.className = 'stackblitz-btn igd-edit-in-btn';
+        btn.innerHTML = stackblitzSvg;
         btn.addEventListener('click', onStackblitz);
         footer.appendChild(btn);
     }
 
     if ((!explicitEditor || explicitEditor === 'csb') && onCodeSandbox) {
-        const btn            = document.createElement('button');
-        btn.className        = 'codesandbox-btn';
-        btn.textContent      = 'CodeSandbox';
-        btn.style.fontWeight = '500';
+        const btn = document.createElement('igc-button') as HTMLElement;
+        btn.setAttribute('variant', 'outlined');
+        btn.setAttribute('aria-label', 'Edit in CodeSandbox');
+        btn.className = 'codesandbox-btn igd-edit-in-btn';
+        btn.innerHTML = codeSandboxSvg;
         btn.addEventListener('click', onCodeSandbox);
         footer.appendChild(btn);
     }
@@ -236,7 +199,7 @@ function addFooter(
 
 class AngularCodeService {
     async init(ctx: WidgetContext): Promise<void> {
-        const { widget, iframeSrc, demosBaseUrl, widgetIndex, navbar, container, activateTab } = ctx;
+        const { widget, iframeSrc, demosBaseUrl, widgetIndex, igcTabs } = ctx;
         const samplePath     = getSamplePath(iframeSrc, demosBaseUrl);
         const isDv           = isDvSample(samplePath);
         const assetDir       = isDv ? 'code-viewer' : 'samples';
@@ -275,8 +238,8 @@ class AngularCodeService {
                 .filter((f: SampleFile) => f.isMain)
                 .sort((a: SampleFile, b: SampleFile) =>
                     SAMPLES_ORDER.indexOf(a.fileHeader) - SAMPLES_ORDER.indexOf(b.fileHeader))
-                .forEach((file: SampleFile, i: number) =>
-                    addCodeTab(navbar, container, activateTab, widgetIndex, file, i));
+                .forEach((file: SampleFile) =>
+                    addCodeTab(igcTabs, file));
 
             const onStackblitz = isDv ? null : () => this._openInStackBlitz(sampleData, sharedData);
             addFooter(widget, explicitEditor, onStackblitz, fallbackCodeSandbox);
@@ -366,7 +329,7 @@ class XplatCodeService {
     }
 
     async init(ctx: WidgetContext): Promise<void> {
-        const { widget, iframeSrc, demosBaseUrl, widgetIndex, navbar, container, activateTab, githubSrc } = ctx;
+        const { widget, iframeSrc, demosBaseUrl, igcTabs, githubSrc } = ctx;
         const samplePath     = getSamplePath(iframeSrc, demosBaseUrl);
         const addXplatFooter = () => {
             if (!this.enableLiveEditing || !githubSrc) return;
@@ -388,8 +351,8 @@ class XplatCodeService {
                 .filter((f: SampleFile) => f.isMain)
                 .sort((a: SampleFile, b: SampleFile) =>
                     this.samplesOrder.indexOf(a.fileHeader) - this.samplesOrder.indexOf(b.fileHeader))
-                .forEach((file: SampleFile, i: number) =>
-                    addCodeTab(navbar, container, activateTab, widgetIndex, file, i));
+                .forEach((file: SampleFile) =>
+                    addCodeTab(igcTabs, file));
 
             addXplatFooter();
         } catch (err: any) {
@@ -432,6 +395,8 @@ export function initSampleWidgets(): void {
 
         iframe.addEventListener('load', () => {
             samplePane.classList.remove('loading');
+            samplePane.removeAttribute('aria-busy');
+            iframe.removeAttribute('aria-hidden');
             iframeLoading = false;
             processIframeQueue();
         }, { once: true });
@@ -439,7 +404,7 @@ export function initSampleWidgets(): void {
         iframe.src = iframe.dataset.src!;
     }
 
-    document.querySelectorAll<HTMLElement>('.code-view[data-platform]').forEach((widget, index) => {
+    document.querySelectorAll<HTMLElement>('.igd-code-view[data-platform]').forEach((widget, index) => {
         // Skip widgets already initialized (e.g. Astro client router restoring a cached page).
         if (widget.dataset.widgetInitialized) return;
         widget.dataset.widgetInitialized = 'true';
@@ -451,26 +416,32 @@ export function initSampleWidgets(): void {
 
         if (!iframeSrc) return;
 
-        const navbar     = widget.querySelector<HTMLElement>('.code-view-navbar');
-        const container  = widget.querySelector<HTMLElement>('.code-views-container');
-        const samplePane = widget.querySelector<HTMLElement>('.sample-container');
+        const igcTabs    = widget.querySelector<HTMLElement>('igc-tabs');
+        const samplePane = widget.querySelector<HTMLElement>('.igd-sample-container');
         const iframe     = widget.querySelector<HTMLIFrameElement>('iframe');
-        const fsBtn      = widget.querySelector<HTMLElement>('.fs-button-container');
-        const exampleTab = widget.querySelector<HTMLElement>('.code-view-tab--active');
+        const fsBtn      = widget.querySelector<HTMLElement>('.igd-full-screen-btn');
 
-        if (!navbar || !container) return;
+        if (!igcTabs) return;
 
-        const exampleTabId = exampleTab?.dataset.tabId ?? `${widget.id}-example`;
-        const activateTab  = buildActivateTab(navbar, container, fsBtn, exampleTabId);
+        const exampleTabId = `${widget.id}-example`;
 
-        // Wire click handler onto the pre-rendered EXAMPLE tab.
-        exampleTab?.addEventListener('click', () => activateTab(exampleTab));
-
-        // Wire pre-rendered code tabs (e.g. MockSample in the playground).
-        navbar.querySelectorAll<HTMLElement>('.code-view-tab').forEach(tab => {
-            tab.addEventListener('click', () => activateTab(tab));
+        // Hide the fullscreen button when a code tab is active.
+        igcTabs.addEventListener('igcChange', (e: Event) => {
+            const detail = (e as CustomEvent<HTMLElement>).detail;
+            if (fsBtn) {
+                fsBtn.style.visibility = detail?.id === exampleTabId ? 'visible' : 'hidden';
+            }
         });
-        container.querySelectorAll<HTMLElement>('.code-wrapper').forEach(pre => {
+
+        // Fullscreen button: wire href so igc-icon-button navigates natively.
+        if (fsBtn && iframeSrc) {
+            const fullscreenSrc = iframeSrc + (iframeSrc.includes('?') ? '&' : '?') + 'nav=0';
+            fsBtn.setAttribute('href', fullscreenSrc);
+            fsBtn.setAttribute('target', '_blank');
+        }
+
+        // Wire copy buttons for pre-rendered code tabs (e.g. MockSample in playground).
+        widget.querySelectorAll<HTMLElement>('.code-wrapper').forEach(pre => {
             const btn  = pre.querySelector<HTMLButtonElement>('.cv-hljs-code-copy');
             const code = pre.querySelector<HTMLElement>('code');
             if (!btn || !code) return;
@@ -484,14 +455,6 @@ export function initSampleWidgets(): void {
                 });
             });
         });
-
-        // Fullscreen button: open the iframe URL in a new tab.
-        if (fsBtn && iframe) {
-            fsBtn.addEventListener('click', () => {
-                const src = iframe.src || iframe.dataset.src || '';
-                if (src) window.open(src + (src.includes('?') ? '&' : '?') + 'nav=0', '_blank');
-            });
-        }
 
         // Enqueue iframe loading.
         if (iframe && samplePane) {
@@ -516,7 +479,7 @@ export function initSampleWidgets(): void {
             : new AngularCodeService();
 
         const ctx: WidgetContext = {
-            widget, iframeSrc, demosBaseUrl, widgetIndex: index, navbar, container, activateTab, githubSrc,
+            widget, iframeSrc, demosBaseUrl, widgetIndex: index, igcTabs, githubSrc,
         };
 
         // Fetch code-tab data only when the widget becomes visible.
