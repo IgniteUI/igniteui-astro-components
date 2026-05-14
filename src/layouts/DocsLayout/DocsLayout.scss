@@ -115,11 +115,15 @@
 	gap: rem(70px);
 	padding-inline: rem(70px) rem(32px);
 	position: relative;
+
+	@media (max-width: #{$bp-sidebar-max}) {
+		padding-inline: rem(34px) rem(16px);
+		gap: rem(24px);
+	}
 }
 
 .content {
 	max-width: 60rem;
 	margin: 0 auto;
-	padding-inline: var(--igd-page-padding);
-	padding-block-end: var(--igd-page-padding);
+	padding: 0;
 }

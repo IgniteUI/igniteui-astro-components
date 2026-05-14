@@ -30,8 +30,17 @@ igc-tabs {
 	}
 	
 	.igd-sample-container {
-		border: none;
+		border-inline: none;
+		border-block-end: none;
 	}
+}
+
+// TODO THIS IS A COMPONENT BUG LOG IT
+igc-tab::part(start-scroll-button) {
+	inset-inline-start: -1px;
+}
+igc-tab::part(end-scroll-button) {
+	inset-inline-end: -1px;
 }
 
 igc-tab {
@@ -83,6 +92,7 @@ igc-tab::part(tab-header) {
 .igd-code-view {
 	width: 100%;
 	border: rem(1px) solid var(--ig-gray-300);
+	margin-block-end: rem(26px);
 }
 
 .igd-code-view__inner {
@@ -96,7 +106,12 @@ igc-tab::part(tab-header) {
 	position: relative;
 	border: rem(1px) solid var(--ig-gray-300);
 	min-height: rem(320px);
-	overflow: hidden scroll;
+	max-height: rem(800px);
+	overflow: hidden auto;
+
+	iframe {
+		display: block;
+	}
 
 	.sample-loading-indicator {
 		position: absolute;
@@ -134,50 +149,22 @@ igc-tab::part(tab-header) {
 	gap: rem(16px);
 }
 
-igc-icon-button[variant='outlined'],
-igc-button[variant='outlined'] {
-	&::part(base) {
-		--border-color: light-dark(var(--ig-gray-400), var(--ig-gray-700));
-		--hover-border-color: light-dark(var(--ig-gray-400), var(--ig-gray-700));
-		--focus-border-color: light-dark(var(--ig-gray-400), var(--ig-gray-700));
-		--focus-visible-border-color: light-dark(var(--ig-gray-400), var(--ig-gray-700));
-		--active-border-color: light-dark(var(--ig-gray-400), var(--ig-gray-700));
-		
-		--foreground: light-dark(var(--ig-gray-900), var(--ig-gray-200));
-		--hover-foreground: var(--igd-accent);
-		--focus-foreground: var(--igd-accent);
-		--active-foreground: var(--igd-accent);
-		--focus-hover-foreground: var(--igd-accent);
-		--focus-visible-foreground: var(--igd-accent);
-		
-		--icon-color: light-dark(var(--ig-gray-900), var(--ig-gray-200));
-		--icon-color-hover: var(--igd-accent);
-		
-		--hover-background: transparent;
-		--focus-background: transparent;
-		--active-background: transparent;
-		--focus-hover-background: transparent;
-		--focus-visible-background: transparent;
-		
-		--border-radius: #{rem(4px)};
-		
-		&::after {
-			display: none;
-		}
-	}
-}
-
 .igd-code-view__header-actions {
 	position: sticky;
-	top: 0;
+	inset-block-end: 0;
 	height: var(--sample-container-header-height);
-	border-block-end: rem(1px) solid var(--ig-gray-300);
+	border-block-start: rem(1px) solid var(--ig-gray-300);
 	background-color: var(--igd-layout-sections-bg);
 }
 
 igc-button {
 	&::part(base) {
 		padding-inline: rem(16px);
+		gap: rem(4px);
+		
+		@include type-style('caption') {
+			margin: 0;
+		}
 	}
 }
 

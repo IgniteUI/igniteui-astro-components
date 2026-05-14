@@ -42,6 +42,14 @@
 	--igd-members-spacing: var(--igd-border-radius) #{rem(16px)};
 	
 	--igd-page-layout-grid: #{minmax(rem(300px), rem(400px)) 1fr};
+	
+	@media (max-width: #{$bp-sidebar-max}) {
+		--igd-page-layout-grid: #{minmax(rem(200px), rem(300px)) 1fr};
+	}
+
+	@media (max-width: #{$bp-desktop-min}) {
+		--igd-page-padding: #{rem(36px)};
+	}
 	--igd-page-padding: #{rem(50px)};
 	
 	// Padding

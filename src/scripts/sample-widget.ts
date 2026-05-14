@@ -168,6 +168,7 @@ function addCodeTab(
 
 function addFooter(
     widget:         HTMLElement,
+    iframeSrc:      string,
     explicitEditor: string | null,
     onStackblitz:   (() => void) | null,
     onCodeSandbox:  (() => void) | null,
@@ -177,8 +178,19 @@ function addFooter(
 
     const label       = document.createElement('span');
     label.className   = 'editing-label';
-    label.textContent = 'Edit in: ';
     footer.appendChild(label);
+
+    const fsBtn = document.createElement('igc-button') as HTMLElement;
+    fsBtn.setAttribute('variant', 'outlined');
+    fsBtn.setAttribute('aria-label', 'Open in full screen');
+    fsBtn.className = 'igd-full-screen-btn igd-edit-in-btn';
+    fsBtn.innerHTML = `<igc-icon name="open-link-blank" collection="docs" slot="prefix"></igc-icon>Full screen`;
+    if (iframeSrc) {
+        const fullscreenSrc = iframeSrc + (iframeSrc.includes('?') ? '&' : '?') + 'nav=0';
+        fsBtn.setAttribute('href', fullscreenSrc);
+        fsBtn.setAttribute('target', '_blank');
+    }
+    footer.appendChild(fsBtn);
 
     if ((!explicitEditor || explicitEditor === 'stackblitz') && onStackblitz) {
         const btn = document.createElement('igc-button') as HTMLElement;
@@ -250,11 +262,11 @@ class AngularCodeService {
                     addCodeTab(igcTabs, file));
 
             const onStackblitz = isDv ? null : () => this._openInStackBlitz(sampleData, sharedData);
-            addFooter(widget, explicitEditor, onStackblitz, fallbackCodeSandbox);
+            addFooter(widget, iframeSrc, explicitEditor, onStackblitz, fallbackCodeSandbox);
 
         } catch (err: any) {
             console.warn('[sample-widget] Could not fetch Angular sample files:', err.message);
-            addFooter(widget, explicitEditor, fallbackStackblitz, fallbackCodeSandbox);
+            addFooter(widget, iframeSrc, explicitEditor, fallbackStackblitz, fallbackCodeSandbox);
         }
     }
 
@@ -341,7 +353,7 @@ class XplatCodeService {
         const samplePath     = getSamplePath(iframeSrc, demosBaseUrl);
         const addXplatFooter = () => {
             if (!this.enableLiveEditing || !githubSrc) return;
-            addFooter(widget, 'csb', null, () => this._openCodeSandbox(githubSrc, demosBaseUrl));
+            addFooter(widget, iframeSrc, 'csb', null, () => this._openCodeSandbox(githubSrc, demosBaseUrl));
         };
 
         try {
@@ -427,26 +439,19 @@ export function initSampleWidgets(): void {
         const igcTabs    = widget.querySelector<HTMLElement>('igc-tabs');
         const samplePane = widget.querySelector<HTMLElement>('.igd-sample-container');
         const iframe     = widget.querySelector<HTMLIFrameElement>('iframe');
-        const fsBtn      = widget.querySelector<HTMLElement>('.igd-full-screen-btn');
 
         if (!igcTabs) return;
 
         const exampleTabId = `${widget.id}-example`;
 
-        // Hide the fullscreen button when a code tab is active.
+        // Toggle fullscreen button visibility based on active tab.
         igcTabs.addEventListener('igcChange', (e: Event) => {
             const detail = (e as CustomEvent<HTMLElement>).detail;
-            if (fsBtn) {
-                fsBtn.style.visibility = detail?.id === exampleTabId ? 'visible' : 'hidden';
+            const btn = widget.querySelector<HTMLElement>('.igd-full-screen-btn');
+            if (btn) {
+                btn.style.display = detail?.id === exampleTabId ? '' : 'none';
             }
         });
-
-        // Fullscreen button: wire href so igc-icon-button navigates natively.
-        if (fsBtn && iframeSrc) {
-            const fullscreenSrc = iframeSrc + (iframeSrc.includes('?') ? '&' : '?') + 'nav=0';
-            fsBtn.setAttribute('href', fullscreenSrc);
-            fsBtn.setAttribute('target', '_blank');
-        }
 
         // Wire copy buttons for pre-rendered code tabs (e.g. MockSample in playground).
         widget.querySelectorAll<HTMLElement>('.code-wrapper').forEach(pre => {

@@ -84,12 +84,6 @@ function tabId(index: number) { return `${id}-code-${index}`; }
     <div class="igd-code-view__inner">
         <igc-tabs id={`${id}-tabs`} alignment="start">
             <igc-tab id={exampleTabId} label="EXAMPLE" selected>
-                <div class="igd-code-view__header-actions">
-                    <igc-icon-button variant="outlined" class="igd-full-screen-btn"
-                         name="enter-fullscreen" collection="docs"
-                         aria-label="Expand to fullscreen">
-                    </igc-icon-button>
-                </div>
                 <div class="igd-sample-container loading" aria-busy="true" style={`height: ${height}px`}>
                     <igc-circular-progress indeterminate class="sample-loading-indicator" aria-label="Loading sample"></igc-circular-progress>
                     <iframe
@@ -103,24 +97,31 @@ function tabId(index: number) { return `${id}-code-${index}`; }
                 </div>
             </igc-tab>
             {resolvedTabs.map((tab, i) => (
-                    <igc-tab id={tabId(i)} label={tab.label}>
-                        <div class="code-wrapper">
-                            <pre><code class={`language-${tab.lang}`}>{tab.content}</code></pre>
-                            <igc-icon-button variant="outlined" aria-label="Copy code" class="cv-hljs-code-copy"><igc-icon name="copy" collection="docs"></igc-icon></igc-icon-button>
-                        </div>
-                    </igc-tab>
+                <igc-tab id={tabId(i)} label={tab.label}>
+                    <div class="code-wrapper">
+                        <pre><code class={`language-${tab.lang}`}>{tab.content}</code></pre>
+                        <igc-icon-button variant="outlined" aria-label="Copy code" class="cv-hljs-code-copy"><igc-icon name="copy" collection="docs"></igc-icon></igc-icon-button>
+                    </div>
+                </igc-tab>
             ))}
         </igc-tabs>
   </div>
 
   <div class="igd-code-view__footer-actions">
-    <span class="editing-label">Edit in: </span>
-    <igc-button variant="outlined" class="stackblitz-btn igd-edit-in-btn" aria-label="Edit in StackBlitz">
+    <igc-button variant="outlined" class="stackblitz-btn igd-edit-in-btn">
         <Fragment set:html={stackblitzSvgRaw} />
     </igc-button>
-    <igc-button variant="outlined" class="codesandbox-btn igd-edit-in-btn" aria-label="Edit in CodeSandbox">
+    <igc-button variant="outlined" class="codesandbox-btn igd-edit-in-btn">
         <Fragment set:html={codeSandboxSvgRaw} />
     </igc-button>
+      <igc-icon-button
+              name="open-link-blank"
+              collection="docs"
+              variant="outlined"
+              class="igd-full-screen-btn igd-edit-in-btn"
+              aria-label="Open in full screen"
+      >
+      </igc-icon-button>
   </div>
 </div>
 

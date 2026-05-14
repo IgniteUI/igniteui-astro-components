@@ -51,15 +51,65 @@ igc-select::part(base) {
 	}
 }
 
-
-igc-icon-button {
-
-	--ig-flat-icon-button-foreground: var(--ig-gray-900);
-	--ig-flat-icon-button-hover-foreground: var(--ig-gray-900);
-	--ig-flat-icon-button-focus-foreground: var(--ig-gray-900);
-	--ig-flat-icon-button-active-foreground: var(--ig-gray-900);
+igc-icon-button[variant='outlined'] {
+	--foreground: light-dark(var(--ig-gray-900), var(--ig-gray-200));
+	--hover-foreground: var(--igd-accent);
+	--focus-foreground: var(--igd-accent);
+	--active-foreground: var(--igd-accent);
+	--focus-hover-foreground: var(--igd-accent);
 	
-	--ig-flat-icon-button-hover-background: transparent;
-	--ig-flat-icon-button-focus-background: transparent;
-	--ig-flat-icon-button-active-background: transparent;
+	--hover-background: transparent;
+	--focus-background: transparent;
+	--active-background: transparent;
+	--focus-hover-background: transparent;
+	--focus-visible-background: transparent;
+	
+	--border-color: light-dark(var(--ig-gray-400), var(--ig-gray-700));
+	--focus-border-color: light-dark(var(--ig-gray-400), var(--ig-gray-700));
+	--border-radius: #{rem(4px)};
+	
+	&::part(base) {
+		&::after {
+			display: none;
+		}
+		
+		// TODO the icon color is not changing on hover, focus, active states, log an issue in the library
+		&:hover,
+		&:focus {
+			--foreground: var(--igd-accent);
+		}
+	}
 }
+
+igc-button[variant='outlined'] {
+	&::part(base) {
+		--border-color: light-dark(var(--ig-gray-400), var(--ig-gray-700));
+		--hover-border-color: light-dark(var(--ig-gray-400), var(--ig-gray-700));
+		--focus-border-color: light-dark(var(--ig-gray-400), var(--ig-gray-700));
+		--focus-visible-border-color: light-dark(var(--ig-gray-400), var(--ig-gray-700));
+		--active-border-color: light-dark(var(--ig-gray-400), var(--ig-gray-700));
+		
+		--foreground: light-dark(var(--ig-gray-900), var(--ig-gray-200));
+		--hover-foreground: var(--igd-accent);
+		--focus-foreground: var(--igd-accent);
+		--active-foreground: var(--igd-accent);
+		--focus-hover-foreground: var(--igd-accent);
+		--focus-visible-foreground: var(--igd-accent);
+		
+		--icon-color: light-dark(var(--ig-gray-900), var(--ig-gray-200));
+		--icon-color-hover: var(--igd-accent);
+		
+		--hover-background: transparent;
+		--focus-background: transparent;
+		--active-background: transparent;
+		--focus-hover-background: transparent;
+		--focus-visible-background: transparent;
+		
+		--border-radius: #{rem(4px)};
+		
+		&::after {
+			display: none;
+		}
+	}
+}
+
