@@ -131,6 +131,46 @@
 	}
 }
 
+// Theme property map tab switcher (used in component theming sections)
+.theme-switcher-wrapper {
+	input[type='radio'][name='theme'] {
+		display: none;
+	}
+
+	.switch-label {
+		display: inline-block;
+		cursor: pointer;
+		padding: rem(6px) rem(16px);
+		border-bottom: rem(2px) solid transparent;
+		margin-inline-end: rem(4px);
+		color: var(--ig-gray-600);
+
+		&:hover {
+			color: var(--ig-gray-900);
+		}
+	}
+
+	.tables .theme-table {
+		display: none;
+	}
+
+	#material:checked ~ .tables .theme-table.material,
+	#fluent:checked ~ .tables .theme-table.fluent,
+	#bootstrap:checked ~ .tables .theme-table.bootstrap,
+	#indigo:checked ~ .tables .theme-table.indigo {
+		display: block;
+	}
+
+	#material:checked ~ label[for='material'],
+	#fluent:checked ~ label[for='fluent'],
+	#bootstrap:checked ~ label[for='bootstrap'],
+	#indigo:checked ~ label[for='indigo'] {
+		color: var(--igd-accent);
+		border-bottom-color: var(--igd-accent);
+		font-weight: 600;
+	}
+}
+
 // Scroll container — wraps every <table> (injected by rehypeTableWrapper).
 // Technique from https://piccalil.li/blog/styling-tables-the-modern-css-way/
 .igd-table-wrapper {
