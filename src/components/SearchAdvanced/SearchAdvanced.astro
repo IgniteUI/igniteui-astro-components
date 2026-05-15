@@ -1,0 +1,1047 @@
+---
+/**
+ * SearchAdvanced
+ *
+ * Client-side search dialog that loads a JSON search index and performs
+ * all matching against symbol and member names — never against page body content.
+ *
+ * Result UI:
+ *   • Configurable tabs (only non-empty categories are shown, with their count)
+ *   • "All" tab (always present) shows up to N results per category
+ *   • Other tabs show all matches for that category
+ *
+ * Built so it has no runtime dependency on Starlight CSS — the trigger
+ * button, dialog, and all styles are self-contained.
+ */
+
+export interface SearchTab {
+  /** Unique identifier for this tab/category */
+  id: string;
+  /** Display label for the tab */
+  label: string;
+  /**
+   * Kind codes from the index that map to this category.
+   * Use `['__name__']` for the special "page names" category.
+   * For member kinds: 'p' = property, 'a' = accessor, 'm' = method, 'e' = event, 'c' = constructor.
+   */
+  kindCodes: string[];
+}
+
+export interface Props {
+  /** CSS class for the outer element */
+  class?: string;
+  /**
+   * URL (or path) to the search index.
+   *
+   * Supports two modes:
+   * - **Single file**: URL pointing to a JSON file with a `{ pages: [...] }` shape.
+   * - **Manifest**: URL pointing to a `manifest.json` with a `{ files: [...] }` shape.
+   *   Each listed file is fetched relative to the manifest URL and their pages
+   *   are merged. This supports incremental / per-version builds.
+   *
+   * Defaults to `${BASE_URL}api-search-index/manifest.json`.
+   */
+  indexUrl?: string;
+  /** Search input placeholder. Defaults to "Search" */
+  placeholder?: string;
+  /** Show scope selector (current package / all packages). Defaults to false */
+  showScope?: boolean;
+  /** Tab categories to show (besides the always-present "All" tab). Defaults to none (only "All") */
+  tabs?: SearchTab[];
+  /** Maximum results per category shown in the "All" tab. Defaults to 10 */
+  allTabLimit?: number;
+}
+
+const {
+  class: className,
+  indexUrl,
+  placeholder = 'Search',
+  showScope = false,
+  tabs = [],
+  allTabLimit = 10,
+} = Astro.props;
+
+const ctrlKey = 'Ctrl';
+// Strip any origin (scheme + host) from BASE_URL so only the path prefix is
+// used. When Astro builds in SSG mode the Node.js process may have
+// process.env.BASE_URL set to a full URL (e.g. "http://localhost:4567") which
+// leaks into import.meta.env.BASE_URL for server-side template expressions and
+// causes the data attributes to embed an absolute origin that breaks previews.
+const rawBase = import.meta.env.BASE_URL ?? '/';
+const basePath = (() => {
+  try { return new URL(rawBase).pathname; } catch { return rawBase; }
+})().replace(/\/?$/, '/');
+const resolvedIndexUrl = indexUrl ?? `${basePath}api-search-index/manifest.json`;
+---
+
+<api-search-advanced
+  class={className}
+  data-base={basePath}
+  data-index-url={resolvedIndexUrl}
+  data-tabs={JSON.stringify(tabs)}
+  data-all-tab-limit={allTabLimit}
+  data-show-scope={showScope ? 'true' : 'false'}
+>
+  <button
+    data-open-modal
+    disabled
+    aria-label={placeholder}
+    aria-keyshortcuts="Control+K"
+  >
+    <svg aria-hidden="true" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
+    <span class="search-label" aria-hidden="true">{placeholder}</span>
+    <kbd class="search-kbd" style="display: none;">
+      <kbd>{ctrlKey}</kbd><kbd>K</kbd>
+    </kbd>
+  </button>
+
+  <igc-dialog aria-label={placeholder} class="ig-search-dialog" hide-default-action close-on-outside-click>
+    <div class="ig-search-shell">
+      <header class="ig-search-header">
+        <igc-input
+          type="text"
+          class="ig-search-input"
+          placeholder={placeholder}
+          autocomplete="off"
+          outlined
+          aria-label={placeholder}
+        >
+          {showScope ? (
+            <igc-select slot="prefix" class="ig-search-scope" outlined aria-label="Search scope" value="current">
+              <igc-select-item value="current">Current package</igc-select-item>
+              <igc-select-item value="all">All packages</igc-select-item>
+            </igc-select>
+          ) : (
+            <svg slot="prefix" aria-hidden="true" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="7"></circle>
+              <path d="m20 20-3.5-3.5"></path>
+            </svg>
+          )}
+          <igc-icon-button slot="suffix" class="ig-search-clear" variant="flat" type="button" aria-label="Clear search" hidden>
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M6 6 18 18 M18 6 6 18"></path>
+            </svg>
+          </igc-icon-button>
+        </igc-input>
+      </header>
+
+      <igc-tabs class="ig-search-tabs" activation="manual" hidden></igc-tabs>
+
+      <div class="ig-search-status" aria-live="polite"></div>
+
+      <igc-list class="ig-search-results"></igc-list>
+    </div>
+  </igc-dialog>
+</api-search-advanced>
+
+<script is:inline>
+  /* Show the platform-correct keyboard shortcut hint after hydration. */
+  (() => {
+    const el = document.querySelector('api-search-advanced');
+    if (!el) return;
+    const openBtn = el.querySelector('button[data-open-modal]');
+    const shortcut = openBtn?.querySelector('kbd');
+    if (!openBtn || !(shortcut instanceof HTMLElement)) return;
+    const platformKey = shortcut.querySelector('kbd');
+    if (platformKey && /(Mac|iPhone|iPod|iPad)/i.test(navigator.platform)) {
+      platformKey.textContent = '\u2318';
+      openBtn.setAttribute('aria-keyshortcuts', 'Meta+K');
+    }
+    shortcut.style.display = '';
+  })();
+</script>
+
+<script>
+  import {
+    defineComponents,
+    IgcInputComponent,
+    IgcDialogComponent,
+    IgcSelectComponent,
+    IgcSelectItemComponent,
+    IgcIconButtonComponent,
+    IgcTabsComponent,
+    IgcTabComponent,
+    IgcListComponent,
+    IgcListItemComponent,
+    IgcListHeaderComponent,
+  } from 'igniteui-webcomponents';
+
+  defineComponents(
+    IgcInputComponent,
+    IgcDialogComponent,
+    IgcSelectComponent,
+    IgcSelectItemComponent,
+    IgcIconButtonComponent,
+    IgcTabsComponent,
+    IgcTabComponent,
+    IgcListComponent,
+    IgcListItemComponent,
+    IgcListHeaderComponent,
+  );
+
+  type IndexedPage = {
+    u: string;
+    n: string;
+    k: string;
+    v: string;
+    p: string;
+    g: string;
+    m: Array<[string, string]>;
+  };
+
+  type TabConfig = {
+    id: string;
+    label: string;
+    kindCodes: string[];
+  };
+
+  type Match = {
+    name: string;
+    pageName: string;
+    url: string;
+    category: string;
+    matchTier: number;
+    qPos: number;
+    hasPrefix: boolean;
+    typeWeight: number;
+    kindLabel: string;
+    metaLabel: string;
+    packageLabel: string;
+  };
+
+  const PAGE_KIND_LABEL: Record<string, string> = {
+    class:     'class',
+    interface: 'interface',
+    enum:      'enum',
+    type:      'type',
+    variable:  'variable',
+    function:  'function',
+    module:    'module',
+  };
+
+  const PAGE_KIND_WEIGHT: Record<string, number> = {
+    class: 0, interface: 1, enum: 2, type: 3, function: 4, variable: 5, module: 6,
+  };
+
+  const KIND_CODE_TO_LABEL: Record<string, string> = {
+    p: 'property',
+    a: 'accessor',
+    m: 'method',
+    e: 'event',
+    c: 'constructor',
+  };
+
+  const INPUT_DEBOUNCE_MS = 100;
+
+  class ApiSearchAdvanced extends HTMLElement {
+    private dialog!: IgcDialogComponent;
+    private input!: IgcInputComponent;
+    private clearBtn!: IgcIconButtonComponent;
+    private scopeSelect: IgcSelectComponent | null = null;
+    private tabsEl!: IgcTabsComponent;
+    private statusEl!: HTMLElement;
+    private resultsEl!: HTMLElement;
+    private indexPromise: Promise<IndexedPage[]> | null = null;
+    private currentTab: string = 'all';
+    private currentMatches: Map<string, Match[]> = new Map();
+    private currentQuery: string = '';
+    private debounceTimer: ReturnType<typeof setTimeout> | null = null;
+    private basePath: string = '/';
+    private indexUrl: string = '';
+    private currentPlatform: string = '';
+    private currentPkg: string = '';
+    private currentVersion: string = '';
+    private scope: 'current' | 'all' = 'current';
+    private categories: TabConfig[] = [];
+    private allTabLimit: number = 10;
+    private showScope: boolean = false;
+    private kindCodeToCategory: Map<string, string> = new Map();
+
+    connectedCallback() {
+      this.basePath = this.dataset.base || '/';
+      this.indexUrl = this.dataset.indexUrl || `${this.basePath}api-search-index.json`;
+      this.allTabLimit = parseInt(this.dataset.allTabLimit || '10', 10) || 10;
+      this.showScope = this.dataset.showScope === 'true';
+
+      // Parse tab configuration
+      try {
+        const tabsData: TabConfig[] = JSON.parse(this.dataset.tabs || '[]');
+        this.categories = tabsData;
+      } catch {
+        this.categories = [];
+      }
+
+      // Build kind code → category mapping
+      for (const cat of this.categories) {
+        for (const code of cat.kindCodes) {
+          if (code !== '__name__') {
+            this.kindCodeToCategory.set(code, cat.id);
+          }
+        }
+      }
+
+      const openBtn  = this.querySelector<HTMLButtonElement>('button[data-open-modal]')!;
+      this.dialog    = this.querySelector<IgcDialogComponent>('igc-dialog')!;
+      this.input     = this.querySelector<IgcInputComponent>('igc-input.ig-search-input')!;
+      this.clearBtn  = this.querySelector<IgcIconButtonComponent>('.ig-search-clear')!;
+      this.scopeSelect = this.querySelector<IgcSelectComponent>('igc-select.ig-search-scope');
+      this.tabsEl    = this.querySelector<IgcTabsComponent>('igc-tabs.ig-search-tabs')!;
+      this.statusEl  = this.querySelector<HTMLElement>('.ig-search-status')!;
+      this.resultsEl = this.querySelector<HTMLElement>('.ig-search-results')!;
+
+      if (this.showScope) {
+        this.detectCurrentContext();
+        this.updateScopeOption();
+      }
+
+      const open = async () => {
+        await this.dialog.show();
+        document.body.toggleAttribute('data-search-modal-open', true);
+        this.loadIndex();
+        this.input.focus();
+      };
+
+      openBtn.addEventListener('click', open);
+      openBtn.disabled = false;
+
+      this.dialog.addEventListener('igcClosed', () => {
+        document.body.toggleAttribute('data-search-modal-open', false);
+      });
+
+      // Close on result-link click (navigation)
+      this.resultsEl.addEventListener('click', (e) => {
+        if ((e.target as Element).closest('a[href]')) {
+          this.dialog.hide();
+        }
+      });
+
+      window.addEventListener('keydown', (e) => {
+        if ((e.metaKey === true || e.ctrlKey === true) && e.key === 'k') {
+          this.dialog.open ? this.closeModal() : open();
+          e.preventDefault();
+        }
+      });
+
+      this.input.addEventListener('igcInput', () => this.onInput());
+      this.clearBtn.addEventListener('click', () => {
+        this.input.value = '';
+        this.input.focus();
+        this.onInput();
+      });
+
+      this.tabsEl.addEventListener('igcChange', (e) => {
+        const tab = (e as CustomEvent<IgcTabComponent>).detail;
+        const tabId = (tab as HTMLElement)?.dataset?.tabId || 'all';
+        if (tabId === this.currentTab) return;
+        this.currentTab = tabId;
+        this.renderResults();
+      });
+
+      if (this.scopeSelect) {
+        this.scopeSelect.addEventListener('igcChange', () => {
+          this.scope = this.scopeSelect!.value === 'all' ? 'all' : 'current';
+          if (this.currentQuery) this.runSearch();
+        });
+      }
+    }
+
+    private detectCurrentContext() {
+      const path = window.location.pathname;
+      const stripped = path.startsWith(this.basePath) ? path.slice(this.basePath.length) : path.replace(/^\/+/, '');
+      const segs = stripped.split('/').filter(Boolean);
+      const baseSegs = this.basePath.split('/').filter(Boolean);
+      this.currentPlatform = baseSegs[baseSegs.length - 1] || '';
+      this.currentPkg = segs[0] || '';
+      this.currentVersion = segs[1] || '';
+    }
+
+    private updateScopeOption() {
+      if (!this.scopeSelect) return;
+      const item = this.scopeSelect.querySelector<HTMLElement & { value: string; disabled: boolean }>('igc-select-item[value="current"]');
+      if (!item) return;
+      if (this.currentPkg && this.currentVersion) {
+        item.textContent = `${this.currentPkg} ${this.currentVersion}`;
+      } else {
+        item.disabled = true;
+        item.hidden = true;
+        this.scopeSelect.value = 'all';
+        this.scope = 'all';
+      }
+    }
+
+    private closeModal() {
+      this.dialog.hide();
+    }
+
+    private loadIndex(): Promise<IndexedPage[]> {
+      if (this.indexPromise) return this.indexPromise;
+      this.indexPromise = this.fetchIndex();
+      return this.indexPromise;
+    }
+
+    private async fetchIndex(): Promise<IndexedPage[]> {
+      const r = await fetch(this.indexUrl);
+      if (!r.ok) throw new Error(`HTTP ${r.status}`);
+      const data = await r.json();
+
+      // Single-file format: { pages: [...] }
+      if (Array.isArray(data?.pages)) {
+        return data.pages as IndexedPage[];
+      }
+
+      // Manifest format: { files: ["pkg/version.json", ...] }
+      if (Array.isArray(data?.files)) {
+        const baseUrl = this.indexUrl.replace(/[^/]*$/, '');
+        const fetches = (data.files as string[]).map(async (file: string) => {
+          const res = await fetch(`${baseUrl}${file}`);
+          if (!res.ok) return [];
+          const d = await res.json();
+          return Array.isArray(d?.pages) ? d.pages as IndexedPage[] : [];
+        });
+        const results = await Promise.all(fetches);
+        return results.flat();
+      }
+
+      return [];
+    }
+
+    private onInput() {
+      if (this.debounceTimer !== null) clearTimeout(this.debounceTimer);
+      this.debounceTimer = setTimeout(() => this.runSearch(), INPUT_DEBOUNCE_MS);
+    }
+
+    private async runSearch() {
+      const raw = (this.input.value as string) ?? '';
+      const q = raw.trim().toLowerCase();
+      this.currentQuery = q;
+      this.clearBtn.hidden = !raw;
+      // igc-input uses [slot="suffix"]:not([hidden]) to show the suffix container.
+      // It doesn't observe attribute mutations on slotted elements, so we must
+      // force a re-render whenever the clear button's visibility changes.
+      (this.input as unknown as { requestUpdate(): void }).requestUpdate?.();
+
+      if (!q) {
+        this.clearResults();
+        return;
+      }
+
+      this.statusEl.textContent = 'Searching\u2026';
+
+      let pages: IndexedPage[];
+      try {
+        pages = await this.loadIndex();
+      } catch (err) {
+        this.statusEl.textContent = `Search unavailable: ${(err as Error).message}`;
+        return;
+      }
+
+      if (q !== this.currentQuery) return;
+
+      const buckets = this.classify(pages, q);
+      this.currentMatches = buckets;
+      if (this.currentTab !== 'all' && (buckets.get(this.currentTab)?.length ?? 0) === 0) {
+        this.currentTab = 'all';
+      }
+      this.renderTabs();
+      this.renderResults();
+    }
+
+    private clearResults() {
+      this.statusEl.textContent = '';
+      this.tabsEl.hidden = true;
+      this.resultsEl.innerHTML = '';
+      this.currentMatches = new Map();
+    }
+
+    private async runBrowse() {
+      this.statusEl.textContent = '';
+
+      let pages: IndexedPage[];
+      try {
+        pages = await this.loadIndex();
+      } catch (err) {
+        this.statusEl.textContent = `Search unavailable: ${(err as Error).message}`;
+        return;
+      }
+
+      const nameCategories = this.categories.filter(c => c.kindCodes.includes('__name__'));
+
+      let scoped: IndexedPage[];
+      if (this.showScope && this.scope === 'current' && this.currentPkg && this.currentVersion) {
+        scoped = pages.filter((p) =>
+          p.p === this.currentPlatform &&
+          p.g === this.currentPkg &&
+          p.v === this.currentVersion
+        );
+      } else if (this.showScope) {
+        const platformPages = this.currentPlatform
+          ? pages.filter((p) => p.p === this.currentPlatform)
+          : pages;
+        scoped = pickHighestVersionWinners(platformPages);
+      } else {
+        scoped = pickHighestVersionWinners(pages);
+      }
+
+      const buckets: Map<string, Match[]> = new Map();
+      for (const cat of this.categories) buckets.set(cat.id, []);
+
+      for (const page of scoped) {
+        const isPlatformPrefixed = /^(Igx|Igr|Igc|Igb)[A-Z]/.test(page.n);
+        const pageWeight = PAGE_KIND_WEIGHT[page.k] ?? 8;
+        const meta = `${page.g} / ${page.v}`;
+
+        for (const nameCat of nameCategories) {
+          buckets.get(nameCat.id)?.push({
+            name: page.n,
+            pageName: page.n,
+            url: page.u,
+            category: nameCat.id,
+            matchTier: 0,
+            qPos: 0,
+            hasPrefix: isPlatformPrefixed,
+            typeWeight: pageWeight,
+            kindLabel: PAGE_KIND_LABEL[page.k] || page.k,
+            metaLabel: meta,
+            packageLabel: meta,
+          });
+        }
+
+        for (const [memberName, kindCode] of page.m) {
+          const catId = this.kindCodeToCategory.get(kindCode);
+          if (!catId) continue;
+          buckets.get(catId)?.push({
+            name: memberName,
+            pageName: page.n,
+            url: page.u + '#' + memberName,
+            category: catId,
+            matchTier: 0,
+            qPos: 0,
+            hasPrefix: isPlatformPrefixed,
+            typeWeight: pageWeight,
+            kindLabel: KIND_CODE_TO_LABEL[kindCode] || kindCode,
+            metaLabel: `${page.n} / ${page.g}`,
+            packageLabel: meta,
+          });
+        }
+      }
+
+      // Sort all buckets alphabetically by name
+      for (const list of buckets.values()) {
+        list.sort((a, b) => a.name.localeCompare(b.name));
+      }
+
+      this.currentMatches = buckets;
+
+      if (this.currentTab !== 'all' && (buckets.get(this.currentTab)?.length ?? 0) === 0) {
+        this.currentTab = 'all';
+      }
+
+      this.renderTabs();
+      this.renderResults();
+    }
+
+    private classify(pages: IndexedPage[], q: string): Map<string, Match[]> {
+      const buckets: Map<string, Match[]> = new Map();
+      for (const cat of this.categories) {
+        buckets.set(cat.id, []);
+      }
+
+      // Determine which categories handle page names
+      const nameCategories = this.categories.filter(c => c.kindCodes.includes('__name__'));
+
+      let scoped: IndexedPage[];
+      if (this.showScope && this.scope === 'current' && this.currentPkg && this.currentVersion) {
+        scoped = pages.filter((p) =>
+          p.p === this.currentPlatform &&
+          p.g === this.currentPkg &&
+          p.v === this.currentVersion
+        );
+      } else if (this.showScope) {
+        const platformPages = this.currentPlatform
+          ? pages.filter((p) => p.p === this.currentPlatform)
+          : pages;
+        scoped = pickHighestVersionWinners(platformPages);
+      } else {
+        scoped = pickHighestVersionWinners(pages);
+      }
+
+      for (const page of scoped) {
+        const isPlatformPrefixed = /^(Igx|Igr|Igc|Igb)[A-Z]/.test(page.n);
+        const pageWeight = PAGE_KIND_WEIGHT[page.k] ?? 8;
+        const meta = `${page.g} / ${page.v}`;
+
+        // Match page names
+        const tier = matchTier(page.n, q);
+        if (tier !== null) {
+          for (const nameCat of nameCategories) {
+            if (!buckets.has(nameCat.id)) buckets.set(nameCat.id, []);
+            buckets.get(nameCat.id)!.push({
+              name: page.n,
+              pageName: page.n,
+              url: page.u,
+              category: nameCat.id,
+              matchTier: tier,
+              qPos: positionInName(page.n, q),
+              hasPrefix: isPlatformPrefixed,
+              typeWeight: pageWeight,
+              kindLabel: PAGE_KIND_LABEL[page.k] || page.k,
+              metaLabel: meta,
+              packageLabel: meta,
+            });
+          }
+
+          // If no categories defined, put everything in a default bucket
+          if (nameCategories.length === 0 && this.categories.length === 0) {
+            if (!buckets.has('__all__')) buckets.set('__all__', []);
+            buckets.get('__all__')!.push({
+              name: page.n,
+              pageName: page.n,
+              url: page.u,
+              category: '__all__',
+              matchTier: tier,
+              qPos: positionInName(page.n, q),
+              hasPrefix: isPlatformPrefixed,
+              typeWeight: pageWeight,
+              kindLabel: PAGE_KIND_LABEL[page.k] || page.k,
+              metaLabel: meta,
+              packageLabel: meta,
+            });
+          }
+        }
+
+        // Match members
+        for (const [memberName, kindCode] of page.m) {
+          const memberTier = matchTier(memberName, q);
+          if (memberTier === null) continue;
+
+          const catId = this.kindCodeToCategory.get(kindCode);
+          if (catId) {
+            if (!buckets.has(catId)) buckets.set(catId, []);
+            buckets.get(catId)!.push({
+              name: memberName,
+              pageName: page.n,
+              url: page.u + '#' + memberName,
+              category: catId,
+              matchTier: memberTier,
+              qPos: positionInName(memberName, q),
+              hasPrefix: isPlatformPrefixed,
+              typeWeight: pageWeight,
+              kindLabel: KIND_CODE_TO_LABEL[kindCode] || kindCode,
+              metaLabel: `${page.n} / ${page.g}`,
+              packageLabel: meta,
+            });
+          } else if (this.categories.length === 0) {
+            // No tabs configured — all results go into one bucket
+            if (!buckets.has('__all__')) buckets.set('__all__', []);
+            buckets.get('__all__')!.push({
+              name: memberName,
+              pageName: page.n,
+              url: page.u + '#' + memberName,
+              category: '__all__',
+              matchTier: memberTier,
+              qPos: positionInName(memberName, q),
+              hasPrefix: isPlatformPrefixed,
+              typeWeight: pageWeight,
+              kindLabel: KIND_CODE_TO_LABEL[kindCode] || kindCode,
+              metaLabel: `${page.n} / ${page.g}`,
+              packageLabel: meta,
+            });
+          }
+        }
+      }
+
+      // Sort each bucket
+      for (const [catId, list] of buckets.entries()) {
+        const isNameCat = nameCategories.some(c => c.id === catId);
+        if (isNameCat) {
+          list.sort((a, b) => {
+            if (a.typeWeight !== b.typeWeight) return a.typeWeight - b.typeWeight;
+            return a.name.localeCompare(b.name);
+          });
+        } else {
+          list.sort((a, b) => {
+            if (a.matchTier !== b.matchTier) return a.matchTier - b.matchTier;
+            if (a.hasPrefix !== b.hasPrefix) return a.hasPrefix ? -1 : 1;
+            if (a.qPos !== b.qPos) return a.qPos - b.qPos;
+            if (a.typeWeight !== b.typeWeight) return a.typeWeight - b.typeWeight;
+            return a.name.localeCompare(b.name);
+          });
+        }
+      }
+
+      return buckets;
+    }
+
+    private renderTabs() {
+      const totalCount = Array.from(this.currentMatches.values()).reduce((s, l) => s + l.length, 0);
+
+      // If no categories configured, don't render tabs
+      if (this.categories.length === 0) {
+        this.tabsEl.hidden = true;
+        return;
+      }
+
+      const tabsHtml: string[] = [];
+      tabsHtml.push(this.tabHtml('all', 'All', totalCount, this.currentTab === 'all'));
+      for (const cat of this.categories) {
+        const count = this.currentMatches.get(cat.id)?.length ?? 0;
+        if (count === 0) continue;
+        tabsHtml.push(this.tabHtml(cat.id, cat.label, count, this.currentTab === cat.id));
+      }
+      this.tabsEl.innerHTML = tabsHtml.join('');
+      this.tabsEl.hidden = totalCount === 0;
+    }
+
+    private tabHtml(id: string, label: string, count: number, selected: boolean): string {
+      return `<igc-tab data-tab-id="${id}" label="${escapeHtml(label)}"${selected ? ' selected' : ''}><span slot="suffix" class="ig-search-tab-count">${count}</span></igc-tab>`;
+    }
+
+    private renderResults() {
+      const totalCount = Array.from(this.currentMatches.values()).reduce((s, l) => s + l.length, 0);
+      if (totalCount === 0) {
+        this.statusEl.textContent = this.currentQuery
+          ? `No results for "${this.currentQuery}".`
+          : 'No results.';
+        this.resultsEl.replaceChildren();
+        return;
+      }
+
+      this.statusEl.textContent = '';
+
+      const rendered: string[] = [];
+
+      if (this.categories.length === 0) {
+        // No tabs — render all results in one flat list
+        const list = this.currentMatches.get('__all__') ?? [];
+        for (const m of list) rendered.push(this.matchHtml(m));
+      } else if (this.currentTab === 'all') {
+        for (const cat of this.categories) {
+          const list = this.currentMatches.get(cat.id) ?? [];
+          if (list.length === 0) continue;
+          rendered.push(`<igc-list-header>${escapeHtml(cat.label)}</igc-list-header>`);
+          const slice = list.slice(0, this.allTabLimit);
+          for (const m of slice) rendered.push(this.matchHtml(m));
+          if (list.length > slice.length) {
+            rendered.push(
+              `<igc-list-item class="ig-search-more"><button type="button" class="ig-search-more-btn" data-tab="${cat.id}">
+                Show all ${list.length} ${escapeHtml(cat.label.toLowerCase())}
+              </button></igc-list-item>`
+            );
+          }
+        }
+      } else {
+        const list = this.currentMatches.get(this.currentTab) ?? [];
+        for (const m of list) rendered.push(this.matchHtml(m));
+      }
+
+      this.resultsEl.innerHTML = rendered.join('');
+
+      this.resultsEl.querySelectorAll<HTMLButtonElement>('.ig-search-more-btn').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const tabId = btn.dataset.tab!;
+          this.currentTab = tabId;
+          const tabEl = this.tabsEl.querySelector<HTMLElement>(`igc-tab[data-tab-id="${tabId}"]`);
+          if (tabEl) this.tabsEl.select(tabEl as any);
+          this.renderResults();
+          this.resultsEl.scrollTop = 0;
+        });
+      });
+    }
+
+    private matchHtml(m: Match): string {
+      const highlightedName = highlight(m.name, this.currentQuery);
+      const nameCategories = this.categories.filter(c => c.kindCodes.includes('__name__'));
+      const isNameMatch = nameCategories.some(c => c.id === m.category);
+      const subtitle = isNameMatch || m.category === '__all__'
+        ? `<span class="ig-search-kind">${escapeHtml(m.packageLabel)}</span>`
+        : `<span class="ig-search-kind">${escapeHtml(m.packageLabel)}</span><span class="ig-search-meta">in ${escapeHtml(m.pageName)}</span>`;
+      return `<igc-list-item>
+        <a href="${m.url}" class="ig-search-link" slot="title">
+          <span class="ig-search-result-title">${highlightedName}</span>
+        </a>
+        <span slot="subtitle" class="ig-search-result-sub">${subtitle}</span>
+      </igc-list-item>`;
+    }
+  }
+
+  function matchTier(name: string, q: string): number | null {
+    const n = name.toLowerCase();
+    if (n === q) return 0;
+    if (n.startsWith(q)) return 1;
+    if (n.includes(q)) return 2;
+    return null;
+  }
+
+  function positionInName(name: string, q: string): number {
+    const i = name.toLowerCase().indexOf(q);
+    return i < 0 ? 99 : Math.min(i, 99);
+  }
+
+  function compareVersions(a: string, b: string): number {
+    const ap = a.replace(/[^0-9.]/g, '').split('.').map(Number);
+    const bp = b.replace(/[^0-9.]/g, '').split('.').map(Number);
+    for (let i = 0; i < Math.max(ap.length, bp.length); i++) {
+      const d = (ap[i] || 0) - (bp[i] || 0);
+      if (d !== 0) return d;
+    }
+    return 0;
+  }
+
+  function pickHighestVersionWinners(pages: IndexedPage[]): IndexedPage[] {
+    const winners = new Map<string, IndexedPage>();
+    for (const p of pages) {
+      const key = `${p.p}|${p.g}|${p.k}|${p.n}`;
+      const existing = winners.get(key);
+      if (!existing || compareVersions(p.v, existing.v) > 0) {
+        winners.set(key, p);
+      }
+    }
+    return Array.from(winners.values());
+  }
+
+  function highlight(text: string, q: string): string {
+    if (!q) return escapeHtml(text);
+    const i = text.toLowerCase().indexOf(q);
+    if (i < 0) return escapeHtml(text);
+    return (
+      escapeHtml(text.slice(0, i)) +
+      '<mark>' + escapeHtml(text.slice(i, i + q.length)) + '</mark>' +
+      escapeHtml(text.slice(i + q.length))
+    );
+  }
+
+  function escapeHtml(s: string): string {
+    return s
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  customElements.define('api-search-advanced', ApiSearchAdvanced);
+</script>
+
+<style>
+	api-search-advanced { display: contents; }
+
+	/* Hide dialog content before web components hydrate (prevents FOUC) */
+	igc-dialog:not(:defined) { display: none; }
+
+	button[data-open-modal] {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		border: 0;
+		background-color: transparent;
+		color: var(--sl-color-gray-1);
+		cursor: pointer;
+		height: 2.5rem;
+		font-size: var(--sl-text-xl);
+	}
+
+	@media (min-width: 50rem) {
+		button[data-open-modal] {
+			border: 1px solid var(--sl-color-gray-5);
+			border-radius: 0.5rem;
+			padding-inline-start: 0.75rem;
+			padding-inline-end: 0.5rem;
+			background-color: var(--sl-color-black);
+			color: var(--sl-color-gray-2);
+			font-size: var(--sl-text-sm);
+			width: 100%;
+			max-width: 22rem;
+		}
+		button[data-open-modal]:hover {
+			border-color: var(--sl-color-gray-2);
+			color: var(--sl-color-white);
+		}
+		button[data-open-modal] > :last-child {
+			margin-inline-start: auto;
+		}
+	}
+
+	button > kbd {
+		border-radius: 0.25rem;
+		font-size: 0.625rem;
+		gap: 0.25em;
+		padding-inline: 0.375rem;
+		background-color: var(--sl-color-gray-6);
+	}
+	kbd { font-family: inherit; }
+</style>
+
+<style is:global>
+	/* ── Dialog ──────────────────────────────────────────────────── */
+	igc-dialog.ig-search-dialog {
+		/* Inherited by ::part(base) (native <dialog>) via igc base CSS */
+		background-color: var(--sl-color-bg, #fff);
+		color: var(--sl-color-text, inherit);
+		border: 1px solid var(--sl-color-gray-5, #ddd);
+	}
+	igc-dialog.ig-search-dialog::part(base) {
+		margin: 0;
+		padding: 0;
+		width: 100%;
+		max-width: 100%;
+		height: 100vh;
+		max-height: 100vh;
+		box-shadow: 0 10px 40px rgba(0,0,0,0.25);
+	}
+	igc-dialog.ig-search-dialog::part(content) {
+		padding: 0;
+		display: flex;
+		flex-direction: column;
+		height: 100%;
+	}
+	igc-dialog.ig-search-dialog::part(backdrop) {
+		background-color: rgba(0,0,0,0.4);
+		-webkit-backdrop-filter: blur(0.25rem);
+		backdrop-filter: blur(0.25rem);
+	}
+	@media (min-width: 50rem) {
+		igc-dialog.ig-search-dialog {
+			border-radius: 0.5rem;
+		}
+		igc-dialog.ig-search-dialog::part(base) {
+			margin: auto;
+			width: 90%;
+			max-width: 42rem;
+			height: calc(100vh - 8rem);
+			max-height: 48rem;
+			border-radius: 0.5rem;
+		}
+	}
+
+	[data-search-modal-open] { overflow: hidden; }
+
+	/* ── Shell layout ─────────────────────────────────────────────── */
+	.ig-search-shell {
+		display: flex;
+		flex-direction: column;
+		min-height: 0;
+		flex: 1 1 auto;
+		height: 100%;
+	}
+
+	/* ── Header ───────────────────────────────────────────────────── */
+	.ig-search-header {
+		padding: 0.75rem 1rem 0.5rem;
+		border-bottom: 1px solid var(--sl-color-gray-6, #f0f0f0);
+		flex-shrink: 0;
+	}
+
+	/* ── Scope selector (igc-select in prefix slot) ────────────── */
+	igc-select.ig-search-scope {
+		flex-shrink: 0;
+		max-width: 14rem;
+		min-width: 8rem;
+	}
+	@media (max-width: 32rem) {
+		igc-select.ig-search-scope { max-width: 9rem; min-width: 6rem; }
+	}
+
+	/* ── Search input (igc-input) ─────────────────────────────────── */
+	igc-input.ig-search-input {
+		width: 100%;
+	}
+
+	/* Clear icon-button in suffix slot */
+	igc-icon-button.ig-search-clear {
+		color: var(--sl-color-gray-3, #888);
+	}
+	igc-icon-button.ig-search-clear:hover {
+		color: var(--sl-color-text, inherit);
+	}
+
+	/* ── Tabs (igc-tabs) ──────────────────────────────────────────── */
+	igc-tabs.ig-search-tabs {
+		flex: 0 0 auto;
+		overflow: hidden;
+		/* Only show the tab header strip; tab body panels are unused */
+		max-height: 2.75rem;
+		border-bottom: 1px solid var(--sl-color-gray-6, #f0f0f0);
+	}
+	.ig-search-tab-count {
+		color: var(--sl-color-gray-3, #888);
+		font-weight: 400;
+		font-size: 0.8rem;
+		margin-inline-start: 0.25rem;
+	}
+
+	/* ── Status ───────────────────────────────────────────────────── */
+	.ig-search-status {
+		padding: 0.5rem 1rem 0;
+		color: var(--sl-color-gray-3, #888);
+		font-size: 0.875rem;
+		min-height: 1.25rem;
+		flex-shrink: 0;
+	}
+	.ig-search-status:empty { padding: 0; min-height: 0; }
+
+	/* ── Results (igc-list) ───────────────────────────────────────── */
+	igc-list.ig-search-results {
+		overflow-y: auto;
+		flex: 1 1 auto;
+		min-height: 0;
+		padding: 0.5rem 0.5rem 1rem;
+	}
+
+	igc-list.ig-search-results igc-list-header {
+		font-size: 0.75rem;
+		font-weight: 600;
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		color: var(--sl-color-gray-3, #888);
+	}
+
+	.ig-search-link {
+		text-decoration: none;
+		color: inherit;
+	}
+	.ig-search-result-title {
+		font-size: 0.95rem;
+		font-weight: 600;
+		color: var(--sl-color-text, inherit);
+	}
+	.ig-search-result-title mark {
+		background: var(--sl-color-accent-low, rgba(90,62,255,0.18));
+		color: inherit;
+		padding: 0 1px;
+		border-radius: 2px;
+	}
+	.ig-search-result-sub {
+		display: flex;
+		gap: 0.5rem;
+		font-size: 0.8rem;
+		color: var(--sl-color-gray-3, #888);
+		flex-wrap: wrap;
+	}
+	.ig-search-kind {
+		display: inline-block;
+		padding: 0 0.375rem;
+		background: var(--sl-color-gray-1, rgba(0,0,0,0.04));
+		border-radius: 0.25rem;
+		font-size: 0.7rem;
+		letter-spacing: 0.04em;
+		font-weight: 500;
+	}
+
+	.ig-search-more {
+		text-align: center;
+	}
+	.ig-search-more-btn {
+		appearance: none;
+		background: transparent;
+		border: 1px solid var(--sl-color-gray-5, #ddd);
+		border-radius: 0.375rem;
+		padding: 0.4rem 0.9rem;
+		color: var(--sl-color-text, inherit);
+		font-size: 0.85rem;
+		cursor: pointer;
+	}
+	.ig-search-more-btn:hover {
+		border-color: var(--sl-color-accent, #5a3eff);
+		color: var(--sl-color-text-accent, inherit);
+	}
+</style>

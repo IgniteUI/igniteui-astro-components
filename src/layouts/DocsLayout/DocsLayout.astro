@@ -30,7 +30,15 @@ export interface Props {
   siteTitle?: string;
 }
 
-const { title, description, keywords, hasToc = true, hasSidebar = true, currentSlug = '', siteTitle: siteTitleProp } = Astro.props;
+const {
+  title,
+  description,
+  keywords,
+  hasToc = true,
+  hasSidebar = true,
+  currentSlug = '',
+  siteTitle: siteTitleProp,
+} = Astro.props;
 const resolvedSiteTitle = siteTitleProp ?? siteTitle;
 const navTheme = (virtualPlatform ?? import.meta.env.VITE_NAV_THEME ?? 'igniteui') as string;
 const showGlobalNav = navTheme !== 'none';
@@ -170,7 +178,12 @@ type HeadEntry = { tag: string; attrs?: Record<string, string | boolean | undefi
      Any igc component rendered dynamically on body level should have .ig-typography in order to have proper type styles.
     -->
     <div class="igd-page-layout ig-typography">
-        <DocsSubHeader data-nav-height-wrapper/>
+        <!-- TODO: WE DONT NEED TO CALCULAtE THE IG HEADER HEIGHT ANYMORE - REMOVE IT -->
+        <!-- <DocsSubHeader style={ `--docs-global-nav-height: ${ showGlobalNav ? '4.7rem': '0' }` } data-nav-height-wrapper/> -->
+        <slot name="subheader">
+          <DocsSubHeader pageTitle={title} currentSlug={currentSlug} siteTitle={siteTitleProp} style={ `--docs-global-nav-height: ${ showGlobalNav ? '4.7rem': '0' }` } data-nav-height-wrapper />
+        </slot>
+
 
         { hasSidebar && (
             <!--<MobileSidebarToggle/>-->

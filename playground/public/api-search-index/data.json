@@ -1,0 +1,381 @@
+{
+  "pages": [
+    {
+      "u": "/components/grid",
+      "n": "IgxGridComponent",
+      "k": "class",
+      "v": "18.0.0",
+      "p": "angular",
+      "g": "@igniteui/angular",
+      "m": [
+        ["data", "p"],
+        ["columns", "p"],
+        ["primaryKey", "p"],
+        ["rowSelection", "p"],
+        ["filterMode", "p"],
+        ["sortingExpressions", "p"],
+        ["groupingExpressions", "p"],
+        ["paginatorRef", "p"],
+        ["height", "p"],
+        ["width", "p"],
+        ["autoGenerate", "p"],
+        ["getCellByColumn", "m"],
+        ["getCellByKey", "m"],
+        ["getRowByIndex", "m"],
+        ["getRowByKey", "m"],
+        ["selectRows", "m"],
+        ["deselectRows", "m"],
+        ["selectAllRows", "m"],
+        ["clearSort", "m"],
+        ["sort", "m"],
+        ["filter", "m"],
+        ["clearFilter", "m"],
+        ["groupBy", "m"],
+        ["clearGrouping", "m"],
+        ["exportExcel", "m"],
+        ["exportCSV", "m"],
+        ["onRowAdded", "e"],
+        ["onRowDeleted", "e"],
+        ["onCellClick", "e"],
+        ["onSelection", "e"],
+        ["onSortingDone", "e"],
+        ["onFilteringDone", "e"],
+        ["onGroupingDone", "e"],
+        ["onColumnResized", "e"],
+        ["onColumnMovingEnd", "e"]
+      ]
+    },
+    {
+      "u": "/components/grid",
+      "n": "IgxGridComponent",
+      "k": "class",
+      "v": "17.0.0",
+      "p": "angular",
+      "g": "@igniteui/angular",
+      "m": [
+        ["data", "p"],
+        ["columns", "p"],
+        ["primaryKey", "p"],
+        ["height", "p"],
+        ["width", "p"],
+        ["autoGenerate", "p"],
+        ["getCellByColumn", "m"],
+        ["selectRows", "m"],
+        ["clearSort", "m"],
+        ["sort", "m"],
+        ["filter", "m"],
+        ["onRowAdded", "e"],
+        ["onCellClick", "e"]
+      ]
+    },
+    {
+      "u": "/components/combo",
+      "n": "IgxComboComponent",
+      "k": "class",
+      "v": "18.0.0",
+      "p": "angular",
+      "g": "@igniteui/angular",
+      "m": [
+        ["data", "p"],
+        ["valueKey", "p"],
+        ["displayKey", "p"],
+        ["placeholder", "p"],
+        ["disabled", "p"],
+        ["type", "p"],
+        ["searchPlaceholder", "p"],
+        ["select", "m"],
+        ["deselect", "m"],
+        ["open", "m"],
+        ["close", "m"],
+        ["toggle", "m"],
+        ["onOpening", "e"],
+        ["onOpened", "e"],
+        ["onClosing", "e"],
+        ["onClosed", "e"],
+        ["onSelectionChange", "e"],
+        ["onSearchInput", "e"]
+      ]
+    },
+    {
+      "u": "/components/date-picker",
+      "n": "IgxDatePickerComponent",
+      "k": "class",
+      "v": "18.0.0",
+      "p": "angular",
+      "g": "@igniteui/angular",
+      "m": [
+        ["value", "a"],
+        ["minValue", "p"],
+        ["maxValue", "p"],
+        ["displayFormat", "p"],
+        ["inputFormat", "p"],
+        ["locale", "p"],
+        ["disabled", "p"],
+        ["open", "m"],
+        ["close", "m"],
+        ["select", "m"],
+        ["clear", "m"],
+        ["onOpened", "e"],
+        ["onClosed", "e"],
+        ["valueChange", "e"],
+        ["validationFailed", "e"]
+      ]
+    },
+    {
+      "u": "/components/tree",
+      "n": "IgxTreeComponent",
+      "k": "class",
+      "v": "18.0.0",
+      "p": "angular",
+      "g": "@igniteui/angular",
+      "m": [
+        ["data", "p"],
+        ["selection", "p"],
+        ["expanded", "p"],
+        ["animationSettings", "p"],
+        ["expandAll", "m"],
+        ["collapseAll", "m"],
+        ["selectAll", "m"],
+        ["deselectAll", "m"],
+        ["onNodeExpanded", "e"],
+        ["onNodeCollapsed", "e"],
+        ["onNodeSelection", "e"]
+      ]
+    },
+    {
+      "u": "/components/grid",
+      "n": "IgrGrid",
+      "k": "class",
+      "v": "18.0.0",
+      "p": "react",
+      "g": "@igniteui/react",
+      "m": [
+        ["data", "p"],
+        ["primaryKey", "p"],
+        ["height", "p"],
+        ["width", "p"],
+        ["autoGenerate", "p"],
+        ["rowSelection", "p"],
+        ["getCellByColumn", "m"],
+        ["selectRows", "m"],
+        ["sort", "m"],
+        ["filter", "m"],
+        ["rowAdded", "e"],
+        ["cellClick", "e"],
+        ["sortingDone", "e"]
+      ]
+    },
+    {
+      "u": "/components/combo",
+      "n": "IgrComboComponent",
+      "k": "class",
+      "v": "18.0.0",
+      "p": "react",
+      "g": "@igniteui/react",
+      "m": [
+        ["data", "p"],
+        ["valueKey", "p"],
+        ["displayKey", "p"],
+        ["placeholder", "p"],
+        ["disabled", "p"],
+        ["select", "m"],
+        ["deselect", "m"],
+        ["open", "m"],
+        ["close", "m"],
+        ["opened", "e"],
+        ["closed", "e"],
+        ["selectionChanging", "e"]
+      ]
+    },
+    {
+      "u": "/components/grid",
+      "n": "IgcGridComponent",
+      "k": "class",
+      "v": "18.0.0",
+      "p": "web-components",
+      "g": "@igniteui/web-components",
+      "m": [
+        ["data", "p"],
+        ["primaryKey", "p"],
+        ["height", "p"],
+        ["width", "p"],
+        ["autoGenerate", "p"],
+        ["selectRows", "m"],
+        ["sort", "m"],
+        ["filter", "m"],
+        ["igcRowAdded", "e"],
+        ["igcCellClick", "e"]
+      ]
+    },
+    {
+      "u": "/components/calendar",
+      "n": "IgxCalendarComponent",
+      "k": "class",
+      "v": "18.0.0",
+      "p": "angular",
+      "g": "@igniteui/angular",
+      "m": [
+        ["value", "a"],
+        ["viewDate", "p"],
+        ["selection", "p"],
+        ["locale", "p"],
+        ["weekStart", "p"],
+        ["showWeekNumbers", "p"],
+        ["disabledDates", "p"],
+        ["specialDates", "p"],
+        ["selectDate", "m"],
+        ["deselectDate", "m"],
+        ["viewDateChanged", "e"],
+        ["selected", "e"],
+        ["onSelection", "e"]
+      ]
+    },
+    {
+      "u": "/components/dialog",
+      "n": "IgxDialogComponent",
+      "k": "class",
+      "v": "18.0.0",
+      "p": "angular",
+      "g": "@igniteui/angular",
+      "m": [
+        ["title", "p"],
+        ["message", "p"],
+        ["leftButtonLabel", "p"],
+        ["rightButtonLabel", "p"],
+        ["closeOnOutsideSelect", "p"],
+        ["isOpen", "a"],
+        ["open", "m"],
+        ["close", "m"],
+        ["toggle", "m"],
+        ["onOpen", "e"],
+        ["onClose", "e"],
+        ["leftButtonSelect", "e"],
+        ["rightButtonSelect", "e"]
+      ]
+    },
+    {
+      "u": "/components/input",
+      "n": "IgxInputDirective",
+      "k": "class",
+      "v": "18.0.0",
+      "p": "angular",
+      "g": "@igniteui/angular",
+      "m": [
+        ["value", "a"],
+        ["disabled", "p"],
+        ["required", "p"],
+        ["placeholder", "p"],
+        ["readonly", "p"],
+        ["type", "p"],
+        ["valid", "p"],
+        ["focused", "p"]
+      ]
+    },
+    {
+      "u": "/enums/filter-mode",
+      "n": "FilterMode",
+      "k": "enum",
+      "v": "18.0.0",
+      "p": "angular",
+      "g": "@igniteui/angular",
+      "m": []
+    },
+    {
+      "u": "/enums/row-selection-mode",
+      "n": "RowSelectionMode",
+      "k": "enum",
+      "v": "18.0.0",
+      "p": "angular",
+      "g": "@igniteui/angular",
+      "m": []
+    },
+    {
+      "u": "/enums/calendar-selection",
+      "n": "CalendarSelection",
+      "k": "enum",
+      "v": "18.0.0",
+      "p": "angular",
+      "g": "@igniteui/angular",
+      "m": []
+    },
+    {
+      "u": "/interfaces/igrid-state",
+      "n": "IGridState",
+      "k": "interface",
+      "v": "18.0.0",
+      "p": "angular",
+      "g": "@igniteui/angular",
+      "m": [
+        ["columns", "p"],
+        ["filtering", "p"],
+        ["sorting", "p"],
+        ["groupBy", "p"],
+        ["paging", "p"],
+        ["selection", "p"],
+        ["cellSelection", "p"],
+        ["columnSelection", "p"],
+        ["rowPinning", "p"],
+        ["expansion", "p"]
+      ]
+    },
+    {
+      "u": "/interfaces/isorting-expression",
+      "n": "ISortingExpression",
+      "k": "interface",
+      "v": "18.0.0",
+      "p": "angular",
+      "g": "@igniteui/angular",
+      "m": [
+        ["fieldName", "p"],
+        ["dir", "p"],
+        ["ignoreCase", "p"],
+        ["strategy", "p"]
+      ]
+    },
+    {
+      "u": "/interfaces/ifiltering-expression",
+      "n": "IFilteringExpression",
+      "k": "interface",
+      "v": "18.0.0",
+      "p": "angular",
+      "g": "@igniteui/angular",
+      "m": [
+        ["fieldName", "p"],
+        ["condition", "p"],
+        ["conditionName", "p"],
+        ["searchVal", "p"],
+        ["ignoreCase", "p"]
+      ]
+    },
+    {
+      "u": "/types/grid-type",
+      "n": "GridType",
+      "k": "type",
+      "v": "18.0.0",
+      "p": "angular",
+      "g": "@igniteui/angular",
+      "m": []
+    },
+    {
+      "u": "/functions/connect-injector",
+      "n": "connectInjector",
+      "k": "function",
+      "v": "18.0.0",
+      "p": "angular",
+      "g": "@igniteui/angular",
+      "m": []
+    },
+    {
+      "u": "/functions/date-range-util",
+      "n": "DateRangeUtil",
+      "k": "class",
+      "v": "18.0.0",
+      "p": "angular",
+      "g": "@igniteui/angular",
+      "m": [
+        ["isDateInRanges", "m"],
+        ["getDateRangeDescriptors", "m"]
+      ]
+    }
+  ]
+}
