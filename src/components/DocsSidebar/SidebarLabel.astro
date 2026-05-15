@@ -24,25 +24,24 @@ interface Props {
 const { node, isLeaf } = Astro.props;
 const childCount = !isLeaf ? (node.children?.length ?? 0) : 0;
 const badges = (node.meta?.badges ?? []) as SidebarBadge[];
-const badge = badges[0] as SidebarBadge | undefined;
-const isPremium = badge?.variant === 'premium';
 ---
 
 {isLeaf ? (
   <>
     <div class="igd-lable-and-badge">
         <span class="docs-tree-label">{node.label}</span>
-        {badge && isPremium && (
-            <>
-                <igc-icon name="premium" collection="docs" class="sidebar-premium-icon" aria-hidden="true"></igc-icon>
-                <span class="visually-hidden">, Premium</span>
-            </>
-        )}
-        {badge && !isPremium && (
-            <>
-                <igc-badge class={`sidebar-badge ${badge.variant}`} aria-hidden="true">{badge.text}</igc-badge>
-                <span class="visually-hidden">, {badge.text}</span>
-            </>
+        {badges.map((badge) =>
+            badge.variant === 'premium' ? (
+                <>
+                    <igc-icon name="premium" collection="docs" class="sidebar-premium-icon" aria-hidden="true"></igc-icon>
+                    <span class="visually-hidden">, Premium</span>
+                </>
+            ) : (
+                <>
+                    <igc-badge class={`sidebar-badge ${badge.variant}`} aria-hidden="true">{badge.text}</igc-badge>
+                    <span class="visually-hidden">, {badge.text}</span>
+                </>
+            )
         )}
     </div>
   </>
