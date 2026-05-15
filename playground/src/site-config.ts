@@ -49,6 +49,13 @@ export const SIDEBAR: SidebarEntry[] = [
     ],
   },
   {
+    label: 'Styles',
+    collapsed: false,
+    items: [
+      { label: 'Style Guide', slug: 'components/styleguide' },
+    ],
+  },
+  {
     label: 'Reference',
     collapsed: true,
     items: [

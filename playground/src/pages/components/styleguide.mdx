@@ -1,0 +1,424 @@
+---
+layout: ../../layouts/PlaygroundMdxLayout.astro
+title: Style Guide
+slug: components/styleguide
+---
+import YtFacadeScript from '../../components/YtFacadeScript.astro';
+
+# Style Guide
+
+A reference page showing every HTML element related to text and typography,
+rendered through the documentation theme.
+
+## Headings
+
+Six levels of section headings, `<h1>`–`<h6>`.
+
+<h1>Heading level 1</h1>
+<h2>Heading level 2</h2>
+<h3>Heading level 3</h3>
+<h4>Heading level 4</h4>
+<h5>Heading level 5</h5>
+<h6>Heading level 6</h6>
+
+---
+
+## Body text
+
+The `<p>` element represents a paragraph of text. It is the
+most common block-level element for prose content. Paragraphs are separated by
+vertical margin and their line-height affects readability significantly.
+
+A second paragraph follows immediately. Notice the consistent spacing between
+paragraphs applied by the documentation theme. Long lines should wrap naturally
+at the container boundary without any explicit `word-break` override
+unless the content contains very long unbreakable strings.
+
+<address>
+  Written by <a href="mailto:docs@example.com">The Docs Team</a>.<br />
+  Visit us at <a href="#">igniteui.com</a>.<br />
+  — <code>&lt;address&gt;</code> element
+</address>
+
+---
+
+## Inline text elements
+
+**Bold importance — `<strong>`**,
+&nbsp;<b>bold without semantics — `<b>`</b>,
+&nbsp;<em>italicised emphasis — `<em>`</em>,
+&nbsp;<i>italic without semantics — `<i>`</i>.
+
+<u>Underlined text — `<u>`</u>,
+&nbsp;<s>strikethrough — `<s>`</s>,
+&nbsp;<del>deleted content — `<del>`</del>,
+&nbsp;<ins>inserted content — `<ins>`</ins>.
+
+<mark>Highlighted text — `<mark>`</mark>,
+&nbsp;<small>small print — `<small>`</small>,
+&nbsp;base<sub>subscript</sub> — `<sub>`,
+&nbsp;base<sup>superscript</sup> — `<sup>`.
+
+<abbr title="Cascading Style Sheets">CSS</abbr> — `<abbr title="…">` renders
+with a dotted underline and shows the full form on hover.
+
+<dfn id="dfn-spa">Single-page application (SPA)</dfn> — `<dfn>` marks the
+defining instance of a term.
+
+Published on <time dateTime="2026-05-15">15 May 2026</time> — `<time>`
+provides a machine-readable date/time.
+
+Visit [this link](#) — `<a href>`.
+&nbsp;<span style="color: var(--sl-color-accent)">Styled span</span> — `<span>`.
+
+---
+
+## Lists
+
+#### Unordered list — `<ul>`
+
+- First item
+- Second item
+  - Nested item A
+  - Nested item B
+- Third item
+
+#### Ordered list — `<ol>`
+
+1. Install dependencies
+2. Configure the project
+3. Run the dev server
+   1. Open the browser
+   2. Navigate to localhost
+4. Build for production
+
+### Description list — `<dl>`
+
+<dl>
+  <dt><code>&lt;dt&gt;</code> — Description term</dt>
+  <dd>The term being defined or described.</dd>
+  <dt><code>&lt;dd&gt;</code> — Description details</dt>
+  <dd>The value or explanation associated with the preceding term.</dd>
+  <dt><code>&lt;dl&gt;</code> — Description list</dt>
+  <dd>A container pairing one or more terms with their descriptions.</dd>
+</dl>
+
+---
+
+## Quotes & citations
+
+<blockquote cite="https://developer.mozilla.org/en-US/docs/Web/HTML">
+  <p>
+    HTML (HyperText Markup Language) is the most basic building block of the Web.
+    It defines the meaning and structure of web content.
+  </p>
+  <footer>— MDN Web Docs, <cite>HTML: HyperText Markup Language</cite></footer>
+</blockquote>
+
+(`<blockquote>` with nested `<cite>`)
+
+As the spec states: <q cite="https://html.spec.whatwg.org/">the purpose of this specification
+is to define a language that can be used both for interactive documents and for automated
+document processing.</q>
+— inline quote via `<q>`.
+
+<cite>Design Patterns: Elements of Reusable Object-Oriented Software</cite> — standalone
+`<cite>` for a creative work title.
+
+---
+
+## Code & preformatted
+
+Use `console.log()` for debugging — `<code>` for inline snippets.
+
+Press <kbd>Ctrl</kbd>+<kbd>K</kbd> to open the search dialog — `<kbd>`
+represents keyboard input.
+
+The command returned <samp>Error: connection refused on port 3000</samp> —
+`<samp>` for program output.
+
+The formula uses variable <var>x</var> as input — `<var>`
+for mathematical or programming variables.
+
+```ts
+// <pre> + <code> — preformatted code block
+function greet(name: string): string {
+  return `Hello, ${name}!`;
+}
+
+console.log(greet('World')); // Hello, World!
+```
+
+<pre>Plain preformatted text without code semantics.
+  Leading whitespace    is    preserved.
+    Indentation is respected.
+— &lt;pre&gt; alone</pre>
+
+---
+
+## Semantic & misc
+
+<figure>
+  <pre><code>npm install igniteui-webcomponents</code></pre>
+  <figcaption>
+    <code>&lt;figure&gt;</code> + <code>&lt;figcaption&gt;</code> — a self-contained
+    content block with an optional caption.
+  </figcaption>
+</figure>
+
+The `<hr>` element represents a thematic break between paragraph-level elements:
+
+---
+
+Content continues after the break above.
+
+The `<br>` element inserts a line break within a block of text.<br />
+Like this second line — useful in addresses or poetry, not for spacing paragraphs.
+
+The `<wbr>` element suggests a line-break opportunity inside a long
+word: `superlong`<wbr />`concatenated`<wbr />`identifier`<wbr />`name`.
+
+HTML entities commonly used in text:
+&amp; (`&amp;`),
+&lt; (`&lt;`),
+&gt; (`&gt;`),
+&nbsp;non-breaking space (`&nbsp;`),
+&mdash; em dash (`&mdash;`),
+&ndash; en dash (`&ndash;`),
+&hellip; ellipsis (`&hellip;`),
+&ldquo;left double quote&rdquo; (`&ldquo;` / `&rdquo;`),
+&lsquo;left single quote&rsquo; (`&lsquo;` / `&rsquo;`).
+
+---
+
+## Images
+
+### Basic image — `<img>`
+
+The `<img>` element embeds a raster or vector image. Always include
+a descriptive `alt` attribute for accessibility.
+
+<img
+  src="https://picsum.photos/seed/igniteui/800/400"
+  alt="A random placeholder landscape photo"
+  width="800"
+  height="400"
+  style="max-width: 100%; height: auto; border-radius: 0.5rem; display: block;"
+/>
+
+### Responsive image — `<picture>` + `<source>`
+
+The `<picture>` element wraps multiple `<source>` candidates.
+
+<picture>
+  <source media="(min-width: 800px)" srcSet="https://picsum.photos/seed/wide/1200/400" />
+  <source media="(min-width: 400px)" srcSet="https://picsum.photos/seed/medium/800/400" />
+  <img
+    src="https://picsum.photos/seed/small/400/300"
+    alt="A responsive placeholder image that changes by viewport width"
+    width="800"
+    height="400"
+    style="max-width: 100%; height: auto; border-radius: 0.5rem; display: block;"
+  />
+</picture>
+
+### Image with caption — `<figure>` + `<figcaption>`
+
+<figure>
+  <img
+    src="https://picsum.photos/seed/caption/800/350"
+    alt="A placeholder photo demonstrating figure and figcaption"
+    width="800"
+    height="350"
+    style="max-width: 100%; height: auto; border-radius: 0.5rem; display: block;"
+  />
+  <figcaption>
+    Fig. 1 — A placeholder image wrapped in a <code>&lt;figure&gt;</code> element
+    with a <code>&lt;figcaption&gt;</code> caption below.
+  </figcaption>
+</figure>
+
+### Inline SVG — `<svg>`
+
+SVG markup can be embedded directly in HTML. It scales losslessly and inherits
+`currentColor` from the surrounding text.
+
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="120"
+  height="120"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  strokeWidth="1.5"
+  strokeLinecap="round"
+  strokeLinejoin="round"
+  aria-label="Inline SVG star icon"
+  role="img"
+  style="display: block; margin-block: 1rem; color: var(--sl-color-accent);"
+>
+  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+</svg>
+
+---
+
+## Icons
+
+Icons from the `docs` collection, rendered with `<igc-icon name="…" collection="docs">`.
+
+<div class="typography-icon-grid">
+  {[
+    'search', 'close', 'copy', 'code', 'check', 'info', 'warning',
+    'link', 'link-blank', 'open-link-blank', 'download', 'refresh',
+    'eye', 'pen', 'filter', 'filter-clear', 'chevron', 'arrow',
+    'arrow-down', 'expand-all', 'collapse', 'show-more',
+    'moon', 'sun', 'system-theme',
+    'angular-logo', 'react-logo', 'wc-logo', 'blazor-logo',
+    'github-logo', 'premium', 'crown', 'rocket', 'shine',
+    'hamburger-menu', 'command', 'play-circle', 'note', 'page',
+    'dot', 'bullet-poiont', 'start', 'check-circle',
+  ].map((name) => (
+    <div class="typography-icon-item" title={name}>
+      <igc-icon name={name} collection="docs" />
+      <span>{name}</span>
+    </div>
+  ))}
+</div>
+
+---
+
+## Embedded media
+
+### YouTube embed — `<iframe>`
+
+Uses the **facade pattern**: a thumbnail image is shown first;
+the heavy YouTube `<iframe>` is only injected into the DOM
+when the user clicks play.
+
+<figure class="typography-video-figure">
+  <div
+    class="yt-facade"
+    data-video-id="t2SuyaeAINg"
+    data-video-title="Infragistics Ultimate 25.2 Release Overview"
+    role="button"
+    tabIndex={0}
+    aria-label="Play video: Infragistics Ultimate 25.2 Release Overview"
+  >
+    <img
+      src="https://i.ytimg.com/vi/t2SuyaeAINg/maxresdefault.jpg"
+      alt="Infragistics Ultimate 25.2 Release Overview — click to play"
+      width="1280"
+      height="720"
+      loading="lazy"
+      class="yt-facade__thumbnail"
+    />
+    <button class="yt-facade__play" aria-hidden="true" tabIndex={-1}>
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 68 48" aria-hidden="true">
+        <path class="yt-facade__play-bg" d="M66.5 7.7a8.5 8.5 0 0 0-6-6C56 0 34 0 34 0S12 0 7.5 1.7a8.5 8.5 0 0 0-6 6C0 12.1 0 24 0 24s0 11.9 1.5 16.3a8.5 8.5 0 0 0 6 6C12 48 34 48 34 48s22 0 26.5-1.7a8.5 8.5 0 0 0 6-6C68 35.9 68 24 68 24s0-11.9-1.5-16.3z"/>
+        <path class="yt-facade__play-arrow" d="M45 24 27 14v20z"/>
+      </svg>
+    </button>
+  </div>
+  <figcaption>
+    <a href="https://www.youtube.com/watch?v=t2SuyaeAINg" target="_blank" rel="noopener">Infragistics Ultimate 25.2 Release Overview</a> — loaded via the YouTube facade pattern (thumbnail-first, iframe on play).
+  </figcaption>
+</figure>
+
+<YtFacadeScript />
+
+### Native video — `<video>`
+
+The `<video>` element plays media files directly in the browser.
+
+<figure>
+  <video
+    controls
+    preload="metadata"
+    poster="https://picsum.photos/seed/videoposter/800/450"
+    style="width: 100%; border-radius: 0.5rem;"
+  >
+    <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4" />
+    <source src="https://www.w3schools.com/html/mov_bbb.ogg" type="video/ogg" />
+    Your browser does not support the <code>video</code> element.
+  </video>
+  <figcaption>
+    Fig. 2 — Native <code>&lt;video&gt;</code> with <code>controls</code>,
+    <code>poster</code>, and two <code>&lt;source&gt;</code> formats (MP4 + OGG).
+  </figcaption>
+</figure>
+
+### Native audio — `<audio>`
+
+<audio controls preload="metadata">
+  <source src="https://www.w3schools.com/html/horse.ogg" type="audio/ogg" />
+  <source src="https://www.w3schools.com/html/horse.mp3" type="audio/mpeg" />
+  Your browser does not support the <code>audio</code> element.
+</audio>
+
+<style>{`
+  .typography-icon-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(7rem, 1fr));
+    gap: 0.75rem;
+    margin-block: 1.5rem;
+  }
+  .typography-icon-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.75rem 0.5rem;
+    border: 1px solid var(--sl-color-gray-6, #eee);
+    border-radius: 0.5rem;
+    font-size: 0.7rem;
+    color: var(--sl-color-gray-3, #888);
+    text-align: center;
+    word-break: break-all;
+  }
+  .typography-icon-item igc-icon {
+    font-size: 1.5rem;
+    color: var(--sl-color-text, inherit);
+  }
+  .typography-video-figure { margin-block: 1.5rem; }
+  .yt-facade {
+    position: relative;
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    cursor: pointer;
+    background: #000;
+  }
+  .yt-facade:focus-visible {
+    outline: 2px solid var(--sl-color-accent, #5a3eff);
+    outline-offset: 3px;
+  }
+  .yt-facade__thumbnail {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: opacity 0.2s;
+  }
+  .yt-facade:hover .yt-facade__thumbnail { opacity: 0.75; }
+  .yt-facade__play {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    background: transparent;
+    border: 0;
+    padding: 0;
+    cursor: pointer;
+  }
+  .yt-facade__play svg {
+    width: 68px;
+    height: 48px;
+    filter: drop-shadow(0 2px 6px rgba(0,0,0,0.5));
+    transition: transform 0.15s;
+  }
+  .yt-facade:hover .yt-facade__play svg { transform: scale(1.1); }
+  .yt-facade__play-bg  { fill: #ff0000; opacity: 0.9; }
+  .yt-facade__play-arrow { fill: #fff; }
+`}</style>

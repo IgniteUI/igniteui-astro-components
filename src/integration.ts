@@ -69,6 +69,7 @@ import type { HeadEntry, PlatformKey, NavLang } from './platform.ts';
 import { remarkDocfx, rehypeCodeView } from './plugins/remark-docfx';
 export { rehypeTableWrapper } from './plugins/rehype-table-wrapper';
 import { rehypeTableWrapper } from './plugins/rehype-table-wrapper';
+import { rehypeHeadingAnchors } from './plugins/rehype-heading-anchors';
 import { stripScripts, absolutifyNavUrls, extractOuterHtml } from './lib/nav-helpers.ts';
 
 /** Build / deployment mode. Drives env-var `DOCS_BUILD_MODE`. */
@@ -831,6 +832,7 @@ export function createDocsSite(options: CreateDocsSiteOptions = {} as CreateDocs
             rehypePlugins: [
                 rehypeCodeView,
                 rehypeTableWrapper,
+                rehypeHeadingAnchors,
                 ...((astroExtra as any).markdown?.rehypePlugins ?? []),
             ],
         },

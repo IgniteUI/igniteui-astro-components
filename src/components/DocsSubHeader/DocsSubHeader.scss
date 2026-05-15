@@ -1,7 +1,7 @@
 @use 'igniteui-theming/sass/typography' as *;
 @use '../../styles/global/breakpoints' as *;
 
-.docs-subheader {
+.igd-docs-subheader {
 	position: sticky;
 	inset: 0;
 	display: grid;
@@ -15,8 +15,8 @@
 	z-index: 1;
 	background-color: var(--igd-layout-sections-bg);
 
-	// On tablet the sidebar column collapses, so the logo area + toggle
-	// share a single auto column, and search fills the remainder.
+	// On tablet the sidebar column collapses — logo+toggle share their column,
+	// search fills the remainder. No extra column needed.
 	@media (max-width: #{$bp-tablet-max}) {
 		grid-template-columns: auto 1fr;
 	}
@@ -30,7 +30,7 @@
 			padding-inline: var(--igd-padding-lg);
 		}
 
-		svg {
+		> svg {
 			min-width: rem(79px);
 			height: rem(22px);
 			opacity: 0;
@@ -74,20 +74,31 @@
 	}
 }
 
-// Sidebar toggle button — only visible on tablet
+.igd-docs-subheader__content {
+	display: flex;
+	align-items: center;
+	height: 100%;
+	gap: rem(16px);
+	
+	> igc-select:first-of-type {
+		margin-inline-start: auto;
+	}
+}
+
+// Sidebar toggle button — only visible on tablet, sits inside .igd-logo
 .subheader-sidebar-toggle {
 	display: none;
+	margin-inline-start: auto;
 
 	@media (max-width: #{$bp-tablet-max}) {
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		width: rem(44px);
-		height: 100%;
+		height: rem(44px);
 		flex-shrink: 0;
 		background: transparent;
 		border: none;
-		border-inline-end: var(--igd-app-outline);
 		color: light-dark(var(--ig-gray-700), var(--ig-gray-300));
 		cursor: pointer;
 
