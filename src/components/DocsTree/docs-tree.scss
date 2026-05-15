@@ -32,7 +32,10 @@ igc-tree {
 		display: none;
 		z-index: 1;
 	}
-	
+
+	body.is-resizing &::before {
+		transition: none;
+	}
 	&::after {
 		content: '';
 		position: absolute;

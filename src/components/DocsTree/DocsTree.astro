@@ -77,4 +77,13 @@ const { nodes, variant, activeId, toggleNodeOnClick, ariaLabel, renderLabel } = 
 
   selectActiveTreeItem();
   document.addEventListener('astro:page-load', selectActiveTreeItem);
+
+  // Suppress the active-indicator transition during window resize so the
+  // anchor-positioned ::before bar doesn't slowly slide to its new position.
+  let resizeTimer: ReturnType<typeof setTimeout>;
+  window.addEventListener('resize', () => {
+    document.body.classList.add('is-resizing');
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => document.body.classList.remove('is-resizing'), 150);
+  }, { passive: true });
 </script>

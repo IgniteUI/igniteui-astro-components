@@ -70,6 +70,7 @@ import { remarkDocfx, rehypeCodeView } from './plugins/remark-docfx';
 export { rehypeTableWrapper } from './plugins/rehype-table-wrapper';
 import { rehypeTableWrapper } from './plugins/rehype-table-wrapper';
 import { rehypeHeadingAnchors } from './plugins/rehype-heading-anchors';
+export { rehypeHeadingAnchors } from './plugins/rehype-heading-anchors';
 import { stripScripts, absolutifyNavUrls, extractOuterHtml } from './lib/nav-helpers.ts';
 
 /** Build / deployment mode. Drives env-var `DOCS_BUILD_MODE`. */

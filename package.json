@@ -69,6 +69,7 @@
     "./lib/types": "./src/lib/types.ts",
     "./plugins/remark-docfx": "./src/plugins/remark-docfx.ts",
     "./plugins/rehype-table-wrapper": "./src/plugins/rehype-table-wrapper.ts",
+    "./plugins/rehype-heading-anchors": "./src/plugins/rehype-heading-anchors.ts",
     "./styles/custom.scss": "./src/styles/custom.scss",
     "./styles/theme.scss": "./src/styles/theme.scss",
     "./package.json": "./package.json"

@@ -11,7 +11,5 @@ const label = license === 'premium' ? 'Premium' : 'Open Source';
 ---
 
 {license && (
-  <header class={`license-indicator license-${license}`}>
-    <p class="license-label">{label}</p>
-  </header>
+  <igc-badge class={`sidebar-badge license-${license}`}>{label}</igc-badge>
 )}

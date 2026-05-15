@@ -4,6 +4,7 @@ import DocsSidebar from '../../../../src/components/DocsSidebar/DocsSidebar.astr
 import DocsToc from '../../../../src/components/DocsToc/DocsToc.astro';
 import DocsSubHeader from '../../../../src/components/DocsSubHeader/DocsSubHeader.astro';
 import Search from '../../../../src/components/Search/Search.astro';
+import DocsAside from '../../../../src/components/mdx/DocsAside/DocsAside.astro';
 import { SITE_TITLE, SIDEBAR, PRODUCT_LINKS, PACKAGES, VERSIONS } from '../../site-config';
 
 const slug = 'components/search';
@@ -29,10 +30,10 @@ const headings = [
 
   <main class="content">
     <h1>Search</h1>
-    <aside class="demo-note">
-      <strong>Note:</strong> The subheader on this page uses the <code>Search</code> component
+    <DocsAside type="note">
+      The subheader on this page uses the <code>Search</code> component
       instead of <code>SearchAdvanced</code>. Click the search button above to see it in action.
-    </aside>
+    </DocsAside>
     <p>
       The <code>Search</code> component provides a full-text search modal powered by
       <a href="https://pagefind.app" target="_blank" rel="noopener">Pagefind</a>.
@@ -76,27 +77,3 @@ const headings = [
     </p>
   </main>
 </DocsLayout>
-
-<style>
-  .content {
-    max-width: 60rem;
-    margin: 0 auto;
-    padding: 2rem 1.5rem 4rem;
-  }
-  h3 { margin-top: 1.75rem; }
-  .demo-note {
-    border: 1px solid var(--ig-info-400, #60a5fa);
-    background: var(--ig-info-100, #eff6ff);
-    border-radius: 6px;
-    padding: 0.75rem 1rem;
-    margin-bottom: 1.5rem;
-    color: var(--ig-info-800, #1e40af);
-    font-size: 0.925rem;
-  }
-  pre {
-    background: var(--ig-gray-100, #f5f5f5);
-    padding: 1rem 1.25rem;
-    border-radius: 6px;
-    overflow-x: auto;
-  }
-</style>
