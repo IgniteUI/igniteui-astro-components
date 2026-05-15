@@ -93,12 +93,6 @@ body[data-sidebar-open] {
 		border-style: solid;
 		border-color: var(--border-color);
 	}
-
-	//&.default {
-	//	--ig-badge-background: light-dark(var(--ig-gray-100), var(--ig-gray-800));
-	//	--ig-badge-color: light-dark(var(--ig-gray-700), var(--ig-gray-300));
-	//	outline: rem(1px) solid light-dark(var(--ig-gray-300), var(--ig-gray-600));
-	//}
 }
 
 .updated {
@@ -130,8 +124,15 @@ body[data-sidebar-open] {
 	--border-color: var(--igd-premium-border);
 }
 
+.opensource {
+	--background-color: var(--igd-opensource-bg);
+	--text-color: var(--igd-opensource-color);
+	--icon-color: var(--igd-opensource-color);
+	--border-color: var(--igd-opensource-border);
+}
+
 .sidebar-premium-icon {
-	margin-inline-start: auto;
+	justify-self: end;
 	color: var(--igd-premium-color);
 	flex-shrink: 0;
 }
@@ -142,7 +143,7 @@ body[data-sidebar-open] {
 	gap: rem(4px);
 	
 	igc-badge {
-		margin-inline-start: auto;
+		justify-self: end;
 	}
 }
 
@@ -157,4 +158,11 @@ body[data-sidebar-open] {
 .group-label-count {
 	color: light-dark(var(--ig-gray-500), var(--ig-gray-600));
 	margin-inline-start: rem(8px)
+}
+
+.igd-badge-container {
+	display: flex;
+	align-items: center;
+	gap: rem(4px);
+	margin-left: auto;
 }

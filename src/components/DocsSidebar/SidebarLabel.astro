@@ -30,18 +30,21 @@ const badges = (node.meta?.badges ?? []) as SidebarBadge[];
   <>
     <div class="igd-lable-and-badge">
         <span class="docs-tree-label">{node.label}</span>
-        {badges.map((badge) =>
-            badge.variant === 'premium' ? (
-                <>
-                    <igc-icon name="premium" collection="docs" class="sidebar-premium-icon" aria-hidden="true"></igc-icon>
-                    <span class="visually-hidden">, Premium</span>
-                </>
-            ) : (
-                <>
-                    <igc-badge class={`sidebar-badge ${badge.variant}`} aria-hidden="true">{badge.text}</igc-badge>
-                    <span class="visually-hidden">, {badge.text}</span>
-                </>
-            )
+        {badges.length > 0 && (
+            <div class="igd-badge-container">
+                {badges.filter(b => b.variant !== 'premium').map((badge) => (
+                    <>
+                        <igc-badge class={`sidebar-badge ${badge.variant}`} aria-hidden="true">{badge.text}</igc-badge>
+                        <span class="visually-hidden">, {badge.text}</span>
+                    </>
+                ))}
+                {badges.some(b => b.variant === 'premium') && (
+                    <>
+                        <igc-icon name="premium" collection="docs" class="sidebar-premium-icon" aria-hidden="true"></igc-icon>
+                        <span class="visually-hidden">, Premium</span>
+                    </>
+                )}
+            </div>
         )}
     </div>
   </>

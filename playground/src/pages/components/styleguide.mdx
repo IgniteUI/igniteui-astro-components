@@ -3,7 +3,7 @@ layout: ../../layouts/PlaygroundMdxLayout.astro
 title: Style Guide
 slug: components/styleguide
 ---
-import YtFacadeScript from '../../components/YtFacadeScript.astro';
+import LicenseIndicator from '../../../../src/components/LicenseIndicator/LicenseIndicator.astro';
 
 # Style Guide
 
@@ -262,6 +262,15 @@ SVG markup can be embedded directly in HTML. It scales losslessly and inherits
 
 ---
 
+## License Indicators
+
+The `LicenseIndicator` component renders an `igc-badge` to signal licensing status.
+
+<LicenseIndicator license="premium" />
+<LicenseIndicator license="opensource" />
+
+---
+
 ## Icons
 
 Icons from the `docs` collection, rendered with `<igc-icon name="…" collection="docs">`.
@@ -295,36 +304,19 @@ Uses the **facade pattern**: a thumbnail image is shown first;
 the heavy YouTube `<iframe>` is only injected into the DOM
 when the user clicks play.
 
-<figure class="typography-video-figure">
-  <div
-    class="yt-facade"
-    data-video-id="t2SuyaeAINg"
-    data-video-title="Infragistics Ultimate 25.2 Release Overview"
-    role="button"
-    tabIndex={0}
-    aria-label="Play video: Infragistics Ultimate 25.2 Release Overview"
-  >
-    <img
-      src="https://i.ytimg.com/vi/t2SuyaeAINg/maxresdefault.jpg"
-      alt="Infragistics Ultimate 25.2 Release Overview — click to play"
-      width="1280"
-      height="720"
-      loading="lazy"
-      class="yt-facade__thumbnail"
-    />
-    <button class="yt-facade__play" aria-hidden="true" tabIndex={-1}>
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 68 48" aria-hidden="true">
-        <path class="yt-facade__play-bg" d="M66.5 7.7a8.5 8.5 0 0 0-6-6C56 0 34 0 34 0S12 0 7.5 1.7a8.5 8.5 0 0 0-6 6C0 12.1 0 24 0 24s0 11.9 1.5 16.3a8.5 8.5 0 0 0 6 6C12 48 34 48 34 48s22 0 26.5-1.7a8.5 8.5 0 0 0 6-6C68 35.9 68 24 68 24s0-11.9-1.5-16.3z"/>
-        <path class="yt-facade__play-arrow" d="M45 24 27 14v20z"/>
-      </svg>
-    </button>
-  </div>
+<figure>
+  <iframe
+    style="width: 100%; aspect-ratio: 16 / 9; border: 0; border-radius: 0.5rem; display: block;"
+    src="https://www.youtube.com/embed/t2SuyaeAINg"
+    title="Infragistics Ultimate 25.2 Release Overview"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+    allowfullscreen
+    loading="lazy"
+  ></iframe>
   <figcaption>
-    <a href="https://www.youtube.com/watch?v=t2SuyaeAINg" target="_blank" rel="noopener">Infragistics Ultimate 25.2 Release Overview</a> — loaded via the YouTube facade pattern (thumbnail-first, iframe on play).
+    <a href="https://www.youtube.com/watch?v=t2SuyaeAINg" target="_blank" rel="noopener">Infragistics Ultimate 25.2 Release Overview</a>
   </figcaption>
 </figure>
-
-<YtFacadeScript />
 
 ### Native video — `<video>`
 
@@ -379,46 +371,4 @@ The `<video>` element plays media files directly in the browser.
     font-size: 1.5rem;
     color: var(--sl-color-text, inherit);
   }
-  .typography-video-figure { margin-block: 1.5rem; }
-  .yt-facade {
-    position: relative;
-    display: block;
-    width: 100%;
-    aspect-ratio: 16 / 9;
-    border-radius: 0.5rem;
-    overflow: hidden;
-    cursor: pointer;
-    background: #000;
-  }
-  .yt-facade:focus-visible {
-    outline: 2px solid var(--sl-color-accent, #5a3eff);
-    outline-offset: 3px;
-  }
-  .yt-facade__thumbnail {
-    display: block;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: opacity 0.2s;
-  }
-  .yt-facade:hover .yt-facade__thumbnail { opacity: 0.75; }
-  .yt-facade__play {
-    position: absolute;
-    inset: 0;
-    display: grid;
-    place-items: center;
-    background: transparent;
-    border: 0;
-    padding: 0;
-    cursor: pointer;
-  }
-  .yt-facade__play svg {
-    width: 68px;
-    height: 48px;
-    filter: drop-shadow(0 2px 6px rgba(0,0,0,0.5));
-    transition: transform 0.15s;
-  }
-  .yt-facade:hover .yt-facade__play svg { transform: scale(1.1); }
-  .yt-facade__play-bg  { fill: #ff0000; opacity: 0.9; }
-  .yt-facade__play-arrow { fill: #fff; }
 `}</style>

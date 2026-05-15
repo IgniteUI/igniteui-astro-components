@@ -137,9 +137,15 @@ type HeadEntry = { tag: string; attrs?: Record<string, string | boolean | undefi
       var rafId = 0;
       function update() {
         var footerTop = footer.getBoundingClientRect().top;
+        // Footer is off-screen below — sidebar needs no clamping.
+        if (footerTop >= window.innerHeight) {
+          if (sidebar.style.maxHeight) sidebar.style.maxHeight = '';
+          return;
+        }
         var sidebarTop = sidebar.getBoundingClientRect().top;
-        var maxH = Math.min(window.innerHeight - sidebarTop, footerTop - sidebarTop);
-        sidebar.style.maxHeight = Math.max(0, maxH) + 'px';
+        var maxH = Math.max(0, Math.min(window.innerHeight - sidebarTop, footerTop - sidebarTop));
+        var next = maxH + 'px';
+        if (sidebar.style.maxHeight !== next) sidebar.style.maxHeight = next;
       }
       function schedule() {
         if (rafId) return;
@@ -150,7 +156,7 @@ type HeadEntry = { tag: string; attrs?: Record<string, string | boolean | undefi
       // covers viewport-only changes such as DevTools docking/undocking.
       window.addEventListener('resize', schedule, { passive: true });
       var ro = new ResizeObserver(schedule);
-      ro.observe(document.documentElement);
+      ro.observe(footer);
       schedule();
       _cleanupSidebarHeights = function() {
         window.removeEventListener('scroll', schedule);

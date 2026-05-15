@@ -52,14 +52,14 @@ export const SIDEBAR: SidebarEntry[] = [
     label: 'Styles',
     collapsed: false,
     items: [
-      { label: 'Style Guide', slug: 'components/styleguide' },
+      { label: 'Style Guide', slug: 'components/styleguide', badges: [{ text: 'Premium', variant: 'premium' }, { text: 'New', variant: 'new' }] },
     ],
   },
   {
     label: 'Reference',
     collapsed: true,
     items: [
-      { label: 'Changelog', slug: 'changelog', badge: { text: 'Beta', variant: 'new' } },
+      { label: 'Changelog', slug: 'changelog', badges: [{ text: 'Beta', variant: 'new' }] },
     ],
   },
 ];
