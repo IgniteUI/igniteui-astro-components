@@ -28,7 +28,7 @@ const headings = [
   <DocsSidebar slot="sidebar" items={SIDEBAR} currentSlug="" />
   <DocsToc slot="toc" headings={headings} offsetTarget=".docs-subheader" />
 
-  <main class="content">
+
     <h1>igniteui-astro-components playground</h1>
     <p>
         This is a local sandbox for the components shipped from
@@ -91,105 +91,5 @@ const headings = [
         <code>DocsLayout</code> and the component under test from
         <code>../../../../src/</code>, and add a link to the list above.
     </p>
-    <DocsToc slot="toc" headings={ headings } offsetTarget=".docs-subheader"/>
-
-    <h3>Table example</h3>
-    <div class="igd-table-wrapper" role="region" aria-labelledby="demo-table-caption" tabindex="0">
-        <table>
-            <thead>
-                <tr>
-                    <th scope="col">Component</th>
-                    <th scope="col">Open-Source</th>
-                    <th scope="col">Premium</th>
-                    <th scope="col">Angular</th>
-                    <th scope="col">React</th>
-                    <th scope="col">Web Components</th>
-                    <th scope="col">Blazor</th>
-                    <th scope="col">Since</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>Accordion</td>
-                    <td>✅</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td>v13.0</td>
-                </tr>
-                <tr>
-                    <td>Action Strip</td>
-                    <td>✅</td><td>✅</td><td>✅</td><td>❌</td><td>✅</td><td>❌</td><td>v10.2</td>
-                </tr>
-                <tr>
-                    <td>Autocomplete</td>
-                    <td>✅</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td>v6.1</td>
-                </tr>
-                <tr>
-                    <td>Avatar</td>
-                    <td>✅</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td>v1.0</td>
-                </tr>
-                <tr>
-                    <td>Badge</td>
-                    <td>✅</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td>v1.0</td>
-                </tr>
-                <tr>
-                    <td>Banner</td>
-                    <td>✅</td><td>✅</td><td>✅</td><td>❌</td><td>✅</td><td>❌</td><td>v7.0</td>
-                </tr>
-                <tr>
-                    <td>Bottom Nav</td>
-                    <td>✅</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td>v5.0</td>
-                </tr>
-                <tr>
-                    <td>Button</td>
-                    <td>✅</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td>v1.0</td>
-                </tr>
-                <tr>
-                    <td>Button Group</td>
-                    <td>✅</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td>v4.0</td>
-                </tr>
-                <tr>
-                    <td>Calendar</td>
-                    <td>✅</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td>v1.0</td>
-                </tr>
-                <tr>
-                    <td>Card</td>
-                    <td>✅</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td>v1.0</td>
-                </tr>
-                <tr>
-                    <td>Carousel</td>
-                    <td>✅</td><td>✅</td><td>✅</td><td>❌</td><td>✅</td><td>❌</td><td>v2.0</td>
-                </tr>
-                <tr>
-                    <td>Chart Area</td>
-                    <td>❌</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td>v8.0</td>
-                </tr>
-                <tr>
-                    <td>Chart Bar</td>
-                    <td>❌</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td>v8.0</td>
-                </tr>
-                <tr>
-                    <td>Chart Bubble</td>
-                    <td>❌</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td>❌</td><td>v9.0</td>
-                </tr>
-                <tr>
-                    <td>Chart Category</td>
-                    <td>❌</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td>v9.0</td>
-                </tr>
-                <tr>
-                    <td>Chart Column</td>
-                    <td>❌</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td>v8.0</td>
-                </tr>
-                <tr>
-                    <td>Chart Donut</td>
-                    <td>❌</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td>v9.0</td>
-                </tr>
-                <tr>
-                    <td>Chart Financial/Stock</td>
-                    <td>❌</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td>❌</td><td>v10.0</td>
-                </tr>
-                <tr>
-                    <td>Chart Line</td>
-                    <td>❌</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td>v8.0</td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
+    <!--<DocsToc slot="toc" headings={ headings } offsetTarget=".docs-subheader"/>-->
 </DocsLayout>

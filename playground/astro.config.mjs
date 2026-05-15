@@ -23,6 +23,7 @@ import path from 'node:path';
 import mdx from '@astrojs/mdx';
 import { getPlatformHead } from '../src/platform.ts';
 import { rehypeHeadingAnchors } from '../src/plugins/rehype-heading-anchors.ts';
+import { rehypeTableWrapper } from '../src/plugins/rehype-table-wrapper.ts';
 
 // Default the platform context used by ApiLink / ApiRef / PlatformBlock.
 process.env.PLATFORM ??= 'React';
@@ -104,7 +105,7 @@ export default defineConfig({
   image: { service: { entrypoint: 'astro/assets/services/noop' } },
   integrations: [mdx()],
   markdown: {
-    rehypePlugins: [rehypeHeadingAnchors],
+    rehypePlugins: [rehypeHeadingAnchors, rehypeTableWrapper],
   },
   vite: {
     plugins: [virtualDocsModules()],

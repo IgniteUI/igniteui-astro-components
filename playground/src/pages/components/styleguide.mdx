@@ -12,7 +12,7 @@ rendered through the documentation theme.
 
 ## Headings
 
-Six levels of section headings, `<h1>`–`<h6>`.
+Six levels of section headings.
 
 <h1>Heading level 1</h1>
 <h2>Heading level 2</h2>
@@ -35,8 +35,8 @@ at the container boundary without any explicit `word-break` override
 unless the content contains very long unbreakable strings.
 
 <address>
-  Written by <a href="mailto:docs@example.com">The Docs Team</a>.<br />
-  Visit us at <a href="#">igniteui.com</a>.<br />
+  Written by <a href="mailto:docs@example.com">The Docs Team</a>.
+  Visit us at <a href="#">igniteui.com</a>.
   — <code>&lt;address&gt;</code> element
 </address>
 
@@ -44,32 +44,25 @@ unless the content contains very long unbreakable strings.
 
 ## Inline text elements
 
-**Bold importance — `<strong>`**,
-&nbsp;<b>bold without semantics — `<b>`</b>,
-&nbsp;<em>italicised emphasis — `<em>`</em>,
-&nbsp;<i>italic without semantics — `<i>`</i>.
-
-<u>Underlined text — `<u>`</u>,
-&nbsp;<s>strikethrough — `<s>`</s>,
-&nbsp;<del>deleted content — `<del>`</del>,
-&nbsp;<ins>inserted content — `<ins>`</ins>.
-
-<mark>Highlighted text — `<mark>`</mark>,
-&nbsp;<small>small print — `<small>`</small>,
-&nbsp;base<sub>subscript</sub> — `<sub>`,
-&nbsp;base<sup>superscript</sup> — `<sup>`.
-
-<abbr title="Cascading Style Sheets">CSS</abbr> — `<abbr title="…">` renders
-with a dotted underline and shows the full form on hover.
-
-<dfn id="dfn-spa">Single-page application (SPA)</dfn> — `<dfn>` marks the
-defining instance of a term.
-
-Published on <time dateTime="2026-05-15">15 May 2026</time> — `<time>`
-provides a machine-readable date/time.
-
-Visit [this link](#) — `<a href>`.
-&nbsp;<span style="color: var(--sl-color-accent)">Styled span</span> — `<span>`.
+| Element | Renders as | Use when |
+|---|---|---|
+| `<strong>` | <strong>Bold importance</strong> | Content has strong importance or urgency |
+| `<b>` | <b>Bold without semantics</b> | Style-only bold, no extra meaning |
+| `<em>` | <em>Emphasised text</em> | Stress emphasis that changes sentence meaning |
+| `<i>` | <i>Italic without semantics</i> | Technical terms, foreign phrases, thoughts |
+| `<u>` | <u>Underlined text</u> | Annotations, misspellings (non-link underline) |
+| `<s>` | <s>Strikethrough</s> | Content no longer accurate or relevant |
+| `<del>` | <del>Deleted content</del> | Editorial deletion (pairs with `<ins>`) |
+| `<ins>` | <ins>Inserted content</ins> | Editorial insertion (pairs with `<del>`) |
+| `<mark>` | <mark>Highlighted text</mark> | Highlighted / search result match |
+| `<small>` | <small>Small print</small> | Side comments, legal text, fine print |
+| `<sub>` | H<sub>2</sub>O | Subscript — chemical formulas, footnotes |
+| `<sup>` | E=mc<sup>2</sup> | Superscript — exponents, ordinals |
+| `<abbr title="Cascading Style Sheets">` | <abbr title="Cascading Style Sheets">CSS</abbr> | Abbreviations — shows expansion on hover |
+| `<dfn>` | <dfn>Single-page application</dfn> | Defining instance of a term |
+| `<time dateTime="2026-05-15">` | <time dateTime="2026-05-15">15 May 2026</time> | Machine-readable dates and times |
+| `<a href>` | [this link](#) | Hyperlinks |
+| `<span>` | <span style="color: var(--ig-primary-500)">Styled span</span> | Generic inline container for styling |
 
 ---
 
@@ -129,16 +122,14 @@ document processing.</q>
 
 ## Code & preformatted
 
-Use `console.log()` for debugging — `<code>` for inline snippets.
-
-Press <kbd>Ctrl</kbd>+<kbd>K</kbd> to open the search dialog — `<kbd>`
-represents keyboard input.
-
-The command returned <samp>Error: connection refused on port 3000</samp> —
-`<samp>` for program output.
-
-The formula uses variable <var>x</var> as input — `<var>`
-for mathematical or programming variables.
+| Element | Example | Use when |
+|---|---|---|
+| `<code>` | Use `console.log()` for debugging | Inline code snippets, file names, values |
+| `<kbd>` | Press <kbd>Ctrl</kbd>+<kbd>K</kbd> to open search | Keyboard input or shortcuts |
+| `<samp>` | Output: <samp>Error: connection refused on port 3000</samp> | Program or terminal output |
+| `<var>` | The formula uses variable <var>x</var> as input | Mathematical or programming variables |
+| `<pre>` + `<code>` | See fenced block below | Multi-line preformatted code |
+| `<pre>` alone | See block below | Preformatted text without code semantics |
 
 ```ts
 // <pre> + <code> — preformatted code block
@@ -172,22 +163,11 @@ The `<hr>` element represents a thematic break between paragraph-level elements:
 
 Content continues after the break above.
 
-The `<br>` element inserts a line break within a block of text.<br />
+The `<br>` element inserts a line break within a block of text.<br/>
 Like this second line — useful in addresses or poetry, not for spacing paragraphs.
 
 The `<wbr>` element suggests a line-break opportunity inside a long
 word: `superlong`<wbr />`concatenated`<wbr />`identifier`<wbr />`name`.
-
-HTML entities commonly used in text:
-&amp; (`&amp;`),
-&lt; (`&lt;`),
-&gt; (`&gt;`),
-&nbsp;non-breaking space (`&nbsp;`),
-&mdash; em dash (`&mdash;`),
-&ndash; en dash (`&ndash;`),
-&hellip; ellipsis (`&hellip;`),
-&ldquo;left double quote&rdquo; (`&ldquo;` / `&rdquo;`),
-&lsquo;left single quote&rsquo; (`&lsquo;` / `&rsquo;`).
 
 ---
 
@@ -372,3 +352,19 @@ The `<video>` element plays media files directly in the browser.
     color: var(--sl-color-text, inherit);
   }
 `}</style>
+
+## HTML Character Entities
+
+Common HTML named character references and how they render.
+
+| Entity code | Renders as | Description |
+|---|---|---|
+| `&amp;` | & | Ampersand |
+| `&lt;` | &lt; | Less-than sign |
+| `&gt;` | &gt; | Greater-than sign |
+| `&nbsp;` | (space) | Non-breaking space |
+| `&mdash;` | — | Em dash |
+| `&ndash;` | – | En dash |
+| `&hellip;` | … | Ellipsis |
+| `&ldquo;` / `&rdquo;` | " / " | Left / right double quotation marks |
+| `&lsquo;` / `&rsquo;` | ' / ' | Left / right single quotation marks |

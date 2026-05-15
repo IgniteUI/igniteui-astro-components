@@ -7,14 +7,14 @@
 	padding: var(--igd-page-padding);
 	min-width: 0;
 	
-	pre {
+	> pre {
 		@include type-style('code', false) {
 			margin: 0;
 		};
 	}
 	
-	pre,
-	code {
+	> pre,
+	> code {
 		margin-block-end: rem(26px);
 	}
 	
@@ -32,7 +32,6 @@
 	// <code> that is not inside a <pre> tag
 	code:not(pre code) {
 		@include type-style('code', false) {
-			font-size: inherit;
 			margin: 0;
 		};
 		
@@ -44,17 +43,20 @@
 		border-radius: rem(4px);
 	}
 	
-	ul {
+	> ul {
 		@include type-style('body-2') {
 			margin: 0;
 		}
 		
-		list-style: none;
-		padding-inline-start: 0;
+		padding-inline-start: rem(18px);
 		padding-block: 0;
 		
+		::marker {
+			color: light-dark(var(--ig-gray--800), var(--ig-gray--200));
+		}
+		
 		li {
-			@include type-style('body-1') {
+			@include type-style('secondary-text', false) {
 				margin: 0;
 			};
 			
@@ -67,18 +69,19 @@
 			
 			position: relative;
 			color: var(--ig-gray-700);
-			padding-block: rem(4px);
-			padding-inline-start: rem(16px);
-			
-			// Nested list — shrink bullet slightly
-			ul li::before {
-				width: rem(5px);
-				height: rem(5px);
-				background-color: var(--ig-gray-400);
-			}
+			padding-inline: 0 rem(8px);
+			padding-block: rem(8px);
 			
 			> .shiki {
 				margin-top: rem(8px);
+			}
+			
+			::marker {
+				color: var(--ig-gray-700);
+			}
+			
+			&:has(> ul) {
+				padding-block-end: 0;
 			}
 		}
 		
@@ -92,6 +95,85 @@
 	// <ul> that is not inside <li>
 	ul:not(li ul) {
 		margin-bottom: rem(26px) !important;
+	}
+	
+	> ol {
+		@include type-style('body-2') {
+			margin: 0;
+		}
+		
+		list-style: none;
+		padding-inline-start: 0;
+		padding-block: 0;
+		counter-reset: ol-counter;
+		
+		li {
+			@include type-style('body-1') {
+				margin: 0;
+			};
+			
+			> strong {
+				@include type-style('subtitle-2') {
+					margin: 0;
+				};
+			}
+			
+			position: relative;
+			color: var(--ig-gray-700);
+			padding-block: rem(4px);
+			padding-inline-start: rem(16px);
+			counter-increment: ol-counter;
+			
+			&::before {
+				content: counter(ol-counter) '.';
+				position: absolute;
+				color: var(--ig-primary-500);
+				font-weight: 600;
+				line-height: inherit;
+				min-width: rem(16px);
+				text-align: end;
+				inset-inline-start: rem(-2px);
+			}
+			
+			// Nested list counter
+			ol {
+				counter-reset: ol-counter;
+				
+				li::before {
+					color: var(--ig-primary-400);
+				}
+			}
+			
+			> .shiki {
+				margin-top: rem(8px);
+			}
+		}
+		
+		p, h1, h2, h3, h4, h5, h6:only-child {
+			margin: 0;
+		}
+	}
+	
+	> address {
+		line-height: rem(32px);
+		
+		p {
+			@include type-style('body-2') {
+				line-height: rem(32px);
+			};
+		}
+		
+		a {
+			color: inherit;
+			text-decoration: underline;
+		}
+		
+		margin-block-end: rem(26px);
+	}
+	
+	// <ol> that is not inside <li>
+	> ol:not(li ol) {
+		margin-block-end: rem(26px);
 	}
 	
 	a {
@@ -194,6 +276,10 @@
 
 	figcaption {
 		@include type-style('caption') { margin: 0; }
+		
+		> p {
+			@include type-style('caption') { margin: 0; }
+		}
 
 		margin-block-end: rem(26px);
 		color: var(--ig-gray-600);
@@ -326,7 +412,8 @@
 	overflow: auto;
 	max-height: var(--igd-table-max-height);
 	border: rem(1px) solid var(--igd-table-border-color);
-	margin-inline-end: rem(26px);
+	margin-block-end: rem(26px);
+	width: 100%;
 	
 	table {
 		font-family: inherit;
@@ -334,7 +421,7 @@
 		
 		// Ensure the table is at least as wide as its container but can grow
 		// wider for many columns — enabling horizontal scroll in the wrapper.
-		width: max(max-content, 100%);
+		min-width: 100%;
 		color: var(--igd-table-fg);
 		
 		th {

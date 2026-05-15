@@ -29,7 +29,7 @@ const headings = [
   <DocsSidebar slot="sidebar" items={SIDEBAR} currentSlug={slug} />
   <DocsToc slot="toc" headings={headings} offsetTarget=".docs-subheader" />
 
-  <main class="content">
+
     <h1>SearchAdvanced</h1>
     <p>
       The <code>SearchAdvanced</code> component provides a structured API-symbol search dialog.
@@ -103,20 +103,4 @@ const headings = [
       <code>{"${BASE_URL}api-search-index/manifest.json"}</code> and can be overridden
       to point at any compatible JSON file.
     </p>
-  </main>
-</DocsLayout>
-
-<style>
-  .content {
-    max-width: 60rem;
-    margin: 0 auto;
-    padding: 2rem 1.5rem 4rem;
-  }
-  h3 { margin-top: 1.75rem; }
-  pre {
-    background: var(--ig-gray-100, #f5f5f5);
-    padding: 1rem 1.25rem;
-    border-radius: 6px;
-    overflow-x: auto;
-  }
-</style>
+</DocsLayout>F

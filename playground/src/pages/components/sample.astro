@@ -190,7 +190,7 @@ describe('GridSampleComponent', () => {
 <DocsLayout title="Sample" siteTitle={SITE_TITLE} hasSidebar currentSlug={slug}>
   <DocsSidebar slot="sidebar" items={SIDEBAR} currentSlug={slug} />
   <DocsToc slot="toc" headings={headings} offsetTarget=".docs-subheader" />
-  <main class="content">
+
     <h1>Sample</h1>
     <p>
       Renders a live demo widget with an embedded iframe, source-code tabs,
@@ -225,5 +225,4 @@ describe('GridSampleComponent', () => {
       "View in full screen" link below the iframe.
     </p>
     <SampleWidget src="/mock-demo" height={200} alt="React Example" iframeOnly fullscreenBtn />
-  </main>
 </DocsLayout>
