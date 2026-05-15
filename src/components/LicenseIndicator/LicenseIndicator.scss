@@ -1,0 +1,29 @@
+@use 'igniteui-theming/sass/typography/functions' as *;
+
+.license-indicator {
+	display: inline-flex;
+	align-items: center;
+	padding: rem(2px) rem(10px);
+	border-radius: var(--igd-border-radius);
+	border: 1px solid;
+	margin-block-end: rem(12px);
+}
+
+.license-premium {
+	background-color: var(--igd-premium-bg);
+	border-color: var(--igd-premium-border);
+	color: var(--igd-premium-color);
+}
+
+.license-opensource {
+	background-color: var(--igd-new-bg);
+	border-color: var(--igd-new-border);
+	color: var(--igd-new-color);
+}
+
+.license-label {
+	margin: 0;
+	font-size: rem(12px);
+	font-weight: 600;
+	line-height: rem(20px);
+}

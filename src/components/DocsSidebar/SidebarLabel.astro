@@ -22,14 +22,14 @@ interface Props {
 }
 
 const { node, isLeaf } = Astro.props;
-const badge = (node.meta?.badge ?? null) as SidebarBadge | null;
+const badges = (node.meta?.badges ?? []) as SidebarBadge[];
 ---
 
 {isLeaf ? (
   <>
     <div class="igd-lable-and-badge">
         <span class="docs-tree-label">{node.label}</span>
-        {badge && <igc-badge class={`sidebar-badge ${badge.variant}`}>{badge.text}</igc-badge>}
+        {badges.map(b => <igc-badge class={`sidebar-badge ${b.variant}`}>{b.text}</igc-badge>)}
     </div>
   </>
 ) : (
