@@ -62,7 +62,7 @@ const toNode = (
       slug: entry.slug,
     },
     linkAttrs: entry.attrs,
-    meta: entry.badge ? { badge: entry.badge } : undefined,
+    meta: entry.badges?.length ? { badges: entry.badges } : undefined,
   };
 };
 

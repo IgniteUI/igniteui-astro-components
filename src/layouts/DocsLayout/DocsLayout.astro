@@ -8,6 +8,7 @@ import GlobalNavBar from '../../components/GlobalNavBar/GlobalNavBar.astro';
 import GlobalFooter from '../../components/GlobalFooter/GlobalFooter.astro';
 import DocsSubHeader from '../../components/DocsSubHeader/DocsSubHeader.astro';
 import DocsBreadcrumb from '../../components/DocsBreadcrumb/DocsBreadcrumb.astro';
+import LicenseIndicator from '../../components/LicenseIndicator/LicenseIndicator.astro';
 import MobileSidebarToggle from '../../components/MobileSidebarToggle/MobileSidebarToggle.astro';
 import { widgetScriptSrc, platform as virtualPlatform } from 'virtual:docs-template/nav-html';
 import { title as siteTitle, headEntries } from 'virtual:docs-template/site-meta';
@@ -28,18 +29,16 @@ export interface Props {
    * Useful when consuming without `siteMetaIntegration`.
    */
   siteTitle?: string;
+  /**
+   * Value of the `license` frontmatter field from the MDX page.
+   * 'commercial' → Premium badge, 'MIT' → Open Source badge, omit → no badge.
+   */
+  license?: string;
 }
 
-const {
-  title,
-  description,
-  keywords,
-  hasToc = true,
-  hasSidebar = true,
-  currentSlug = '',
-  siteTitle: siteTitleProp,
-} = Astro.props;
+const { title, description, keywords, hasToc = true, hasSidebar = true, currentSlug = '', siteTitle: siteTitleProp, license } = Astro.props;
 const resolvedSiteTitle = siteTitleProp ?? siteTitle;
+const licenseType = license === 'commercial' ? 'premium' : license === 'MIT' ? 'opensource' : false;
 const navTheme = (virtualPlatform ?? import.meta.env.VITE_NAV_THEME ?? 'igniteui') as string;
 const showGlobalNav = navTheme !== 'none';
 const pageTitle = title ? `${title} | ${resolvedSiteTitle}` : resolvedSiteTitle;
@@ -181,7 +180,7 @@ type HeadEntry = { tag: string; attrs?: Record<string, string | boolean | undefi
         <!-- TODO: WE DONT NEED TO CALCULAtE THE IG HEADER HEIGHT ANYMORE - REMOVE IT -->
         <!-- <DocsSubHeader style={ `--docs-global-nav-height: ${ showGlobalNav ? '4.7rem': '0' }` } data-nav-height-wrapper/> -->
         <slot name="subheader">
-          <DocsSubHeader pageTitle={title} currentSlug={currentSlug} siteTitle={siteTitleProp} style={ `--docs-global-nav-height: ${ showGlobalNav ? '4.7rem': '0' }` } data-nav-height-wrapper />
+          <DocsSubHeader pageTitle={title} currentSlug={currentSlug} siteTitle={siteTitleProp} />
         </slot>
 
 
@@ -197,6 +196,7 @@ type HeadEntry = { tag: string; attrs?: Record<string, string | boolean | undefi
             <div class="igd-main-content__inner">
                 <div class="igd-main-content__page">
                     <main class="igd-main-content__markdown">
+                        <LicenseIndicator license={licenseType} />
                         <DocsBreadcrumb pageTitle={ title } currentSlug={ currentSlug } siteTitle={ siteTitleProp }/>
                         <slot/>
                     </main>

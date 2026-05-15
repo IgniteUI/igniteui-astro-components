@@ -3,7 +3,7 @@
  * Shared by the SSR components and any consumer that walks the tree.
  */
 
-import type { SidebarEntry, SidebarGroup } from './types';
+import type { SidebarEntry, SidebarGroup, SidebarLink } from './types';
 
 export const isGroup = (e: SidebarEntry): e is SidebarGroup => 'items' in e;
 
@@ -67,6 +67,19 @@ export const getActiveLabel = (items: SidebarEntry[], currentSlug: string): stri
     }
   }
   return '';
+};
+
+/** Returns the active SidebarLink for the current slug, or null if not found. */
+export const getActiveLink = (items: SidebarEntry[], currentSlug: string): SidebarLink | null => {
+  for (const item of items) {
+    if (isGroup(item)) {
+      const found = getActiveLink(item.items, currentSlug);
+      if (found) return found;
+    } else if (isActive(item.slug, currentSlug)) {
+      return item;
+    }
+  }
+  return null;
 };
 
 /**
