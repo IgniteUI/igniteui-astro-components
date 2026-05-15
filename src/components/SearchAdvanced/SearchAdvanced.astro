@@ -397,14 +397,14 @@ const resolvedIndexUrl = indexUrl ?? `${basePath}api-search-index/manifest.json`
       // Manifest format: { files: ["pkg/version.json", ...] }
       if (Array.isArray((data as any)?.files)) {
         const baseUrl = this.indexUrl.replace(/[^/]*$/, '');
-        const fetches = ((data as any).files as string[]).map(async (file: string) => {
+        const fetches: Promise<IndexedPage[]>[] = ((data as any).files as string[]).map(async (file: string) => {
           try {
             const res = await fetch(`${baseUrl}${file}`);
-            if (!res.ok) return [] as IndexedPage[];
+            if (!res.ok) return [];
             const d = await res.json();
-            return Array.isArray(d?.pages) ? d.pages as IndexedPage[] : [] as IndexedPage[];
+            return Array.isArray(d?.pages) ? d.pages as IndexedPage[] : [];
           } catch {
-            return [] as IndexedPage[];
+            return [];
           }
         });
         const results = await Promise.all(fetches);
