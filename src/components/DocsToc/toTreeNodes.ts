@@ -1,7 +1,7 @@
 /**
  * Adapter: Astro `MarkdownHeading[]` → TreeNode[] for the shared DocsTree.
  *
- * Filters headings by `min`/`max` heading level (matching Starlight's TOC
+ * Filters headings by `min`/`max` heading level (matching the TOC
  * config), nests them by depth, and emits TreeNodes whose `href` points
  * at the heading's anchor (`#slug`).
  *

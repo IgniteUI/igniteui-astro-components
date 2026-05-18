@@ -4,7 +4,7 @@
 import { createDocsCollection } from './content-helper.ts';
 
 // TODO: remove these template-specific exclusions once the source repos add
-// proper Starlight frontmatter to these files (no `title` → fail schema).
+// proper frontmatter to these files (no `title` → fail schema).
 export const collections = {
   docs: createDocsCollection(process.env.DOCS_SOURCE_PATH, {
     exclude: [
