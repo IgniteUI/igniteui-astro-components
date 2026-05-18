@@ -380,23 +380,32 @@ const resolvedIndexUrl = indexUrl ?? `${basePath}api-search-index/manifest.json`
     }
 
     private async fetchIndex(): Promise<IndexedPage[]> {
-      const r = await fetch(this.indexUrl);
-      if (!r.ok) throw new Error(`HTTP ${r.status}`);
-      const data = await r.json();
+      let data: unknown;
+      try {
+        const r = await fetch(this.indexUrl);
+        if (!r.ok) return [];
+        data = await r.json();
+      } catch {
+        return [];
+      }
 
       // Single-file format: { pages: [...] }
-      if (Array.isArray(data?.pages)) {
-        return data.pages as IndexedPage[];
+      if (Array.isArray((data as any)?.pages)) {
+        return (data as any).pages as IndexedPage[];
       }
 
       // Manifest format: { files: ["pkg/version.json", ...] }
-      if (Array.isArray(data?.files)) {
+      if (Array.isArray((data as any)?.files)) {
         const baseUrl = this.indexUrl.replace(/[^/]*$/, '');
-        const fetches = (data.files as string[]).map(async (file: string) => {
-          const res = await fetch(`${baseUrl}${file}`);
-          if (!res.ok) return [];
-          const d = await res.json();
-          return Array.isArray(d?.pages) ? d.pages as IndexedPage[] : [];
+        const fetches: Promise<IndexedPage[]>[] = ((data as any).files as string[]).map(async (file: string) => {
+          try {
+            const res = await fetch(`${baseUrl}${file}`);
+            if (!res.ok) return [];
+            const d = await res.json();
+            return Array.isArray(d?.pages) ? d.pages as IndexedPage[] : [];
+          } catch {
+            return [];
+          }
         });
         const results = await Promise.all(fetches);
         return results.flat();
