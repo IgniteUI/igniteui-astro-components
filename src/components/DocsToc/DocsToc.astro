@@ -144,8 +144,11 @@ const nodes = headingsToTreeNodes(headings, tocConfig);
 
         private bindOffsetTarget() {
             const selector = this.dataset.offsetTarget ?? null;
-            if (!selector) return;
-            this.offsetEl = document.querySelector(selector);
+            // If an explicit selector is given, use it; otherwise fall back to
+            // the docs subheader which is always present in the layout.
+            this.offsetEl = (selector ? document.querySelector(selector) : null)
+                ?? document.querySelector('docs-subheader-menu')
+                ?? null;
             if (!this.offsetEl) return;
 
             this.syncScrollPadding();

@@ -16,13 +16,13 @@
 	align-self: start;
 	gap: rem(24px);
 
-	// On tablet: sidebar becomes a fixed overlay, hidden off-screen by default.
+	// On tablet/mobile: sidebar becomes a full-height fixed overlay, hidden off-screen by default.
 	@media (max-width: #{$bp-tablet-max}) {
 		position: fixed;
-		inset-block: var(--igd-header-height) 0;
+		inset-block: 0;
 		inset-inline-start: 0;
-		height: auto;
-		max-height: none;
+		height: 100dvh;
+		max-height: 100dvh;
 		width: min(rem(360px), 85vw);
 		z-index: 100;
 		transform: translateX(-100%);

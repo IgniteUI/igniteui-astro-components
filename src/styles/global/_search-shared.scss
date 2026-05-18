@@ -1,6 +1,8 @@
 @use '../../styles/global/breakpoints' as *;
 @use 'igniteui-theming/sass/typography' as *;
 
+// ── Trigger button ─────────────────────────────────────────────────────────
+
 .search-trigger {
 	--ig-size: 1;
 	
@@ -32,6 +34,23 @@
 	}
 }
 
+.search-trigger__hint {
+	background: transparent;
+	box-shadow: none;
+	border: none;
+	
+	kbd {
+		@include type-style('subtitle-1') {
+			margin: 0;
+		};
+		
+		background: transparent;
+		box-shadow: none;
+		border: none;
+		color: var(--ig-gray-500);
+	}
+}
+
 .search-trigger__label,
 .search-trigger__hint {
 	@media (max-width: #{$bp-tablet-max}) {
@@ -48,12 +67,6 @@
 	align-items: center;
 	margin-inline-start: auto;
 	gap: rem(4px);
-	
-	span {
-		@include type-style('detail-1', false) {
-			margin: 0;
-		};
-	}
 }
 
 .search-trigger__label {
@@ -63,3 +76,199 @@
 	
 	color: var(--ig-gray-600);
 }
+
+// ── Shared dialog mixins ───────────────────────────────────────────────────
+
+/// Sizing/position for both igc-dialog::part(base) and native <dialog>.
+@mixin search-dialog-base-styles {
+	margin: 0;
+	padding: 0;
+	width: 100%;
+	max-width: 100%;
+	height: 100dvh;
+	max-height: 100dvh;
+	box-shadow: none;
+	border: none;
+
+	@media (min-width: 50rem) {
+		margin: auto;
+		width: 90%;
+		max-width: 42rem;
+		height: calc(100vh - 8rem);
+		max-height: 48rem;
+		border-radius: 0;
+	}
+}
+
+/// Backdrop base state (before open animation).
+@mixin search-dialog-backdrop {
+	background-color: light-dark(var(--ig-gray-800), var(--ig-gray-800));
+	will-change: backdrop-filter, opacity;
+}
+
+/// Backdrop visible/open state.
+@mixin search-dialog-backdrop-open {
+	opacity: .6;
+	-webkit-backdrop-filter: blur(10px);
+	backdrop-filter: blur(10px);
+}
+
+// ── Shared dialog chrome ───────────────────────────────────────────────────
+
+[data-search-modal-open] { overflow: hidden; }
+
+.igd-search-shell {
+	display: flex;
+	flex-direction: column;
+	min-height: 0;
+	flex: 1 1 auto;
+	height: 100%;
+	border-radius: 0;
+}
+
+/* ── Status ─────────────────────────────────────────────────────────────── */
+.igd-search-status {
+	@include type-style('overline') {
+		margin: 0;
+	}
+	
+	padding: rem(26px);
+	color: light-dark(var(--ig-gray-900), var(--ig-gray-300));
+	
+	&:empty {
+		display: none;
+	}
+}
+
+.igd-search-query {
+	color: var(--igd-accent);
+}
+
+/* ── Results ─────────────────────────────────────────────────────────────── */
+.igd-search-results {
+	--background: transparent;
+	
+	gap: rem(16px);
+	
+	igc-list-item {
+		--item-border-radius: 0;
+		--item-background: transparent;
+		--item-background-hover: light-dark(var(--ig-gray-100), var(--ig-gray-50));
+		--item-background-focus: transparent;
+		--item-background-active: transparent;
+		--border-color: transparent;
+		
+		padding: 0;
+		gap: 0;
+		
+		&:focus-within {
+			--item-background-hover: transparent;
+		}
+	}
+	
+	&:last-of-type {
+		margin-block-end: 0;
+	}
+}
+
+.igd-search-results {
+	margin-block-end: rem(26px);
+}
+
+.igd-search-results,
+.igd-search-results--flat {
+	overflow-y: auto;
+	flex: 1 1 auto;
+	min-height: 0;
+}
+
+.igd-search-results--flat {
+	display: flex;
+	flex-direction: column;
+	padding-bottom: 1rem;
+}
+
+.igd-search-link {
+	display: grid;
+	align-items: center;
+	padding: rem(8px) rem(16px);
+	gap: rem(4px);
+	text-decoration: none;
+	color: inherit;
+	
+	&:focus-visible {
+		outline: transparent;
+		box-shadow: inset 0 0 0 rem(1px) var(--igd-accent);
+	}
+}
+
+.igd-search-result-title {
+	@include type-style('body-2') {
+		margin: 0;
+	}
+	
+	color: light-dark(var(--ig-gray-900), var(--ig-gray-300));
+
+	mark {
+		background: transparent;
+		color: var(--igd-accent);
+		padding: 0 1px;
+		border-radius: 2px;
+	}
+}
+
+.igd-search-kind {
+	@include type-style('caption') {
+		margin-block: 0;
+	}
+	
+	margin-inline-end: rem(8px);
+	padding: rem(4px);
+	border-radius: rem(2px);
+	color: light-dark(var(--ig-gray-700), var(--ig-gray-500));
+	background: light-dark(var(--ig-gray-200), #112031);
+}
+
+/* ── Category header (above each result list in the All tab) ─────────────── */
+.igd-search-category-header {
+	@include type-style('detail-2', false) {
+		margin: 0;
+	}
+	
+	display: inline-block;
+	color: light-dark(var(--ig-gray-900), var(--ig-gray-300));
+	margin-block-end: rem(16px);
+}
+
+.igd-search-more-btn {
+	--focus-visible-border-color: transparent;
+	--border-radius: #{rem(4px)};
+	--foreground: light-dark(var(--ig-gray-700), var(--ig-gray-500));
+	--icon-color: var(--igd-accent);
+	--icon-color-hover: var(--igd-accent);
+	--hover-background: transparent;
+	--hover-foreground: var(--igd-accent);
+	--focus-background: transparent;
+	--focus-foreground: var(--igd-accent);
+	--active-foreground: transparent;
+	--focus-hover-background: var(--igd-accent);
+	--focus-hover-foreground: transparent;
+	--focus-visible-foreground: var(--igd-accent);
+	--focus-visible-background: transparent;
+	
+	&::part(base) {
+		@include type-style('detail-2', false) {
+			margin: 0;
+		}
+		
+		&:hover,
+		&:focus-visible {
+			text-decoration: underline;
+		}
+	}
+	
+	display: flex;
+	justify-self: center;
+	margin-block-end: rem(36px);
+}
+

@@ -48,6 +48,10 @@
 		}
 	}
 	
+	:global(.globalnav__mobile-menu) {
+		top: -1px;
+	}
+	
 	// Class names below come from the injected headerHtml / static fallback markup.
 	// CSS Modules would hash them, breaking the match — :global() prevents that.
 	:global(.globalnav__primary) {

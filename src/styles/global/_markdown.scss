@@ -11,6 +11,10 @@
 		@include type-style('code', false) {
 			margin: 0;
 		};
+		
+		border: rem(1px) solid light-dark(var(--ig-gray-200), var(--ig-primary-900));
+		background-color: light-dark(var(--ig-gray-50), var(--ig-gray-50)) !important;
+		color: light-dark(var(--ig-gray-900), var(--ig-gray-800));
 	}
 	
 	> pre,
@@ -35,25 +39,23 @@
 			margin: 0;
 		};
 		
-		background: var(--ig-primary-50);
-		color: var(--ig-primary-800);
-		border: rem(1px) solid var(--ig-primary-100);
+		background: light-dark(var(--ig-primary-50), var(--ig-gray-50));
+		color: light-dark(var(--ig-primary-600), var(--ig-gray-500));
+		border: rem(1px) solid light-dark(var(--ig-gray-300), var(--ig-gray-200));
 		
-		padding: rem(2px) rem(4px);
+		padding: rem(4px) rem(8px);
 		border-radius: rem(4px);
 	}
 	
-	> ul {
+	> ul,
+	> ol,
+	> dl {
 		@include type-style('body-2') {
 			margin: 0;
 		}
 		
 		padding-inline-start: rem(18px);
 		padding-block: 0;
-		
-		::marker {
-			color: light-dark(var(--ig-gray--800), var(--ig-gray--200));
-		}
 		
 		li {
 			@include type-style('secondary-text', false) {
@@ -88,69 +90,27 @@
 		p, h1, h2, h3, h4, h5, h6:only-child {
 			margin: 0;
 		}
-		
-		
 	}
 	
 	// <ul> that is not inside <li>
-	ul:not(li ul) {
+	// <ol> that is not inside <li>
+	> ul:not(li ul),
+	> ol:not(li ol),
+	> dl:not(dd dl)
+	{
 		margin-bottom: rem(26px) !important;
 	}
 	
-	> ol {
-		@include type-style('body-2') {
-			margin: 0;
-		}
-		
-		list-style: none;
+	dl {
 		padding-inline-start: 0;
-		padding-block: 0;
-		counter-reset: ol-counter;
 		
-		li {
-			@include type-style('body-1') {
-				margin: 0;
-			};
-			
-			> strong {
-				@include type-style('subtitle-2') {
-					margin: 0;
-				};
-			}
-			
-			position: relative;
-			color: var(--ig-gray-700);
-			padding-block: rem(4px);
-			padding-inline-start: rem(16px);
-			counter-increment: ol-counter;
-			
-			&::before {
-				content: counter(ol-counter) '.';
-				position: absolute;
-				color: var(--ig-primary-500);
-				font-weight: 600;
-				line-height: inherit;
-				min-width: rem(16px);
-				text-align: end;
-				inset-inline-start: rem(-2px);
-			}
-			
-			// Nested list counter
-			ol {
-				counter-reset: ol-counter;
-				
-				li::before {
-					color: var(--ig-primary-400);
-				}
-			}
-			
-			> .shiki {
-				margin-top: rem(8px);
-			}
+		dt {
+			color: var(--ig-gray-900);
 		}
 		
-		p, h1, h2, h3, h4, h5, h6:only-child {
-			margin: 0;
+		dd {
+			margin-block-end: rem(16px);
+			color: var(--ig-gray-700);
 		}
 	}
 	
@@ -168,11 +128,6 @@
 			text-decoration: underline;
 		}
 		
-		margin-block-end: rem(26px);
-	}
-	
-	// <ol> that is not inside <li>
-	> ol:not(li ol) {
 		margin-block-end: rem(26px);
 	}
 	
@@ -217,6 +172,10 @@
 		display: flex;
 		align-items: center;
 		gap: rem(8px);
+		// CSS baseline: ensure in-page anchor links scroll the heading clear of
+		// the sticky subheader. The JS-driven scroll-padding-top set by DocsToc
+		// (using the measured subheader bottom) takes precedence when available.
+		scroll-margin-top: rem(18px);
 
 		&:hover .igd-anchor-link {
 			opacity: 1;
@@ -230,8 +189,25 @@
 
 		// igc-icon-button internal sizing
 		--ig-size: 1;
-		color: var(--ig-gray-500);
+		--foreground: var(--ig-secondary-500);
+		--background: light-dark(var(--ig-gray-100), var(--ig-secondary-900));
+		--border-color: light-dark(var(--ig-gray-100), var(--ig-secondary-500));
+		
+		--hover-foreground: var(--ig-secondary-500);
+		--hover-background: light-dark(var(--ig-gray-100), var(--ig-secondary-900));
+		
+		--focus-foreground: var(--ig-secondary-500);
+		--focus-background: light-dark(var(--ig-gray-100), var(--ig-secondary-900));
+		
+		--active-foreground: var(--ig-secondary-500);
+		--active-background: light-dark(var(--ig-gray-100), var(--ig-secondary-900));
 
+		&::part(focused) {
+			&:after {
+				display: none;
+			}
+		}
+		
 		&:focus-within,
 		&:focus-visible {
 			opacity: 1;
@@ -239,7 +215,7 @@
 		}
 
 		igc-icon {
-			--size: rem(18px);
+			--size: rem(24px);
 		}
 	}
 	
@@ -269,7 +245,8 @@
 
 		// Nested img should not double-margin
 		img,
-		video {
+		video,
+		p, h1, h2, h3, h4, h5, h6 {
 			margin-block-end: 0;
 		}
 	}
@@ -281,6 +258,7 @@
 			@include type-style('caption') { margin: 0; }
 		}
 
+		padding-block-start: rem(8px);
 		margin-block-end: rem(26px);
 		color: var(--ig-gray-600);
 		text-align: center;
@@ -288,10 +266,18 @@
 	
 	blockquote {
 		padding: rem(16px);
-		border-inline-start-width: rem(2px);
-		border-inline-start-color:  light-dark(var(--ig-gray-300), var(--ig-gray-700));
-		margin-inline-start: rem(16px);
+		border-inline-start-width: rem(1px);
+		border-inline-start-color:  var(--ig-gray-500);
 		margin-block-end: rem(26px);
+		
+		p:only-child {
+			@include type-style('detail-1', false) {
+				margin: 0;
+				font-style: italic;
+			}
+			
+			margin: 0;
+		}
 	}
 	
 	blockquote .small,
@@ -364,6 +350,12 @@
 			}
 		}
 	}
+	
+	> hr {
+		border: none;
+		border-block-start: rem(1px) solid light-dark(var(--ig-gray-200), var(--ig-gray-100));
+		margin-block: rem(26px);
+	}
 }
 
 // Theme property map tab switcher (used in component theming sections)
@@ -414,6 +406,8 @@
 	border: rem(1px) solid var(--igd-table-border-color);
 	margin-block-end: rem(26px);
 	width: 100%;
+	position: relative;
+	z-index: 0;
 	
 	table {
 		font-family: inherit;

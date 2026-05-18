@@ -51,7 +51,16 @@ export interface Props {
   tabs?: SearchTab[];
   /** Maximum results per category shown in the "All" tab. Defaults to 10 */
   allTabLimit?: number;
+  /** Current platform key (angular, react, blazor, web-components). Used to show the platform logo in the scope selector. */
+  platform?: string;
 }
+
+const PLATFORM_ICONS: Record<string, string> = {
+  angular: 'angular-logo',
+  react: 'react-logo',
+  blazor: 'blazor-logo',
+  'web-components': 'wc-logo',
+};
 
 const {
   class: className,
@@ -60,9 +69,11 @@ const {
   showScope = false,
   tabs = [],
   allTabLimit = 10,
+  platform = '',
 } = Astro.props;
 
-const ctrlKey = 'Ctrl';
+const platformIcon = platform ? (PLATFORM_ICONS[platform] ?? null) : null;
+
 // Strip any origin (scheme + host) from BASE_URL so only the path prefix is
 // used. When Astro builds in SSG mode the Node.js process may have
 // process.env.BASE_URL set to a full URL (e.g. "http://localhost:4567") which
@@ -82,6 +93,7 @@ const resolvedIndexUrl = indexUrl ?? `${basePath}api-search-index/manifest.json`
   data-tabs={JSON.stringify(tabs)}
   data-all-tab-limit={allTabLimit}
   data-show-scope={showScope ? 'true' : 'false'}
+  data-platform-icon={platformIcon ?? ''}
 >
   <button
     data-open-modal
@@ -91,68 +103,47 @@ const resolvedIndexUrl = indexUrl ?? `${basePath}api-search-index/manifest.json`
     class="search-trigger"
 
   >
-    <svg aria-hidden="true" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
+    <igc-icon name="search" collection="docs" aria-hidden="true"></igc-icon>
     <span class="search-trigger__lable" aria-hidden="true">{placeholder}</span>
+
     <kbd class="search-trigger__hint" style="display: none;">
-      <span>{ctrlKey}</span><span>K</span>
+      <kbd>Ctrl</kbd><kbd>K</kbd>
     </kbd>
   </button>
 
-  <igc-dialog aria-label={placeholder} class="ig-search-dialog" hide-default-action close-on-outside-click>
-    <div class="ig-search-shell">
-      <header class="ig-search-header">
-        <igc-input
-          type="text"
-          class="ig-search-input"
-          placeholder={placeholder}
-          autocomplete="off"
-          outlined
-          aria-label={placeholder}
-        >
-          {showScope ? (
-            <igc-select slot="prefix" class="ig-search-scope" outlined aria-label="Search scope" value="current">
-              <igc-select-item value="current">Current package</igc-select-item>
-              <igc-select-item value="all">All packages</igc-select-item>
-            </igc-select>
-          ) : (
-            <svg slot="prefix" aria-hidden="true" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="11" cy="11" r="7"></circle>
-              <path d="m20 20-3.5-3.5"></path>
-            </svg>
-          )}
-          <igc-icon-button slot="suffix" class="ig-search-clear" variant="flat" type="button" aria-label="Clear search" hidden>
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M6 6 18 18 M18 6 6 18"></path>
-            </svg>
-          </igc-icon-button>
-        </igc-input>
-      </header>
+    <igc-dialog aria-label={placeholder} class="igd-search-dialog" hide-default-action close-on-outside-click>
+        <div class="igd-search-shell">
+            <header class="igd-search-header">
+                <igc-select slot="prefix" class="igd-search-scope" outlined aria-label="Search scope" value="current">
+                    {platformIcon && <igc-icon id="search-scope-trigger-icon" name={platformIcon} collection="docs" slot="prefix" aria-hidden="true"></igc-icon>}
+                    <igc-select-item value="current">
+                        <span data-scope-label>Current package</span>
+                    </igc-select-item>
+                    <igc-select-item value="all">All packages</igc-select-item>
+                </igc-select>
 
-      <igc-tabs class="ig-search-tabs" activation="manual" hidden></igc-tabs>
+                <igc-divider vertical></igc-divider>
 
-      <div class="ig-search-status" aria-live="polite"></div>
+                <igc-input
+                    type="text"
+                    class="igd-search-input"
+                    placeholder={placeholder}
+                    autocomplete="off"
+                    outlined
+                    aria-label={placeholder}
+                >
+                    <igc-icon name="search" collection="docs" slot="prefix" aria-hidden="true"></igc-icon>
+                    <igc-icon-button slot="suffix" class="igd-search-clear" variant="flat" type="button" aria-label="Clear search" name="clear" collection="docs" hidden></igc-icon-button>
+                </igc-input>
+            </header>
 
-      <igc-list class="ig-search-results"></igc-list>
-    </div>
-  </igc-dialog>
+            <div class="igd-search-status" aria-live="polite"></div>
+
+            <igc-tabs class="igd-search-tabs" activation="manual" hidden></igc-tabs>
+            <igc-list class="igd-search-results--flat" hidden></igc-list>
+        </div>
+    </igc-dialog>
 </api-search-advanced>
-
-<script is:inline>
-  /* Show the platform-correct keyboard shortcut hint after hydration. */
-  (() => {
-    const el = document.querySelector('api-search-advanced');
-    if (!el) return;
-    const openBtn = el.querySelector('button[data-open-modal]');
-    const shortcut = openBtn?.querySelector('kbd');
-    if (!openBtn || !(shortcut instanceof HTMLElement)) return;
-    const platformKey = shortcut.querySelector('kbd');
-    if (platformKey && /(Mac|iPhone|iPod|iPad)/i.test(navigator.platform)) {
-      platformKey.textContent = '\u2318';
-      openBtn.setAttribute('aria-keyshortcuts', 'Meta+K');
-    }
-    shortcut.style.display = '';
-  })();
-</script>
 
 <script>
   import {
@@ -162,12 +153,14 @@ const resolvedIndexUrl = indexUrl ?? `${basePath}api-search-index/manifest.json`
     IgcSelectComponent,
     IgcSelectItemComponent,
     IgcIconButtonComponent,
+    IgcIconComponent,
     IgcTabsComponent,
     IgcTabComponent,
     IgcListComponent,
     IgcListItemComponent,
-    IgcListHeaderComponent,
+    IgcDividerComponent,
   } from 'igniteui-webcomponents';
+  import '../../scripts/icon-registry';
 
   defineComponents(
     IgcInputComponent,
@@ -175,11 +168,12 @@ const resolvedIndexUrl = indexUrl ?? `${basePath}api-search-index/manifest.json`
     IgcSelectComponent,
     IgcSelectItemComponent,
     IgcIconButtonComponent,
+    IgcIconComponent,
     IgcTabsComponent,
     IgcTabComponent,
     IgcListComponent,
     IgcListItemComponent,
-    IgcListHeaderComponent,
+    IgcDividerComponent,
   );
 
   type IndexedPage = {
@@ -241,9 +235,11 @@ const resolvedIndexUrl = indexUrl ?? `${basePath}api-search-index/manifest.json`
     private input!: IgcInputComponent;
     private clearBtn!: IgcIconButtonComponent;
     private scopeSelect: IgcSelectComponent | null = null;
+    private scopeTriggerIcon: HTMLElement | null = null;
+    private platformIconName: string = '';
     private tabsEl!: IgcTabsComponent;
     private statusEl!: HTMLElement;
-    private resultsEl!: HTMLElement;
+    private flatListEl!: HTMLElement;
     private indexPromise: Promise<IndexedPage[]> | null = null;
     private currentTab: string = 'all';
     private currentMatches: Map<string, Match[]> = new Map();
@@ -285,12 +281,50 @@ const resolvedIndexUrl = indexUrl ?? `${basePath}api-search-index/manifest.json`
 
       const openBtn  = this.querySelector<HTMLButtonElement>('button[data-open-modal]')!;
       this.dialog    = this.querySelector<IgcDialogComponent>('igc-dialog')!;
-      this.input     = this.querySelector<IgcInputComponent>('igc-input.ig-search-input')!;
-      this.clearBtn  = this.querySelector<IgcIconButtonComponent>('.ig-search-clear')!;
-      this.scopeSelect = this.querySelector<IgcSelectComponent>('igc-select.ig-search-scope');
-      this.tabsEl    = this.querySelector<IgcTabsComponent>('igc-tabs.ig-search-tabs')!;
-      this.statusEl  = this.querySelector<HTMLElement>('.ig-search-status')!;
-      this.resultsEl = this.querySelector<HTMLElement>('.ig-search-results')!;
+      this.input     = this.querySelector<IgcInputComponent>('igc-input.igd-search-input')!;
+      this.clearBtn  = this.querySelector<IgcIconButtonComponent>('.igd-search-clear')!;
+      this.scopeSelect = this.querySelector<IgcSelectComponent>('igc-select.igd-search-scope');
+      this.scopeTriggerIcon = this.querySelector('#search-scope-trigger-icon');
+      this.platformIconName = this.dataset.platformIcon || '';
+      this.tabsEl    = this.querySelector<IgcTabsComponent>('igc-tabs.igd-search-tabs')!;
+      this.statusEl  = this.querySelector<HTMLElement>('.igd-search-status')!;
+      this.flatListEl = this.querySelector<HTMLElement>('.igd-search-results--flat')!;
+
+      // Update the keyboard shortcut hint for the current OS.
+      const shortcut = this.querySelector<HTMLElement>('kbd.search-trigger__hint');
+      if (shortcut) {
+        if (/Mac|iPhone|iPod|iPad/i.test(navigator.userAgent)) {
+          const modKey = shortcut.querySelector('kbd');
+          if (modKey) modKey.textContent = '\u2318';
+          openBtn.setAttribute('aria-keyshortcuts', 'Meta+K');
+        }
+        shortcut.style.display = '';
+      }
+
+      // Auto-detect platform icon from the enclosing docs-subheader-menu when not
+      // explicitly provided via the `platform` prop.
+      if (!this.platformIconName) {
+        const subheader = document.querySelector<HTMLElement>('docs-subheader-menu');
+        const detectedPlatform = subheader?.dataset.platform || '';
+        const ICONS: Record<string, string> = {
+          angular: 'angular-logo', react: 'react-logo',
+          blazor: 'blazor-logo', 'web-components': 'wc-logo',
+        };
+        this.platformIconName = ICONS[detectedPlatform] || '';
+      }
+
+      // Dynamically insert the trigger prefix icon when the platform was resolved
+      // at runtime (i.e. not server-side rendered via the explicit `platform` prop).
+      if (this.platformIconName && this.scopeSelect && !this.scopeTriggerIcon) {
+        const triggerIcon = document.createElement('igc-icon') as HTMLElement;
+        triggerIcon.id = 'search-scope-trigger-icon';
+        triggerIcon.setAttribute('name', this.platformIconName);
+        triggerIcon.setAttribute('collection', 'docs');
+        triggerIcon.setAttribute('slot', 'prefix');
+        triggerIcon.setAttribute('aria-hidden', 'true');
+        this.scopeSelect.prepend(triggerIcon);
+        this.scopeTriggerIcon = triggerIcon;
+      }
 
       if (this.showScope) {
         this.detectCurrentContext();
@@ -311,8 +345,8 @@ const resolvedIndexUrl = indexUrl ?? `${basePath}api-search-index/manifest.json`
         document.body.toggleAttribute('data-search-modal-open', false);
       });
 
-      // Close on result-link click (navigation)
-      this.resultsEl.addEventListener('click', (e) => {
+      // Close dialog when a result link is clicked — covers both tab panels and the flat list
+      this.querySelector<HTMLElement>('.igd-search-shell')!.addEventListener('click', (e) => {
         if ((e.target as Element).closest('a[href]')) {
           this.dialog.hide();
         }
@@ -332,12 +366,11 @@ const resolvedIndexUrl = indexUrl ?? `${basePath}api-search-index/manifest.json`
         this.onInput();
       });
 
+      // Track the active tab — igc-tabs handles content visibility automatically
       this.tabsEl.addEventListener('igcChange', (e) => {
         const tab = (e as CustomEvent<IgcTabComponent>).detail;
         const tabId = (tab as HTMLElement)?.dataset?.tabId || 'all';
-        if (tabId === this.currentTab) return;
         this.currentTab = tabId;
-        this.renderResults();
       });
 
       if (this.scopeSelect) {
@@ -363,7 +396,12 @@ const resolvedIndexUrl = indexUrl ?? `${basePath}api-search-index/manifest.json`
       const item = this.scopeSelect.querySelector<HTMLElement & { value: string; disabled: boolean }>('igc-select-item[value="current"]');
       if (!item) return;
       if (this.currentPkg && this.currentVersion) {
-        item.textContent = `${this.currentPkg} ${this.currentVersion}`;
+        const labelEl = item.querySelector('[data-scope-label]');
+        if (labelEl) {
+          labelEl.textContent = `${this.currentPkg} ${this.currentVersion}`;
+        } else {
+          item.textContent = `${this.currentPkg} ${this.currentVersion}`;
+        }
       } else {
         item.disabled = true;
         item.hidden = true;
@@ -452,7 +490,9 @@ const resolvedIndexUrl = indexUrl ?? `${basePath}api-search-index/manifest.json`
     private clearResults() {
       this.statusEl.textContent = '';
       this.tabsEl.hidden = true;
-      this.resultsEl.innerHTML = '';
+      this.tabsEl.innerHTML = '';
+      this.flatListEl.hidden = true;
+      this.flatListEl.innerHTML = '';
       this.currentMatches = new Map();
     }
 
@@ -678,77 +718,84 @@ const resolvedIndexUrl = indexUrl ?? `${basePath}api-search-index/manifest.json`
     private renderTabs() {
       const totalCount = Array.from(this.currentMatches.values()).reduce((s, l) => s + l.length, 0);
 
-      // If no categories configured, don't render tabs
+      // No-categories fallback: hide tabs, render a plain list
       if (this.categories.length === 0) {
         this.tabsEl.hidden = true;
+        this.tabsEl.innerHTML = '';
+        const list = this.currentMatches.get('__all__') ?? [];
+        this.flatListEl.innerHTML = list.map(m => this.matchHtml(m)).join('');
+        this.flatListEl.hidden = list.length === 0;
         return;
       }
 
+      this.flatListEl.hidden = true;
+      this.flatListEl.innerHTML = '';
+
+      // Build each igc-tab with its results embedded in the default slot (tab body)
       const tabsHtml: string[] = [];
-      tabsHtml.push(this.tabHtml('all', 'All', totalCount, this.currentTab === 'all'));
+
+      // "All" tab — truncated per category with "Show more" buttons
+      const allContent: string[] = [];
       for (const cat of this.categories) {
-        const count = this.currentMatches.get(cat.id)?.length ?? 0;
-        if (count === 0) continue;
-        tabsHtml.push(this.tabHtml(cat.id, cat.label, count, this.currentTab === cat.id));
+        const list = this.currentMatches.get(cat.id) ?? [];
+        if (list.length === 0) continue;
+        const slice = list.slice(0, this.allTabLimit);
+        const items = slice.map(m => this.matchHtml(m)).join('');
+        const moreBtn = list.length > slice.length
+          ? `<igc-button variant="flat" class="igd-search-more-btn" data-tab="${cat.id}">See` +
+              ` all ${list.length} ${escapeHtml(cat.label.toLowerCase())}` +
+            `</igc-button>`
+          : '';
+        allContent.push(
+          `<span class="igd-search-category-header">${escapeHtml(cat.label)}</span>` +
+          `<igc-list class="igd-search-results">${items}</igc-list>` +
+          moreBtn
+        );
       }
+      tabsHtml.push(
+        `<igc-tab data-tab-id="all" label="All"${this.currentTab === 'all' ? ' selected' : ''}>` +
+          `<span slot="suffix" class="igd-search-tab-count">/${totalCount}/</span>` +
+          allContent.join('') +
+        `</igc-tab>`
+      );
+
+      // Per-category tabs — full result list in each tab body
+      for (const cat of this.categories) {
+        const list = this.currentMatches.get(cat.id) ?? [];
+        if (list.length === 0) continue;
+        const isSelected = this.currentTab === cat.id;
+        tabsHtml.push(
+          `<igc-tab data-tab-id="${cat.id}" label="${escapeHtml(cat.label)}"${isSelected ? ' selected' : ''}>` +
+            `<span slot="suffix" class="igd-search-tab-count">/${list.length}/</span>` +
+            `<igc-list class="igd-search-results">${list.map(m => this.matchHtml(m)).join('')}</igc-list>` +
+          `</igc-tab>`
+        );
+      }
+
       this.tabsEl.innerHTML = tabsHtml.join('');
       this.tabsEl.hidden = totalCount === 0;
-    }
 
-    private tabHtml(id: string, label: string, count: number, selected: boolean): string {
-      return `<igc-tab data-tab-id="${id}" label="${escapeHtml(label)}"${selected ? ' selected' : ''}><span slot="suffix" class="ig-search-tab-count">${count}</span></igc-tab>`;
-    }
-
-    private renderResults() {
-      const totalCount = Array.from(this.currentMatches.values()).reduce((s, l) => s + l.length, 0);
-      if (totalCount === 0) {
-        this.statusEl.textContent = this.currentQuery
-          ? `No results for "${this.currentQuery}".`
-          : 'No results.';
-        this.resultsEl.replaceChildren();
-        return;
-      }
-
-      this.statusEl.textContent = '';
-
-      const rendered: string[] = [];
-
-      if (this.categories.length === 0) {
-        // No tabs — render all results in one flat list
-        const list = this.currentMatches.get('__all__') ?? [];
-        for (const m of list) rendered.push(this.matchHtml(m));
-      } else if (this.currentTab === 'all') {
-        for (const cat of this.categories) {
-          const list = this.currentMatches.get(cat.id) ?? [];
-          if (list.length === 0) continue;
-          rendered.push(`<igc-list-header>${escapeHtml(cat.label)}</igc-list-header>`);
-          const slice = list.slice(0, this.allTabLimit);
-          for (const m of slice) rendered.push(this.matchHtml(m));
-          if (list.length > slice.length) {
-            rendered.push(
-              `<igc-list-item class="ig-search-more"><button type="button" class="ig-search-more-btn" data-tab="${cat.id}">
-                Show all ${list.length} ${escapeHtml(cat.label.toLowerCase())}
-              </button></igc-list-item>`
-            );
-          }
-        }
-      } else {
-        const list = this.currentMatches.get(this.currentTab) ?? [];
-        for (const m of list) rendered.push(this.matchHtml(m));
-      }
-
-      this.resultsEl.innerHTML = rendered.join('');
-
-      this.resultsEl.querySelectorAll<HTMLButtonElement>('.ig-search-more-btn').forEach((btn) => {
+      // Wire "Show more" buttons — select the target tab (its content is already rendered)
+      this.tabsEl.querySelectorAll<HTMLButtonElement>('.igd-search-more-btn').forEach((btn) => {
         btn.addEventListener('click', () => {
           const tabId = btn.dataset.tab!;
           this.currentTab = tabId;
           const tabEl = this.tabsEl.querySelector<HTMLElement>(`igc-tab[data-tab-id="${tabId}"]`);
           if (tabEl) this.tabsEl.select(tabEl as any);
-          this.renderResults();
-          this.resultsEl.scrollTop = 0;
         });
       });
+    }
+
+    private renderResults() {
+      const totalCount = Array.from(this.currentMatches.values()).reduce((s, l) => s + l.length, 0);
+      if (totalCount === 0) {
+        this.statusEl.innerHTML = this.currentQuery
+          ? `No results for "<strong class="igd-search-query">${escapeHtml(this.currentQuery)}</strong>".`
+          : 'No results.';
+      } else {
+        this.statusEl.textContent = '';
+      }
+      // Content is embedded inside igc-tab bodies by renderTabs(); nothing extra to do here.
     }
 
     private matchHtml(m: Match): string {
@@ -756,13 +803,14 @@ const resolvedIndexUrl = indexUrl ?? `${basePath}api-search-index/manifest.json`
       const nameCategories = this.categories.filter(c => c.kindCodes.includes('__name__'));
       const isNameMatch = nameCategories.some(c => c.id === m.category);
       const subtitle = isNameMatch || m.category === '__all__'
-        ? `<span class="ig-search-kind">${escapeHtml(m.packageLabel)}</span>`
-        : `<span class="ig-search-kind">${escapeHtml(m.packageLabel)}</span><span class="ig-search-meta">in ${escapeHtml(m.pageName)}</span>`;
+        ? `<span class="igd-search-kind">${escapeHtml(m.packageLabel)}</span>`
+        : `<span class="igd-search-kind">${escapeHtml(m.packageLabel)}</span><span class="igd-search-meta">in ${escapeHtml(m.pageName)}</span>`;
       return `<igc-list-item>
-        <a href="${m.url}" class="ig-search-link" slot="title">
-          <span class="ig-search-result-title">${highlightedName}</span>
+        <a href="${m.url}" class="igd-search-link">
+          <span class="igd-search-result-title">${highlightedName}</span>
+          <span class="igd-search-result-sub">${subtitle}</span>
         </a>
-        <span slot="subtitle" class="ig-search-result-sub">${subtitle}</span>
+        
       </igc-list-item>`;
     }
   }

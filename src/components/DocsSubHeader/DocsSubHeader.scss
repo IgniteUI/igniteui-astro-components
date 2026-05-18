@@ -83,32 +83,76 @@
 	> igc-select:first-of-type {
 		margin-inline-start: auto;
 	}
+	
+	&:last-child {
+		margin-inline-end: rem(32px);
+	}
 }
 
-// Sidebar toggle button — only visible on tablet, sits inside .igd-logo
+// Sidebar toggle button — only visible on tablet/mobile (when the sidebar is hidden).
+// Rendered as igc-icon-button; styled via CSS custom properties.
 .subheader-sidebar-toggle {
 	display: none;
-	margin-inline-start: auto;
+
+	--foreground: light-dark(var(--ig-gray-700), var(--ig-gray-300));
+	--background: transparent;
+	--border-color: transparent;
+
+	--hover-foreground: var(--igd-accent);
+	--hover-background: transparent;
+
+	--focus-foreground: var(--igd-accent);
+	--focus-background: transparent;
+
+	--active-foreground: var(--igd-accent);
+	--active-background: transparent;
 
 	@media (max-width: #{$bp-tablet-max}) {
 		display: flex;
-		align-items: center;
-		justify-content: center;
-		width: rem(44px);
-		height: rem(44px);
 		flex-shrink: 0;
-		background: transparent;
-		border: none;
-		color: light-dark(var(--ig-gray-700), var(--ig-gray-300));
-		cursor: pointer;
+	}
+}
 
-		&:hover {
-			color: var(--igd-accent);
+// Theme toggle: show sun in dark mode, moon in light mode.
+.subheader-theme-toggle {
+	--foreground: light-dark(var(--ig-gray-900), var(--ig-gray-900));
+	--background: transparent;
+	--border-color: transparent;
+	
+	--hover-foreground: var(--ig-primary-100);
+	--hover-background: transparent;
+	
+	--focus-foreground: var(--ig-primary-100);
+	--focus-background: transparent;
+	
+	--active-foreground: var(--ig-primary-100);
+	--active-background: transparent;
+	
+	.theme-icon {
+		display: flex;
+	}
+
+	.theme-icon--moon {
+		display: none;
+	}
+
+	:root[data-theme='dark'] & {
+		.theme-icon--sun {
+			display: flex;
 		}
 
-		&:focus-visible {
-			outline: none;
-			box-shadow: inset 0 0 0 1px var(--igd-accent);
+		.theme-icon--moon {
+			display: none;
+		}
+	}
+
+	:root:not([data-theme='dark']) & {
+		.theme-icon--sun {
+			display: none;
+		}
+
+		.theme-icon--moon {
+			display: flex;
 		}
 	}
 }

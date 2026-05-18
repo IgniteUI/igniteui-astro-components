@@ -79,7 +79,6 @@ igc-tab {
 }
 
 // TODO Log issue in the component this is not suppose to be affected by the ig-typography
-
 igc-tab::part(content) {
 	@include type-style('subtitle-1') {
 		margin: 0;

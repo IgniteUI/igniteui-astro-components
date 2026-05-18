@@ -18,7 +18,16 @@ import Search from '../Search/Search.astro';
 import type { SidebarEntry } from '../../lib/sidebar/types';
 import { getBreadcrumb } from '../../lib/sidebar/helpers';
 import logoRaw from '../../assets/ig-logo.svg?raw';
+import moonRaw from '../../assets/icons/moon.svg?raw';
+import sunRaw from '../../assets/icons/sun.svg?raw';
 import './DocsSubHeader.scss';
+
+const PLATFORM_ICONS: Record<string, string> = {
+  angular: 'angular-logo',
+  react: 'react-logo',
+  blazor: 'blazor-logo',
+  'web-components': 'wc-logo',
+};
 
 interface ProductLink {
   label: string;
@@ -81,6 +90,7 @@ const {
 } = Astro.props;
 const resolvedSiteTitle = siteTitleProp ?? siteTitle;
 const currentPlatform = virtualPlatform ?? null;
+const platformIcon = currentPlatform ? (PLATFORM_ICONS[currentPlatform] ?? null) : null;
 const resolvedLinks = (productLinksProp ?? productLinks) as ProductLink[];
 const filteredLinks = resolvedLinks.filter((l: ProductLink) => l.platform !== currentPlatform);
 
@@ -89,7 +99,7 @@ const sidebarCrumbs = currentSlug ? getBreadcrumb(resolvedSidebar, currentSlug) 
 const crumbs = sidebarCrumbs.length > 0 ? sidebarCrumbs : (pageTitle ? [pageTitle] : []);
 ---
 
-<docs-subheader-menu class="igd-docs-subheader">
+<docs-subheader-menu class="igd-docs-subheader" data-platform={currentPlatform ?? ''}>
 
         <div class="igd-logo">
             <Fragment set:html={logoRaw} />
@@ -103,6 +113,7 @@ const crumbs = sidebarCrumbs.length > 0 ? sidebarCrumbs : (pageTitle ? [pageTitl
             <!-- Package selector (optional) -->
             {packages && packages.length > 0 && (
                 <igc-select id="package-select" outlined value={selectedPackage} aria-label={packageLabel}>
+                    {platformIcon && <igc-icon name={platformIcon} collection="docs" slot="prefix" aria-hidden="true"></igc-icon>}
                     {packages.map((p) => (
                             <igc-select-item value={p}>{p}</igc-select-item>
                     ))}
@@ -127,8 +138,21 @@ const crumbs = sidebarCrumbs.length > 0 ? sidebarCrumbs : (pageTitle ? [pageTitl
                     data-theme-key={themeStorageKey}
                     aria-label="Toggle theme"
                     title="Toggle light/dark theme">
+                    <span class="theme-icon theme-icon--sun" aria-hidden="true"><Fragment set:html={sunRaw} /></span>
+                    <span class="theme-icon theme-icon--moon" aria-hidden="true"><Fragment set:html={moonRaw} /></span>
                 </igc-icon-button>
             )}
+
+            <!-- Hamburger — visible only when the sidebar is hidden (tablet + mobile) -->
+            <igc-icon-button
+                class="subheader-sidebar-toggle"
+                variant="flat"
+                data-sidebar-toggle
+                aria-label="Toggle sidebar navigation"
+                aria-expanded="false"
+                title="Toggle sidebar">
+                <igc-icon name="hamburger-menu" collection="docs" aria-hidden="true"></igc-icon>
+            </igc-icon-button>
 
             <!-- TODO WHY WE NEED THIS? -->
             <!--{filteredLinks.length > 0 && (-->
@@ -208,5 +232,11 @@ const crumbs = sidebarCrumbs.length > 0 ? sidebarCrumbs : (pageTitle ? [pageTitl
 
         customElements.define('docs-subheader-menu', DocsSubHeaderMenu);
     }
+</script>
+
+<script>
+    import { defineComponents, IgcIconComponent, IgcIconButtonComponent } from 'igniteui-webcomponents';
+    import '../../scripts/icon-registry';
+    defineComponents(IgcIconComponent, IgcIconButtonComponent);
 </script>
 

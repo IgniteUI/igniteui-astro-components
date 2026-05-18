@@ -70,17 +70,17 @@ igc-select-item {
 	margin-block: 0;
 }
 
+igc-select::part(container) {
+	@include type-style('body-2') {
+		margin: 0;
+	};
+}
+
 igc-select::part(base) {
 	border: var(--igd-app-outline);
 	box-shadow: none;
 	padding: rem(16px);
 	min-width: fit-content;
-}
-
-igc-select::part(base) {
-	@include type-style('body-2') {
-		margin: 0;
-	}
 }
 
 igc-icon-button[variant='outlined'] {

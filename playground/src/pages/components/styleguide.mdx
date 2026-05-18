@@ -88,11 +88,11 @@ unless the content contains very long unbreakable strings.
 ### Description list — `<dl>`
 
 <dl>
-  <dt><code>&lt;dt&gt;</code> — Description term</dt>
+  <dt>Description term</dt>
   <dd>The term being defined or described.</dd>
-  <dt><code>&lt;dd&gt;</code> — Description details</dt>
+  <dt>Description details</dt>
   <dd>The value or explanation associated with the preceding term.</dd>
-  <dt><code>&lt;dl&gt;</code> — Description list</dt>
+  <dt>Description list</dt>
   <dd>A container pairing one or more terms with their descriptions.</dd>
 </dl>
 
@@ -101,14 +101,9 @@ unless the content contains very long unbreakable strings.
 ## Quotes & citations
 
 <blockquote cite="https://developer.mozilla.org/en-US/docs/Web/HTML">
-  <p>
     HTML (HyperText Markup Language) is the most basic building block of the Web.
     It defines the meaning and structure of web content.
-  </p>
-  <footer>— MDN Web Docs, <cite>HTML: HyperText Markup Language</cite></footer>
 </blockquote>
-
-(`<blockquote>` with nested `<cite>`)
 
 As the spec states: <q cite="https://html.spec.whatwg.org/">the purpose of this specification
 is to define a language that can be used both for interactive documents and for automated
@@ -150,10 +145,9 @@ console.log(greet('World')); // Hello, World!
 ## Semantic & misc
 
 <figure>
-  <pre><code>npm install igniteui-webcomponents</code></pre>
+  a self-contained content block with an optional caption.
   <figcaption>
-    <code>&lt;figure&gt;</code> + <code>&lt;figcaption&gt;</code> — a self-contained
-    content block with an optional caption.
+    with an optional caption.
   </figcaption>
 </figure>
 
@@ -338,18 +332,17 @@ The `<video>` element plays media files directly in the browser.
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 0.4rem;
-    padding: 0.75rem 0.5rem;
-    border: 1px solid var(--sl-color-gray-6, #eee);
+    gap: 8px;
+    padding: 16px;
+    border: 1px solid light-dark(var(--ig-gray-300), var(--ig-gray-900));
     border-radius: 0.5rem;
     font-size: 0.7rem;
-    color: var(--sl-color-gray-3, #888);
     text-align: center;
     word-break: break-all;
   }
   .typography-icon-item igc-icon {
-    font-size: 1.5rem;
-    color: var(--sl-color-text, inherit);
+    --size: 32px;
+    color: inherit;
   }
 `}</style>
 

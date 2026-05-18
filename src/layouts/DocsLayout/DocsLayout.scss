@@ -9,6 +9,20 @@
 	margin: 0;
 	z-index: 0;
 	
+	@media (max-width: #{$bp-tablet-max}) {
+		--igd-page-layout-grid: 1fr;
+		--igd-page-padding: #{rem(38px)};
+		
+		.search-trigger__lable,
+		.search-trigger__hint {
+			display: none;
+		}
+		
+		.search-trigger {
+			border-inline-end: var(--igd-app-outline);
+		}
+	}
+	
 	@media (min-width: #{$bp-tablet-min}) {
 		justify-content: center;
 		padding-inline: 0;
@@ -120,7 +134,14 @@
 		padding-inline: rem(34px) rem(16px);
 		gap: rem(24px);
 	}
+	
+	@media (max-width: #{$bp-tablet-max}) {
+		padding-inline: rem(16px);
+		gap: rem(16px)
+	}
 }
+
+
 
 .content {
 	max-width: 60rem;

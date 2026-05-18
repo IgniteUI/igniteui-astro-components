@@ -3,6 +3,27 @@
 @use 'igniteui-theming/sass/elevations/presets' as *;
 @use 'global' as *;
 
+// Establish the CSS cascade layer order.
+//
+// Bootstrap (v3 / v4) is injected into the page by platform.ts as an @import
+// wrapped in layer(bootstrap). Without this declaration the browser would
+// still create the layer on first encounter, but the ORDER would be undefined
+// relative to our own unlayered rules — meaning Bootstrap could win.
+//
+// By declaring the layer order here (before any Bootstrap stylesheet loads)
+// we guarantee that ANY unlayered rule — all of our ig-theme.scss /
+// DocsLayout.scss styles — wins over everything inside the bootstrap layer,
+// regardless of selector specificity.
+//
+// Rule: lower layers lose to higher layers, and unlayered rules beat all layers.
+@layer bootstrap;
+
+// Restore browser default (16px). Bootstrap 3 sets html { font-size: 10px }
+// inside @layer(bootstrap) which would break all rem-based sizing without this.
+html {
+	font-size: 16px;
+}
+
 // Define font CSS custom properties so components can reference or override them.
 // The actual @font-face rules come from @fontsource-variable (imported in DocsLayout.astro).
 :root {
@@ -68,9 +89,14 @@ igc-icon {
 // Global scrollbar styling.
 // scrollbar-width / scrollbar-color: standards-based (Firefox, Chrome 121+).
 // ::-webkit-scrollbar-*: legacy WebKit/Blink fallback (older Chrome/Safari/Edge).
+//
+// ::-webkit-scrollbar pseudo-elements don't inherit color-scheme from the DOM,
+// so light-dark() never resolves correctly inside them. Instead we use
+// --igd-scrollbar-thumb, set per theme in _palette.scss, so both the
+// standards-based and webkit rules share the same resolved value.
 * {
 	scrollbar-width: thin;
-	scrollbar-color: light-dark(var(--ig-gray-300), var(--ig-gray-800)) transparent;
+	scrollbar-color: var(--igd-scrollbar-thumb) transparent;
 }
 
 ::-webkit-scrollbar {
@@ -83,6 +109,6 @@ igc-icon {
 }
 
 ::-webkit-scrollbar-thumb {
-	background-color: light-dark(var(--ig-gray-300), var(--ig-gray-800));
+	background-color: var(--igd-scrollbar-thumb);
 	border-radius: rem(5px);
 }

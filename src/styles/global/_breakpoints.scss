@@ -37,12 +37,12 @@ $bp-tablet-min: #{rem(768px)};
 /// Start of desktop (≥ 1024px)
 $bp-desktop-min: #{rem(1024px)};
 
-/// Start of large-desktop (≥ 1440px)
-$bp-large-desktop-min: #{rem(1440px)};
+/// Start of large-desktop (≥ 1280px)
+$bp-large-desktop-min: #{rem(1280px)};
 
 /// Layout-specific
 /// Below this the sidebar becomes a slide-in overlay (< 1300px)
-$bp-sidebar-max: #{rem(1299px)};
+$bp-sidebar-max: #{rem(1600px)};
 
 /// At this and above the sidebar is always visible (≥ 1300px)
 $bp-sidebar-min: #{rem(1400px)};

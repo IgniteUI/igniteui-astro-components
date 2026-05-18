@@ -1,1 +1,18 @@
 @use '../../styles/global/search-shared' as *;
+
+.search-dialog {
+	@include search-dialog-base-styles;
+	background: var(--igd-layout-sections-bg);
+	color: inherit;
+	border: none;
+	padding: 0;
+
+	&:focus-visible {
+		outline: none;
+	}
+
+	&::backdrop {
+		@include search-dialog-backdrop;
+		@include search-dialog-backdrop-open;
+	}
+}

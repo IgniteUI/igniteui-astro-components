@@ -22,7 +22,7 @@ import './Search.scss';
 >
     <igc-icon name="search" collection="docs" aria-hidden="true"></igc-icon>
     <span class="search-trigger__label">Search</span>
-    <span class="search-trigger__hint"><span>Ctrl</span>K</span>
+    <kbd class="search-trigger__hint" style="display:none;"><kbd>Ctrl</kbd><kbd>K</kbd></kbd>
 </button>
 
 <script>
@@ -32,7 +32,8 @@ import './Search.scss';
 </script>
 
 <dialog id="search-dialog" class="search-dialog" aria-label="Search">
-  <div class="search-dialog-inner">
+  <div class="igd-search-shell">
+    <div class="igd-search-status" aria-live="polite"></div>
     <div id="search-pagefind"></div>
   </div>
 </dialog>
@@ -103,6 +104,19 @@ import './Search.scss';
   if (!_w.__searchListeners) {
     _w.__searchListeners = true;
 
+    function updateSearchHint() {
+      const hint = document.querySelector<HTMLElement>('kbd.search-trigger__hint');
+      if (!hint) return;
+      const isMac = /Mac|iPhone|iPod|iPad/i.test(navigator.userAgent);
+      const modKey = hint.querySelector('kbd');
+      if (modKey) modKey.textContent = isMac ? '\u2318' : 'Ctrl';
+      const btn = document.getElementById('search-trigger');
+      btn?.setAttribute('aria-keyshortcuts', isMac ? 'Meta+K' : 'Control+K');
+      btn?.setAttribute('title', isMac ? 'Search (\u2318K)' : 'Search (Ctrl+K)');
+      hint.style.display = '';
+    }
+    updateSearchHint();
+
     // Declarative show-modal via commandfor fires a `command` event on the dialog —
     // use it to load page find and focus the input.
     document.addEventListener('command', async (e: Event) => {
@@ -131,6 +145,7 @@ import './Search.scss';
     document.addEventListener('astro:page-load', () => {
       const dialog = document.getElementById('search-dialog') as HTMLDialogElement | null;
       dialog?.close();
+      updateSearchHint();
     });
   }
 </script>
