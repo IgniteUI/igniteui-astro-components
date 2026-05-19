@@ -122,5 +122,5 @@
 	--igd-table-border-color: light-dark(var(--ig-gray-200), var(--ig-gray-200));
 	
 	--igd-table-header-bg: var(--igd-layout-sections-bg);
-	--igd-table-header-fg: var(--ig-gray-900);
+	--igd-table-header-fg: light-dark(var(--ig-gray-900), var(--ig-gray-700));
 }

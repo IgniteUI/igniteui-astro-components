@@ -509,6 +509,20 @@
 				background: var(--igd-table-border-color);
 			}
 		}
+
+		// Double bottom border on the sticky header row when scrolled vertically.
+		.igd-table-wrapper[data-scrolled-y] & thead th::before {
+			height: rem(3px);
+			background: linear-gradient(
+				to bottom,
+				var(--igd-table-border-color) 0,
+				var(--igd-table-border-color) rem(1px),
+				transparent rem(1px),
+				transparent rem(2px),
+				var(--igd-table-border-color) rem(2px),
+				var(--igd-table-border-color) rem(3px)
+			);
+		}
 		
 		// Sticky first column — each cell needs its own background so content doesn't bleed through.
 		th:first-child {
@@ -533,6 +547,21 @@
 				height: 100%;
 				background: var(--igd-table-border-color);
 			}
+		}
+		
+		// Double right border on the sticky first column when scrolled horizontally.
+		.igd-table-wrapper[data-scrolled-x] & th:first-child::after,
+		.igd-table-wrapper[data-scrolled-x] & td:first-child::after {
+			width: rem(3px);
+			background: linear-gradient(
+				to right,
+				var(--igd-table-border-color) 0,
+				var(--igd-table-border-color) rem(1px),
+				transparent rem(1px),
+				transparent rem(2px),
+				var(--igd-table-border-color) rem(2px),
+				var(--igd-table-border-color) rem(3px)
+			);
 		}
 		
 		// Sticky first header cell sits above both axes — needs header background.

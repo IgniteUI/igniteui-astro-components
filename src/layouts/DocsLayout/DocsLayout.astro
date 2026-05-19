@@ -188,6 +188,21 @@ type HeadEntry = { tag: string; attrs?: Record<string, string | boolean | undefi
     }
     document.addEventListener('astro:page-load', initSidebarHeights);
     initSidebarHeights();
+
+    // Toggle data-scrolled-y / data-scrolled-x on each .igd-table-wrapper
+    // so the sticky header/column can show a double border while scrolled.
+    function initTableScrollStates() {
+      document.querySelectorAll('.igd-table-wrapper').forEach(function(wrapper) {
+        function update() {
+          wrapper.toggleAttribute('data-scrolled-y', wrapper.scrollTop > 0);
+          wrapper.toggleAttribute('data-scrolled-x', wrapper.scrollLeft > 0);
+        }
+        wrapper.addEventListener('scroll', update, { passive: true });
+        update();
+      });
+    }
+    document.addEventListener('astro:page-load', initTableScrollStates);
+    initTableScrollStates();
   </script>
 </head>
 <body>
