@@ -8,7 +8,7 @@
 import type { SidebarEntry } from '../../src/lib/sidebar/types';
 import type { SearchTab } from '../../src/components/SearchAdvanced/SearchAdvanced.astro';
 
-export const SITE_TITLE = 'Components Playground';
+export const SITE_TITLE = 'IgniteUI';
 
 export const PRODUCT_LINKS = [
   { label: 'Angular',        href: '#', platform: 'angular' },

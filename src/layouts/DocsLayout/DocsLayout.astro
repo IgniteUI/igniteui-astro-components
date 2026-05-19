@@ -13,7 +13,6 @@ import MobileSidebarToggle from '../../components/MobileSidebarToggle/MobileSide
 import { widgetScriptSrc, platform as virtualPlatform } from 'virtual:docs-template/nav-html';
 import { title as siteTitle, headEntries } from 'virtual:docs-template/site-meta';
 import '../../styles/theme.scss';
-import '../../styles/custom.scss';
 import './DocsLayout.scss';
 
 export interface Props {
@@ -99,7 +98,7 @@ type HeadEntry = { tag: string; attrs?: Record<string, string | boolean | undefi
         });
       }
     });
-    
+
     // Preserve dynamically-injected <style> tags across View Transitions.
     // Only styles added by JS at runtime (e.g. the IG nav widget) need
     // preserving — Astro re-injects its own component styles on every page

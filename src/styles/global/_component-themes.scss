@@ -1,3 +1,4 @@
+@use '../../styles/global/breakpoints' as *;
 @use 'igniteui-theming' as *;
 
 
@@ -62,8 +63,28 @@ igc-select {
 	--ig-select-toggle-button-foreground-disabled: var(--ig-gray-400);
 }
 
-igc-select::part(native-input) {
-	field-sizing: content;
+igc-select::part(toggle-icon) {
+	padding-inline-start: 0;
+}
+
+
+@media (max-width: #{$bp-mobile-max}) {
+	.igd-version-select {
+		max-width: rem(90px);
+	}
+}
+
+@media (min-width: #{$bp-mobile-max}) {
+	.igd-package-select::part(native-input),
+	.igd-version-select::part(native-input) {
+		field-sizing: content;
+		
+		&::part(base) {
+			min-width: 100%;
+		}
+	}
+	
+
 }
 
 igc-select-item {

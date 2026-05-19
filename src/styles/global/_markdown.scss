@@ -1,3 +1,4 @@
+@use '../../styles/global/breakpoints' as *;
 @use 'igniteui-theming/sass/typography' as *;
 
 // 'code' and 'small' are custom type-scale entries — their CSS vars are
@@ -355,6 +356,10 @@
 		border: none;
 		border-block-start: rem(1px) solid light-dark(var(--ig-gray-200), var(--ig-gray-100));
 		margin-block: rem(26px);
+	}
+	
+	@media (max-width: #{$bp-mobile-horizontal-max}) {
+		padding-inline: rem(32px);
 	}
 }
 

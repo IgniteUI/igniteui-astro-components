@@ -90,13 +90,12 @@ igc-icon {
 // scrollbar-width / scrollbar-color: standards-based (Firefox, Chrome 121+).
 // ::-webkit-scrollbar-*: legacy WebKit/Blink fallback (older Chrome/Safari/Edge).
 //
-// ::-webkit-scrollbar pseudo-elements don't inherit color-scheme from the DOM,
-// so light-dark() never resolves correctly inside them. Instead we use
-// --igd-scrollbar-thumb, set per theme in _palette.scss, so both the
-// standards-based and webkit rules share the same resolved value.
+// ::-webkit-scrollbar pseudo-elements don't reliably inherit CSS custom properties
+// when applied to the document-level scrollbar. We therefore add explicit scoped
+// overrides for dark mode below in addition to the variable-based defaults.
 * {
 	scrollbar-width: thin;
-	scrollbar-color: var(--igd-scrollbar-thumb) transparent;
+	scrollbar-color: var(--igd-scrollbar-thumb) var(--igd-scrollbar-track);
 }
 
 ::-webkit-scrollbar {
@@ -105,10 +104,24 @@ igc-icon {
 }
 
 ::-webkit-scrollbar-track {
-	background: transparent;
+	background-color: var(--igd-scrollbar-track);
 }
 
 ::-webkit-scrollbar-thumb {
 	background-color: var(--igd-scrollbar-thumb);
 	border-radius: rem(5px);
+}
+
+// Explicit dark-mode overrides — bypass CSS variable resolution issues in
+// ::-webkit-scrollbar pseudo-elements.
+// html[data-theme='dark'] targets the document scrollbar (html is the scroller).
+// [data-theme='dark'] ::-webkit-scrollbar-* targets inner scrollable elements.
+html[data-theme='dark']::-webkit-scrollbar-track,
+[data-theme='dark'] ::-webkit-scrollbar-track {
+	background-color: rgba(255, 255, 255, 0.05);
+}
+
+html[data-theme='dark']::-webkit-scrollbar-thumb,
+[data-theme='dark'] ::-webkit-scrollbar-thumb {
+	background-color: rgba(255, 255, 255, 0.25);
 }

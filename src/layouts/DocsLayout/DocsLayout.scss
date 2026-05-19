@@ -26,10 +26,14 @@
 	@media (min-width: #{$bp-tablet-min}) {
 		justify-content: center;
 		padding-inline: 0;
+		
+		.igd-docs-subheader {
+			--igd-page-layout-grid: auto 1fr;
+		}
 	}
 	
 	@media (max-width: #{$bp-mobile-horizontal-max}) {
-		padding-inline: rem(32px);
+		padding-inline: 0;
 	}
 	
 	&:not(:has(.igd-right-sidebar)) {
@@ -51,7 +55,7 @@
 	}
 	
 	@media (max-width: #{$bp-mobile-horizontal-max}) {
-		padding-inline: rem(32px);
+		padding-inline: 0;
 	}
 	
 	&:not(:has(.igd-right-sidebar)) {
@@ -118,6 +122,10 @@
 	border-inline: var(--igd-app-outline);
 	width: clamp(rem(300px), 100%, rem(940px));
 	margin-inline-start: auto;
+	
+	@media (max-width: #{$bp-mobile-horizontal-max}) {
+		border: none;
+	}
 }
 
 .igd-main-content__page + aside {
@@ -139,9 +147,15 @@
 		padding-inline: rem(16px);
 		gap: rem(16px)
 	}
+	
+	@media (max-width: #{$bp-mobile-horizontal-max}) {
+		padding: 0;
+		
+		aside {
+			display: none;
+		}
+	}
 }
-
-
 
 .content {
 	max-width: 60rem;

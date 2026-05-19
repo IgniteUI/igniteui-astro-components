@@ -17,17 +17,22 @@
 
 	// On tablet the sidebar column collapses — logo+toggle share their column,
 	// search fills the remainder. No extra column needed.
-	@media (max-width: #{$bp-tablet-max}) {
-		grid-template-columns: auto 1fr;
+	@media (max-width: #{$bp-mobile-horizontal-max}) {
+		.igd-docs-subheader {
+			--igd-page-layout-grid: 1fr;
+		}
+		
+		padding-inline-end: rem(16px);
 	}
-
+	
 	.igd-logo {
 		display: flex;
 		align-items: center;
 		height: 100%;
+		padding-inline: rem(32px) rem(16px);
 
-		@media (min-width: #{$bp-mobile-horizontal-max}) {
-			padding-inline: var(--igd-padding-lg);
+		@media (max-width: #{$bp-mobile-horizontal-max}) {
+			display: none;
 		}
 
 		> svg {
@@ -86,6 +91,12 @@
 	
 	&:last-child {
 		margin-inline-end: rem(32px);
+	}
+	
+	@media (max-width: #{$bp-mobile-horizontal-max}) {
+		&:last-child {
+			margin-inline-end: 0;
+		}
 	}
 }
 
