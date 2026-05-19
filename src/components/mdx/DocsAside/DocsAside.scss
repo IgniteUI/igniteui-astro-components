@@ -21,10 +21,6 @@ blockquote {
 	padding: var(--igd-aside-padding);
 	border-radius: var(--igd-aside-border-radius);
 	margin-block-end: var(--igd-aside-margin-bottom);
-	
-	code {
-		color: inherit;
-	}
 }
 
 .igd-aside__title {
@@ -58,10 +54,6 @@ blockquote {
 	.igd-aside__content {
 		color: var(--igd-aside-info-content);
 	}
-	
-	code {
-		background: var(--igd-aside-info-code-background);
-	}
 }
 
 .igd-aside--warning {
@@ -79,10 +71,6 @@ blockquote {
 	.igd-aside__content {
 		color: var(--igd-aside-warning-content);
 	}
-	
-	code {
-		background: var(--igd-aside-warning-code-background);
-	}
 }
 
 .igd-aside--note {
@@ -99,10 +87,6 @@ blockquote {
 	
 	.igd-aside__content {
 		color: var(--igd-aside-note-content);
-	}
-	
-	code {
-		background: var(--igd-aside-note-code-background);
 	}
 }
 
