@@ -38,6 +38,11 @@
 		// This is the height of the input in fluent theme + 8px padding
 		// TODO this can be made smart using a css variable to override the original height of the input and used here
 		min-height: rem(40px);
+		
+		
+		igc-icon {
+			color: light-dark(var(--ig-gray-800), var(--ig-gray-300));
+		}
 	}
 }
 

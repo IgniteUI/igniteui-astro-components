@@ -142,10 +142,16 @@ igc-tree-item[data-has-children] {
 	transition: transform 0.2s ease;
 }
 
+igc-tree-item[aria-expanded='false'] {
+	.tree-expand-icon {
+		color: var(--igd-accent);
+	}
+}
+
 igc-tree-item[aria-expanded='true'] {
 	.tree-expand-icon {
 		transform: rotate(0deg);
-		color: var(--igd-accent);
+		color: light-dark(var(--ig-gray-800), var(--ig-gray-300));
 	}
 }
 

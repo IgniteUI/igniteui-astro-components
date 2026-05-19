@@ -20,6 +20,16 @@
 	color: light-dark(var(--ig-gray-700), var(--ig-gray-400));
 }
 
+[data-theme='dark'] {
+	.docs-breadcrumb-list {
+		color: light-dark(var(--ig-gray-400), var(--ig-gray-700));
+	}
+	
+	.docs-breadcrumb-home {
+		color: light-dark(var(--ig-gray-600), var(--ig-gray-500));
+	}
+}
+
 .docs-breadcrumb-item {
 	display: flex;
 	align-items: center;
