@@ -17,7 +17,7 @@
 	gap: rem(4px);
 	list-style: none;
 	padding: 0;
-	color: var(--ig-gray-500);
+	color: light-dark(var(--ig-gray-700), var(--ig-gray-400));
 }
 
 .docs-breadcrumb-item {
@@ -29,8 +29,7 @@
 }
 
 .docs-breadcrumb-home {
-	font-weight: 600;
-	color: var(--ig-gray-700);
+	color: light-dark(var(--ig-gray-500), var(--ig-gray-600));
 	flex-shrink: 0;
 }
 
