@@ -1,0 +1,96 @@
+---
+/**
+ * MobileTocToggle
+ *
+ * Mobile-only sticky row rendered below the DocsSubHeader.
+ * Shows "On this page" with the current active heading and a chevron.
+ * Tapping it opens a dropdown containing the TOC links.
+ *
+ * Hidden on tablet and above — the full DocsToc sidebar is shown there.
+ */
+import type { MarkdownHeading } from 'astro';
+import DocsTree from '../DocsTree/DocsTree.astro';
+import { headingsToTreeNodes, type TocConfig } from '../DocsToc/toTreeNodes';
+import './MobileTocToggle.scss';
+
+interface Props {
+    headings?: MarkdownHeading[];
+    tocConfig?: TocConfig;
+    label?: string;
+}
+
+const { headings = [], tocConfig, label = 'On this page' } = Astro.props;
+const nodes = headingsToTreeNodes(headings, tocConfig);
+---
+
+{nodes.length > 0 && (
+    <div class="mobile-toc">
+        <button
+            class="mobile-toc__trigger"
+            id="mobile-toc-trigger"
+            aria-expanded="false"
+            aria-controls="mobile-toc-dropdown"
+        >
+            <span class="mobile-toc__label">{label}</span>
+            <span class="mobile-toc__active" id="mobile-toc-active" aria-hidden="true"></span>
+            <svg class="mobile-toc__chevron" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+        </button>
+
+        <div class="mobile-toc__dropdown" id="mobile-toc-dropdown" aria-hidden="true">
+            <nav aria-label={label}>
+                <DocsTree nodes={nodes} variant="toc" />
+            </nav>
+        </div>
+    </div>
+)}
+
+<script>
+    function initMobileToc() {
+        const trigger = document.getElementById('mobile-toc-trigger');
+        const dropdown = document.getElementById('mobile-toc-dropdown');
+        const activeLabel = document.getElementById('mobile-toc-active');
+        if (!trigger || !dropdown) return;
+
+        // Toggle open/close
+        trigger.addEventListener('click', () => {
+            const isOpen = dropdown.getAttribute('aria-hidden') === 'false';
+            dropdown.setAttribute('aria-hidden', String(isOpen));
+            trigger.setAttribute('aria-expanded', String(!isOpen));
+        });
+
+        // Close on link click
+        dropdown.addEventListener('click', (e) => {
+            if ((e.target as Element | null)?.closest('a')) {
+                dropdown.setAttribute('aria-hidden', 'true');
+                trigger.setAttribute('aria-expanded', 'false');
+            }
+        });
+
+        // Close on Escape
+        document.addEventListener('keyup', (e) => {
+            if (e.key === 'Escape' && dropdown.getAttribute('aria-hidden') === 'false') {
+                dropdown.setAttribute('aria-hidden', 'true');
+                trigger.setAttribute('aria-expanded', 'false');
+                trigger.focus();
+            }
+        });
+
+        // Sync active heading text from the desktop TOC scroll-spy.
+        // DocsToc sets aria-current="true" on the active anchor — observe that.
+        const syncActive = () => {
+            if (!activeLabel) return;
+            const active = document.querySelector<HTMLAnchorElement>(
+                '#mobile-toc-dropdown a[aria-current="true"]'
+            );
+            activeLabel.textContent = active?.textContent?.trim() ?? '';
+        };
+
+        const observer = new MutationObserver(syncActive);
+        observer.observe(dropdown, { subtree: true, attributeFilter: ['aria-current'] });
+        syncActive();
+    }
+
+    document.addEventListener('astro:page-load', initMobileToc);
+</script>

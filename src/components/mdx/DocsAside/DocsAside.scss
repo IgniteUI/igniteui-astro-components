@@ -107,18 +107,17 @@ blockquote {
 }
 
 // TYPOGRAPHY STYLES
-.ig-typography {
-	.igd-aside__title {
-		@include type-style('body-2') {
-			font-weight: bold;
-			margin: 0;
-		};
-		
-	}
+.igd-aside__title {
+	@include type-style('body-2') {
+		font-weight: bold;
+		margin: 0;
+	};
 	
-	.igd-aside__content {
-		@include type-style('detail-1', false) {
-			margin: 0;
-		}
+}
+
+.igd-aside__content {
+	@include type-style('detail-1', false) {
+		margin: 0;
 	}
 }
+

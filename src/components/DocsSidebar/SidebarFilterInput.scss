@@ -5,7 +5,7 @@ igc-input {
 	--ig-input-group-input-suffix-color--filled: light-dark(var(--ig-gray-900), var(--ig-gray-800));
 	--ig-input-group-input-suffix-color--focused: light-dark(var(--ig-gray-900), var(--ig-gray-800));
 	--ig-input-group-idle-text-color: light-dark(var(--ig-gray-900), var(--ig-gray-800));
-	--ig-input-group-filled-text-color: light-dark(var(--ig-gray-900), var(--ig-gray-50));
+	--ig-input-group-filled-text-color: light-dark(var(--ig-gray-900), var(--ig-gray-900));
 	--ig-input-group-placeholder-color: var(--ig-gray-500);
 	--ig-input-group-hover-placeholder-color: var(--ig-gray-500);
 	--ig-flat-button-hover-background: transparent;
@@ -20,7 +20,7 @@ igc-input {
 }
 
 igc-input::part(input) {
-	@include type-style('caption') {
+	@include type-style('body-2') {
 		margin: 0;
 	}
 }

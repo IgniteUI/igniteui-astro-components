@@ -10,18 +10,23 @@
 // still create the layer on first encounter, but the ORDER would be undefined
 // relative to our own unlayered rules — meaning Bootstrap could win.
 //
-// By declaring the layer order here (before any Bootstrap stylesheet loads)
-// we guarantee that ANY unlayered rule — all of our ig-theme.scss /
-// DocsLayout.scss styles — wins over everything inside the bootstrap layer,
-// regardless of selector specificity.
+// `components` holds every component-level stylesheet (DocsSubHeader, Search,
+// DocsSidebar, …). The layout-level overrides in DocsLayout.scss stay
+// UNLAYERED so they always beat component base styles regardless of import
+// order and even when component selectors have higher specificity.
 //
 // Rule: lower layers lose to higher layers, and unlayered rules beat all layers.
-@layer bootstrap;
+@layer bootstrap, components;
 
 // Restore browser default (16px). Bootstrap 3 sets html { font-size: 10px }
 // inside @layer(bootstrap) which would break all rem-based sizing without this.
 html {
 	font-size: 16px;
+	background: var(--igd-app-bg);
+}
+
+body {
+	scrollbar-gutter: stable;
 }
 
 // Define font CSS custom properties so components can reference or override them.
@@ -112,10 +117,23 @@ igc-icon {
 	border-radius: rem(5px);
 }
 
-// Explicit dark-mode overrides — bypass CSS variable resolution issues in
+// Explicit theme overrides — bypass CSS variable resolution issues in
 // ::-webkit-scrollbar pseudo-elements.
-// html[data-theme='dark'] targets the document scrollbar (html is the scroller).
-// [data-theme='dark'] ::-webkit-scrollbar-* targets inner scrollable elements.
+// html[data-theme='...'] targets the document scrollbar (html is the scroller).
+// [data-theme='...'] ::-webkit-scrollbar-* targets inner scrollable elements.
+
+// Light
+html[data-theme='light']::-webkit-scrollbar-track,
+[data-theme='light'] ::-webkit-scrollbar-track {
+	background-color: rgba(0, 0, 0, 0.05);
+}
+
+html[data-theme='light']::-webkit-scrollbar-thumb,
+[data-theme='light'] ::-webkit-scrollbar-thumb {
+	background-color: rgba(0, 0, 0, 0.25);
+}
+
+// Dark
 html[data-theme='dark']::-webkit-scrollbar-track,
 [data-theme='dark'] ::-webkit-scrollbar-track {
 	background-color: rgba(255, 255, 255, 0.05);

@@ -9,7 +9,7 @@ igc-tabs {
 		flex-grow: 1;
 	}
 	
-	--item-text-color: var(--ig-gray-800);
+	--item-text-color: light-dark(var(--ig-gray-900), var(--ig-gray-50));
 	--item-hover-color: var(--igd-accent);
 	--item-background: var(--igd-layout-sections-bg);
 	--item-hover-background: var(--igd-layout-sections-bg);
@@ -20,13 +20,13 @@ igc-tabs {
 	--item-active-hover-background: var(--igd-layout-sections-bg);
 	--indicator-color: var(--igd-accent);
 	
-	--button-color: var(--ig-gray-800);
+	--button-color: light-dark(var(--ig-gray-900), var(--ig-gray-50));
 	--button-hover-color: var(--igd-accent);
 	--button-background: var(--igd-layout-sections-bg);
 	--button-hover-background: var(--igd-layout-sections-bg);
 	
 	.igd-code-view__header-actions {
-		border-block: rem(1px) solid var(--ig-gray-300);
+		border-block: rem(1px) solid light-dark(var(--ig-gray-300), var(--ig-gray-200));
 	}
 	
 	.igd-sample-container {

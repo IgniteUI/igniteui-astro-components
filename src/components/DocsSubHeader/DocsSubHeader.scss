@@ -1,10 +1,14 @@
 @use 'igniteui-theming/sass/typography' as *;
-@use '../../styles/global/breakpoints' as *;
+
+@layer components {
 
 .igd-docs-subheader {
 	position: sticky;
 	inset: 0;
 	display: grid;
+	
+	// Subgrid: mirror the parent .igd-page-layout column tracks so the logo
+	// column aligns with the sidebar column at all breakpoints.
 	grid-template-columns: var(--igd-page-layout-grid);
 	align-items: center;
 	width: 100%;
@@ -15,31 +19,16 @@
 	z-index: 1;
 	background-color: var(--igd-layout-sections-bg);
 
-	// On tablet the sidebar column collapses — logo+toggle share their column,
-	// search fills the remainder. No extra column needed.
-	@media (max-width: #{$bp-mobile-horizontal-max}) {
-		.igd-docs-subheader {
-			--igd-page-layout-grid: 1fr;
-		}
-		
-		padding-inline-end: rem(16px);
-	}
-	
 	.igd-logo {
 		display: flex;
 		align-items: center;
 		height: 100%;
 		padding-inline: rem(32px) rem(16px);
 
-		@media (max-width: #{$bp-mobile-horizontal-max}) {
-			display: none;
-		}
-
 		> svg {
 			min-width: rem(79px);
 			height: rem(22px);
 			opacity: 0;
-			transform: translateY(-4px);
 			transition: opacity 200ms ease, transform 200ms ease;
 			position: absolute;
 
@@ -48,11 +37,13 @@
 			}
 		}
 
-		h1 {
+		> h1 {
+			@include type-style('body-2') {
+				margin: 0;
+			};
+			
 			opacity: 1;
-			transform: translateY(0);
 			transition: opacity 200ms ease, transform 200ms ease;
-			margin: 0;
 		}
 
 		border-inline-end: var(--igd-app-outline);
@@ -84,24 +75,17 @@
 	align-items: center;
 	height: 100%;
 	gap: rem(16px);
-	
+
 	> igc-select:first-of-type {
 		margin-inline-start: auto;
 	}
-	
+
 	&:last-child {
 		margin-inline-end: rem(32px);
 	}
-	
-	@media (max-width: #{$bp-mobile-horizontal-max}) {
-		&:last-child {
-			margin-inline-end: 0;
-		}
-	}
 }
 
-// Sidebar toggle button — only visible on tablet/mobile (when the sidebar is hidden).
-// Rendered as igc-icon-button; styled via CSS custom properties.
+// Hidden by default. DocsLayout.scss reveals it on tablet/mobile (when the sidebar is hidden).
 .subheader-sidebar-toggle {
 	display: none;
 
@@ -117,11 +101,6 @@
 
 	--active-foreground: var(--igd-accent);
 	--active-background: transparent;
-
-	@media (max-width: #{$bp-tablet-max}) {
-		display: flex;
-		flex-shrink: 0;
-	}
 }
 
 // Theme toggle: show sun in dark mode, moon in light mode.
@@ -167,3 +146,6 @@
 		}
 	}
 }
+
+}
+

@@ -9,6 +9,7 @@
  * in the <script> block below to use @infragistics/igniteui-webcomponents.
  */
 import { sidebar as sidebarData, trailingSlash as configuredTrailingSlash } from 'virtual:docs-template/site-meta';
+import logoRaw from '../../assets/ig-logo.svg?raw';
 import SidebarFilterInput from './SidebarFilterInput.astro';
 import './DocsSidebar.scss';
 import SidebarLabel from './SidebarLabel.astro';
@@ -43,6 +44,9 @@ const activeId = normalizeSlug(currentSlug);
 
 <sidebar-filter class="docs-sidebar" id="docs-sidebar" data-no-results="No topics match">
     <div class="sidebar-gutter">
+        <div class="sidebar-logo" aria-hidden="true">
+            <Fragment set:html={logoRaw} />
+        </div>
 { showFilter && <SidebarFilterInput/> }
     </div>
     <div class="sidebar-scroll" data-sidebar-scroll>

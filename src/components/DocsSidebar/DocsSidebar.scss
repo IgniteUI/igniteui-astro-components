@@ -1,10 +1,13 @@
 @use 'igniteui-theming/sass/typography' as *;
-@use '../../styles/global/breakpoints' as *;
 
+@layer components {
+
+// Desktop base. On tablet/mobile DocsLayout.scss turns this into a slide-in overlay.
 .docs-sidebar {
+	--igd-sidebar-z-index: 0;
 	display: flex;
 	flex-direction: column;
-	z-index: 0;
+	z-index: var(--igd-sidebar-z-index);
 	border-inline-end: var(--igd-app-outline);
 	padding-inline: var(--igd-padding-md);
 	padding-block: calc(var(--igd-padding-lg) + rem(14px));
@@ -16,69 +19,41 @@
 	align-self: start;
 	gap: rem(24px);
 
-	// On tablet/mobile: sidebar becomes a full-height fixed overlay, hidden off-screen by default.
-	@media (max-width: #{$bp-tablet-max}) {
-		position: fixed;
-		inset-block: 0;
-		inset-inline-start: 0;
-		height: 100dvh;
-		max-height: 100dvh;
-		width: min(rem(360px), 85vw);
-		z-index: 100;
-		transform: translateX(-100%);
-		transition: transform 250ms ease, box-shadow 250ms ease;
-		box-shadow: none;
-	}
-	
 	.sidebar-gutter {
 		overflow-y: hidden;
 		scrollbar-gutter: stable;
-		
+
 		// This Makes sure the input border is visible
 		// This is the height of the input in fluent theme + 8px padding
 		// TODO this can be made smart using a css variable to override the original height of the input and used here
 		min-height: rem(40px);
-		
-		
+
+
 		igc-icon {
 			color: light-dark(var(--ig-gray-800), var(--ig-gray-300));
 		}
-		
+
 		&:empty {
 			display: none;
 		}
 	}
 }
 
-// Overlay backdrop — only visible on tablet when sidebar is open.
+// Hidden by default. DocsLayout.scss reveals it on tablet/mobile when the sidebar is open.
 .docs-sidebar-backdrop {
 	display: none;
-
-	@media (max-width: #{$bp-tablet-max}) {
-		display: block;
-		position: fixed;
-		inset: 0;
-		z-index: 99;
-		background: rgba(0, 0, 0, 0.4);
-		opacity: 0;
-		pointer-events: none;
-		transition: opacity 250ms ease;
-	}
 }
 
-// Open state — driven by data-sidebar-open on <body>
-body[data-sidebar-open] {
-	@media (max-width: #{$bp-tablet-max}) {
-		overflow: hidden;
+.sidebar-logo {
+	display: none;
+	margin-block-end: rem(8px);
+	padding-inline-start: rem(20px);
 
-		.docs-sidebar {
-			transform: translateX(0);
-			box-shadow: var(--ig-elevation-8);
-		}
+	> svg {
+		width: rem(79px);
 
-		.docs-sidebar-backdrop {
-			opacity: 1;
-			pointer-events: auto;
+		.logo-type {
+			fill: var(--igd-logo-type);
 		}
 	}
 }
@@ -175,3 +150,6 @@ body[data-sidebar-open] {
 	gap: rem(4px);
 	margin-left: auto;
 }
+
+}
+

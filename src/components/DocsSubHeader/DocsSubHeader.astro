@@ -110,7 +110,7 @@ const crumbs = sidebarCrumbs.length > 0 ? sidebarCrumbs : (pageTitle ? [pageTitl
 
         <div class="igd-logo">
             <Fragment set:html={logoRaw} />
-            <h1 class="ig-typography__body-2">{logoText}</h1>
+            <h1>{logoText}</h1>
         </div>
 
         <div class="igd-docs-subheader__content">
@@ -213,6 +213,14 @@ const crumbs = sidebarCrumbs.length > 0 ? sidebarCrumbs : (pageTitle ? [pageTitl
                         document.documentElement.setAttribute('data-theme', next);
                         const key = themeBtn.dataset.themeKey || 'docs-theme';
                         try { localStorage.setItem(key, next); } catch (_) {}
+
+                        // Force WebKit to repaint the document scrollbar so
+                        // ::-webkit-scrollbar-* styles pick up the new data-theme.
+                        const html = document.documentElement;
+                        const saved = html.style.overflow;
+                        html.style.overflow = 'hidden';
+                        html.offsetHeight; // trigger reflow
+                        html.style.overflow = saved;
                     });
                 }
 
@@ -221,7 +229,7 @@ const crumbs = sidebarCrumbs.length > 0 ? sidebarCrumbs : (pageTitle ? [pageTitl
                 if (globalNav) {
                     const observer = new IntersectionObserver(
                         ([entry]) => {
-                            this.classList.toggle('docs-subheader--pinned', !entry.isIntersecting);
+                            this.classList.toggle('igd-docs-subheader--pinned', !entry.isIntersecting);
                         },
                         { threshold: 0 }
                     );
@@ -231,7 +239,7 @@ const crumbs = sidebarCrumbs.length > 0 ? sidebarCrumbs : (pageTitle ? [pageTitl
                     // The observer fires mid-transition (GlobalNavBar briefly clipped)
                     // and would leave --pinned set when the new page loads at scroll=0.
                     document.addEventListener('astro:before-swap', () => {
-                        this.classList.remove('docs-subheader--pinned');
+                        this.classList.remove('igd-docs-subheader--pinned');
                     });
                 }
             }

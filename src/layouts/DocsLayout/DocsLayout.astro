@@ -218,7 +218,7 @@ type HeadEntry = { tag: string; attrs?: Record<string, string | boolean | undefi
      the .igd-page-layout not on the body.
      Any igc component rendered dynamically on body level should have .ig-typography in order to have proper type styles.
     -->
-    <div class="igd-page-layout ig-typography">
+    <div class="igd-page-layout">
         <!-- TODO: WE DONT NEED TO CALCULAtE THE IG HEADER HEIGHT ANYMORE - REMOVE IT -->
         <!-- <DocsSubHeader style={ `--docs-global-nav-height: ${ showGlobalNav ? '4.7rem': '0' }` } data-nav-height-wrapper/> -->
         <slot name="subheader">
