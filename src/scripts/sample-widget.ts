@@ -11,8 +11,6 @@
  *   – Live-editing footer (StackBlitz / CodeSandbox)
  *
  * Selector: `.igd-code-view[data-platform]`
- *   This distinguishes pre-rendered Sample.astro widgets from `.ig-code-view`
- *   elements that come from the docfx pipeline (handled by code-view.js).
  */
 
 import { defineComponents, IgcTabsComponent, IgcTabComponent, IgcButtonComponent, IgcIconButtonComponent, IgcIconComponent, IgcCircularProgressComponent } from 'igniteui-webcomponents';

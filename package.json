@@ -67,7 +67,9 @@
     "./lib/sidebar/types": "./src/lib/sidebar/types.ts",
     "./lib/sidebar/helpers": "./src/lib/sidebar/helpers.ts",
     "./lib/types": "./src/lib/types.ts",
-    "./plugins/remark-docfx": "./src/plugins/remark-docfx.ts",
+    "./plugins/remark-env-vars": "./src/plugins/remark-env-vars.ts",
+    "./plugins/remark-md-links": "./src/plugins/remark-md-links.ts",
+    "./plugins/remark-html-transforms": "./src/plugins/remark-html-transforms.ts",
     "./plugins/rehype-table-wrapper": "./src/plugins/rehype-table-wrapper.ts",
     "./plugins/rehype-heading-anchors": "./src/plugins/rehype-heading-anchors.ts",
     "./styles/theme.scss": "./src/styles/theme.scss",
@@ -86,11 +88,9 @@
     "@fontsource-variable/instrument-sans": "^5.2.8",
     "@fontsource-variable/jetbrains-mono": "^5.2.8",
     "igniteui-webcomponents": "^7.1.3",
-    "js-yaml": "^4.1.0",
     "jsdom": "^29.0.1"
   },
   "devDependencies": {
-    "@types/js-yaml": "^4.0.9",
     "@types/jsdom": "^21.1.7",
     "astro": "^6.1.6",
     "igniteui-theming": "^26.0.1",
