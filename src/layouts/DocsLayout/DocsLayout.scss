@@ -126,8 +126,8 @@
 	gap: var(--ig-padding);
 	background-color: var(--igd-layout-sections-bg);
 	border-inline: var(--igd-app-outline);
-	width: clamp(rem(300px), 100%, rem(940px));
-	margin-inline-start: auto;
+	width: clamp(rem(300px), 100%, rem(1024px));
+	margin-inline: auto;
 	
 	@media (max-width: #{$bp-mobile-horizontal-max}) {
 		border: none;
@@ -143,6 +143,12 @@
 	gap: rem(70px);
 	padding-inline: rem(70px) rem(32px);
 	position: relative;
+	
+	&:has(aside) {
+		.igd-main-content__page {
+			margin-inline-end: 0;
+		}
+	}
 
 	@media (max-width: #{$bp-sidebar-max}) {
 		padding-inline: rem(34px) rem(16px);

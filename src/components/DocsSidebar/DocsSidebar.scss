@@ -43,6 +43,10 @@
 		igc-icon {
 			color: light-dark(var(--ig-gray-800), var(--ig-gray-300));
 		}
+		
+		&:empty {
+			display: none;
+		}
 	}
 }
 
