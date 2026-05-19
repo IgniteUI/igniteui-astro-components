@@ -32,6 +32,12 @@
 		}
 	}
 	
+	@media (min-width: #{$bp-desktop-min}) {
+		.igd-docs-subheader {
+			--igd-page-layout-grid: #{minmax(rem(300px), rem(400px)) 1fr};
+		}
+	}
+	
 	@media (max-width: #{$bp-mobile-horizontal-max}) {
 		padding-inline: 0;
 	}
