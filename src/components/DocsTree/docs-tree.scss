@@ -66,7 +66,7 @@ igc-tree[data-variant='toc'] igc-tree-item[selected] > [slot='label'] {
 igc-tree-item {
 	--igc-tree-indentation-size: #{rem(20px)};
 	--background: transparent;
-	--foreground: light-dark(var(--ig-gray-600), var(--ig-gray-500));
+	--foreground: light-dark(var(--ig-gray-600), var(--ig-gray-400));
 	--background-selected: transparent;
 	--background-active: transparent;
 	--foreground-active: var(--igd-accent);
@@ -160,9 +160,9 @@ igc-tree-item[data-has-children][data-depth='0'] {
 }
 
 igc-tree-item[data-has-children] {
-	--foreground: light-dark(var(--ig-gray-900), var(--ig-gray-50));
-	--foreground-selected: light-dark(var(--ig-gray-900), var(--ig-gray-50));
-	--foreground-active-selected: light-dark(var(--ig-gray-900), var(--ig-gray-50));
+	--foreground: light-dark(var(--ig-gray-900), var(--ig-gray-600));
+	--foreground-selected: light-dark(var(--ig-gray-900), var(--ig-gray-600));
+	--foreground-active-selected: light-dark(var(--ig-gray-900), var(--ig-gray-600));
 	--foreground-active: light-dark(var(--ig-gray-900), var(--ig-gray-50));
 	--foreground-hover: light-dark(var(--ig-gray-900), var(--ig-gray-50));
 }
@@ -181,9 +181,9 @@ igc-tree[data-variant='sidebar'] {
 	overflow: hidden;
 	
 	igc-tree-item[data-has-children] {
-		--foreground: light-dark(var(--ig-gray-900), var(--ig-gray-50));
-		--foreground-selected: light-dark(var(--ig-gray-900), var(--ig-gray-50));
-		--foreground-active-selected: light-dark(var(--ig-gray-900), var(--ig-gray-50));
+		--foreground: light-dark(var(--ig-gray-900), var(--ig-gray-600));
+		--foreground-selected: light-dark(var(--ig-gray-900), var(--ig-gray-600));
+		--foreground-active-selected: light-dark(var(--ig-gray-900), var(--ig-gray-600));
 		--foreground-active: light-dark(var(--ig-gray-900), var(--ig-gray-50));
 		--foreground-hover: light-dark(var(--ig-gray-900), var(--ig-gray-50));
 	}
