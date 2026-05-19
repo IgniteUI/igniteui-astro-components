@@ -61,11 +61,14 @@ type HeadEntry = { tag: string; attrs?: Record<string, string | boolean | undefi
   <slot name="head" />
   <ClientRouter />
   <script is:inline>
-    // Force light theme on load and after every View Transitions swap
-    document.documentElement.setAttribute('data-theme', 'light');
-    document.addEventListener('astro:after-swap', function () {
-      document.documentElement.setAttribute('data-theme', 'light');
-    });
+    // Restore persisted theme (or default to light) on load and after every View Transitions swap
+    function applyStoredTheme() {
+      var stored;
+      try { stored = localStorage.getItem('docs-theme'); } catch (_) {}
+      document.documentElement.setAttribute('data-theme', stored || 'light');
+    }
+    applyStoredTheme();
+    document.addEventListener('astro:after-swap', applyStoredTheme);
 
     // Enable smooth scrolling only after the page is fully loaded so the
     // browser's scroll-position restoration on refresh is instant (no visible

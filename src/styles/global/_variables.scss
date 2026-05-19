@@ -116,11 +116,11 @@
 	// TABLES
 	--igd-table-max-height: #{rem(350px)};
 	--igd-table-pinned-border-size: #{rem(1px)};
-	--igd-table-fg: light-dark(var(--ig-gray-900), var(--ig-gray-900));
+	--igd-table-fg: light-dark(var(--ig-gray-700), var(--ig-gray-500));
 	--igd-table-bg: var(--igd-layout-sections-bg);
 	--igd-tabe-even-row-bg: var(--igd-table-bg);
 	--igd-table-border-color: light-dark(var(--ig-gray-200), var(--ig-gray-200));
 	
 	--igd-table-header-bg: var(--igd-layout-sections-bg);
-	--igd-table-header-fg: light-dark(var(--ig-gray-900), var(--ig-gray-400));
+	--igd-table-header-fg: var(--ig-gray-900);
 }

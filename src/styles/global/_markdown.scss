@@ -427,7 +427,17 @@
 		color: var(--igd-table-fg);
 		
 		th {
+			@include type-style('subtitle-2') {
+				margin: 0;
+			}
+			
 			white-space: nowrap;
+		}
+		
+		td {
+			@include type-style('detail-1', false) {
+				margin: 0;
+			}
 		}
 		
 		td, th {
