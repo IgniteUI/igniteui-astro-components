@@ -47,6 +47,10 @@ api-search-advanced { display: contents; }
 	}
 }
 
+.search-trigger {
+	color: light-dark(var(--ig-gray-600), var(--ig-gray-400));
+}
+
 // TODO BUG IN THE TAB COMPONENT
 igc-tabs::part(inner) {
 	flex-grow: 1;
