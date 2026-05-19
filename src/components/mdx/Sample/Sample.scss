@@ -1,32 +1,175 @@
+@use 'igniteui-theming/sass/typography' as *;
+
+igc-tabs {
+	position: relative;
+	z-index: 0;
+	width: 100%;
+	
+	&::part(inner) {
+		flex-grow: 1;
+	}
+	
+	--item-text-color: var(--ig-gray-800);
+	--item-hover-color: var(--igd-accent);
+	--item-background: var(--igd-layout-sections-bg);
+	--item-hover-background: var(--igd-layout-sections-bg);
+	
+	--item-active-color: var(--igd-accent);
+	--item-active-hover-color: var(--igd-accent);
+	--item-active-background: var(--igd-layout-sections-bg);
+	--item-active-hover-background: var(--igd-layout-sections-bg);
+	--indicator-color: var(--igd-accent);
+	
+	--button-color: var(--ig-gray-800);
+	--button-hover-color: var(--igd-accent);
+	--button-background: var(--igd-layout-sections-bg);
+	--button-hover-background: var(--igd-layout-sections-bg);
+	
+	.igd-code-view__header-actions {
+		border-block: rem(1px) solid var(--ig-gray-300);
+	}
+	
+	.igd-sample-container {
+		border-inline: none;
+		border-block-end: none;
+	}
+}
+
+// TODO THIS IS A COMPONENT BUG LOG IT
+igc-tab::part(start-scroll-button) {
+	inset-inline-start: -1px;
+}
+igc-tab::part(end-scroll-button) {
+	inset-inline-end: -1px;
+}
+
+igc-tab {
+	.code-wrapper {
+		position: relative;
+		border-radius: 0;
+		margin: 0;
+		border: none;
+		border-top: rem(1px) solid var(--ig-gray-300);
+		max-height: rem(400px);
+		overflow: auto;
+		overscroll-behavior: contain;
+
+		pre {
+			margin: 0;
+			border: none;
+			padding: 0;
+			border-radius: 0;
+		}
+
+		.cv-hljs-code-copy {
+			position: absolute;
+			top: rem(16px);
+			right: rem(16px);
+			opacity: 0;
+			transition: opacity 0.2s ease;
+			pointer-events: none;
+		}
+
+		&:hover .cv-hljs-code-copy,
+		&:focus-within .cv-hljs-code-copy {
+			opacity: 1;
+			pointer-events: auto;
+		}
+	}
+}
+
+// TODO Log issue in the component this is not suppose to be affected by the ig-typography
+igc-tab::part(content) {
+	@include type-style('subtitle-1') {
+		margin: 0;
+	}
+}
+
+igc-tab::part(tab-header) {
+	min-height: 72px;
+}
+
+.igd-code-view {
+	width: 100%;
+	border: rem(1px) solid var(--ig-gray-300);
+	margin-block-end: rem(26px);
+}
+
+.igd-code-view__inner {
+	position: relative;
+	display: flex;
+}
+
+.igd-sample-container {
+	--sample-container-header-height: #{rem(66px)};
+	
+	position: relative;
+	border: rem(1px) solid var(--ig-gray-300);
+	min-height: rem(320px);
+	max-height: rem(800px);
+	overflow: hidden auto;
+
+	iframe {
+		display: block;
+	}
+
+	.sample-loading-indicator {
+		position: absolute;
+		inset: var(--sample-container-header-height, 0px) 0 0 0;
+		margin: auto;
+		width: 60px;
+		height: 60px;
+		z-index: 1;
+		opacity: 0;
+		pointer-events: none;
+		transition: opacity 0.2s ease;
+	}
+
+	&.loading .sample-loading-indicator {
+		opacity: 1;
+	}
+}
+
 .full-screen-btn {
-  display: inline-flex;
-  align-items: center;
-  font-size: 0.8rem;
-  font-weight: 400;
-  color: #fff;
-  border: 0;
-  text-transform: uppercase;
-  padding: 0.5rem 1rem;
-  margin: 1.5rem 0;
-  outline-style: none;
-  transition: all 0.25s ease-out;
-  background: #0099ff;
-  cursor: pointer;
+	display: flex;
+	align-items: center;
+}
 
-  &:hover,
-  &:focus {
-    color: white;
-    box-shadow: 0 5px 5px -3px rgba(0,0,0,.26), 0 8px 10px 1px rgba(0,0,0,.12), 0 3px 14px 2px rgba(0,0,0,.08);
-  }
+.igd-code-view__footer-actions {
+	border-block-start: rem(1px) solid var(--ig-gray-300);
+}
 
-  &::before {
-    content: "";
-    display: inline-block;
-    width: 1.75rem;
-    height: 1.75rem;
-    margin-right: 0.5rem;
-    background-image: url("/images/general/fullscreen-white-18dp.svg");
-    background-size: 100%;
-    background-repeat: no-repeat;
-  }
+.igd-code-view__header-actions,
+.igd-code-view__footer-actions {
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+	position: relative;
+	padding: rem(16px) rem(26px);
+	gap: rem(16px);
+}
+
+.igd-code-view__header-actions {
+	position: sticky;
+	inset-block-end: 0;
+	height: var(--sample-container-header-height);
+	border-block-start: rem(1px) solid var(--ig-gray-300);
+	background-color: var(--igd-layout-sections-bg);
+}
+
+igc-button {
+	&::part(base) {
+		padding-inline: rem(16px);
+		gap: rem(4px);
+		
+		@include type-style('caption') {
+			margin: 0;
+		}
+	}
+}
+
+.editing-label {
+	@include type-style('body-2') {
+		margin: 0;
+	}
 }

@@ -1,3 +1,4 @@
+@use '../../styles/global/breakpoints' as *;
 @use 'igniteui-theming/sass/typography/functions' as *;
 
 /*
@@ -48,11 +49,19 @@
 		}
 	}
 	
+	:global(.globalnav__mobile-menu) {
+		top: -1px;
+	}
+	
 	// Class names below come from the injected headerHtml / static fallback markup.
 	// CSS Modules would hash them, breaking the match — :global() prevents that.
 	:global(.globalnav__primary) {
-		padding-inline: rem(17px);
+		padding-inline: rem(16px);
 		border-bottom: var(--igd-app-outline) !important;
+		
+		@media (max-width: #{$bp-tablet-max}) {
+			padding-inline-end: 0;
+		}
 	}
 	
 	:global(.navbar-inverse) {
@@ -179,6 +188,12 @@
 		list-style: none;
 		margin: 0;
 		padding: 0;
+	}
+	
+	:global(.globalnav__brand) {
+		@media (max-width: #{$bp-tablet-max}) {
+			margin-inline-start: 0;
+		}
 	}
 	
 	@media only screen and (min-width: 961px) {

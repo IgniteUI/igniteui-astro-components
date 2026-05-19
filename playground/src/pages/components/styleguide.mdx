@@ -1,0 +1,363 @@
+---
+layout: ../../layouts/PlaygroundMdxLayout.astro
+title: Style Guide
+slug: components/styleguide
+---
+import LicenseIndicator from '../../../../src/components/LicenseIndicator/LicenseIndicator.astro';
+
+# Style Guide
+
+A reference page showing every HTML element related to text and typography,
+rendered through the documentation theme.
+
+## Headings
+
+Six levels of section headings.
+
+<h1>Heading level 1</h1>
+<h2>Heading level 2</h2>
+<h3>Heading level 3</h3>
+<h4>Heading level 4</h4>
+<h5>Heading level 5</h5>
+<h6>Heading level 6</h6>
+
+---
+
+## Body text
+
+The `<p>` element represents a paragraph of text. It is the
+most common block-level element for prose content. Paragraphs are separated by
+vertical margin and their line-height affects readability significantly.
+
+A second paragraph follows immediately. Notice the consistent spacing between
+paragraphs applied by the documentation theme. Long lines should wrap naturally
+at the container boundary without any explicit `word-break` override
+unless the content contains very long unbreakable strings.
+
+<address>
+  Written by <a href="mailto:docs@example.com">The Docs Team</a>.
+  Visit us at <a href="#">igniteui.com</a>.
+  — <code>&lt;address&gt;</code> element
+</address>
+
+---
+
+## Inline text elements
+
+| Element | Renders as | Use when |
+|---|---|---|
+| `<strong>` | <strong>Bold importance</strong> | Content has strong importance or urgency |
+| `<b>` | <b>Bold without semantics</b> | Style-only bold, no extra meaning |
+| `<em>` | <em>Emphasised text</em> | Stress emphasis that changes sentence meaning |
+| `<i>` | <i>Italic without semantics</i> | Technical terms, foreign phrases, thoughts |
+| `<u>` | <u>Underlined text</u> | Annotations, misspellings (non-link underline) |
+| `<s>` | <s>Strikethrough</s> | Content no longer accurate or relevant |
+| `<del>` | <del>Deleted content</del> | Editorial deletion (pairs with `<ins>`) |
+| `<ins>` | <ins>Inserted content</ins> | Editorial insertion (pairs with `<del>`) |
+| `<mark>` | <mark>Highlighted text</mark> | Highlighted / search result match |
+| `<small>` | <small>Small print</small> | Side comments, legal text, fine print |
+| `<sub>` | H<sub>2</sub>O | Subscript — chemical formulas, footnotes |
+| `<sup>` | E=mc<sup>2</sup> | Superscript — exponents, ordinals |
+| `<abbr title="Cascading Style Sheets">` | <abbr title="Cascading Style Sheets">CSS</abbr> | Abbreviations — shows expansion on hover |
+| `<dfn>` | <dfn>Single-page application</dfn> | Defining instance of a term |
+| `<time dateTime="2026-05-15">` | <time dateTime="2026-05-15">15 May 2026</time> | Machine-readable dates and times |
+| `<a href>` | [this link](#) | Hyperlinks |
+| `<span>` | <span style="color: var(--ig-primary-500)">Styled span</span> | Generic inline container for styling |
+
+---
+
+## Lists
+
+#### Unordered list — `<ul>`
+
+- First item
+- Second item
+  - Nested item A
+  - Nested item B
+- Third item
+
+#### Ordered list — `<ol>`
+
+1. Install dependencies
+2. Configure the project
+3. Run the dev server
+   1. Open the browser
+   2. Navigate to localhost
+4. Build for production
+
+### Description list — `<dl>`
+
+<dl>
+  <dt>Description term</dt>
+  <dd>The term being defined or described.</dd>
+  <dt>Description details</dt>
+  <dd>The value or explanation associated with the preceding term.</dd>
+  <dt>Description list</dt>
+  <dd>A container pairing one or more terms with their descriptions.</dd>
+</dl>
+
+---
+
+## Quotes & citations
+
+<blockquote cite="https://developer.mozilla.org/en-US/docs/Web/HTML">
+    HTML (HyperText Markup Language) is the most basic building block of the Web.
+    It defines the meaning and structure of web content.
+</blockquote>
+
+As the spec states: <q cite="https://html.spec.whatwg.org/">the purpose of this specification
+is to define a language that can be used both for interactive documents and for automated
+document processing.</q>
+— inline quote via `<q>`.
+
+<cite>Design Patterns: Elements of Reusable Object-Oriented Software</cite> — standalone
+`<cite>` for a creative work title.
+
+---
+
+## Code & preformatted
+
+| Element | Example | Use when |
+|---|---|---|
+| `<code>` | Use `console.log()` for debugging | Inline code snippets, file names, values |
+| `<kbd>` | Press <kbd>Ctrl</kbd>+<kbd>K</kbd> to open search | Keyboard input or shortcuts |
+| `<samp>` | Output: <samp>Error: connection refused on port 3000</samp> | Program or terminal output |
+| `<var>` | The formula uses variable <var>x</var> as input | Mathematical or programming variables |
+| `<pre>` + `<code>` | See fenced block below | Multi-line preformatted code |
+| `<pre>` alone | See block below | Preformatted text without code semantics |
+
+```ts
+// <pre> + <code> — preformatted code block
+function greet(name: string): string {
+  return `Hello, ${name}!`;
+}
+
+console.log(greet('World')); // Hello, World!
+```
+
+<pre>Plain preformatted text without code semantics.
+  Leading whitespace    is    preserved.
+    Indentation is respected.
+— &lt;pre&gt; alone</pre>
+
+---
+
+## Semantic & misc
+
+<figure>
+  a self-contained content block with an optional caption.
+  <figcaption>
+    with an optional caption.
+  </figcaption>
+</figure>
+
+The `<hr>` element represents a thematic break between paragraph-level elements:
+
+---
+
+Content continues after the break above.
+
+The `<br>` element inserts a line break within a block of text.<br/>
+Like this second line — useful in addresses or poetry, not for spacing paragraphs.
+
+The `<wbr>` element suggests a line-break opportunity inside a long
+word: `superlong`<wbr />`concatenated`<wbr />`identifier`<wbr />`name`.
+
+---
+
+## Images
+
+### Basic image — `<img>`
+
+The `<img>` element embeds a raster or vector image. Always include
+a descriptive `alt` attribute for accessibility.
+
+<img
+  src="https://picsum.photos/seed/igniteui/800/400"
+  alt="A random placeholder landscape photo"
+  width="800"
+  height="400"
+  style="max-width: 100%; height: auto; border-radius: 0.5rem; display: block;"
+/>
+
+### Responsive image — `<picture>` + `<source>`
+
+The `<picture>` element wraps multiple `<source>` candidates.
+
+<picture>
+  <source media="(min-width: 800px)" srcSet="https://picsum.photos/seed/wide/1200/400" />
+  <source media="(min-width: 400px)" srcSet="https://picsum.photos/seed/medium/800/400" />
+  <img
+    src="https://picsum.photos/seed/small/400/300"
+    alt="A responsive placeholder image that changes by viewport width"
+    width="800"
+    height="400"
+    style="max-width: 100%; height: auto; border-radius: 0.5rem; display: block;"
+  />
+</picture>
+
+### Image with caption — `<figure>` + `<figcaption>`
+
+<figure>
+  <img
+    src="https://picsum.photos/seed/caption/800/350"
+    alt="A placeholder photo demonstrating figure and figcaption"
+    width="800"
+    height="350"
+    style="max-width: 100%; height: auto; border-radius: 0.5rem; display: block;"
+  />
+  <figcaption>
+    Fig. 1 — A placeholder image wrapped in a <code>&lt;figure&gt;</code> element
+    with a <code>&lt;figcaption&gt;</code> caption below.
+  </figcaption>
+</figure>
+
+### Inline SVG — `<svg>`
+
+SVG markup can be embedded directly in HTML. It scales losslessly and inherits
+`currentColor` from the surrounding text.
+
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="120"
+  height="120"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  strokeWidth="1.5"
+  strokeLinecap="round"
+  strokeLinejoin="round"
+  aria-label="Inline SVG star icon"
+  role="img"
+  style="display: block; margin-block: 1rem; color: var(--sl-color-accent);"
+>
+  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+</svg>
+
+---
+
+## License Indicators
+
+The `LicenseIndicator` component renders an `igc-badge` to signal licensing status.
+
+<LicenseIndicator license="premium" />
+<LicenseIndicator license="opensource" />
+
+---
+
+## Icons
+
+Icons from the `docs` collection, rendered with `<igc-icon name="…" collection="docs">`.
+
+<div class="typography-icon-grid">
+  {[
+    'search', 'close', 'copy', 'code', 'check', 'info', 'warning',
+    'link', 'link-blank', 'open-link-blank', 'download', 'refresh',
+    'eye', 'pen', 'filter', 'filter-clear', 'chevron', 'arrow',
+    'arrow-down', 'expand-all', 'collapse', 'show-more',
+    'moon', 'sun', 'system-theme',
+    'angular-logo', 'react-logo', 'wc-logo', 'blazor-logo',
+    'github-logo', 'premium', 'crown', 'rocket', 'shine',
+    'hamburger-menu', 'command', 'play-circle', 'note', 'page',
+    'dot', 'bullet-poiont', 'start', 'check-circle',
+  ].map((name) => (
+    <div class="typography-icon-item" title={name}>
+      <igc-icon name={name} collection="docs" />
+      <span>{name}</span>
+    </div>
+  ))}
+</div>
+
+---
+
+## Embedded media
+
+### YouTube embed — `<iframe>`
+
+Uses the **facade pattern**: a thumbnail image is shown first;
+the heavy YouTube `<iframe>` is only injected into the DOM
+when the user clicks play.
+
+<figure>
+  <iframe
+    style="width: 100%; aspect-ratio: 16 / 9; border: 0; border-radius: 0.5rem; display: block;"
+    src="https://www.youtube.com/embed/t2SuyaeAINg"
+    title="Infragistics Ultimate 25.2 Release Overview"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+    allowfullscreen
+    loading="lazy"
+  ></iframe>
+  <figcaption>
+    <a href="https://www.youtube.com/watch?v=t2SuyaeAINg" target="_blank" rel="noopener">Infragistics Ultimate 25.2 Release Overview</a>
+  </figcaption>
+</figure>
+
+### Native video — `<video>`
+
+The `<video>` element plays media files directly in the browser.
+
+<figure>
+  <video
+    controls
+    preload="metadata"
+    poster="https://picsum.photos/seed/videoposter/800/450"
+    style="width: 100%; border-radius: 0.5rem;"
+  >
+    <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4" />
+    <source src="https://www.w3schools.com/html/mov_bbb.ogg" type="video/ogg" />
+    Your browser does not support the <code>video</code> element.
+  </video>
+  <figcaption>
+    Fig. 2 — Native <code>&lt;video&gt;</code> with <code>controls</code>,
+    <code>poster</code>, and two <code>&lt;source&gt;</code> formats (MP4 + OGG).
+  </figcaption>
+</figure>
+
+### Native audio — `<audio>`
+
+<audio controls preload="metadata">
+  <source src="https://www.w3schools.com/html/horse.ogg" type="audio/ogg" />
+  <source src="https://www.w3schools.com/html/horse.mp3" type="audio/mpeg" />
+  Your browser does not support the <code>audio</code> element.
+</audio>
+
+<style>{`
+  .typography-icon-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(7rem, 1fr));
+    gap: 0.75rem;
+    margin-block: 1.5rem;
+  }
+  .typography-icon-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 16px;
+    border: 1px solid light-dark(var(--ig-gray-300), var(--ig-gray-900));
+    border-radius: 0.5rem;
+    font-size: 0.7rem;
+    text-align: center;
+    word-break: break-all;
+  }
+  .typography-icon-item igc-icon {
+    --size: 32px;
+    color: inherit;
+  }
+`}</style>
+
+## HTML Character Entities
+
+Common HTML named character references and how they render.
+
+| Entity code | Renders as | Description |
+|---|---|---|
+| `&amp;` | & | Ampersand |
+| `&lt;` | &lt; | Less-than sign |
+| `&gt;` | &gt; | Greater-than sign |
+| `&nbsp;` | (space) | Non-breaking space |
+| `&mdash;` | — | Em dash |
+| `&ndash;` | – | En dash |
+| `&hellip;` | … | Ellipsis |
+| `&ldquo;` / `&rdquo;` | " / " | Left / right double quotation marks |
+| `&lsquo;` / `&rsquo;` | ' / ' | Left / right single quotation marks |

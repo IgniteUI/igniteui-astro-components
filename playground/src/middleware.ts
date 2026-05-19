@@ -33,7 +33,13 @@ const MOCK_PLATFORM: PlatformContext = {
     },
 };
 
+const MOCK_ENV: Record<string, string> = {
+    demosBaseUrl:   '',
+    dvDemosBaseUrl: '',
+};
+
 export const onRequest = defineMiddleware((context, next) => {
     context.locals.platformContext = MOCK_PLATFORM;
+    context.locals.envVars         = MOCK_ENV;
     return next();
 });

@@ -1,0 +1,19 @@
+---
+import './LicenseIndicator.scss';
+
+export interface Props {
+  /** 'premium' shows a purple Premium badge; 'opensource' shows a green Open Source badge; false/undefined hides the badge. */
+  license?: 'premium' | 'opensource' | false;
+}
+
+const { license } = Astro.props;
+const label = license === 'premium' ? 'Premium' : 'Open Source';
+---
+
+{license && (
+  <igc-badge class={`sidebar-badge ${license}`}>
+      <span>{label}</span>
+
+      {license === 'premium' && <igc-icon name="premium" collection="docs" class="sidebar-premium-icon" aria-hidden="true"></igc-icon>}
+  </igc-badge>
+)}

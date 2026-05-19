@@ -13,6 +13,7 @@ const headings = [
     { depth: 3, slug: 'mdx-components', text: 'MDX components' },
     { depth: 2, slug: 'how-it-works', text: 'How it works' },
     { depth: 3, slug: 'adding-a-demo-page', text: 'Adding a demo page' },
+    { depth: 2, slug: 'styles', text: 'Styles' },
 ];
 ---
 
@@ -27,7 +28,7 @@ const headings = [
   <DocsSidebar slot="sidebar" items={SIDEBAR} currentSlug="" />
   <DocsToc slot="toc" headings={headings} offsetTarget=".docs-subheader" />
 
-  <main class="content">
+
     <h1>igniteui-astro-components playground</h1>
     <p>
         This is a local sandbox for the components shipped from
@@ -63,6 +64,11 @@ const headings = [
         </li>
     </ul>
 
+    <h2 id="styles">Styles</h2>
+    <ul>
+        <li><a href="/components/styleguide">Style Guide</a> — all HTML text and typography elements rendered through the theme.</li>
+    </ul>
+
     <h2 id="how-it-works">How it works</h2>
     <p>
         The playground uses the prop-driven pattern: sidebar data, product links,
@@ -85,5 +91,5 @@ const headings = [
         <code>DocsLayout</code> and the component under test from
         <code>../../../../src/</code>, and add a link to the list above.
     </p>
-    <DocsToc slot="toc" headings={ headings } offsetTarget=".docs-subheader"/>
+    <!--<DocsToc slot="toc" headings={ headings } offsetTarget=".docs-subheader"/>-->
 </DocsLayout>

@@ -7,12 +7,10 @@
  */
 
 export type SidebarBadgeVariant =
-  | 'note'
-  | 'danger'
-  | 'success'
-  | 'caution'
-  | 'tip'
-  | 'default';
+  | 'new'
+  | 'updated'
+  | 'preview'
+  | 'premium';
 
 export interface SidebarBadge {
   text: string;
@@ -22,7 +20,7 @@ export interface SidebarBadge {
 export interface SidebarLink {
   label: string;
   slug: string;
-  badge?: SidebarBadge;
+  badges?: SidebarBadge[];
   attrs?: Record<string, string | number | boolean | undefined>;
 }
 

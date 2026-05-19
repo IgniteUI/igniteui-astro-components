@@ -8,7 +8,7 @@
 import type { SidebarEntry } from '../../src/lib/sidebar/types';
 import type { SearchTab } from '../../src/components/SearchAdvanced/SearchAdvanced.astro';
 
-export const SITE_TITLE = 'Components Playground';
+export const SITE_TITLE = 'IgniteUI';
 
 export const PRODUCT_LINKS = [
   { label: 'Angular',        href: '#', platform: 'angular' },
@@ -43,15 +43,23 @@ export const SIDEBAR: SidebarEntry[] = [
           { label: 'ApiRef',        slug: 'components/api-ref' },
           { label: 'DocsAside',     slug: 'components/docs-aside' },
           { label: 'PlatformBlock', slug: 'components/platform-block' },
+          { label: 'Sample',        slug: 'components/sample' },
         ],
       },
+    ],
+  },
+  {
+    label: 'Styles',
+    collapsed: false,
+    items: [
+      { label: 'Style Guide', slug: 'components/styleguide', badges: [{ text: 'Premium', variant: 'premium' }, { text: 'New', variant: 'new' }] },
     ],
   },
   {
     label: 'Reference',
     collapsed: true,
     items: [
-      { label: 'Changelog', slug: 'changelog', badge: { text: 'Beta', variant: 'caution' } },
+      { label: 'Changelog', slug: 'changelog', badges: [{ text: 'Beta', variant: 'new' }] },
     ],
   },
 ];

@@ -31,8 +31,12 @@ igc-input::part(container) {
 	border-block-end: rem(1px) solid light-dark(var(--ig-gray-200), var(--ig-gray-300));
 	
 	border-radius: 0;
-	padding-inline-start: rem(16px);
-	padding-inline-end: rem(8px);
+	padding-inline: rem(16px);
+	
+	// TODO make this more stable using css vars
+	// padding-inline-end is 8px(padding) - 5px(scrollbar width)
+	padding-inline-end: rem(3px);
+	
 	padding-block-end: rem(8px);
 	
 	&::before {
@@ -61,7 +65,7 @@ igc-button {
 	}
 	
 	color: light-dark(var(--ig-gray-600), var(--ig-gray-700));
-	padding: rem(16px) rem(24px);
+	padding-inline: rem(24px);
 	
 	&:empty {
 		display: none;

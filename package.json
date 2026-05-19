@@ -47,6 +47,7 @@
     "./components/SearchAdvanced.astro": "./src/components/SearchAdvanced/SearchAdvanced.astro",
     "./components/ThemingWidget.astro": "./src/components/ThemingWidget/ThemingWidget.astro",
     "./components/MobileSidebarToggle.astro": "./src/components/MobileSidebarToggle/MobileSidebarToggle.astro",
+    "./components/MobileTocToggle.astro": "./src/components/MobileTocToggle/MobileTocToggle.astro",
     "./components/DocsToc.astro": "./src/components/DocsToc/DocsToc.astro",
     "./components/DocsSidebar/DocsSidebar.astro": "./src/components/DocsSidebar/DocsSidebar.astro",
     "./components/DocsSidebar/SidebarFilterInput.astro": "./src/components/DocsSidebar/SidebarFilterInput.astro",
@@ -69,7 +70,8 @@
     "./plugins/remark-env-vars": "./src/plugins/remark-env-vars.ts",
     "./plugins/remark-md-links": "./src/plugins/remark-md-links.ts",
     "./plugins/remark-html-transforms": "./src/plugins/remark-html-transforms.ts",
-    "./styles/custom.scss": "./src/styles/custom.scss",
+    "./plugins/rehype-table-wrapper": "./src/plugins/rehype-table-wrapper.ts",
+    "./plugins/rehype-heading-anchors": "./src/plugins/rehype-heading-anchors.ts",
     "./styles/theme.scss": "./src/styles/theme.scss",
     "./package.json": "./package.json"
   },

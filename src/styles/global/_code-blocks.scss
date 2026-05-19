@@ -18,7 +18,7 @@ pre.shiki {
     word-wrap: break-word;
     white-space: pre-wrap;
 	border-radius: var(--igd-border-radius);
-	padding: 1rem 1.25rem;
+	padding: rem(32px);
 }
 
 pre.shiki code {

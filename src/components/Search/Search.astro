@@ -17,10 +17,12 @@ import './Search.scss';
     class="search-trigger"
     aria-label="Search documentation"
     title="Search (Ctrl+K)"
+    commandfor="search-dialog"
+    command="show-modal"
 >
     <igc-icon name="search" collection="docs" aria-hidden="true"></igc-icon>
     <span class="search-trigger__label">Search</span>
-    <span class="search-trigger__hint"><span>Ctrl</span>K</span>
+    <kbd class="search-trigger__hint" style="display:none;"><kbd>Ctrl</kbd><kbd>K</kbd></kbd>
 </button>
 
 <script>
@@ -30,7 +32,8 @@ import './Search.scss';
 </script>
 
 <dialog id="search-dialog" class="search-dialog" aria-label="Search">
-  <div class="search-dialog-inner">
+  <div class="igd-search-shell">
+    <div class="igd-search-status" aria-live="polite"></div>
     <div id="search-pagefind"></div>
   </div>
 </dialog>
@@ -43,13 +46,10 @@ import './Search.scss';
   // State is kept on `window` so it survives re-executions.
   const _w = window as any;
 
-  async function openSearch() {
+  async function loadAndMountPagefind() {
     const dialog = document.getElementById('search-dialog') as HTMLDialogElement | null;
     if (!dialog) return;
 
-    // Load pagefind-ui.js only once — it's an IIFE that sets window.PagefindUI.
-    // Checking window.PagefindUI avoids appending a duplicate <script> tag whose
-    // onload never fires (cached scripts don't re-trigger onload).
     if (!_w.PagefindUI) {
       try {
         const link = Object.assign(document.createElement('link'), {
@@ -69,12 +69,10 @@ import './Search.scss';
         console.error('[Search] pagefind failed to load:', err);
         const el = document.getElementById('search-pagefind');
         if (el) el.textContent = 'Search index not available — run a production build first.';
-        dialog.showModal();
         return;
       }
     }
 
-    // Mount the UI if the container is empty (first open, or after DOM swap).
     const container = document.getElementById('search-pagefind');
     if (container && !container.firstChild) {
       try {
@@ -91,21 +89,41 @@ import './Search.scss';
       }
     }
 
-    dialog.showModal();
     requestAnimationFrame(() => {
       (dialog.querySelector('input') as HTMLInputElement | null)?.focus();
     });
   }
 
-  // All listeners go on `document` so they survive ClientRouter DOM swaps.
-  // The window flag ensures they are registered only once (script runs once,
-  // but guard is here for safety in case the behaviour changes).
+  async function openSearch() {
+    const dialog = document.getElementById('search-dialog') as HTMLDialogElement | null;
+    if (!dialog) return;
+    await loadAndMountPagefind();
+    dialog.showModal();
+  }
+
   if (!_w.__searchListeners) {
     _w.__searchListeners = true;
 
-    // Button click — delegate so the listener survives trigger DOM replacement.
-    document.addEventListener('click', (e) => {
-      if ((e.target as Element | null)?.closest('#search-trigger')) openSearch();
+    function updateSearchHint() {
+      const hint = document.querySelector<HTMLElement>('kbd.search-trigger__hint');
+      if (!hint) return;
+      const isMac = /Mac|iPhone|iPod|iPad/i.test(navigator.userAgent);
+      const modKey = hint.querySelector('kbd');
+      if (modKey) modKey.textContent = isMac ? '\u2318' : 'Ctrl';
+      const btn = document.getElementById('search-trigger');
+      btn?.setAttribute('aria-keyshortcuts', isMac ? 'Meta+K' : 'Control+K');
+      btn?.setAttribute('title', isMac ? 'Search (\u2318K)' : 'Search (Ctrl+K)');
+      hint.style.display = '';
+    }
+    updateSearchHint();
+
+    // Declarative show-modal via commandfor fires a `command` event on the dialog —
+    // use it to load page find and focus the input.
+    document.addEventListener('command', async (e: Event) => {
+      const ce = e as CommandEvent;
+      if (ce.target instanceof HTMLDialogElement && ce.target.id === 'search-dialog') {
+        await loadAndMountPagefind();
+      }
     });
 
     // Keyboard shortcut
@@ -127,6 +145,7 @@ import './Search.scss';
     document.addEventListener('astro:page-load', () => {
       const dialog = document.getElementById('search-dialog') as HTMLDialogElement | null;
       dialog?.close();
+      updateSearchHint();
     });
   }
 </script>

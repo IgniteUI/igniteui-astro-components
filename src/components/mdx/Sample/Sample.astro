@@ -56,56 +56,66 @@ const exampleTabId = `${widgetId}-example`;
 
 {iframeOnly ? (
   <>
-    <div class="sample-container" style={`height: ${height}px`}>
-      <iframe
-        src={iframeSrc}
-        title={alt || `${name} Example`}
-        style="width: 100%; height: 100%;"
-        frameborder="0"
-        seamless
-      ></iframe>
-    </div>
-    {fullscreenBtn && (
-      <button class="full-screen-btn" onclick={`window.open("${iframeSrc}")`}>View in full screen</button>
-    )}
-  </>
-) : (
-  <>
-    <div class="code-view"
-         id={widgetId}
-         data-iframe-src={iframeSrc}
-         data-demos-base-url={baseUrl}
-         data-github-src={githubSrc}
-         data-platform={lower}>
-      <div class="code-view-navbar">
-        <div class="code-view-tab code-view-tab--active" data-tab-id={exampleTabId}>EXAMPLE</div>
-        <span class="fs-button-container" title="Expand to fullscreen"></span>
-      </div>
-      <div class="code-views-container">
-        <div id={exampleTabId}
-             class="sample-container code-view-tab-content loading"
-             style={`height: ${height}px`}>
-          <iframe
-            data-src={iframeSrc}
-            title={alt || `${name} Example`}
+    <div class="igd-sample-container" style={ `height: ${ height }px` }>
+        <iframe
+            src={ iframeSrc }
+            title={ alt || `${ name } Example` }
             style="width: 100%; height: 100%;"
             frameborder="0"
             seamless
-          ></iframe>
-        </div>
-      </div>
+        ></iframe>
+        { fullscreenBtn && (
+            <div class="igd-code-view__header-actions">
+                <igc-icon-button
+                        name="open-link-blank"
+                        collection="docs"
+                        variant="outlined"
+                        class="igd-full-screen-btn igd-edit-in-btn"
+                        href={ iframeSrc }
+                        target="_blank"
+                        aria-label="Open in full screen"
+                ></igc-icon-button>
+            </div>
+        ) }
     </div>
+  </>
+) : (
+  <>
+      <div class="igd-code-view"
+           id={ widgetId }
+           data-iframe-src={ iframeSrc }
+           data-demos-base-url={ baseUrl }
+           data-github-src={ githubSrc }
+           data-platform={ lower }>
+          <div class="igd-code-view__inner">
+              <igc-tabs id={ `${ widgetId }-tabs` } alignment="start">
+                  <igc-tab id={ exampleTabId } label="EXAMPLE" selected>
+                      <div class="igd-sample-container loading" aria-busy="true" style={ `height: ${ height }px` }>
+                          <igc-circular-progress indeterminate class="sample-loading-indicator" aria-label="Loading sample"></igc-circular-progress>
+                          <iframe
+                                  data-src={ iframeSrc }
+                                  title={ alt || `${ name } Example` }
+                                  style="width: 100%; height: 100%;"
+                                  frameborder="0"
+                                  seamless
+                                  aria-hidden="true"
+                          ></iframe>
+                      </div>
+                  </igc-tab>
+              </igc-tabs>
 
-    <div class="divider--half"></div>
-
-    <script>
-      // Astro deduplicates module scripts — this runs exactly once per full page load.
-      // astro:page-load fires after every client-router navigation AND on the initial
-      // page load, so using it as the sole trigger handles both cases without
-      // double-initialization.
-      import { initSampleWidgets } from '../../../scripts/sample-widget';
-      document.addEventListener('astro:page-load', initSampleWidgets);
-    </script>
+          </div>
+      </div>
   </>
 )}
 
+<script>
+  // Astro deduplicates module scripts — this runs exactly once per full page load.
+  // astro:page-load fires after every client-router navigation AND on the initial
+  // page load, so using it as the sole trigger handles both cases without
+  // double-initialization.
+  // Placed outside the iframeOnly conditional so components and icons are always
+  // registered (needed for igc-icon-button even in iframeOnly + fullscreenBtn mode).
+  import { initSampleWidgets } from '../../../scripts/sample-widget';
+  document.addEventListener('astro:page-load', initSampleWidgets);
+</script>

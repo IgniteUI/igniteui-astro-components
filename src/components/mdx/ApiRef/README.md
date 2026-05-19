@@ -39,7 +39,7 @@ import ApiRef from 'igniteui-astro-components/components/mdx/ApiRef.astro';
 
 ## Platform context
 
-Same as `ApiLink` — resolved from the `PLATFORM` env var via `getPlatformContext()`.
+Same as `ApiLink` — resolved from the `Platform` env var via `getPlatformContext()`.
 
 When a page mixes types from different packages or different kinds, use separate `<ApiRef>` blocks:
 

@@ -62,6 +62,10 @@ import { buildSidebarFromToc } from './sidebar';
 import { getPlatformHead } from './platform';
 import type { HeadEntry, PlatformKey, NavLang } from './platform.ts';
 import { remarkEnvVars } from './plugins/remark-env-vars';
+export { rehypeTableWrapper } from './plugins/rehype-table-wrapper';
+import { rehypeTableWrapper } from './plugins/rehype-table-wrapper';
+import { rehypeHeadingAnchors } from './plugins/rehype-heading-anchors';
+export { rehypeHeadingAnchors } from './plugins/rehype-heading-anchors';
 import { remarkMdLinks } from './plugins/remark-md-links';
 import { remarkHtmlTransforms } from './plugins/remark-html-transforms';
 
@@ -705,6 +709,9 @@ export function createDocsSite(options: CreateDocsSiteOptions = {} as CreateDocs
                 ...((astroExtra as any).markdown?.remarkPlugins ?? []),
             ],
             rehypePlugins: [
+                rehypeCodeView,
+                rehypeTableWrapper,
+                rehypeHeadingAnchors,
                 ...((astroExtra as any).markdown?.rehypePlugins ?? []),
             ],
         },

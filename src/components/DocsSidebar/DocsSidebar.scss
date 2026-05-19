@@ -1,18 +1,168 @@
 @use 'igniteui-theming/sass/typography' as *;
+@use '../../styles/global/breakpoints' as *;
 
 .docs-sidebar {
 	display: flex;
 	flex-direction: column;
 	z-index: 0;
 	border-inline-end: var(--igd-app-outline);
-	padding-inline: var(--igd-padding-lg);
+	padding-inline: var(--igd-padding-md);
 	padding-block: calc(var(--igd-padding-lg) + rem(14px));
 	background-color: var(--igd-layout-sections-bg);
-	overflow-y: auto;
 	position: sticky;
 	top: var(--igd-header-height);
 	height: calc(100dvh - var(--igd-header-height));
 	max-height: 100dvh;
 	align-self: start;
 	gap: rem(24px);
+
+	// On tablet/mobile: sidebar becomes a full-height fixed overlay, hidden off-screen by default.
+	@media (max-width: #{$bp-tablet-max}) {
+		position: fixed;
+		inset-block: 0;
+		inset-inline-start: 0;
+		height: 100dvh;
+		max-height: 100dvh;
+		width: min(rem(360px), 85vw);
+		z-index: 100;
+		transform: translateX(-100%);
+		transition: transform 250ms ease, box-shadow 250ms ease;
+		box-shadow: none;
+	}
+	
+	.sidebar-gutter {
+		overflow-y: hidden;
+		scrollbar-gutter: stable;
+		
+		// This Makes sure the input border is visible
+		// This is the height of the input in fluent theme + 8px padding
+		// TODO this can be made smart using a css variable to override the original height of the input and used here
+		min-height: rem(40px);
+	}
+}
+
+// Overlay backdrop — only visible on tablet when sidebar is open.
+.docs-sidebar-backdrop {
+	display: none;
+
+	@media (max-width: #{$bp-tablet-max}) {
+		display: block;
+		position: fixed;
+		inset: 0;
+		z-index: 99;
+		background: rgba(0, 0, 0, 0.4);
+		opacity: 0;
+		pointer-events: none;
+		transition: opacity 250ms ease;
+	}
+}
+
+// Open state — driven by data-sidebar-open on <body>
+body[data-sidebar-open] {
+	@media (max-width: #{$bp-tablet-max}) {
+		overflow: hidden;
+
+		.docs-sidebar {
+			transform: translateX(0);
+			box-shadow: var(--ig-elevation-8);
+		}
+
+		.docs-sidebar-backdrop {
+			opacity: 1;
+			pointer-events: auto;
+		}
+	}
+}
+
+.sidebar-scroll {
+	overflow-y: auto;
+	scrollbar-gutter: stable;
+}
+
+.sidebar-badge {
+	--border-radius: #{rem(4px)};
+	--elevation: none;
+	
+	&::part(base) {
+		@include type-style('overline') {
+			margin: 0;
+		};
+		
+		border-radius: var(--border-radius);
+		border-width: rem(1px);
+		border-style: solid;
+		border-color: var(--border-color);
+	}
+}
+
+.updated {
+	--background-color: var(--igd-updated-bg);
+	--text-color: var(--igd-updated-color);
+	--icon-color: var(--igd-updated-color);
+	--border-color: var(--igd-updated-border);
+}
+
+.new {
+	--background-color: var(--igd-new-bg);
+	--text-color: var(--igd-new-color);
+	--icon-color: var(--igd-new-color);
+	--border-color: var(--igd-new-border);
+}
+
+.preview {
+	--background-color: var(--igd-preview-bg);
+	--text-color: var(--igd-preview-color);
+	--icon-color: var(--igd-preview-color);
+	--border-color: var(--igd-preview-border);
+}
+
+
+.premium {
+	--background-color: var(--igd-premium-bg);
+	--text-color: var(--igd-premium-color);
+	--icon-color: var(--igd-premium-color);
+	--border-color: var(--igd-premium-border);
+}
+
+.opensource {
+	--background-color: var(--igd-opensource-bg);
+	--text-color: var(--igd-opensource-color);
+	--icon-color: var(--igd-opensource-color);
+	--border-color: var(--igd-opensource-border);
+}
+
+.sidebar-premium-icon {
+	justify-self: end;
+	color: var(--igd-premium-color);
+	flex-shrink: 0;
+}
+
+.igd-lable-and-badge {
+	display: flex;
+	align-items: center;
+	gap: rem(4px);
+	
+	igc-badge {
+		justify-self: end;
+	}
+}
+
+.group-label-text {
+	@include type-style('body-2') {
+		margin: 0;
+	};
+	
+	color: light-dark(var(--ig-gray-800), var(--ig-gray-600));
+}
+
+.group-label-count {
+	color: light-dark(var(--ig-gray-500), var(--ig-gray-600));
+	margin-inline-start: rem(8px)
+}
+
+.igd-badge-container {
+	display: flex;
+	align-items: center;
+	gap: rem(4px);
+	margin-left: auto;
 }

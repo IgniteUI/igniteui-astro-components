@@ -30,7 +30,6 @@ const headings = [
   <DocsSidebar slot="sidebar" items={SIDEBAR} currentSlug={slug} />
   <DocsToc slot="toc" headings={headings} offsetTarget=".docs-subheader" />
 
-  <main class="content">
     <h1>DocsSubHeader</h1>
     <p>
       The subheader bar above this content is rendered with all available
@@ -93,14 +92,4 @@ const headings = [
       module. Links whose <code>platform</code> matches the current build
       platform are automatically hidden.
     </p>
-  </main>
 </DocsLayout>
-
-<style>
-  .content {
-    max-width: 60rem;
-    margin: 0 auto;
-    padding: 2rem 1.5rem 4rem;
-  }
-  h3 { margin-top: 1.75rem; }
-</style>

@@ -1,7 +1,7 @@
 @use 'igniteui-theming/sass/typography' as *;
 @use '../../styles/global/breakpoints' as *;
 
-.docs-subheader {
+.igd-docs-subheader {
 	position: sticky;
 	inset: 0;
 	display: grid;
@@ -14,39 +14,50 @@
 	border-block-end: var(--igd-app-outline);
 	z-index: 1;
 	background-color: var(--igd-layout-sections-bg);
+
+	// On tablet the sidebar column collapses — logo+toggle share their column,
+	// search fills the remainder. No extra column needed.
+	@media (max-width: #{$bp-mobile-horizontal-max}) {
+		.igd-docs-subheader {
+			--igd-page-layout-grid: 1fr;
+		}
+		
+		padding-inline-end: rem(16px);
+	}
 	
 	.igd-logo {
 		display: flex;
 		align-items: center;
 		height: 100%;
-		
-		@media (min-width: #{$bp-mobile-horizontal-max}) {
-			padding-inline: var(--igd-padding-lg);
+		padding-inline: rem(32px) rem(16px);
+
+		@media (max-width: #{$bp-mobile-horizontal-max}) {
+			display: none;
 		}
-		
-		svg {
+
+		> svg {
 			min-width: rem(79px);
 			height: rem(22px);
 			opacity: 0;
 			transform: translateY(-4px);
 			transition: opacity 200ms ease, transform 200ms ease;
 			position: absolute;
-			
+
 			.logo-type {
 				fill: var(--igd-logo-type);
 			}
 		}
-		
+
 		h1 {
 			opacity: 1;
 			transform: translateY(0);
 			transition: opacity 200ms ease, transform 200ms ease;
 			margin: 0;
 		}
-		
+
 		border-inline-end: var(--igd-app-outline);
 	}
-	
+
 	// Logo area: text visible by default, logo hidden.
 	// When the GlobalNavBar scrolls out of view, .docs-subheader--pinned is added
 	// and the logo fades in while the text fades out.
@@ -57,13 +68,102 @@
 				transform: translateY(0);
 				position: relative;
 			}
-			
+
 			h1 {
 				opacity: 0;
 				transform: translateY(4px);
 				position: absolute;
 				pointer-events: none;
 			}
+		}
+	}
+}
+
+.igd-docs-subheader__content {
+	display: flex;
+	align-items: center;
+	height: 100%;
+	gap: rem(16px);
+	
+	> igc-select:first-of-type {
+		margin-inline-start: auto;
+	}
+	
+	&:last-child {
+		margin-inline-end: rem(32px);
+	}
+	
+	@media (max-width: #{$bp-mobile-horizontal-max}) {
+		&:last-child {
+			margin-inline-end: 0;
+		}
+	}
+}
+
+// Sidebar toggle button — only visible on tablet/mobile (when the sidebar is hidden).
+// Rendered as igc-icon-button; styled via CSS custom properties.
+.subheader-sidebar-toggle {
+	display: none;
+
+	--foreground: light-dark(var(--ig-gray-700), var(--ig-gray-300));
+	--background: transparent;
+	--border-color: transparent;
+
+	--hover-foreground: var(--igd-accent);
+	--hover-background: transparent;
+
+	--focus-foreground: var(--igd-accent);
+	--focus-background: transparent;
+
+	--active-foreground: var(--igd-accent);
+	--active-background: transparent;
+
+	@media (max-width: #{$bp-tablet-max}) {
+		display: flex;
+		flex-shrink: 0;
+	}
+}
+
+// Theme toggle: show sun in dark mode, moon in light mode.
+.subheader-theme-toggle {
+	--foreground: light-dark(var(--ig-gray-900), var(--ig-gray-900));
+	--background: transparent;
+	--border-color: transparent;
+	
+	--hover-foreground: var(--ig-primary-100);
+	--hover-background: transparent;
+	
+	--focus-foreground: var(--ig-primary-100);
+	--focus-background: transparent;
+	
+	--active-foreground: var(--ig-primary-100);
+	--active-background: transparent;
+	
+	.theme-icon {
+		display: flex;
+	}
+
+	.theme-icon--moon {
+		display: none;
+	}
+
+	:root[data-theme='dark'] & {
+		.theme-icon--sun {
+			display: flex;
+		}
+
+		.theme-icon--moon {
+			display: none;
+		}
+	}
+
+	:root:not([data-theme='dark']) & {
+		.theme-icon--sun {
+			display: none;
+		}
+
+		.theme-icon--moon {
+			display: flex;
 		}
 	}
 }

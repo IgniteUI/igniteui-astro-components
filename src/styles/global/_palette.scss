@@ -123,9 +123,16 @@ $dark-palette: (
 );
 
 [data-theme='light'] {
+	color-scheme: light;
+	--igd-scrollbar-thumb: var(--ig-gray-300);
+	--igd-scrollbar-track: transparent;
 	@include palette($light-palette);
 }
 
 [data-theme='dark'] {
+	color-scheme: dark;
+	--igd-scrollbar-thumb: rgba(255, 255, 255, 0.25);
+	--igd-scrollbar-track: rgba(255, 255, 255, 0.05);
+
 	@include palette($dark-palette);
 }

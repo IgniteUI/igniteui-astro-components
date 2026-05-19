@@ -22,14 +22,35 @@ interface Props {
 }
 
 const { node, isLeaf } = Astro.props;
-const badge = (node.meta?.badge ?? null) as SidebarBadge | null;
+const childCount = !isLeaf ? (node.children?.length ?? 0) : 0;
+const badges = (node.meta?.badges ?? []) as SidebarBadge[];
 ---
 
 {isLeaf ? (
   <>
-    <span class="docs-tree-label">{node.label}</span>
-    {badge && <span class={`sl-badge ${badge.variant}`}>{badge.text}</span>}
+    <div class="igd-lable-and-badge">
+        <span class="docs-tree-label">{node.label}</span>
+        {badges.length > 0 && (
+            <div class="igd-badge-container">
+                {badges.filter(b => b.variant !== 'premium').map((badge) => (
+                    <>
+                        <igc-badge class={`sidebar-badge ${badge.variant}`} aria-hidden="true">{badge.text}</igc-badge>
+                        <span class="visually-hidden">, {badge.text}</span>
+                    </>
+                ))}
+                {badges.some(b => b.variant === 'premium') && (
+                    <>
+                        <igc-icon name="premium" collection="docs" class="sidebar-premium-icon" aria-hidden="true"></igc-icon>
+                        <span class="visually-hidden">, Premium</span>
+                    </>
+                )}
+            </div>
+        )}
+    </div>
   </>
 ) : (
-  <span class="group-label-text">{node.label}</span>
+  <span class="group-label-text">
+        <span>{node.label}</span>
+        <span class="group-label-count">/{childCount}/</span>
+  </span>
 )}
