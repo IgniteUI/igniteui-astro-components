@@ -53,18 +53,15 @@
 	> ul,
 	> ol,
 	> dl {
-		@include type-style('body-2') {
+		@include type-style('body-1') {
 			margin: 0;
 		}
 		
 		padding-inline-start: rem(18px);
 		padding-block: 0;
+		color: inherit;
 		
 		li {
-			@include type-style('secondary-text', false) {
-				margin: 0;
-			};
-			
 			> strong {
 				@include type-style('subtitle-2') {
 					margin: 0;
@@ -73,7 +70,7 @@
 			}
 			
 			position: relative;
-			color: var(--ig-gray-700);
+			color: inherit;
 			padding-inline: 0 rem(8px);
 			padding-block: rem(8px);
 			
@@ -113,7 +110,7 @@
 		
 		dd {
 			margin-block-end: rem(16px);
-			color: var(--ig-gray-700);
+			color: inherit;
 		}
 	}
 	
