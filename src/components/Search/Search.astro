@@ -17,8 +17,6 @@ import './Search.scss';
     class="search-trigger"
     aria-label="Search documentation"
     title="Search (Ctrl+K)"
-    commandfor="search-dialog"
-    command="show-modal"
 >
     <igc-icon name="search" collection="docs" aria-hidden="true"></igc-icon>
     <span class="search-trigger__label">Search</span>
@@ -128,13 +126,8 @@ import './Search.scss';
     }
     updateSearchHint();
 
-    // Declarative show-modal via commandfor fires a `command` event on the dialog —
-    // use it to load page find and focus the input.
-    document.addEventListener('command', async (e: Event) => {
-      const ce = e as CommandEvent;
-      if (ce.target instanceof HTMLDialogElement && ce.target.id === 'search-dialog') {
-        await loadAndMountPagefind();
-      }
+    document.getElementById('search-trigger')?.addEventListener('click', () => {
+      openSearch();
     });
 
     // Keyboard shortcut
