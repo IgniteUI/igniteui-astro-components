@@ -105,6 +105,13 @@ export default defineConfig({
   image: { service: { entrypoint: 'astro/assets/services/noop' } },
   integrations: [mdx()],
   markdown: {
+    shikiConfig: {
+      themes: {
+        light: 'catppuccin-latte',
+        dark: 'catppuccin-mocha',
+      },
+      wrap: true,
+    },
     rehypePlugins: [rehypeHeadingAnchors, rehypeTableWrapper],
   },
   vite: {

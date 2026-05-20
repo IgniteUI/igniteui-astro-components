@@ -41,13 +41,13 @@ const crumbs            = sidebarCrumbs.length > 0 ? sidebarCrumbs : (pageTitle 
         { resolvedSiteTitle && (
             <li class="docs-breadcrumb-item docs-breadcrumb-home">
                 <span>{ resolvedSiteTitle }</span>
-                <span class="docs-breadcrumb-sep" aria-hidden="true">
-                /
-                </span>
             </li>
         ) }
         { crumbs.map((label, i) => (
             <li class="docs-breadcrumb-item">
+                <span class="docs-breadcrumb-sep" aria-hidden="true">
+                /
+                </span>
                 <span class="docs-breadcrumb-crumb" title={ label }>{ label }</span>
             </li>
         )) }

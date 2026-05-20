@@ -1,48 +1,26 @@
 @use 'igniteui-theming/sass/typography/functions' as *;
 
-// Breakpoints
-
-// Single source of truth for all responsive breakpoints.
-
-// Viewport ranges:
-//   mobile            < 480px   (≤ 29.999rem)
-//   mobile-horizontal 480–767px (30rem – 47.999rem)
-//   tablet            768–1023px (48rem – 63.999rem)
-//   desktop           1024–1439px (64rem – 89.999rem)
-//   large-desktop     ≥ 1440px  (≥ 90rem)
-
+// Breakpoints — 3 viewport tiers
+//
+//   mobile:   < 768px               (max-width: $bp-mobile-max)
+//   tablet:   768px – 1279px        (max-width: $bp-tablet-max / min-width: $bp-tablet-min)
+//   desktop:  ≥ 1280px              (min-width: $bp-desktop-min)
+//
 // Usage:  @media (max-width: #{$bp-mobile-max}) { … }
 // Never use var() inside @media — CSS custom properties don't work there.
 
-/// Upper bounds (max-width)
-/// Top of mobile range  (< 480px)
-$bp-mobile-max: #{rem(479px)};
+/// Top of mobile range (< 768px)
+$bp-mobile-max: #{rem(767px)};
 
-/// Top of mobile-horizontal range (< 768px)
-$bp-mobile-horizontal-max: #{rem(767px)};
-
-/// Top of tablet range (< 1024px)
-$bp-tablet-max: #{rem(1023px)};
-
-/// Top of desktop range (< 1440px)
-$bp-desktop-max: #{rem(1439px)};
-
-/// Lower bounds (min-width)
-/// Start of mobile-horizontal (≥ 480px)
-$bp-mobile-horizontal-min: #{rem(480px)};
-
-/// Start of tablet (≥ 768px)
+/// Start of tablet range (≥ 768px)
 $bp-tablet-min: #{rem(768px)};
 
-/// Start of desktop (≥ 1024px)
-$bp-desktop-min: #{rem(1024px)};
+/// Top of tablet range (< 1280px)
+$bp-tablet-max: #{rem(1279px)};
 
-/// Start of large-desktop (≥ 1280px)
-$bp-large-desktop-min: #{rem(1280px)};
+$bp-reduce-sidebar: #{rem(1500px)};
 
-/// Layout-specific
-/// Below this the sidebar becomes a slide-in overlay (< 1300px)
-$bp-sidebar-max: #{rem(1600px)};
+$bp-hide-toc: #{rem(1100px)};
 
-/// At this and above the sidebar is always visible (≥ 1300px)
-$bp-sidebar-min: #{rem(1400px)};
+/// Start of desktop range (≥ 1280px)
+$bp-desktop-min: #{rem(1280px)};

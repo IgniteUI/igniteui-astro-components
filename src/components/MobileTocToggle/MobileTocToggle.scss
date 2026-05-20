@@ -1,0 +1,74 @@
+@use 'igniteui-theming/sass/typography' as *;
+
+@layer components {
+
+// Hidden by default. DocsLayout.scss reveals it on mobile-horizontal viewports.
+.mobile-toc {
+	display: none;
+}
+
+.mobile-toc__trigger {
+	display: flex;
+	align-items: center;
+	width: 100%;
+	gap: rem(8px);
+	padding-inline: var(--igd-padding-md);
+	padding-block: rem(12px);
+	background: transparent;
+	border: none;
+	cursor: pointer;
+	color: light-dark(var(--ig-gray-700), var(--ig-gray-300));
+
+	&:focus-visible {
+		outline: none;
+		box-shadow: inset 0 0 0 1px var(--igd-accent);
+	}
+
+	&[aria-expanded='true'] .mobile-toc__chevron {
+		transform: rotate(180deg);
+	}
+}
+
+.mobile-toc__label {
+	@include type-style('body-2') { margin: 0; };
+	font-weight: 600;
+	flex-shrink: 0;
+}
+
+.mobile-toc__active {
+	@include type-style('body-2') { margin: 0; };
+	color: var(--igd-accent);
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	flex: 1;
+	text-align: start;
+
+	&:empty { display: none; }
+
+	&::before { content: '— '; }
+}
+
+.mobile-toc__chevron {
+	flex-shrink: 0;
+	margin-inline-start: auto;
+	transition: transform 200ms ease;
+}
+
+.mobile-toc__dropdown {
+	overflow: hidden;
+	max-height: 0;
+	transition: max-height 300ms ease;
+
+	&[aria-hidden='false'] {
+		max-height: 75dvh;
+		overflow-y: auto;
+	}
+
+	nav {
+		padding-inline: var(--igd-padding-md);
+		padding-block-end: rem(16px);
+	}
+}
+
+}

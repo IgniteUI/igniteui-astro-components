@@ -66,7 +66,7 @@ igc-tree[data-variant='toc'] igc-tree-item[selected] > [slot='label'] {
 igc-tree-item {
 	--igc-tree-indentation-size: #{rem(20px)};
 	--background: transparent;
-	--foreground: light-dark(var(--ig-gray-600), var(--ig-gray-500));
+	--foreground: light-dark(var(--ig-gray-600), var(--ig-gray-400));
 	--background-selected: transparent;
 	--background-active: transparent;
 	--foreground-active: var(--igd-accent);
@@ -123,6 +123,7 @@ igc-tree-item::part(indicator) {
 igc-tree-item::part(label) {
 	width: 100%;
 	max-height: 100%;
+	padding-block: rem(6px);
 }
 
 igc-tree-item[data-has-children] {
@@ -142,10 +143,16 @@ igc-tree-item[data-has-children] {
 	transition: transform 0.2s ease;
 }
 
-igc-tree-item[aria-expanded='true'] {
+igc-tree-item[aria-expanded='false'] > [slot='label'] {
+	.tree-expand-icon {
+		color: var(--igd-accent);
+	}
+}
+
+igc-tree-item[aria-expanded='true'] > [slot='label'] {
 	.tree-expand-icon {
 		transform: rotate(0deg);
-		color: var(--igd-accent);
+		color: light-dark(var(--ig-gray-800), var(--ig-gray-300));
 	}
 }
 
@@ -154,9 +161,9 @@ igc-tree-item[data-has-children][data-depth='0'] {
 }
 
 igc-tree-item[data-has-children] {
-	--foreground: light-dark(var(--ig-gray-900), var(--ig-gray-50));
-	--foreground-selected: light-dark(var(--ig-gray-900), var(--ig-gray-50));
-	--foreground-active-selected: light-dark(var(--ig-gray-900), var(--ig-gray-50));
+	--foreground: light-dark(var(--ig-gray-900), var(--ig-gray-600));
+	--foreground-selected: light-dark(var(--ig-gray-900), var(--ig-gray-600));
+	--foreground-active-selected: light-dark(var(--ig-gray-900), var(--ig-gray-600));
 	--foreground-active: light-dark(var(--ig-gray-900), var(--ig-gray-50));
 	--foreground-hover: light-dark(var(--ig-gray-900), var(--ig-gray-50));
 }
@@ -175,9 +182,9 @@ igc-tree[data-variant='sidebar'] {
 	overflow: hidden;
 	
 	igc-tree-item[data-has-children] {
-		--foreground: light-dark(var(--ig-gray-900), var(--ig-gray-50));
-		--foreground-selected: light-dark(var(--ig-gray-900), var(--ig-gray-50));
-		--foreground-active-selected: light-dark(var(--ig-gray-900), var(--ig-gray-50));
+		--foreground: light-dark(var(--ig-gray-900), var(--ig-gray-600));
+		--foreground-selected: light-dark(var(--ig-gray-900), var(--ig-gray-600));
+		--foreground-active-selected: light-dark(var(--ig-gray-900), var(--ig-gray-600));
 		--foreground-active: light-dark(var(--ig-gray-900), var(--ig-gray-50));
 		--foreground-hover: light-dark(var(--ig-gray-900), var(--ig-gray-50));
 	}

@@ -33,6 +33,17 @@ import './Search.scss';
 
 <dialog id="search-dialog" class="search-dialog" aria-label="Search">
   <div class="igd-search-shell">
+    <div class="igd-search-mobile-bar">
+      <button
+        type="button"
+        class="search-trigger search-close"
+        aria-label="Close search"
+        commandfor="search-dialog"
+        command="close"
+      >
+        <igc-icon name="close" collection="docs" aria-hidden="true"></igc-icon>
+      </button>
+    </div>
     <div class="igd-search-status" aria-live="polite"></div>
     <div id="search-pagefind"></div>
   </div>

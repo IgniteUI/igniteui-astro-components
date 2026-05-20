@@ -1,4 +1,7 @@
+@use 'igniteui-theming' as *;
 @use '../../styles/global/search-shared' as *;
+
+@layer components {
 
 .search-dialog {
 	@include search-dialog-base-styles;
@@ -15,4 +18,14 @@
 		@include search-dialog-backdrop;
 		@include search-dialog-backdrop-open;
 	}
+}
+
+// Mobile-only bar — DocsLayout.scss flips display:flex on mobile.
+.igd-search-mobile-bar {
+	display: none;
+	justify-content: flex-end;
+	border-bottom: rem(1px) solid var(--igd-app-outline-color);
+	min-height: rem(48px);
+}
+
 }

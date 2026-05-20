@@ -114,7 +114,7 @@ const resolvedIndexUrl = indexUrl ?? `${basePath}api-search-index/manifest.json`
     <igc-dialog aria-label={placeholder} class="igd-search-dialog" hide-default-action close-on-outside-click>
         <div class="igd-search-shell">
             <header class="igd-search-header">
-                <igc-select slot="prefix" class="igd-search-scope" outlined aria-label="Search scope" value="current">
+                <igc-select  placement="bottom-start" distance="17" slot="prefix" class="igd-search-scope" outlined aria-label="Search scope" value="current">
                     {platformIcon && <igc-icon id="search-scope-trigger-icon" name={platformIcon} collection="docs" slot="prefix" aria-hidden="true"></igc-icon>}
                     <igc-select-item value="current">
                         <span data-scope-label>Current package</span>
@@ -132,10 +132,21 @@ const resolvedIndexUrl = indexUrl ?? `${basePath}api-search-index/manifest.json`
                     outlined
                     aria-label={placeholder}
                 >
-                    <igc-icon name="search" collection="docs" slot="prefix" aria-hidden="true"></igc-icon>
+                    <igc-icon class="igd-search-icon" name="search" collection="docs" slot="prefix" aria-hidden="true"></igc-icon>
                     <igc-icon-button slot="suffix" class="igd-search-clear" variant="flat" type="button" aria-label="Clear search" name="clear" collection="docs" hidden></igc-icon-button>
                 </igc-input>
+
+                <button
+                    type="button"
+                    data-close-modal
+                    class="search-trigger search-close"
+                    aria-label="Close search"
+                >
+                    <igc-icon name="close" collection="docs" aria-hidden="true"></igc-icon>
+                </button>
             </header>
+
+            <igc-divider></igc-divider>
 
             <div class="igd-search-status" aria-live="polite"></div>
 
@@ -280,6 +291,7 @@ const resolvedIndexUrl = indexUrl ?? `${basePath}api-search-index/manifest.json`
       }
 
       const openBtn  = this.querySelector<HTMLButtonElement>('button[data-open-modal]')!;
+      const closeBtn = this.querySelector<HTMLButtonElement>('button[data-close-modal]')!;
       this.dialog    = this.querySelector<IgcDialogComponent>('igc-dialog')!;
       this.input     = this.querySelector<IgcInputComponent>('igc-input.igd-search-input')!;
       this.clearBtn  = this.querySelector<IgcIconButtonComponent>('.igd-search-clear')!;
@@ -340,6 +352,8 @@ const resolvedIndexUrl = indexUrl ?? `${basePath}api-search-index/manifest.json`
 
       openBtn.addEventListener('click', open);
       openBtn.disabled = false;
+
+      closeBtn.addEventListener('click', () => this.closeModal());
 
       this.dialog.addEventListener('igcClosed', () => {
         document.body.toggleAttribute('data-search-modal-open', false);
@@ -758,7 +772,7 @@ const resolvedIndexUrl = indexUrl ?? `${basePath}api-search-index/manifest.json`
         allContent.push(
           `<span class="igd-search-category-header">${escapeHtml(cat.label)}</span>` +
           `<igc-list class="igd-search-results">${items}</igc-list>` +
-          moreBtn
+          moreBtn + `<igc-divider></igc-divider>`
         );
       }
       tabsHtml.push(

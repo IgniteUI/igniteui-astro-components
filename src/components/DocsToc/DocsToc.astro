@@ -92,9 +92,11 @@ const nodes = headingsToTreeNodes(headings, tocConfig);
             this.querySelectorAll('a[aria-current]').forEach(
                 (a) => a.removeAttribute('aria-current'),
             );
-            // Clear any stale selected state on tree items.
+            // Clear any stale selected / active state on tree items.
             this.querySelectorAll('igc-tree-item').forEach((item) => {
-                (item as HTMLElement & { selected: boolean }).selected = false;
+                const treeItem = item as HTMLElement & { selected: boolean; active: boolean };
+                treeItem.selected = false;
+                treeItem.active = false;
             });
 
             this.links = Array.from(this.querySelectorAll<HTMLAnchorElement>('a[href^="#"]'));
@@ -212,12 +214,15 @@ const nodes = headingsToTreeNodes(headings, tocConfig);
             const next = this.links[index];
             if (!next || next === this.currentLink) return;
 
-            const prevItem = this.currentLink?.closest<HTMLElement & { selected: boolean }>('igc-tree-item');
-            if (prevItem) prevItem.selected = false;
+            const prevItem = this.currentLink?.closest<HTMLElement & { selected: boolean; active: boolean }>('igc-tree-item');
+            if (prevItem) {
+                prevItem.selected = false;
+                prevItem.active = false;
+            }
             this.currentLink?.removeAttribute('aria-current');
 
             next.setAttribute('aria-current', 'true');
-            const nextItem = next.closest<HTMLElement & { selected: boolean }>('igc-tree-item');
+            const nextItem = next.closest<HTMLElement & { selected: boolean; active: boolean }>('igc-tree-item');
             if (nextItem) nextItem.selected = true;
 
             this.currentLink = next;

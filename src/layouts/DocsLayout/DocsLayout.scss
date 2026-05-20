@@ -1,6 +1,13 @@
 @use '../../styles/global/breakpoints' as *;
 @use 'igniteui-theming/sass/typography/functions' as *;
 
+// ────────────────────────────────────────────────────────────────────────────
+// Base (desktop-default) styles. Responsive overrides live in the
+// "RESPONSIVE" section at the bottom of this file — that is the single
+// place where every breakpoint-driven rule for the docs layout (and the
+// components it contains) is defined.
+// ────────────────────────────────────────────────────────────────────────────
+
 .igd-page-layout {
 	display: grid;
 	grid-template-columns: var(--igd-page-layout-grid);
@@ -8,40 +15,7 @@
 	color: var(--igd-on-app-bg);
 	margin: 0;
 	z-index: 0;
-	
-	@media (max-width: #{$bp-tablet-max}) {
-		--igd-page-layout-grid: 1fr;
-		--igd-page-padding: #{rem(38px)};
-		
-		.search-trigger__lable,
-		.search-trigger__hint {
-			display: none;
-		}
-		
-		.search-trigger {
-			border-inline-end: var(--igd-app-outline);
-		}
-	}
-	
-	@media (min-width: #{$bp-tablet-min}) {
-		justify-content: center;
-		padding-inline: 0;
-		
-		.igd-docs-subheader {
-			--igd-page-layout-grid: auto 1fr;
-		}
-	}
-	
-	@media (min-width: #{$bp-desktop-min}) {
-		.igd-docs-subheader {
-			--igd-page-layout-grid: #{minmax(rem(300px), rem(400px)) 1fr};
-		}
-	}
-	
-	@media (max-width: #{$bp-mobile-horizontal-max}) {
-		padding-inline: 0;
-	}
-	
+
 	&:not(:has(.igd-right-sidebar)) {
 		.igd-main-pane {
 			> main {
@@ -53,17 +27,8 @@
 
 .igd-main-content {
 	display: grid;
-	padding-inline: rem(32px);
 	position: relative;
-	
-	@media (min-width: #{$bp-tablet-min}) {
-		padding-inline: 0;
-	}
-	
-	@media (max-width: #{$bp-mobile-horizontal-max}) {
-		padding-inline: 0;
-	}
-	
+
 	&:not(:has(.igd-right-sidebar)) {
 		.igd-main-pane {
 			> main {
@@ -71,7 +36,7 @@
 			}
 		}
 	}
-	
+
 	// ── Static square grid background ────────────────────────────────────────────
 	// Pure CSS: two repeating-linear-gradients intersected via mask-composite
 	// create 4×4px squares at a 35px grid pitch.
@@ -84,40 +49,34 @@
 		pointer-events: none;
 		user-select: none;
 		z-index: 0;
-		
+
 		$pitch: 35px;
 		$sq:     3px;
 		$pad:   15.5px;
-		
+
 		background-color: light-dark(var(--ig-gray-500), var(--igd-accent));
-		
-		// Three mask layers, all intersected:
-		//   vignette ∩ horizontal-strips ∩ vertical-strips → squares that fade at the edges
+
+		// Two mask layers intersected:
+		//   horizontal-strips ∩ vertical-strips → squares with no edge fade
 		mask-image:
-			// 1. Vignette — opaque center, transparent at edges
-			radial-gradient(ellipse 80% 80% at 50% 40%, black 40%, transparent 100%),
-				// 2. Horizontal 4px bands at 35px pitch  (repeating-linear 0deg = top-to-bottom)
+			// 1. Horizontal 4px bands at 35px pitch  (repeating-linear 0deg = top-to-bottom)
 			repeating-linear-gradient(0deg,
 			transparent 0,           transparent #{$pad},
 			black        #{$pad},    black        #{$pad + $sq},
 			transparent  #{$pad + $sq}, transparent #{$pitch}
 			),
-				// 3. Vertical 4px bands at 35px pitch  (repeating-linear 90deg = left-to-right)
+			// 2. Vertical 4px bands at 35px pitch  (repeating-linear 90deg = left-to-right)
 			repeating-linear-gradient(90deg,
 			transparent 0,           transparent #{$pad},
 			black        #{$pad},    black        #{$pad + $sq},
 			transparent  #{$pad + $sq}, transparent #{$pitch}
 			);
-		
-		mask-size: 100% 100%, #{$pitch} #{$pitch}, #{$pitch} #{$pitch};
-		mask-composite: intersect, intersect;
-		-webkit-mask-composite: source-in, source-in;
-		
+
+		mask-size: #{$pitch} #{$pitch}, #{$pitch} #{$pitch};
+		mask-composite: intersect;
+		-webkit-mask-composite: source-in;
+
 		opacity: .5;
-		
-		@media (max-width: #{$bp-mobile-max}) {
-			display: none;
-		}
 	}
 }
 
@@ -126,12 +85,8 @@
 	gap: var(--ig-padding);
 	background-color: var(--igd-layout-sections-bg);
 	border-inline: var(--igd-app-outline);
-	width: clamp(rem(300px), 100%, rem(940px));
-	margin-inline-start: auto;
-	
-	@media (max-width: #{$bp-mobile-horizontal-max}) {
-		border: none;
-	}
+	width: clamp(rem(1000px), 100%, rem(1200px));
+	margin-inline: auto;
 }
 
 .igd-main-content__page + aside {
@@ -144,21 +99,9 @@
 	padding-inline: rem(70px) rem(32px);
 	position: relative;
 
-	@media (max-width: #{$bp-sidebar-max}) {
-		padding-inline: rem(34px) rem(16px);
-		gap: rem(24px);
-	}
-	
-	@media (max-width: #{$bp-tablet-max}) {
-		padding-inline: rem(16px);
-		gap: rem(16px)
-	}
-	
-	@media (max-width: #{$bp-mobile-horizontal-max}) {
-		padding: 0;
-		
-		aside {
-			display: none;
+	&:has(aside) {
+		.igd-main-content__page {
+			margin-inline-end: 0;
 		}
 	}
 }
@@ -167,4 +110,221 @@
 	max-width: 60rem;
 	margin: 0 auto;
 	padding: 0;
+}
+
+// ════════════════════════════════════════════════════════════════════════════
+// RESPONSIVE — 3 viewport tiers
+//
+//   mobile:    < 768px       (max-width: $bp-mobile-max)
+//   tablet:    768–1279px    (max-width: $bp-tablet-max  /  min-width: $bp-tablet-min)
+//   desktop:   ≥ 1280px      (default — no media query)
+//
+// This is the single source of truth for every responsive rule that affects
+// the docs layout and the components rendered inside `.igd-page-layout`.
+// ════════════════════════════════════════════════════════════════════════════
+
+
+@media (max-width: #{$bp-reduce-sidebar}) {
+	.igd-page-layout {
+		--igd-page-layout-grid: #{minmax(rem(200px), rem(290px)) 1fr};
+	}
+	
+	.igd-main-content__inner {
+		padding-inline: rem(26px) 0;
+		gap: rem(26px);
+	}
+}
+
+// ── Mobile + Tablet (< 1280px) — everything below desktop ──────────────────
+@media (max-width: #{$bp-tablet-max}) {
+	:root {
+		--igd-header-height: #{rem(50px)};
+		--igd-page-padding: #{rem(38px)};
+	}
+
+	// Single-column page grid; subheader follows via subgrid.
+	.igd-page-layout {
+		--igd-page-layout-grid: 1fr;
+	}
+	
+	.igd-main-content {
+		grid-row: 2;
+	}
+
+	// Logo only shown on desktop, where it can sit in its own sidebar-aligned column.
+	.igd-logo {
+		display: none;
+	}
+
+	// Search: collapse trigger to icon-only and reveal the mobile-only close UI.
+	.search-trigger {
+		max-width: none;
+		width: auto;
+	}
+
+	.search-trigger__label,
+	.search-trigger__lable,
+	.search-trigger__hint {
+		display: none;
+	}
+
+	.igd-search-mobile-bar {
+		display: flex;
+	}
+
+	// Sidebar becomes a fixed slide-in overlay, hidden off-screen by default.
+	.docs-sidebar {
+		--igd-sidebar-z-index: 1000;
+		
+		position: fixed;
+		inset-block: 0;
+		inset-inline-start: 0;
+		height: 100dvh;
+		max-height: 100dvh;
+		width: min(rem(360px), 85vw);
+		transform: translateX(-100%);
+		transition: transform 250ms ease, box-shadow 250ms ease;
+		box-shadow: none;
+	}
+
+	.docs-sidebar-backdrop {
+		display: block;
+		position: fixed;
+		inset: 0;
+		z-index: 99;
+		background: light-dark(var(--ig-gray-900), var(--ig-gray-100));
+		opacity: 0;
+		pointer-events: none;
+		transition: opacity 250ms ease;
+	}
+
+	body[data-sidebar-open] {
+		overflow: hidden;
+
+		.docs-sidebar {
+			transform: translateX(0);
+			box-shadow: var(--ig-elevation-8);
+		}
+
+		.docs-sidebar-backdrop {
+			opacity: .6;
+			pointer-events: auto;
+			backdrop-filter: blur(10px);
+		}
+	}
+
+	// Subheader sidebar toggle reveals when the sidebar is not persistent.
+	.subheader-sidebar-toggle {
+		display: flex;
+		flex-shrink: 0;
+	}
+
+	// Logo inside the slide-in sidebar (visible only when sidebar is an overlay).
+	.sidebar-logo {
+		display: flex;
+		margin-block-end: rem(16px);
+	}
+
+	.igd-main-content__inner {
+		padding-inline: 0;
+	}
+	
+	// This is the height of the input in fluent theme + 8px padding + height of the logo above
+	.sidebar-gutter {
+		min-height: rem(80px);
+	}
+}
+
+// ── Mobile only (< 768px) ──────────────────────────────────────────────────
+@media (max-width: #{$bp-mobile-max}) {
+	.igd-main-content::before {
+		display: none;
+	}
+
+	.igd-version-select {
+		max-width: rem(90px);
+	}
+
+	.igd-docs-subheader {
+		padding-inline-end: rem(16px);
+	}
+
+	.igd-docs-subheader__content:last-child {
+		margin-inline-end: 0;
+	}
+
+	.mobile-toc {
+		display: block;
+		position: sticky;
+		top: var(--igd-header-height);
+		z-index: 10;
+		grid-column: 1 / -1;
+		border-block-end: var(--igd-app-outline);
+		background-color: var(--igd-layout-sections-bg);
+	}
+
+	.igd-main-content__markdown {
+		padding-inline: rem(32px);
+	}
+
+	// Search dialog goes fullscreen on mobile only.
+	// `.igd-page-layout` prefix bumps specificity so this beats the
+	// centered-card base styles declared in Search.scss / SearchAdvanced.scss
+	// (those files load after this one in the Astro bundle).
+	.igd-page-layout .search-dialog,
+	.igd-page-layout .igd-search-dialog::part(base) {
+		margin: 0;
+		width: 100%;
+		max-width: 100%;
+		height: 100dvh;
+		max-height: 100dvh;
+		border-radius: 0;
+	}
+	
+	.search-trigger.search-close {
+		display: flex;
+		flex-shrink: 0;
+		padding-inline: var(--igd-padding-sm);
+	}
+	
+	igc-input {
+		&::part(container) {
+			&:focus-within {
+				box-shadow:
+					0 0 0 1px var(--igd-accent),
+					inset 0 1px 0 var(--igd-accent),
+					inset 0 -1px 0 var(--igd-accent),
+					 -1px 0 0 var(--igd-accent);
+			}
+		}
+	}
+}
+
+@media (max-width: #{$bp-hide-toc}) {
+	.igd-main-content__inner {
+		aside {
+			display: none;
+		}
+	}
+	
+	
+	.igd-main-content__page {
+		border: none;
+	}
+}
+
+// ── Tablet + Desktop (≥ 768px) ─────────────────────────────────────────────
+@media (min-width: #{$bp-tablet-min}) {
+	.igd-page-layout {
+		justify-content: center;
+	}
+
+	.igd-package-select::part(native-input),
+	.igd-version-select::part(native-input) {
+		field-sizing: content;
+
+		&::part(base) {
+			min-width: 100%;
+		}
+	}
 }

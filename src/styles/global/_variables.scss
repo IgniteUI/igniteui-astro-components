@@ -1,6 +1,5 @@
 @use 'igniteui-theming/sass/typography' as *;
 @use 'palette' as *;
-@use 'breakpoints' as *;
 
 /* ============================================================
    CSS Custom Properties
@@ -31,26 +30,15 @@
 
 	--igd-sidebar-spacing: #{rem(46px)} #{rem(24px)};
 	
-	--igd-header-height: #{rem(50px)};
-	
-	@media (min-width: #{$bp-tablet-max}) {
-		--igd-header-height: #{rem(75px)};
-	}
-	
-	--sticky-sidebar-top: 0;
-	
-	--igd-members-spacing: var(--igd-border-radius) #{rem(16px)};
-	
-	--igd-page-layout-grid: #{minmax(rem(300px), rem(400px)) 1fr};
-	
-	@media (max-width: #{$bp-sidebar-max}) {
-		--igd-page-layout-grid: #{minmax(rem(180px), rem(260px)) 1fr};
-	}
+	// Desktop default. DocsLayout.scss overrides to 50px on mobile + tablet.
+	--igd-header-height: #{rem(75px)};
 
-	@media (max-width: #{$bp-desktop-min}) {
-		--igd-page-padding: #{rem(36px)};
-	}
-	
+	--sticky-sidebar-top: 0;
+
+	--igd-members-spacing: var(--igd-border-radius) #{rem(16px)};
+
+	--igd-page-layout-grid: #{minmax(rem(200px), rem(340px)) 1fr};
+
 	--igd-page-padding: #{rem(50px)};
 	
 	// Padding
@@ -97,7 +85,6 @@
 	--igd-aside-info-border: light-dark(var(--ig-primary-700), var(--ig-primary-400));
 	--igd-aside-info-code-background: light-dark(var(--ig-primary-100), var(--ig-primary-900));
 	
-	
 	--igd-aside-warning-title: light-dark(var(--ig-secondary-700), var(--ig-secondary-400));
 	--igd-aside-warning-content: light-dark(var(--ig-secondary-700), var(--ig-secondary-300));
 	--igd-aside-warning-icon: light-dark(var(--ig-secondary-700), var(--ig-secondary-400));
@@ -116,11 +103,11 @@
 	// TABLES
 	--igd-table-max-height: #{rem(350px)};
 	--igd-table-pinned-border-size: #{rem(1px)};
-	--igd-table-fg: light-dark(var(--ig-gray-900), var(--ig-gray-900));
+	--igd-table-fg: light-dark(var(--ig-gray-700), var(--ig-gray-500));
 	--igd-table-bg: var(--igd-layout-sections-bg);
 	--igd-tabe-even-row-bg: var(--igd-table-bg);
 	--igd-table-border-color: light-dark(var(--ig-gray-200), var(--ig-gray-200));
 	
 	--igd-table-header-bg: var(--igd-layout-sections-bg);
-	--igd-table-header-fg: light-dark(var(--ig-gray-900), var(--ig-gray-400));
+	--igd-table-header-fg: light-dark(var(--ig-gray-900), var(--ig-gray-700));
 }
