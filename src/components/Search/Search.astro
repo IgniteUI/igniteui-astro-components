@@ -23,91 +23,139 @@ import './Search.scss';
     <kbd class="search-trigger__hint" style="display:none;"><kbd>Ctrl</kbd><kbd>K</kbd></kbd>
 </button>
 
-<script>
-  import { defineComponents, IgcIconComponent } from 'igniteui-webcomponents';
-  import '../../scripts/icon-registry';
-  defineComponents(IgcIconComponent);
-</script>
-
-<dialog id="search-dialog" class="search-dialog" aria-label="Search">
-  <div class="igd-search-shell">
-    <div class="igd-search-mobile-bar">
-      <button
-        type="button"
-        class="search-trigger search-close"
-        aria-label="Close search"
-        commandfor="search-dialog"
-        command="close"
-      >
-        <igc-icon name="close" collection="docs" aria-hidden="true"></igc-icon>
-      </button>
+<igc-dialog id="search-dialog" class="igd-search-dialog" aria-label="Search" hide-default-action close-on-outside-click>
+    <div class="igd-search-shell">
+        <igc-input
+            type="text"
+            class="igd-search-input"
+            placeholder="Search documentation"
+            autocomplete="off"
+            outlined
+            aria-label="Search documentation"
+        >
+            <igc-icon name="search" collection="docs" slot="prefix" aria-hidden="true"></igc-icon>
+            <igc-icon-button
+                slot="suffix"
+                class="igd-search-clear"
+                variant="flat"
+                type="button"
+                aria-label="Clear search"
+                name="clear"
+                collection="docs"
+                hidden
+            ></igc-icon-button>
+        </igc-input>
+        <div class="igd-search-status" aria-live="polite"></div>
+        <igc-list class="igd-search-results" hidden></igc-list>
     </div>
-    <div class="igd-search-status" aria-live="polite"></div>
-    <div id="search-pagefind"></div>
-  </div>
-</dialog>
+</igc-dialog>
 
 <script>
-  // BASE_URL accounts for non-root deployments, e.g. /products/ignite-ui-angular/...
+  import {
+    defineComponents,
+    IgcIconComponent,
+    IgcIconButtonComponent,
+    IgcDialogComponent,
+    IgcInputComponent,
+    IgcListComponent,
+    IgcListItemComponent,
+  } from 'igniteui-webcomponents';
+  import '../../scripts/icon-registry';
+
+  defineComponents(
+    IgcIconComponent,
+    IgcIconButtonComponent,
+    IgcDialogComponent,
+    IgcInputComponent,
+    IgcListComponent,
+    IgcListItemComponent,
+  );
+
   const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+  const _w   = window as any;
 
-  // With ClientRouter, this script re-runs on every navigation.
-  // State is kept on `window` so it survives re-executions.
-  const _w = window as any;
+  const INPUT_DEBOUNCE_MS = 150;
+  const MAX_RESULTS       = 10;
 
-  async function loadAndMountPagefind() {
-    const dialog = document.getElementById('search-dialog') as HTMLDialogElement | null;
-    if (!dialog) return;
+  async function loadPagefind() {
+    if (_w.__pagefind) return _w.__pagefind;
+    try {
+      const pf = await import(/* @vite-ignore */ `${base}/pagefind/pagefind.js`);
+      await pf.init();
+      _w.__pagefind = pf;
+      return pf;
+    } catch {
+      return null;
+    }
+  }
 
-    if (!_w.PagefindUI) {
-      try {
-        const link = Object.assign(document.createElement('link'), {
-          rel: 'stylesheet',
-          href: `${base}/pagefind/pagefind-ui.css`,
-        });
-        document.head.appendChild(link);
+  function escapeHtml(s: string): string {
+    return s
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
 
-        await new Promise<void>((resolve, reject) => {
-          const s = document.createElement('script');
-          s.src = `${base}/pagefind/pagefind-ui.js`;
-          s.onload = () => resolve();
-          s.onerror = () => reject(new Error('Failed to load pagefind-ui.js'));
-          document.head.appendChild(s);
-        });
-      } catch (err) {
-        console.error('[Search] pagefind failed to load:', err);
-        const el = document.getElementById('search-pagefind');
-        if (el) el.textContent = 'Search index not available — run a production build first.';
-        return;
-      }
+  async function runSearch(query: string) {
+    const statusEl = document.querySelector<HTMLElement>('.igd-search-status');
+    const listEl   = document.querySelector<any>('igc-list.igd-search-results');
+    const clearBtn = document.querySelector<any>('.igd-search-clear');
+    const input    = document.querySelector<any>('igc-input.igd-search-input');
+
+    if (!statusEl || !listEl) return;
+
+    if (clearBtn) clearBtn.hidden = !query;
+    input?.requestUpdate?.();
+
+    if (!query.trim()) {
+      statusEl.textContent = '';
+      listEl.innerHTML     = '';
+      listEl.hidden        = true;
+      return;
     }
 
-    const container = document.getElementById('search-pagefind');
-    if (container && !container.firstChild) {
-      try {
-        new _w.PagefindUI({
-          element: '#search-pagefind',
-          showSubResults: true,
-          showImages: false,
-          resetStyles: false,
-          baseUrl: base || '/',
-          bundlePath: `${base}/pagefind/`,
-        });
-      } catch (err) {
-        console.error('[Search] PagefindUI init failed:', err);
-      }
+    statusEl.textContent = 'Searching…';
+
+    const pf = await loadPagefind();
+    if (!pf) {
+      statusEl.textContent = 'Search index not available — run a production build first.';
+      return;
     }
 
-    requestAnimationFrame(() => {
-      (dialog.querySelector('input') as HTMLInputElement | null)?.focus();
-    });
+    const search  = await pf.search(query.trim());
+    const results = await Promise.all(
+      search.results.slice(0, MAX_RESULTS).map((r: any) => r.data()),
+    );
+
+    if (results.length === 0) {
+      statusEl.innerHTML = `No results for “<strong class="igd-search-query">${escapeHtml(query)}</strong>”.`;
+      listEl.innerHTML   = '';
+      listEl.hidden      = true;
+      return;
+    }
+
+    const total = search.results.length;
+    statusEl.textContent = total > MAX_RESULTS
+      ? `Showing ${MAX_RESULTS} of ${total} results`
+      : `${total} result${total === 1 ? '' : 's'}`;
+    listEl.innerHTML = results.map((r: any) => `<igc-list-item>
+      <a href="${escapeHtml(r.url)}" class="igd-search-link">
+        <span class="igd-search-result-title">${escapeHtml(r.meta?.title ?? r.url)}</span>
+        <span class="igd-search-result-excerpt">${r.excerpt ?? ''}</span>
+      </a>
+    </igc-list-item>`).join('');
+    listEl.hidden = false;
   }
 
   async function openSearch() {
-    const dialog = document.getElementById('search-dialog') as HTMLDialogElement | null;
+    const dialog = document.querySelector<any>('igc-dialog.igd-search-dialog');
     if (!dialog) return;
-    await loadAndMountPagefind();
-    dialog.showModal();
+    await dialog.show();
+    loadPagefind();
+    requestAnimationFrame(() => {
+      document.querySelector<any>('igc-input.igd-search-input')?.focus();
+    });
   }
 
   if (!_w.__searchListeners) {
@@ -118,39 +166,48 @@ import './Search.scss';
       if (!hint) return;
       const isMac = /Mac|iPhone|iPod|iPad/i.test(navigator.userAgent);
       const modKey = hint.querySelector('kbd');
-      if (modKey) modKey.textContent = isMac ? '\u2318' : 'Ctrl';
+      if (modKey) modKey.textContent = isMac ? '⌘' : 'Ctrl';
       const btn = document.getElementById('search-trigger');
       btn?.setAttribute('aria-keyshortcuts', isMac ? 'Meta+K' : 'Control+K');
-      btn?.setAttribute('title', isMac ? 'Search (\u2318K)' : 'Search (Ctrl+K)');
+      btn?.setAttribute('title',             isMac ? 'Search (⌘K)' : 'Search (Ctrl+K)');
       hint.style.display = '';
     }
     updateSearchHint();
 
-    document.getElementById('search-trigger')?.addEventListener('click', () => {
-      openSearch();
-    });
+    document.getElementById('search-trigger')?.addEventListener('click', () => openSearch());
 
-    // Keyboard shortcut
     document.addEventListener('keydown', (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
         e.preventDefault();
-        const dialog = document.getElementById('search-dialog') as HTMLDialogElement | null;
-        if (dialog?.open) dialog.close(); else openSearch();
+        const dialog = document.querySelector<any>('igc-dialog.igd-search-dialog');
+        if (dialog?.open) dialog.hide(); else openSearch();
       }
     });
 
-    // Backdrop click closes the dialog
-    document.addEventListener('click', (e: MouseEvent) => {
-      const dialog = document.getElementById('search-dialog') as HTMLDialogElement | null;
-      if (dialog && e.target === dialog) dialog.close();
+    document.addEventListener('astro:page-load', () => {
+      document.querySelector<any>('igc-dialog.igd-search-dialog')?.hide();
+      updateSearchHint();
     });
 
-    // Close on navigation
-    document.addEventListener('astro:page-load', () => {
-      const dialog = document.getElementById('search-dialog') as HTMLDialogElement | null;
-      dialog?.close();
-      updateSearchHint();
+    let debounceTimer: ReturnType<typeof setTimeout> | null = null;
+    document.querySelector('igc-input.igd-search-input')?.addEventListener('igcInput', () => {
+      if (debounceTimer !== null) clearTimeout(debounceTimer);
+      const val = (document.querySelector<any>('igc-input.igd-search-input')?.value as string) ?? '';
+      debounceTimer = setTimeout(() => runSearch(val), INPUT_DEBOUNCE_MS);
+    });
+
+    document.querySelector('.igd-search-clear')?.addEventListener('click', () => {
+      const input = document.querySelector<any>('igc-input.igd-search-input');
+      if (!input) return;
+      input.value = '';
+      input.focus();
+      runSearch('');
+    });
+
+    document.querySelector('.igd-search-shell')?.addEventListener('click', (e: Event) => {
+      if ((e.target as Element).closest('a[href]')) {
+        document.querySelector<any>('igc-dialog.igd-search-dialog')?.hide();
+      }
     });
   }
 </script>
-
