@@ -110,8 +110,16 @@ if (kind === 'class') {
     const slug = pkgConfig.noPackagePrefix
         ? baseType
         : `${pkgConfig.packageId}.${baseType}`;
+    // Enum members keep their authored case (TypeDoc emits PascalCase ids
+    // for enum members like #Area, #Column).
     const memberAnchorNonClass = member
-        ? `#${pkgConfig.pascalCaseMembers ? member.charAt(0).toUpperCase() + member.slice(1) : member.toLowerCase()}`
+        ? `#${
+            kind === 'enum'
+                ? member
+                : pkgConfig.pascalCaseMembers
+                    ? member.charAt(0).toUpperCase() + member.slice(1)
+                    : member.toLowerCase()
+        }`
         : '';
     url = `${pkgConfig.docRoot}/${segment}/${slug}${memberAnchorNonClass}`;
 }
