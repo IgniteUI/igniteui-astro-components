@@ -114,7 +114,7 @@ const resolvedIndexUrl = indexUrl ?? `${basePath}api-search-index/manifest.json`
     <igc-dialog aria-label={placeholder} class="igd-search-dialog" hide-default-action close-on-outside-click>
         <div class="igd-search-shell">
             <header class="igd-search-header">
-                <igc-select slot="prefix" class="igd-search-scope" outlined aria-label="Search scope" value="current">
+                <igc-select  placement="bottom-start" distance="17" slot="prefix" class="igd-search-scope" outlined aria-label="Search scope" value="current">
                     {platformIcon && <igc-icon id="search-scope-trigger-icon" name={platformIcon} collection="docs" slot="prefix" aria-hidden="true"></igc-icon>}
                     <igc-select-item value="current">
                         <span data-scope-label>Current package</span>
@@ -145,6 +145,8 @@ const resolvedIndexUrl = indexUrl ?? `${basePath}api-search-index/manifest.json`
                     <igc-icon name="close" collection="docs" aria-hidden="true"></igc-icon>
                 </button>
             </header>
+
+            <igc-divider></igc-divider>
 
             <div class="igd-search-status" aria-live="polite"></div>
 

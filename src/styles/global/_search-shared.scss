@@ -63,8 +63,8 @@
 .search-trigger.search-close {
 	display: none;
 	color: light-dark(var(--ig-gray-600), var(--ig-gray-400));
-
-	border-inline-start: var(--igd-app-outline);
+	
+	border-inline-start: rem(1px) solid light-dark(var(--ig-gray-400), var(--ig-gray-300));
 	border-inline-end: 0;
 
 	igc-icon {
@@ -90,7 +90,7 @@
 
 /// Backdrop base state (before open animation).
 @mixin search-dialog-backdrop {
-	background-color: light-dark(var(--ig-gray-800), var(--ig-gray-800));
+	background-color: light-dark(var(--ig-gray-800), var(--ig-gray-50));
 	will-change: backdrop-filter, opacity;
 }
 
@@ -240,7 +240,8 @@
 	--hover-foreground: var(--igd-accent);
 	--focus-background: transparent;
 	--focus-foreground: var(--igd-accent);
-	--active-foreground: transparent;
+	--active-foreground: var(--igd-accent);
+	--active-background: transparent;
 	--focus-hover-background: var(--igd-accent);
 	--focus-hover-foreground: transparent;
 	--focus-visible-foreground: var(--igd-accent);
@@ -260,7 +261,7 @@
 	display: flex;
 	justify-self: center;
 	
-	padding-block-start: rem(26px);
+	margin-block-start: rem(26px);
 }
 
 .igd-search-meta {

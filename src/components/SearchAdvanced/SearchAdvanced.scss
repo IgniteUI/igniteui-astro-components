@@ -48,6 +48,7 @@
 				box-shadow:
 					0 0 0 1px var(--igd-accent),
 					inset 0 1px 0 var(--igd-accent),
+					inset 0 -1px 0 var(--igd-accent),
 					inset -1px 0 0 var(--igd-accent);
 			}
 		}
@@ -69,8 +70,6 @@
 	
 	igc-tabs {
 		igc-divider {
-			--ig-divider-color: var(--igd-app-outline-color);
-			
 			margin-block: rem(26px);
 			
 			&:last-of-type {
@@ -142,7 +141,6 @@
 	
 	.igd-search-header {
 		display: flex;
-		border-bottom: rem(1px) solid var(--igd-app-outline-color);
 		min-height: rem(75px);
 		padding-inline-start: rem(16px);
 	}
@@ -204,7 +202,7 @@
 	}
 	
 	igc-divider {
-		--color: var(--igd-app-outline-color);
+		--color: light-dark(var(--ig-gray-400), var(--ig-gray-300));
 	}
 }
 

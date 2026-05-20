@@ -119,7 +119,7 @@ const crumbs = sidebarCrumbs.length > 0 ? sidebarCrumbs : (pageTitle ? [pageTitl
 
             <!-- Package selector (optional) -->
             {packages && packages.length > 0 && (
-                <igc-select id="package-select" class="igd-package-select" outlined value={selectedPackage} aria-label={packageLabel}>
+                <igc-select distance="17" placement="bottom-end" id="package-select" class="igd-package-select" outlined value={selectedPackage} aria-label={packageLabel}>
                     {platformIcon && <igc-icon name={platformIcon} collection="docs" slot="prefix" aria-hidden="true"></igc-icon>}
                     {packages.map((p) => (
                             <igc-select-item value={p}>{p}</igc-select-item>
@@ -129,7 +129,7 @@ const crumbs = sidebarCrumbs.length > 0 ? sidebarCrumbs : (pageTitle ? [pageTitl
 
             <!-- Version selector (optional) -->
             {versions && versions.length > 0 && (
-                <igc-select class="igd-version-select" id="version-select" outlined value={selectedVersion} aria-label={versionLabel}>
+                <igc-select distance="17" class="igd-version-select" id="version-select" outlined value={selectedVersion} aria-label={versionLabel}>
                     {versions.map((v) => (
                             <igc-select-item value={v}>{v}</igc-select-item>
                     ))}

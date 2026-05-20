@@ -123,6 +123,7 @@ igc-tree-item::part(indicator) {
 igc-tree-item::part(label) {
 	width: 100%;
 	max-height: 100%;
+	padding-block: rem(6px);
 }
 
 igc-tree-item[data-has-children] {
@@ -142,13 +143,13 @@ igc-tree-item[data-has-children] {
 	transition: transform 0.2s ease;
 }
 
-igc-tree-item[aria-expanded='false'] {
+igc-tree-item[aria-expanded='false'] > [slot='label'] {
 	.tree-expand-icon {
 		color: var(--igd-accent);
 	}
 }
 
-igc-tree-item[aria-expanded='true'] {
+igc-tree-item[aria-expanded='true'] > [slot='label'] {
 	.tree-expand-icon {
 		transform: rotate(0deg);
 		color: light-dark(var(--ig-gray-800), var(--ig-gray-300));

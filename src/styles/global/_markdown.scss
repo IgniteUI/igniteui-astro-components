@@ -33,13 +33,18 @@
 			@include type-style('h6');
 		}
 		
+		p,h1,h2,h3,h4,h5,h6,table {
+			code {
+				margin-block-end: 0;
+			}
+		}
 		
 		color: light-dark(var(--ig-gray-700), var(--ig-gray-500));
 		
 		padding: var(--igd-page-padding);
 		min-width: 0;
 		
-		> pre {
+		pre {
 			@include type-style('code', false) {
 				margin: 0;
 			};
@@ -49,9 +54,14 @@
 			color: light-dark(var(--ig-gray-900), var(--ig-gray-800));
 		}
 		
-		> pre,
-		> code {
+		pre,
+		code {
 			margin-block-end: rem(26px);
+		}
+		
+		code {
+			--shiki-dark-bg: transparent;
+			--shiki-light-bg: transparent;
 		}
 		
 		kbd {
@@ -66,22 +76,10 @@
 		}
 		
 		// <code> that is not inside a <pre> tag
-		code:not(pre code) {
-			@include type-style('code', false) {
-				margin: 0;
-			};
-			
-			background: light-dark(var(--ig-primary-50), #112031);
-			color: light-dark(var(--ig-primary-600), var(--ig-gray-400));
-			border: rem(1px) solid light-dark(var(--ig-gray-300), var(--ig-gray-100));
-			
-			padding: rem(4px) rem(8px);
-			border-radius: rem(4px);
-		}
-		
-		> ul,
-		> ol,
-		> dl {
+
+		ul,
+		ol,
+		dl {
 			@include type-style('body-1') {
 				margin: 0;
 			}
@@ -116,6 +114,10 @@
 				}
 			}
 			
+			code {
+				margin-block-end: 0;
+			}
+			
 			p, h1, h2, h3, h4, h5, h6:only-child {
 				margin: 0;
 			}
@@ -123,9 +125,9 @@
 		
 		// <ul> that is not inside <li>
 		// <ol> that is not inside <li>
-		> ul:not(li ul),
-		> ol:not(li ol),
-		> dl:not(dd dl)
+		ul:not(li ul),
+		ol:not(li ol),
+		dl:not(dd dl)
 		{
 			margin-bottom: rem(26px) !important;
 		}
@@ -143,7 +145,7 @@
 			}
 		}
 		
-		> address {
+		address {
 			line-height: rem(32px);
 			
 			p {
@@ -362,27 +364,6 @@
 			margin-block-end: rem(26px);
 		}
 		
-		p, ul, ol, table {
-			code {
-				@include type-style('code', false) {
-					margin: 0;
-				};
-				
-				padding: rem(2px) rem(4px);
-				font-size: 90%;
-				color: var(--ig-primary-800);
-				background-color: var(--ig-primary-50);
-				border-radius: rem(4px);
-			}
-			
-			a:has(code) {
-				text-decoration: none;
-				
-				&:hover {
-					text-decoration: underline;
-				}
-			}
-		}
 		
 		> hr {
 			border: none;
