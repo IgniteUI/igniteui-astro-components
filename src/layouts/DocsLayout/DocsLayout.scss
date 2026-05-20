@@ -228,6 +228,11 @@
 	.igd-main-content__inner {
 		padding-inline: 0;
 	}
+	
+	// This is the height of the input in fluent theme + 8px padding + height of the logo above
+	.sidebar-gutter {
+		min-height: rem(80px);
+	}
 }
 
 // ── Mobile only (< 768px) ──────────────────────────────────────────────────
@@ -312,11 +317,6 @@
 @media (min-width: #{$bp-tablet-min}) {
 	.igd-page-layout {
 		justify-content: center;
-	}
-	
-	// This is the height of the input in fluent theme + 8px padding + height of the logo above
-	.sidebar-gutter {
-		min-height: rem(80px);
 	}
 
 	.igd-package-select::part(native-input),
