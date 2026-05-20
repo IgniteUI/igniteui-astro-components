@@ -25,26 +25,36 @@ import './Search.scss';
 
 <igc-dialog id="search-dialog" class="igd-search-dialog" aria-label="Search" hide-default-action close-on-outside-click>
     <div class="igd-search-shell">
-        <igc-input
-            type="text"
-            class="igd-search-input"
-            placeholder="Search documentation"
-            autocomplete="off"
-            outlined
-            aria-label="Search documentation"
-        >
-            <igc-icon name="search" collection="docs" slot="prefix" aria-hidden="true"></igc-icon>
-            <igc-icon-button
-                slot="suffix"
-                class="igd-search-clear"
-                variant="flat"
+        <header class="igd-search-header">
+            <igc-input
+                type="text"
+                class="igd-search-input"
+                placeholder="Search documentation"
+                autocomplete="off"
+                outlined
+                aria-label="Search documentation"
+            >
+                <igc-icon class="igd-search-icon" name="search" collection="docs" slot="prefix" aria-hidden="true"></igc-icon>
+                <igc-icon-button
+                    slot="suffix"
+                    class="igd-search-clear"
+                    variant="flat"
+                    type="button"
+                    aria-label="Clear search"
+                    name="clear"
+                    collection="docs"
+                    hidden
+                ></igc-icon-button>
+            </igc-input>
+            <button
                 type="button"
-                aria-label="Clear search"
-                name="clear"
-                collection="docs"
-                hidden
-            ></igc-icon-button>
-        </igc-input>
+                class="search-trigger search-close"
+                aria-label="Close search"
+            >
+                <igc-icon name="close" collection="docs" aria-hidden="true"></igc-icon>
+            </button>
+        </header>
+        <igc-divider></igc-divider>
         <div class="igd-search-status" aria-live="polite"></div>
         <igc-list class="igd-search-results" hidden></igc-list>
     </div>
@@ -59,6 +69,7 @@ import './Search.scss';
     IgcInputComponent,
     IgcListComponent,
     IgcListItemComponent,
+    IgcDividerComponent,
   } from 'igniteui-webcomponents';
   import '../../scripts/icon-registry';
 
@@ -69,6 +80,7 @@ import './Search.scss';
     IgcInputComponent,
     IgcListComponent,
     IgcListItemComponent,
+    IgcDividerComponent,
   );
 
   const base = import.meta.env.BASE_URL.replace(/\/$/, '');
@@ -202,6 +214,10 @@ import './Search.scss';
       input.value = '';
       input.focus();
       runSearch('');
+    });
+
+    document.querySelector('.igd-search-shell .search-close')?.addEventListener('click', () => {
+      document.querySelector<any>('igc-dialog.igd-search-dialog')?.hide();
     });
 
     document.querySelector('.igd-search-shell')?.addEventListener('click', (e: Event) => {
