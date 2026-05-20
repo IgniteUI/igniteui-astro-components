@@ -81,9 +81,9 @@
 				margin: 0;
 			};
 			
-			background: light-dark(var(--ig-primary-50), var(--ig-gray-50));
-			color: light-dark(var(--ig-primary-600), var(--ig-gray-500));
-			border: rem(1px) solid light-dark(var(--ig-gray-300), var(--ig-gray-200));
+			background: light-dark(var(--ig-primary-50), #112031);
+			color: light-dark(var(--ig-primary-600), var(--ig-gray-400));
+			border: rem(1px) solid light-dark(var(--ig-gray-300), #1A314A);
 			
 			padding: rem(4px) rem(8px);
 			border-radius: rem(4px);

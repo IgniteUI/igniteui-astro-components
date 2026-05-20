@@ -150,7 +150,7 @@ const crumbs = sidebarCrumbs.length > 0 ? sidebarCrumbs : (pageTitle ? [pageTitl
                 </igc-icon-button>
             )}
 
-            <!-- Hamburger — visible only when the sidebar is hidden (tablet + mobile) -->
+            <!-- Sidebar toggle — visible only when the sidebar is hidden (tablet + mobile) -->
             <igc-icon-button
                 class="subheader-sidebar-toggle"
                 variant="flat"
@@ -158,7 +158,8 @@ const crumbs = sidebarCrumbs.length > 0 ? sidebarCrumbs : (pageTitle ? [pageTitl
                 aria-label="Toggle sidebar navigation"
                 aria-expanded="false"
                 title="Toggle sidebar">
-                <igc-icon name="hamburger-menu" collection="docs" aria-hidden="true"></igc-icon>
+                <igc-icon name="dropdown-indicator-bold" collection="docs" class="toggle-icon toggle-icon--dropdown" aria-hidden="true"></igc-icon>
+                <igc-icon name="hamburger-menu" collection="docs" class="toggle-icon toggle-icon--hamburger" aria-hidden="true"></igc-icon>
             </igc-icon-button>
 
             <!-- TODO WHY WE NEED THIS? -->

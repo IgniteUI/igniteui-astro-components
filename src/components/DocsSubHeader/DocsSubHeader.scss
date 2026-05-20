@@ -89,7 +89,7 @@
 .subheader-sidebar-toggle {
 	display: none;
 
-	--foreground: light-dark(var(--ig-gray-700), var(--ig-gray-300));
+	--foreground: light-dark(var(--ig-gray-900), var(--ig-gray-900));
 	--background: transparent;
 	--border-color: transparent;
 
@@ -101,6 +101,21 @@
 
 	--active-foreground: var(--igd-accent);
 	--active-background: transparent;
+
+	.toggle-icon--hamburger {
+		display: none;
+	}
+}
+
+// When the subheader becomes sticky, swap dropdown-indicator → hamburger.
+.igd-docs-subheader--pinned .subheader-sidebar-toggle {
+	.toggle-icon--dropdown {
+		display: none;
+	}
+
+	.toggle-icon--hamburger {
+		display: flex;
+	}
 }
 
 // Theme toggle: show sun in dark mode, moon in light mode.
