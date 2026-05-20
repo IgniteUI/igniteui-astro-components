@@ -243,11 +243,6 @@
 	.igd-docs-subheader {
 		padding-inline-end: rem(16px);
 	}
-	
-	// This is the height of the input in fluent theme + 8px padding + height of the logo above
-	.sidebar-gutter {
-		min-height: rem(80px);
-	}
 
 	.igd-docs-subheader__content:last-child {
 		margin-inline-end: 0;
@@ -317,6 +312,11 @@
 @media (min-width: #{$bp-tablet-min}) {
 	.igd-page-layout {
 		justify-content: center;
+	}
+	
+	// This is the height of the input in fluent theme + 8px padding + height of the logo above
+	.sidebar-gutter {
+		min-height: rem(80px);
 	}
 
 	.igd-package-select::part(native-input),
