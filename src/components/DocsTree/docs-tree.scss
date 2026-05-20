@@ -124,6 +124,10 @@ igc-tree-item::part(label) {
 	width: 100%;
 	max-height: 100%;
 	padding-block: rem(6px);
+	text-overflow: unset;
+	white-space: unset;
+	word-break: break-all;
+	overflow: unset;
 }
 
 igc-tree-item[data-has-children] {
@@ -136,7 +140,6 @@ igc-tree-item[data-has-children] {
 
 .tree-expand-icon {
 	margin-inline-start: auto;
-	//margin-inline-end: rem(4px);
 	flex-shrink: 0;
 	color: inherit;
 	transform: rotate(-90deg);

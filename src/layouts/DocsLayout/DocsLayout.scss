@@ -315,6 +315,12 @@
 
 // ── Tablet + Desktop (≥ 768px) ─────────────────────────────────────────────
 @media (min-width: #{$bp-tablet-min}) {
+	.sidebar-gutter {
+		&:has(.sidebar-logo:only-child) {
+			display: none;
+		}
+	}
+	
 	.igd-page-layout {
 		justify-content: center;
 	}
