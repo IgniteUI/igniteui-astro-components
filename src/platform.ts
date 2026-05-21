@@ -67,14 +67,8 @@ export interface NavConfig {
 // Shared IG styles — used by: angular, react, blazor, web-components, slingshot
 // ---------------------------------------------------------------------------
 const IG_STYLES: HeadEntry[] = [
-    // Bootstrap is wrapped in a CSS cascade layer so its global resets do not
-    // bleed into the docs theme. The layer priority order is declared at
-    // the top of custom.scss: @layer bootstrap
-    // Note: @import layer() does not support the `integrity` SRI attribute.
-    {
-        tag: 'style',
-        content: '@import url("https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css") layer(bootstrap);',
-    },
+    // Bootstrap 3 is scoped inside GlobalNavBar.module.scss via a SCSS @import.
+    // It is not injected into <head> — no CDN dependency, no global resets.
     { tag: 'link', attrs: { rel: 'stylesheet', href: 'https://www.infragistics.com/assets/modern/css/layout.css' } },
     { tag: 'link', attrs: { rel: 'stylesheet', href: 'https://www.infragistics.com/assets/modern/css/animate-custom.css' } },
     { tag: 'link', attrs: { rel: 'stylesheet', href: 'https://www.infragistics.com/assets/modern/css/fontello.css' } },
