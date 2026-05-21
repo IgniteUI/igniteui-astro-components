@@ -78,6 +78,36 @@ const { nodes, variant, activeId, toggleNodeOnClick, ariaLabel, renderLabel } = 
   selectActiveTreeItem();
   document.addEventListener('astro:page-load', selectActiveTreeItem);
 
+  // Restore sidebar focus when navigation was triggered from within the tree.
+  // Astro's ClientRouter moves focus to main content on every page-load;
+  // this counteracts that for keyboard users browsing the sidebar.
+  let focusWasInTree = false;
+
+  document.addEventListener('astro:before-preparation', () => {
+    focusWasInTree = !!document.activeElement?.closest('igc-tree[data-variant="sidebar"]');
+  });
+
+  document.addEventListener('astro:page-load', () => {
+    if (!focusWasInTree) return;
+    focusWasInTree = false;
+    customElements.whenDefined('igc-tree-item').then(() => {
+      const activeItem = document.querySelector<HTMLElement>(
+        'igc-tree[data-variant="sidebar"] igc-tree-item:has(a[aria-current="page"])'
+      );
+      activeItem?.focus();
+    });
+  });
+
+  // When clicking a tree link, focus the parent igc-tree-item so that
+  // up/down arrow key navigation works immediately after the click.
+  // The <a> overlay is position:absolute and captures clicks, but igc-tree's
+  // keyboard handler only fires when igc-tree-item itself has focus.
+  document.addEventListener('click', (e) => {
+    const link = (e.target as Element).closest('igc-tree[data-variant="sidebar"] a.docs-tree-link');
+    if (!link) return;
+    link.closest<HTMLElement>('igc-tree-item')?.focus();
+  }, { capture: true });
+
   // Suppress the active-indicator transition during window resize so the
   // anchor-positioned ::before bar doesn't slowly slide to its new position.
   let resizeTimer: ReturnType<typeof setTimeout>;

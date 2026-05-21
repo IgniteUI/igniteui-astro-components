@@ -82,11 +82,16 @@
 
 .igd-main-content__page {
 	display: grid;
-	gap: var(--ig-padding);
 	background-color: var(--igd-layout-sections-bg);
-	border-inline: var(--igd-app-outline);
-	width: clamp(rem(1000px), 100%, rem(1200px));
+	border-inline-end: var(--igd-app-outline);
+	width: clamp(rem(1200px), 100%, rem(1200px));
 	margin-inline: auto;
+}
+
+.igd-main-content__inner:not(:has(aside)) {
+	.igd-main-content__page {
+		border-inline: var(--igd-app-outline);
+	}
 }
 
 .igd-main-content__page + aside {
@@ -95,8 +100,6 @@
 
 .igd-main-content__inner {
 	display: flex;
-	gap: rem(70px);
-	padding-inline: rem(70px) rem(32px);
 	position: relative;
 
 	&:has(aside) {
@@ -117,21 +120,30 @@
 //
 //   mobile:    < 768px       (max-width: $bp-mobile-max)
 //   tablet:    768–1279px    (max-width: $bp-tablet-max  /  min-width: $bp-tablet-min)
-//   desktop:   ≥ 1280px      (default — no media query)
+//   desktop:   ≥ 1700px      (default — no media query)
 //
 // This is the single source of truth for every responsive rule that affects
 // the docs layout and the components rendered inside `.igd-page-layout`.
 // ════════════════════════════════════════════════════════════════════════════
 
 
-@media (max-width: #{$bp-reduce-sidebar}) {
+@media (min-width: #{$bp-desktop-wide}) {
 	.igd-page-layout {
-		--igd-page-layout-grid: #{minmax(rem(200px), rem(290px)) 1fr};
+		--igd-page-layout-grid: #{rem(400px)} 1fr;
+	}
+	
+	.igd-main-content__page {
+		gap: var(--ig-padding);
+		border-inline: var(--igd-app-outline);
 	}
 	
 	.igd-main-content__inner {
-		padding-inline: rem(26px) 0;
-		gap: rem(26px);
+		gap: rem(70px);
+		padding-inline: rem(70px) rem(32px);
+	}
+	
+	.toc-sidebar {
+		border-inline: var(--igd-app-outline);
 	}
 }
 
