@@ -4,62 +4,13 @@
 @layer components {
 	api-search-advanced { display: contents; }
 	
-	.igd-search-dialog {
-		--border-radius: 0;
-		--background: var(--igd-layout-sections-bg);
-		--transition-duration: 150ms;
-		
-		border: none;
-	
-		&::part(base) {
-			@include search-dialog-base-styles;
-	
-			&:focus-visible {
-				outline: none;
-			}
-		}
-	
-		&::part(content) {
-			padding: 0;
-			display: flex;
-			flex-direction: column;
-			height: 100%;
-		}
-	
-		&::part(backdrop) {
-			@include search-dialog-backdrop;
-		}
-	
-		&[open]::part(backdrop) {
-			@include search-dialog-backdrop-open;
-		}
-		
-		igc-input {
-			height: 100%;
-		}
-		
-		igc-input::part(container) {
-			border: 0;
-			height: 100%;
-			padding: 0 rem(16px) !important;
-			border-block-end: none !important;
-			
-			&:focus-within {
-				box-shadow:
-					0 0 0 1px var(--igd-accent),
-					inset 0 1px 0 var(--igd-accent),
-					inset 0 -1px 0 var(--igd-accent),
-					inset -1px 0 0 var(--igd-accent);
-			}
-		}
-	}
-	
 	.search-trigger {
 		color: light-dark(var(--ig-gray-600), var(--ig-gray-400));
 	}
 	
-	.igd-search-icon {
-		color: light-dark(var(--ig-gray-900), var(--ig-gray-500));
+	// Advanced header has a scope selector before the input, needs start padding
+	.igd-search-header {
+		padding-inline-start: rem(16px);
 	}
 	
 	// TODO BUG IN THE TAB COMPONENT
@@ -136,64 +87,6 @@
 			flex: 1 1 auto;
 			min-height: 0;
 			padding-block: rem(26px);
-		}
-	}
-	
-	.igd-search-header {
-		display: flex;
-		min-height: rem(75px);
-		padding-inline-start: rem(16px);
-	}
-	
-	.igd-search-scope {
-		flex-shrink: 0;
-		align-self: center;
-	}
-	
-	.igd-search-input {
-		--input-prefix-background: transparent;
-		--input-prefix-background--focused: transparent;
-		--input-prefix-background--filled: transparent;
-	
-		--input-suffix-background: transparent;
-		--input-suffix-background--focused: transparent;
-		--input-suffix-background--filled: transparent;
-	
-		width: 100%;
-		min-width: 0;
-		flex: 1 1 auto;
-	
-		&::part(input) {
-			@include type-style('body-2') {
-				margin: 0;
-			}
-		}
-	}
-	
-	.igd-search-clear {
-		--foreground: light-dark(var(--ig-gray-900), var(--ig-gray-900));
-		--backgroind-hover: transparent;
-		--hover-foreground: var(--igd-accent);
-		--focus-hover-foreground: var(--igd-accent);
-		--focus-foreground: var(--igd-accent);
-		--active-foreground: var(--igd-accent);
-		--shadow-color: transparent;
-		--background: transparent;
-		--hover-background: transparent;
-		--focus-background: transparent;
-		--focus-hover-background: transparent;
-		--active-background: transparent;
-		--border-color: transparent;
-		--border-radius: 0;
-		
-		&::part(base) {
-			&::after {
-				display: none;
-			}
-		}
-		
-		&::part(focused) {
-			--foreground: var(--igd-accent);
 		}
 	}
 	
