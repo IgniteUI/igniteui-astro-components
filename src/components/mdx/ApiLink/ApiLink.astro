@@ -77,6 +77,34 @@ interface Props {
      * @default true
      */
     suffix?: boolean;
+    /**
+     * Comma-separated list of platforms (e.g. "React" or "React,Blazor") for
+     * which the API link does NOT exist on the documentation site. When the
+     * current platform matches any entry the component renders the type name
+     * as plain inline code (no link), preserving the symbol reference for the
+     * reader without producing a broken URL.
+     *
+     * Use this instead of wrapping a single <ApiLink> in a <PlatformBlock>
+     * just to hide it from a specific platform.
+     */
+    exclude?: string;
+    /**
+     * Comma-separated list of platforms for which the package classSuffix
+     * (e.g. "Component") should NOT be appended, overriding the package default.
+     * Useful when the same type is a plain class on some platforms but carries
+     * a framework suffix on others (e.g. "Angular,WebComponents").
+     *
+     * Does not suppress the link — combine with `exclude` to suppress entirely.
+     */
+    excludeSuffixFor?: string;
+    /**
+     * Comma-separated list of platforms for which the platform prefix
+     * (Igr/Igx/Igc/Igb) should NOT be prepended, overriding the package default.
+     * Useful when a symbol has no prefix on certain platforms.
+     *
+     * Does not suppress the link — combine with `exclude` to suppress entirely.
+     */
+    excludePrefixFor?: string;
 }
 
 const KIND_SEGMENT: Record<ApiKind, string> = {
@@ -88,15 +116,29 @@ const KIND_SEGMENT: Record<ApiKind, string> = {
     function:  'functions',
 };
 
-const { type, kind = 'class', member, pkg = 'core', label, prefixed = true, suffix = true } = Astro.props;
-const { prefix, apiPackages } = Astro.locals.platformContext as PlatformContext;
+const {
+    type, kind = 'class', member, pkg = 'core', label,
+    prefixed = true, suffix = true,
+    exclude, excludeSuffixFor, excludePrefixFor,
+} = Astro.props;
+const { name: platformName, prefix, apiPackages } = Astro.locals.platformContext as PlatformContext;
+
+const splitList = (s?: string) => s ? s.split(',').map(p => p.trim()).filter(Boolean) : [];
+
+const isExcluded       = splitList(exclude).includes(platformName);
+const isSuffixExcluded = splitList(excludeSuffixFor).includes(platformName);
+const isPrefixExcluded = splitList(excludePrefixFor).includes(platformName);
+
+// Effective flags for this platform
+const effectivePrefixed = prefixed && !isPrefixExcluded;
+const effectiveSuffix   = suffix   && !isSuffixExcluded;
 
 const pkgConfig  = apiPackages[pkg] ?? apiPackages['core'];
-const baseType   = prefixed ? `${prefix}${type}` : type;
+const baseType   = effectivePrefixed ? `${prefix}${type}` : type;
 const segment    = KIND_SEGMENT[kind];
 let url: string;
 if (kind === 'class') {
-    const fullType  = (suffix && pkgConfig.classSuffix) ? `${baseType}${pkgConfig.classSuffix}` : baseType;
+    const fullType  = (effectiveSuffix && pkgConfig.classSuffix) ? `${baseType}${pkgConfig.classSuffix}` : baseType;
     const cased     = pkgConfig.preserveCase ? fullType : fullType.toLowerCase();
     const classSlug = pkgConfig.noPackagePrefix
         ? cased
@@ -126,4 +168,6 @@ if (kind === 'class') {
 
 const displayLabel = label ?? (member ? `${baseType}.${member}` : baseType);
 ---
-<a href={url}><code>{displayLabel}</code></a>
+{isExcluded
+    ? <code>{displayLabel}</code>
+    : <a href={url}><code>{displayLabel}</code></a>}
