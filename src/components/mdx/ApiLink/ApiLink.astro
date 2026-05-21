@@ -40,16 +40,30 @@
  */
 import type { PlatformContext } from '../../../lib/types.ts';
 
-type ApiKind = 'class' | 'interface' | 'enum' | 'type' | 'variable' | 'function';
+type ApiKind = 'class' | 'interface' | 'enum' | 'type' | 'variable' | 'function' | 'sass';
 
 interface Props {
-    /** Short type / symbol name without platform prefix, e.g. "Toast". */
-    type: string;
+    /**
+     * Short type/symbol name without platform prefix (TypeDoc), e.g. "Toast".
+     * For kind="sass", the anchor without "#", e.g. "mixin-slide-in-left". Optional when no anchor.
+     */
+    type?: string;
     /**
      * TypeDoc symbol kind. Determines the URL segment used.
+     * Use "sass" for SASS API documentation links.
      * @default "class"
      */
     kind?: ApiKind;
+    /**
+     * SASS module name, e.g. "animations", "themes". Required when kind="sass".
+     */
+    module?: string;
+    /**
+     * When true (sass only), wraps the label in <code>.
+     * @default true — all sass links are code-formatted by default, matching TypeDoc ApiLinks.
+     * Set to false for descriptive/prose labels that should not be code-formatted.
+     */
+    code?: boolean;
     /** Optional member name (property / method), e.g. "show". Appended as #anchor. */
     member?: string;
     /**
@@ -79,7 +93,7 @@ interface Props {
     suffix?: boolean;
 }
 
-const KIND_SEGMENT: Record<ApiKind, string> = {
+const KIND_SEGMENT: Record<Exclude<ApiKind, 'sass'>, string> = {
     class:     'classes',
     interface: 'interfaces',
     enum:      'enums',
@@ -88,34 +102,42 @@ const KIND_SEGMENT: Record<ApiKind, string> = {
     function:  'functions',
 };
 
-const { type, kind = 'class', member, pkg = 'core', label, prefixed = true, suffix = true } = Astro.props;
-const { prefix, apiPackages } = Astro.locals.platformContext as PlatformContext;
+const { type, kind = 'class', module, code = true, member, pkg = 'core', label, prefixed = true, suffix = true } = Astro.props;
+const ctx = Astro.locals.platformContext as PlatformContext;
+const { prefix, apiPackages } = ctx;
 
-const pkgConfig  = apiPackages[pkg] ?? apiPackages['core'];
-const baseType   = prefixed ? `${prefix}${type}` : type;
-const segment    = KIND_SEGMENT[kind];
 let url: string;
-if (kind === 'class') {
-    const fullType  = (suffix && pkgConfig.classSuffix) ? `${baseType}${pkgConfig.classSuffix}` : baseType;
-    const cased     = pkgConfig.preserveCase ? fullType : fullType.toLowerCase();
-    const classSlug = pkgConfig.noPackagePrefix
-        ? cased
-        : `${pkgConfig.packageId}.${cased}`;
-    const memberAnchor = member
-        ? `#${pkgConfig.pascalCaseMembers ? member.charAt(0).toUpperCase() + member.slice(1) : member}`
-        : '';
-    url = `${pkgConfig.docRoot}/classes/${classSlug}${memberAnchor}`;
-} else {
-    // Non-class kinds: preserve original casing, no classSuffix
-    const slug = pkgConfig.noPackagePrefix
-        ? baseType
-        : `${pkgConfig.packageId}.${baseType}`;
-    const memberAnchorNonClass = member
-        ? `#${pkgConfig.pascalCaseMembers ? member.charAt(0).toUpperCase() + member.slice(1) : member.toLowerCase()}`
-        : '';
-    url = `${pkgConfig.docRoot}/${segment}/${slug}${memberAnchorNonClass}`;
-}
+let displayLabel: string;
 
-const displayLabel = label ?? (member ? `${baseType}.${member}` : baseType);
+if (kind === 'sass') {
+    const anchor = type ? `#${type}` : '';
+    url = `${ctx.sassApiUrl ?? ''}/${module ?? ''}${anchor}`;
+    displayLabel = label ?? type ?? module ?? '';
+} else {
+    const pkgConfig  = apiPackages[pkg] ?? apiPackages['core'];
+    const baseType   = prefixed ? `${prefix}${type}` : (type ?? '');
+    const segment    = KIND_SEGMENT[kind];
+    if (kind === 'class') {
+        const fullType  = (suffix && pkgConfig.classSuffix) ? `${baseType}${pkgConfig.classSuffix}` : baseType;
+        const cased     = pkgConfig.preserveCase ? fullType : fullType.toLowerCase();
+        const classSlug = pkgConfig.noPackagePrefix
+            ? cased
+            : `${pkgConfig.packageId}.${cased}`;
+        const memberAnchor = member
+            ? `#${pkgConfig.pascalCaseMembers ? member.charAt(0).toUpperCase() + member.slice(1) : member}`
+            : '';
+        url = `${pkgConfig.docRoot}/classes/${classSlug}${memberAnchor}`;
+    } else {
+        // Non-class kinds: preserve original casing, no classSuffix
+        const slug = pkgConfig.noPackagePrefix
+            ? baseType
+            : `${pkgConfig.packageId}.${baseType}`;
+        const memberAnchorNonClass = member
+            ? `#${pkgConfig.pascalCaseMembers ? member.charAt(0).toUpperCase() + member.slice(1) : member.toLowerCase()}`
+            : '';
+        url = `${pkgConfig.docRoot}/${segment}/${slug}${memberAnchorNonClass}`;
+    }
+    displayLabel = label ?? (member ? `${baseType}.${member}` : baseType);
+}
 ---
-<a href={url}><code>{displayLabel}</code></a>
+<a href={url}>{(kind !== 'sass' || code) ? <code>{displayLabel}</code> : displayLabel}</a>

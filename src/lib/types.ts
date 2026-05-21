@@ -63,4 +63,5 @@ export interface PlatformContext {
         forums: string;
         repoSamples: string;
     };
+    sassApiUrl?: string;
 }
