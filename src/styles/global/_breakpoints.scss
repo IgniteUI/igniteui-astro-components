@@ -4,7 +4,7 @@
 //
 //   mobile:   < 768px               (max-width: $bp-mobile-max)
 //   tablet:   768px – 1279px        (max-width: $bp-tablet-max / min-width: $bp-tablet-min)
-//   desktop:  ≥ 1280px              (min-width: $bp-desktop-min)
+//   desktop:  ≥ 1900px              (min-width: $bp-desktop-wide)
 //
 // Usage:  @media (max-width: #{$bp-mobile-max}) { … }
 // Never use var() inside @media — CSS custom properties don't work there.
@@ -18,9 +18,7 @@ $bp-tablet-min: #{rem(768px)};
 /// Top of tablet range (< 1280px)
 $bp-tablet-max: #{rem(1279px)};
 
-$bp-reduce-sidebar: #{rem(1500px)};
-
 $bp-hide-toc: #{rem(1100px)};
 
-/// Start of desktop range (≥ 1280px)
-$bp-desktop-min: #{rem(1280px)};
+/// Start of desktop range (≥ 1900px)
+$bp-desktop-wide: #{rem(1899px)};

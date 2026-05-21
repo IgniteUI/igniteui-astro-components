@@ -14,7 +14,7 @@
 	max-height: calc(100vh - var(--igd-header-height));
 	overflow-y: auto;
 	padding: rem(46px) rem(24px);
-	border-inline: var(--igd-app-outline);
+	border-inline-end: var(--igd-app-outline);
 	border-block-end: var(--igd-app-outline);
 	background-color: var(--igd-layout-sections-bg);
 }
