@@ -77,6 +77,16 @@
 		border-style: solid;
 		border-color: var(--border-color);
 	}
+	
+	igc-icon {
+		--size: #{rem(18px)}
+	}
+	
+	// TODO, This has to be fixed inside the component
+	span {
+		position: relative;
+		padding-inline: rem(3px);
+	}
 }
 
 .updated {
@@ -116,6 +126,8 @@
 }
 
 .sidebar-premium-icon {
+	--size: #{rem(24px)};
+	
 	justify-self: end;
 	color: var(--igd-premium-color);
 	flex-shrink: 0;

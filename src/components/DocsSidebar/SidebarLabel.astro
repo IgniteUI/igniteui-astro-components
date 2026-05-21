@@ -34,7 +34,7 @@ const badges = (node.meta?.badges ?? []) as SidebarBadge[];
             <div class="igd-badge-container">
                 {badges.filter(b => b.variant !== 'premium').map((badge) => (
                     <>
-                        <igc-badge class={`sidebar-badge ${badge.variant}`} aria-hidden="true">{badge.text}</igc-badge>
+                        <igc-badge class={`sidebar-badge ${badge.variant}`} aria-hidden="true"><span>{badge.text}</span></igc-badge>
                         <span class="visually-hidden">, {badge.text}</span>
                     </>
                 ))}
