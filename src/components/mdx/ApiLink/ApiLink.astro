@@ -42,28 +42,35 @@ import type { PlatformContext } from '../../../lib/types.ts';
 
 type ApiKind = 'class' | 'interface' | 'enum' | 'type' | 'variable' | 'function' | 'sass';
 
-interface Props {
-    /**
-     * Short type/symbol name without platform prefix (TypeDoc), e.g. "Toast".
-     * For kind="sass", the anchor without "#", e.g. "mixin-slide-in-left". Optional when no anchor.
-     */
+/** Props for SASS API documentation links (`kind="sass"`). */
+type SassProps = {
+    kind: 'sass';
+    /** The anchor fragment without "#", e.g. "mixin-slide-in-left". Optional when linking to the module page. */
     type?: string;
-    /**
-     * TypeDoc symbol kind. Determines the URL segment used.
-     * Use "sass" for SASS API documentation links.
-     * @default "class"
-     */
-    kind?: ApiKind;
-    /**
-     * SASS module name, e.g. "animations", "themes". Required when kind="sass".
-     */
+    /** SASS module name, e.g. "animations", "themes". Required for correct URL generation. */
     module?: string;
     /**
-     * When true (sass only), wraps the label in <code>.
-     * @default true — all sass links are code-formatted by default, matching TypeDoc ApiLinks.
-     * Set to false for descriptive/prose labels that should not be code-formatted.
+     * When true, wraps the label in <code>.
+     * @default true — matches TypeDoc ApiLink code-formatting behaviour.
+     * Set to false for descriptive/prose labels.
      */
     code?: boolean;
+    /** Override the display text. Defaults to `type ?? module ?? ''`. */
+    label?: string;
+};
+
+/** Props for TypeDoc API documentation links (all non-sass kinds). */
+type TypeDocProps = {
+    /**
+     * TypeDoc symbol kind. Determines the URL segment used.
+     * @default "class"
+     */
+    kind?: Exclude<ApiKind, 'sass'>;
+    /**
+     * Short type/symbol name without platform prefix, e.g. "Toast".
+     * Required for all TypeDoc kinds.
+     */
+    type: string;
     /** Optional member name (property / method), e.g. "show". Appended as #anchor. */
     member?: string;
     /**
@@ -91,7 +98,9 @@ interface Props {
      * @default true
      */
     suffix?: boolean;
-}
+};
+
+type Props = SassProps | TypeDocProps;
 
 const KIND_SEGMENT: Record<Exclude<ApiKind, 'sass'>, string> = {
     class:     'classes',
@@ -102,16 +111,18 @@ const KIND_SEGMENT: Record<Exclude<ApiKind, 'sass'>, string> = {
     function:  'functions',
 };
 
-const { type, kind = 'class', module, code = true, member, pkg = 'core', label, prefixed = true, suffix = true } = Astro.props;
 const ctx = Astro.locals.platformContext as PlatformContext;
 const { prefix, apiPackages } = ctx;
+const label = Astro.props.label;
 
 let url: string;
 let displayLabel: string;
+let renderCode: boolean;
 
-if (kind === 'sass') {
+if (Astro.props.kind === 'sass') {
+    const { type, module, code = true } = Astro.props;
     if (!module) console.warn('[ApiLink] kind="sass" requires a `module` prop — link may be malformed.');
-    const base   = ctx.sassApiUrl?.trim().replace(/\/+$/, '');
+    const base = ctx.sassApiUrl?.trim().replace(/\/+$/, '');
     const anchor = type ? `#${type}` : '';
     if (!base) {
         console.warn('[ApiLink] kind="sass" requires `platformContext.sassApiUrl` to be configured — falling back to "#".');
@@ -120,10 +131,11 @@ if (kind === 'sass') {
         url = `${base}/${module ?? ''}${anchor}`;
     }
     displayLabel = label ?? type ?? module ?? '';
+    renderCode = code;
 } else {
-    if (!type) console.warn('[ApiLink] `type` is required for non-sass kinds — link may be malformed.');
+    const { type, kind = 'class', member, pkg = 'core', prefixed = true, suffix = true } = Astro.props;
     const pkgConfig  = apiPackages[pkg] ?? apiPackages['core'];
-    const baseType   = prefixed ? `${prefix}${type ?? ''}` : (type ?? '');
+    const baseType   = prefixed ? `${prefix}${type}` : type;
     const segment    = KIND_SEGMENT[kind];
     if (kind === 'class') {
         const fullType  = (suffix && pkgConfig.classSuffix) ? `${baseType}${pkgConfig.classSuffix}` : baseType;
@@ -136,7 +148,6 @@ if (kind === 'sass') {
             : '';
         url = `${pkgConfig.docRoot}/classes/${classSlug}${memberAnchor}`;
     } else {
-        // Non-class kinds: preserve original casing, no classSuffix
         const slug = pkgConfig.noPackagePrefix
             ? baseType
             : `${pkgConfig.packageId}.${baseType}`;
@@ -146,6 +157,7 @@ if (kind === 'sass') {
         url = `${pkgConfig.docRoot}/${segment}/${slug}${memberAnchorNonClass}`;
     }
     displayLabel = label ?? (member ? `${baseType}.${member}` : baseType);
+    renderCode = true;
 }
 ---
-<a href={url}>{(kind !== 'sass' || code) ? <code>{displayLabel}</code> : displayLabel}</a>
+<a href={url}>{renderCode ? <code>{displayLabel}</code> : displayLabel}</a>
