@@ -35,9 +35,25 @@ export interface Props {
   license?: string;
   /** Set to true on 404 pages to add the `igd-page-layout--404` modifier class. */
   is404?: boolean;
+  /** Package names for the subheader package selector. When omitted the selector is hidden. */
+  packages?: string[];
+  /** Currently selected package (must match one of `packages`). */
+  selectedPackage?: string;
+  /** Label rendered before the package selector. Defaults to `'Package'`. */
+  packageLabel?: string;
+  /** Version labels for the subheader version selector. When omitted the selector is hidden. */
+  versions?: string[];
+  /** Currently selected version (must match one of `versions`). */
+  selectedVersion?: string;
+  /** Label rendered before the version selector. Defaults to `'Version'`. */
+  versionLabel?: string;
+  /** Show a light/dark theme toggle button in the subheader. */
+  showThemeToggle?: boolean;
+  /** `localStorage` key for persisting the theme. Defaults to `'docs-theme'`. */
+  themeStorageKey?: string;
 }
 
-const { title, description, keywords, hasToc = true, hasSidebar = true, currentSlug = '', siteTitle: siteTitleProp, license, is404 = false } = Astro.props;
+const { title, description, keywords, hasToc = true, hasSidebar = true, currentSlug = '', siteTitle: siteTitleProp, license, is404 = false, packages, selectedPackage, packageLabel, versions, selectedVersion, versionLabel, showThemeToggle, themeStorageKey } = Astro.props;
 const resolvedSiteTitle = siteTitleProp ?? siteTitle;
 const licenseType = license === 'commercial' ? 'premium' : license === 'MIT' ? 'opensource' : false;
 const navTheme = (virtualPlatform ?? import.meta.env.VITE_NAV_THEME ?? 'igniteui') as string;
@@ -224,7 +240,7 @@ type HeadEntry = { tag: string; attrs?: Record<string, string | boolean | undefi
         <!-- TODO: WE DONT NEED TO CALCULAtE THE IG HEADER HEIGHT ANYMORE - REMOVE IT -->
         <!-- <DocsSubHeader style={ `--docs-global-nav-height: ${ showGlobalNav ? '4.7rem': '0' }` } data-nav-height-wrapper/> -->
         <slot name="subheader">
-          <DocsSubHeader pageTitle={title} currentSlug={currentSlug} siteTitle={siteTitleProp} />
+          <DocsSubHeader pageTitle={title} currentSlug={currentSlug} siteTitle={siteTitleProp} packages={packages} selectedPackage={selectedPackage} packageLabel={packageLabel} versions={versions} selectedVersion={selectedVersion} versionLabel={versionLabel} showThemeToggle={showThemeToggle} themeStorageKey={themeStorageKey} />
         </slot>
 
 

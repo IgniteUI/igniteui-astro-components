@@ -75,6 +75,7 @@
 	align-items: center;
 	height: 100%;
 	gap: rem(16px);
+	min-width: 0;
 
 	> igc-select:first-of-type {
 		margin-inline-start: auto;
@@ -82,6 +83,23 @@
 
 	&:last-child {
 		margin-inline-end: rem(32px);
+	}
+}
+
+.igd-package-select,
+.igd-version-select {
+	flex-shrink: 0;
+	position: relative;
+	width: fit-content;
+	max-width: rem(180px);
+
+	&::part(base) {
+		position: absolute;
+		inset-block-start: 100%;
+		inset-inline-end: 0;
+		width: max-content;
+		min-width: 100%;
+		z-index: 100;
 	}
 }
 
