@@ -12,14 +12,52 @@ rendered through the documentation theme.
 
 ## Headings
 
-Six levels of section headings.
+Six levels of section headings. Each level has a specific semantic role — choose based on document structure, not visual size.
 
-<h1>Heading level 1</h1>
-<h2>Heading level 2</h2>
-<h3>Heading level 3</h3>
-<h4>Heading level 4</h4>
-<h5>Heading level 5</h5>
-<h6>Heading level 6</h6>
+| Element | Use when |
+|---|---|
+| `<h1>` | The single top-level title of the page. One per page. |
+| `<h2>` | Major sections directly beneath the page title. |
+| `<h3>` | Sub-sections within an `<h2>` section. |
+| `<h4>` | Sub-sections within an `<h3>`, for deeper nesting. |
+| `<h5>` | Rarely needed — deep nesting usually signals restructuring. |
+| `<h6>` | Deepest level; use only when six distinct levels are genuinely required. |
+
+<h1>Heading level 1 — page title, one per page</h1>
+<h2>Heading level 2 — major section</h2>
+<h3>Heading level 3 — sub-section</h3>
+<h4>Heading level 4 — deeper sub-section</h4>
+<h5>Heading level 5 — avoid unless strictly necessary</h5>
+<h6>Heading level 6 — deepest level</h6>
+
+### Typography utility classes
+
+When you need the *visual style* of a heading level on a different element —
+for example, making an `<h2>` look like an `<h5>` without breaking the document
+outline — use the `.igd-h1` – `.igd-h6` and `.igd-p` utility classes instead of
+choosing the wrong semantic element.
+
+| Class | Applies the visual style of |
+|---|---|
+| `.igd-h1` | `<h1>` |
+| `.igd-h2` | `<h2>` |
+| `.igd-h3` | `<h3>` |
+| `.igd-h4` | `<h4>` |
+| `.igd-h5` | `<h5>` |
+| `.igd-h6` | `<h6>` |
+| `.igd-p` | `<p>` (body text) |
+
+```html
+<!-- Semantically an h2, styled like an h5 -->
+<h2 class="igd-h5">Section title that should appear smaller</h2>
+
+<!-- A div that needs paragraph styling -->
+<div class="igd-p">This text looks like a paragraph.</div>
+```
+
+example:
+<h2 class="igd-h5">An h2 styled with `.igd-h5`</h2>
+<h3 class="igd-h2">An h3 styled with `.igd-h2`</h3>
 
 ---
 
@@ -33,12 +71,6 @@ A second paragraph follows immediately. Notice the consistent spacing between
 paragraphs applied by the documentation theme. Long lines should wrap naturally
 at the container boundary without any explicit `word-break` override
 unless the content contains very long unbreakable strings.
-
-<address>
-  Written by <a href="mailto:docs@example.com">The Docs Team</a>.
-  Visit us at <a href="#">igniteui.com</a>.
-  — <code>&lt;address&gt;</code> element
-</address>
 
 ---
 
@@ -68,18 +100,26 @@ unless the content contains very long unbreakable strings.
 
 ## Lists
 
-#### Unordered list — `<ul>`
+### Unordered list — `<ul>`
 
 - First item
 - Second item
   - Nested item A
   - Nested item B
+    - Nested item B.1
+    - Nested item B.2
 - Third item
 
-#### Ordered list — `<ol>`
+### Ordered list — `<ol>`
 
 1. Install dependencies
 2. Configure the project
+   1. Set up environment variables
+   2. Edit the config file
+      1. Set the base URL
+      2. Set the output directory
+      3. Enable source maps
+   3. Install optional plugins
 3. Run the dev server
    1. Open the browser
    2. Navigate to localhost
