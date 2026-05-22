@@ -13,6 +13,7 @@
  */
 import type { TreeNode } from '../DocsTree/types';
 import type { SidebarBadge } from '../../lib/sidebar/types';
+import Badge from '../mdx/Badge/Badge.astro';
 
 interface Props {
   node: TreeNode;
@@ -34,7 +35,7 @@ const badges = (node.meta?.badges ?? []) as SidebarBadge[];
             <div class="igd-badge-container">
                 {badges.filter(b => b.variant !== 'premium').map((badge) => (
                     <>
-                        <igc-badge class={`sidebar-badge ${badge.variant}`} aria-hidden="true"><span>{badge.text}</span></igc-badge>
+                        <Badge variant={badge.variant} class="sidebar-badge" aria-hidden="true"><span>{badge.text}</span></Badge>
                         <span class="visually-hidden">, {badge.text}</span>
                     </>
                 ))}

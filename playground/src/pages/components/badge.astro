@@ -1,0 +1,77 @@
+---
+import DocsLayout from '../../../../src/layouts/DocsLayout/DocsLayout.astro';
+import DocsSidebar from '../../../../src/components/DocsSidebar/DocsSidebar.astro';
+import Badge from '../../../../src/components/mdx/Badge/Badge.astro';
+import DocsToc from '../../../../src/components/DocsToc/DocsToc.astro';
+import DocsSubHeader from '../../../../src/components/DocsSubHeader/DocsSubHeader.astro';
+import SearchAdvanced from '../../../../src/components/SearchAdvanced/SearchAdvanced.astro';
+import { SITE_TITLE, SIDEBAR, PRODUCT_LINKS, SEARCH_TABS, PACKAGES, VERSIONS } from '../../site-config';
+
+const slug = 'components/badge';
+
+const headings = [
+  { depth: 2, slug: 'variants',       text: 'Variants' },
+  { depth: 2, slug: 'with-headings',  text: 'With headings' },
+  { depth: 2, slug: 'inline-text',    text: 'Inline in text' },
+  { depth: 2, slug: 'custom-content', text: 'Custom content' },
+];
+---
+
+<DocsLayout title="Badge" siteTitle={SITE_TITLE} hasSidebar currentSlug={slug}>
+  <DocsSubHeader slot="subheader" pageTitle="Badge" currentSlug={slug} siteTitle={SITE_TITLE}
+    productLinks={PRODUCT_LINKS} showThemeToggle={true}
+    packages={[...PACKAGES]} selectedPackage={PACKAGES[0]}
+    versions={[...VERSIONS]} selectedVersion={VERSIONS[0]}
+  >
+    <SearchAdvanced slot="search" tabs={SEARCH_TABS} showScope={true} />
+  </DocsSubHeader>
+  <DocsSidebar slot="sidebar" items={SIDEBAR} currentSlug={slug} />
+  <DocsToc slot="toc" headings={headings} offsetTarget=".docs-subheader" />
+
+  <h1>Badge</h1>
+  <p>
+    Small inline status chips rendered via <code>igc-badge</code>.
+    Five semantic variants, each with its own color scheme.
+  </p>
+
+  <h2 id="variants">Variants</h2>
+  <p>All five built-in variants with their default label text:</p>
+  <p>
+    <Badge variant="preview" />
+    <Badge variant="new" />
+    <Badge variant="updated" />
+    <Badge variant="premium" />
+    <Badge variant="opensource" />
+  </p>
+
+  <h2 id="with-headings">With headings</h2>
+  <p>
+    Badges placed inside a heading tag align to the text.
+    Headings in the markdown area use <code>display: flex; align-items: center</code>
+    so the badge is vertically centered without extra offsets.
+  </p>
+
+  <h1>H1 heading <Badge variant="new" /></h1>
+  <h2>H2 heading <Badge variant="preview" /></h2>
+  <h3>H3 heading <Badge variant="updated" /></h3>
+  <h4>H4 heading <Badge variant="premium" /></h4>
+  <h5>H5 heading <Badge variant="opensource" /></h5>
+
+  <h2 id="inline-text">Inline in text</h2>
+  <p>
+    Badges sit inline and align to the text baseline.
+    This feature is <Badge variant="new" /> and still experimental.
+    The API is <Badge variant="preview" /> and subject to change.
+    Available in the <Badge variant="premium" /> plan only.
+    The library is fully <Badge variant="opensource" />.
+  </p>
+
+  <h2 id="custom-content">Custom content</h2>
+  <p>Override the label via the default slot:</p>
+  <p>
+    <Badge variant="new">Coming Soon</Badge>
+    <Badge variant="preview">Alpha</Badge>
+    <Badge variant="updated">v3.0</Badge>
+    <Badge variant="premium">Enterprise</Badge>
+  </p>
+</DocsLayout>

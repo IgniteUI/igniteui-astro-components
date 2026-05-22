@@ -43,6 +43,7 @@ Then open http://localhost:4567.
 | `/components/nav-bar` | `GlobalNavBar`, `GlobalFooter` |
 | `/components/api-link` | `ApiLink` |
 | `/components/api-ref` | `ApiRef` |
+| `/components/badge` | `Badge` |
 | `/components/platform-block` | `PlatformBlock` |
 
 ## Caveats
