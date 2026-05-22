@@ -110,8 +110,10 @@ let url: string;
 let displayLabel: string;
 
 if (kind === 'sass') {
+    if (!module) console.warn('[ApiLink] kind="sass" requires a `module` prop — link may be malformed.');
+    const base   = (ctx.sassApiUrl ?? '').replace(/\/$/, '');
     const anchor = type ? `#${type}` : '';
-    url = `${ctx.sassApiUrl ?? ''}/${module ?? ''}${anchor}`;
+    url = `${base}/${module ?? ''}${anchor}`;
     displayLabel = label ?? type ?? module ?? '';
 } else {
     const pkgConfig  = apiPackages[pkg] ?? apiPackages['core'];

@@ -63,5 +63,11 @@ export interface PlatformContext {
         forums: string;
         repoSamples: string;
     };
+    /**
+     * Sass API documentation base URL.
+     * Used as a base for link path concatenation - must have **no trailing slash**
+     * to avoid accidental `//` in generated URLs.
+     * @example `https://www.infragistics.com/products/ignite-ui-angular/angular/components/themes/sass`
+     */
     sassApiUrl?: string;
 }
