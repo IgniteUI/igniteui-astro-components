@@ -33,9 +33,11 @@ export interface Props {
    * 'commercial' → Premium badge, 'MIT' → Open Source badge, omit → no badge.
    */
   license?: string;
+  /** Set to true on 404 pages to add the `igd-page-layout--404` modifier class. */
+  is404?: boolean;
 }
 
-const { title, description, keywords, hasToc = true, hasSidebar = true, currentSlug = '', siteTitle: siteTitleProp, license } = Astro.props;
+const { title, description, keywords, hasToc = true, hasSidebar = true, currentSlug = '', siteTitle: siteTitleProp, license, is404 = false } = Astro.props;
 const resolvedSiteTitle = siteTitleProp ?? siteTitle;
 const licenseType = license === 'commercial' ? 'premium' : license === 'MIT' ? 'opensource' : false;
 const navTheme = (virtualPlatform ?? import.meta.env.VITE_NAV_THEME ?? 'igniteui') as string;
@@ -218,7 +220,7 @@ type HeadEntry = { tag: string; attrs?: Record<string, string | boolean | undefi
      the .igd-page-layout not on the body.
      Any igc component rendered dynamically on body level should have .ig-typography in order to have proper type styles.
     -->
-    <div class="igd-page-layout">
+    <div class={`igd-page-layout${is404 ? ' igd-page-layout--404' : ''}`}>
         <!-- TODO: WE DONT NEED TO CALCULAtE THE IG HEADER HEIGHT ANYMORE - REMOVE IT -->
         <!-- <DocsSubHeader style={ `--docs-global-nav-height: ${ showGlobalNav ? '4.7rem': '0' }` } data-nav-height-wrapper/> -->
         <slot name="subheader">

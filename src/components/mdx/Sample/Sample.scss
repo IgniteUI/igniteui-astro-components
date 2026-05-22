@@ -9,7 +9,7 @@ igc-tabs {
 		flex-grow: 1;
 	}
 	
-	--item-text-color: light-dark(var(--ig-gray-900), var(--ig-gray-50));
+	--item-text-color: light-dark(var(--ig-gray-900), var(--ig-gray-900));
 	--item-hover-color: var(--igd-accent);
 	--item-background: var(--igd-layout-sections-bg);
 	--item-hover-background: var(--igd-layout-sections-bg);
@@ -20,7 +20,7 @@ igc-tabs {
 	--item-active-hover-background: var(--igd-layout-sections-bg);
 	--indicator-color: var(--igd-accent);
 	
-	--button-color: light-dark(var(--ig-gray-900), var(--ig-gray-50));
+	--button-color: light-dark(var(--ig-gray-900), var(--ig-gray-900));
 	--button-hover-color: var(--igd-accent);
 	--button-background: var(--igd-layout-sections-bg);
 	--button-hover-background: var(--igd-layout-sections-bg);
@@ -86,7 +86,7 @@ igc-tab::part(content) {
 }
 
 igc-tab::part(tab-header) {
-	min-height: 72px;
+	min-height: rem(60px);
 }
 
 .igd-code-view {
@@ -165,11 +165,5 @@ igc-button {
 		@include type-style('caption') {
 			margin: 0;
 		}
-	}
-}
-
-.editing-label {
-	@include type-style('body-2') {
-		margin: 0;
 	}
 }

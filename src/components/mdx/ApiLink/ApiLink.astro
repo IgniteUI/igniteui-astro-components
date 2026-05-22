@@ -40,16 +40,37 @@
  */
 import type { PlatformContext } from '../../../lib/types.ts';
 
-type ApiKind = 'class' | 'interface' | 'enum' | 'type' | 'variable' | 'function';
+type ApiKind = 'class' | 'interface' | 'enum' | 'type' | 'variable' | 'function' | 'sass';
 
-interface Props {
-    /** Short type / symbol name without platform prefix, e.g. "Toast". */
-    type: string;
+/** Props for SASS API documentation links (`kind="sass"`). */
+type SassProps = {
+    kind: 'sass';
+    /** The anchor fragment without "#", e.g. "mixin-slide-in-left". Optional when linking to the module page. */
+    type?: string;
+    /** SASS module name, e.g. "animations", "themes". Required for correct URL generation. */
+    module?: string;
+    /**
+     * When true, wraps the label in <code>.
+     * @default true — matches TypeDoc ApiLink code-formatting behaviour.
+     * Set to false for descriptive/prose labels.
+     */
+    code?: boolean;
+    /** Override the display text. Defaults to `type ?? module ?? ''`. */
+    label?: string;
+};
+
+/** Props for TypeDoc API documentation links (all non-sass kinds). */
+type TypeDocProps = {
     /**
      * TypeDoc symbol kind. Determines the URL segment used.
      * @default "class"
      */
-    kind?: ApiKind;
+    kind?: Exclude<ApiKind, 'sass'>;
+    /**
+     * Short type/symbol name without platform prefix, e.g. "Toast".
+     * Required for all TypeDoc kinds.
+     */
+    type: string;
     /** Optional member name (property / method), e.g. "show". Appended as #anchor. */
     member?: string;
     /**
@@ -105,9 +126,12 @@ interface Props {
      * Does not suppress the link — combine with `exclude` to suppress entirely.
      */
     excludePrefixFor?: string;
-}
 
-const KIND_SEGMENT: Record<ApiKind, string> = {
+};
+
+type Props = SassProps | TypeDocProps;
+
+const KIND_SEGMENT: Record<Exclude<ApiKind, 'sass'>, string> = {
     class:     'classes',
     interface: 'interfaces',
     enum:      'enums',
@@ -116,58 +140,74 @@ const KIND_SEGMENT: Record<ApiKind, string> = {
     function:  'functions',
 };
 
-const {
-    type, kind = 'class', member, pkg = 'core', label,
-    prefixed = true, suffix = true,
-    exclude, excludeSuffixFor, excludePrefixFor,
-} = Astro.props;
-const { name: platformName, prefix, apiPackages } = Astro.locals.platformContext as PlatformContext;
+const ctx = Astro.locals.platformContext as PlatformContext;
+const { name: platformName, prefix, apiPackages } = ctx;
+const label = Astro.props.label;
 
 const splitList = (s?: string) => s ? s.split(',').map(p => p.trim()).filter(Boolean) : [];
 
-const isExcluded       = splitList(exclude).includes(platformName);
-const isSuffixExcluded = splitList(excludeSuffixFor).includes(platformName);
-const isPrefixExcluded = splitList(excludePrefixFor).includes(platformName);
-
-// Effective flags for this platform
-const effectivePrefixed = prefixed && !isPrefixExcluded;
-const effectiveSuffix   = suffix   && !isSuffixExcluded;
-
-const pkgConfig  = apiPackages[pkg] ?? apiPackages['core'];
-const baseType   = effectivePrefixed ? `${prefix}${type}` : type;
-const segment    = KIND_SEGMENT[kind];
 let url: string;
-if (kind === 'class') {
-    const fullType  = (effectiveSuffix && pkgConfig.classSuffix) ? `${baseType}${pkgConfig.classSuffix}` : baseType;
-    const cased     = pkgConfig.preserveCase ? fullType : fullType.toLowerCase();
-    const classSlug = pkgConfig.noPackagePrefix
-        ? cased
-        : `${pkgConfig.packageId}.${cased}`;
-    const memberAnchor = member
-        ? `#${pkgConfig.pascalCaseMembers ? member.charAt(0).toUpperCase() + member.slice(1) : member}`
-        : '';
-    url = `${pkgConfig.docRoot}/classes/${classSlug}${memberAnchor}`;
-} else {
-    // Non-class kinds: preserve original casing, no classSuffix
-    const slug = pkgConfig.noPackagePrefix
-        ? baseType
-        : `${pkgConfig.packageId}.${baseType}`;
-    // Enum members keep their authored case (TypeDoc emits PascalCase ids
-    // for enum members like #Area, #Column).
-    const memberAnchorNonClass = member
-        ? `#${
-            kind === 'enum'
-                ? member
-                : pkgConfig.pascalCaseMembers
-                    ? member.charAt(0).toUpperCase() + member.slice(1)
-                    : member.toLowerCase()
-        }`
-        : '';
-    url = `${pkgConfig.docRoot}/${segment}/${slug}${memberAnchorNonClass}`;
-}
+let displayLabel: string;
+let renderCode: boolean;
+let isExcluded = false;
 
-const displayLabel = label ?? (member ? `${baseType}.${member}` : baseType);
+if (Astro.props.kind === 'sass') {
+    const { type, module, code = true } = Astro.props;
+    if (!module) console.warn('[ApiLink] kind="sass" requires a `module` prop — link may be malformed.');
+    const base = ctx.sassApiUrl?.trim().replace(/\/+$/, '');
+    const anchor = type ? `#${type}` : '';
+    if (!base) {
+        console.warn('[ApiLink] kind="sass" requires `platformContext.sassApiUrl` to be configured — falling back to "#".');
+        url = '#';
+    } else {
+        url = `${base}/${module ?? ''}${anchor}`;
+    }
+    displayLabel = label ?? type ?? module ?? '';
+    renderCode = code;
+} else {
+    const {
+        type, kind = 'class', member, pkg = 'core',
+        prefixed = true, suffix = true,
+        exclude, excludeSuffixFor, excludePrefixFor,
+    } = Astro.props;
+    isExcluded = splitList(exclude).includes(platformName);
+    const isSuffixExcluded = splitList(excludeSuffixFor).includes(platformName);
+    const isPrefixExcluded = splitList(excludePrefixFor).includes(platformName);
+    const effectivePrefixed = prefixed && !isPrefixExcluded;
+    const effectiveSuffix = suffix && !isSuffixExcluded;
+
+    const pkgConfig  = apiPackages[pkg] ?? apiPackages['core'];
+    const baseType   = effectivePrefixed ? `${prefix}${type}` : type;
+    const segment    = KIND_SEGMENT[kind];
+    if (kind === 'class') {
+        const fullType  = (effectiveSuffix && pkgConfig.classSuffix) ? `${baseType}${pkgConfig.classSuffix}` : baseType;
+        const cased     = pkgConfig.preserveCase ? fullType : fullType.toLowerCase();
+        const classSlug = pkgConfig.noPackagePrefix
+            ? cased
+            : `${pkgConfig.packageId}.${cased}`;
+        const memberAnchor = member
+            ? `#${pkgConfig.pascalCaseMembers ? member.charAt(0).toUpperCase() + member.slice(1) : member}`
+            : '';
+        url = `${pkgConfig.docRoot}/classes/${classSlug}${memberAnchor}`;
+    } else {
+        const slug = pkgConfig.noPackagePrefix
+            ? baseType
+            : `${pkgConfig.packageId}.${baseType}`;
+        const memberAnchorNonClass = member
+            ? `#${
+                kind === 'enum'
+                    ? member
+                    : pkgConfig.pascalCaseMembers
+                        ? member.charAt(0).toUpperCase() + member.slice(1)
+                        : member.toLowerCase()
+            }`
+            : '';
+        url = `${pkgConfig.docRoot}/${segment}/${slug}${memberAnchorNonClass}`;
+    }
+    displayLabel = label ?? (member ? `${baseType}.${member}` : baseType);
+    renderCode = true;
+}
 ---
 {isExcluded
     ? <code>{displayLabel}</code>
-    : <a href={url}><code>{displayLabel}</code></a>}
+    : <a href={url}>{renderCode ? <code>{displayLabel}</code> : displayLabel}</a>}

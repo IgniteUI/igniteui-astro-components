@@ -1,31 +1,19 @@
 @use 'igniteui-theming' as *;
 @use '../../styles/global/search-shared' as *;
 
-@layer components {
-
-.search-dialog {
-	@include search-dialog-base-styles;
-	background: var(--igd-layout-sections-bg);
-	color: inherit;
-	border: none;
-	padding: 0;
-
-	&:focus-visible {
-		outline: none;
+.igd-search-result-excerpt {
+	@include type-style('caption') {
+		margin: 0;
 	}
 
-	&::backdrop {
-		@include search-dialog-backdrop;
-		@include search-dialog-backdrop-open;
+	color: light-dark(var(--ig-gray-600), var(--ig-gray-400));
+
+	mark {
+		background: transparent;
+		color: var(--igd-accent);
 	}
 }
 
-// Mobile-only bar — DocsLayout.scss flips display:flex on mobile.
-.igd-search-mobile-bar {
-	display: none;
-	justify-content: flex-end;
-	border-bottom: rem(1px) solid var(--igd-app-outline-color);
-	min-height: rem(48px);
-}
-
+.igd-search-results {
+	padding-inline-end: rem(26px);
 }
