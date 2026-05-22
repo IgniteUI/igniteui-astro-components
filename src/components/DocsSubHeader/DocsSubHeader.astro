@@ -13,7 +13,7 @@
  * moved to the `DocsBreadcrumb` component, rendered inside the main frame.
  */
 import { platform as virtualPlatform } from 'virtual:docs-template/nav-html';
-import { productLinks, sidebar as sidebarData, title as siteTitle } from 'virtual:docs-template/site-meta';
+import { productLinks, sidebar as sidebarData, title as siteTitle, packages as virtualPackages, selectedPackage as virtualSelectedPackage } from 'virtual:docs-template/site-meta';
 import Search from '../Search/Search.astro';
 import type { SidebarEntry } from '../../lib/sidebar/types';
 import { getBreadcrumb } from '../../lib/sidebar/helpers';
@@ -55,9 +55,13 @@ interface Props {
    * Defaults to the virtual module value.
    */
   sidebarItems?: SidebarEntry[];
-  /** Package names for the package selector dropdown. When omitted the selector is hidden. */
-  packages?: string[];
-  /** Currently selected package (must match one of `packages`). */
+  /**
+   * Items for the package/platform selector dropdown. When omitted the selector is hidden.
+   * Each entry is either a plain string label, or an object with a `label`, optional `value`
+   * (defaults to `label`), and optional `href` to navigate to when selected.
+   */
+  packages?: Array<string | { label: string; value?: string; href?: string }>;
+  /** Currently selected package value (must match one of `packages`). */
   selectedPackage?: string;
   /** Label rendered before the package selector. Defaults to `'Package'`. */
   packageLabel?: string;
@@ -85,8 +89,8 @@ const {
   siteTitle: siteTitleProp,
   productLinks: productLinksProp,
   sidebarItems,
-  packages,
-  selectedPackage,
+  packages: packagesProp,
+  selectedPackage: selectedPackageProp,
   packageLabel = 'Package',
   versions,
   selectedVersion,
@@ -97,9 +101,15 @@ const {
 } = Astro.props;
 const resolvedSiteTitle = siteTitleProp ?? siteTitle;
 const currentPlatform = virtualPlatform ?? null;
-const platformIcon = currentPlatform ? (PLATFORM_ICONS[currentPlatform] ?? null) : null;
 const resolvedLinks = (productLinksProp ?? productLinks) as ProductLink[];
 const filteredLinks = resolvedLinks.filter((l: ProductLink) => l.platform !== currentPlatform);
+type PackageEntry = string | { label: string; value?: string; href?: string };
+const rawPackages = packagesProp ?? (virtualPackages.length > 0 ? virtualPackages : undefined);
+const packages = (rawPackages as PackageEntry[] | undefined)?.map((p: PackageEntry) =>
+    typeof p === 'string' ? { label: p, value: p, href: undefined } : { label: p.label, value: p.value ?? p.label, href: p.href }
+);
+const selectedPackage = selectedPackageProp ?? (virtualSelectedPackage || undefined);
+const platformIcon = PLATFORM_ICONS[selectedPackage ?? currentPlatform ?? ''] ?? null;
 
 const resolvedSidebar = (sidebarItems ?? sidebarData) as SidebarEntry[];
 const sidebarCrumbs = currentSlug ? getBreadcrumb(resolvedSidebar, currentSlug) : [];
@@ -119,10 +129,10 @@ const crumbs = sidebarCrumbs.length > 0 ? sidebarCrumbs : (pageTitle ? [pageTitl
 
             <!-- Package selector (optional) -->
             {packages && packages.length > 0 && (
-                <igc-select distance="17" placement="bottom-end" id="package-select" class="igd-package-select" outlined value={selectedPackage} aria-label={packageLabel}>
+                <igc-select distance="17" id="package-select" class="igd-package-select" outlined value={selectedPackage} aria-label={packageLabel}>
                     {platformIcon && <igc-icon name={platformIcon} collection="docs" slot="prefix" aria-hidden="true"></igc-icon>}
                     {packages.map((p) => (
-                            <igc-select-item value={p}>{p}</igc-select-item>
+                        <igc-select-item value={p.value} data-href={p.href}>{p.label}</igc-select-item>
                     ))}
                 </igc-select>
             )}
@@ -180,6 +190,17 @@ const crumbs = sidebarCrumbs.length > 0 ? sidebarCrumbs : (pageTitle ? [pageTitl
     if (!customElements.get('docs-subheader-menu')) {
         class DocsSubHeaderMenu extends HTMLElement {
             connectedCallback() {
+                // Package selector navigation
+                const packageSelect = this.querySelector('#package-select');
+                if (packageSelect) {
+                    packageSelect.addEventListener('igcChange', (e: Event) => {
+                        const val = (e as CustomEvent).detail?.value ?? (packageSelect as any).value;
+                        const item = packageSelect.querySelector<HTMLElement>(`igc-select-item[value="${val}"]`);
+                        const href = item?.dataset?.href;
+                        if (href) window.location.href = href;
+                    });
+                }
+
                 // Sidebar toggle
                 const sidebarBtn = this.querySelector<HTMLButtonElement>('[data-sidebar-toggle]');
                 if (sidebarBtn) {
@@ -243,6 +264,32 @@ const crumbs = sidebarCrumbs.length > 0 ? sidebarCrumbs : (pageTitle ? [pageTitl
                         this.classList.remove('igd-docs-subheader--pinned');
                     });
                 }
+
+                // Close open selects on scroll, and prevent the browser's
+                // focus-triggered scrollIntoView from jumping the page when a
+                // select is clicked while the user is scrolled down.
+                const selectsForScroll = Array.from(
+                    this.querySelectorAll<HTMLElement>('#package-select, #version-select')
+                );
+                selectsForScroll.forEach(select => {
+                    let savedY: number | null = null;
+                    let guardTimer: ReturnType<typeof setTimeout> | null = null;
+
+                    // pointerdown fires before focus is assigned to save scroll position
+                    select.addEventListener('pointerdown', () => {
+                        savedY = window.scrollY;
+                        if (guardTimer) clearTimeout(guardTimer);
+                        guardTimer = setTimeout(() => { savedY = null; guardTimer = null; }, 300);
+                    });
+
+                    window.addEventListener('scroll', () => {
+                        if (savedY !== null) {
+                            window.scrollTo({ top: savedY, left: 0, behavior: 'instant' });
+                            return;
+                        }
+                        if ((select as any).open) (select as any).hide();
+                    }, { passive: true });
+                });
             }
         }
 
@@ -251,8 +298,8 @@ const crumbs = sidebarCrumbs.length > 0 ? sidebarCrumbs : (pageTitle ? [pageTitl
 </script>
 
 <script>
-    import { defineComponents, IgcIconComponent, IgcIconButtonComponent } from 'igniteui-webcomponents';
+    import { defineComponents, IgcIconComponent, IgcIconButtonComponent, IgcSelectComponent, IgcSelectItemComponent } from 'igniteui-webcomponents';
     import '../../scripts/icon-registry';
-    defineComponents(IgcIconComponent, IgcIconButtonComponent);
+    defineComponents(IgcIconComponent, IgcIconButtonComponent, IgcSelectComponent, IgcSelectItemComponent);
 </script>
 
