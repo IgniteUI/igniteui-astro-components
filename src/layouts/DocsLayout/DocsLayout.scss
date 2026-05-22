@@ -84,8 +84,7 @@
 	display: grid;
 	background-color: var(--igd-layout-sections-bg);
 	border-inline-end: var(--igd-app-outline);
-	width: clamp(rem(1200px), 100%, rem(1200px));
-	margin-inline: auto;
+	width: 100%;
 }
 
 .igd-main-content__inner:not(:has(aside)) {
@@ -134,7 +133,9 @@
 	
 	.igd-main-content__page {
 		gap: var(--ig-padding);
+		margin-inline: auto;
 		border-inline: var(--igd-app-outline);
+		width: clamp(rem(1200px), 100%, rem(1200px));
 	}
 	
 	.igd-main-content__inner {
