@@ -7,6 +7,7 @@ const MOCK_PLATFORM: PlatformContext = {
     prefix: 'Igr',
     productName: 'Ignite UI for React',
     productSpinal: 'ignite-ui-react',
+    sassApiUrl: 'https://www.infragistics.com/products/ignite-ui-angular/angular/components/themes/sass',
     apiPackages: {
         core:        { docRoot: 'https://www.infragistics.com/react-apis-new/react/igniteui-react/latest',            packageId: 'igniteui-react',            noPackagePrefix: true, preserveCase: true },
         charts:      { docRoot: 'https://www.infragistics.com/react-apis-new/react/igniteui-react-charts/latest',    packageId: 'igniteui-react-charts',     noPackagePrefix: true, preserveCase: true },
