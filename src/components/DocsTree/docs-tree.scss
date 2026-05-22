@@ -177,6 +177,7 @@ igc-tree-item[data-has-children] {
 	-webkit-box-orient: vertical;
 	overflow: hidden;
 	white-space: normal;
+	word-break: break-word;
 }
 
 /* Hover accent applies to leaf items (sidebar) and all linked items (TOC) */
