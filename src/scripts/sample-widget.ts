@@ -174,22 +174,6 @@ function addFooter(
     const footer     = document.createElement('div');
     footer.className = 'igd-code-view__footer-actions';
 
-    const label       = document.createElement('span');
-    label.className   = 'editing-label';
-    footer.appendChild(label);
-
-    const fsBtn = document.createElement('igc-button') as HTMLElement;
-    fsBtn.setAttribute('variant', 'outlined');
-    fsBtn.setAttribute('aria-label', 'Open in full screen');
-    fsBtn.className = 'igd-full-screen-btn igd-edit-in-btn';
-    fsBtn.innerHTML = `<igc-icon name="open-link-blank" collection="docs" slot="prefix"></igc-icon>Full screen`;
-    if (iframeSrc) {
-        const fullscreenSrc = iframeSrc + (iframeSrc.includes('?') ? '&' : '?') + 'nav=0';
-        fsBtn.setAttribute('href', fullscreenSrc);
-        fsBtn.setAttribute('target', '_blank');
-    }
-    footer.appendChild(fsBtn);
-
     if ((!explicitEditor || explicitEditor === 'stackblitz') && onStackblitz) {
         const btn = document.createElement('igc-button') as HTMLElement;
         btn.setAttribute('variant', 'outlined');
@@ -209,6 +193,19 @@ function addFooter(
         btn.addEventListener('click', onCodeSandbox);
         footer.appendChild(btn);
     }
+
+    const fsBtn = document.createElement('igc-icon-button') as HTMLElement;
+    fsBtn.setAttribute('name', 'open-link-blank');
+    fsBtn.setAttribute('collection', 'docs');
+    fsBtn.setAttribute('variant', 'outlined');
+    fsBtn.setAttribute('aria-label', 'Open in full screen');
+    fsBtn.className = 'igd-full-screen-btn igd-edit-in-btn';
+    if (iframeSrc) {
+        const fullscreenSrc = iframeSrc + (iframeSrc.includes('?') ? '&' : '?') + 'nav=0';
+        fsBtn.setAttribute('href', fullscreenSrc);
+        fsBtn.setAttribute('target', '_blank');
+    }
+    footer.appendChild(fsBtn);
 
     widget.appendChild(footer);
 }
