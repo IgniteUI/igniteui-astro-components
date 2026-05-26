@@ -354,7 +354,9 @@ class XplatCodeService {
         try {
             // Blazor's local dev server uses a self-signed cert on a non-4200 port,
             // causing CORS errors. Use a relative URL so Vite's proxy handles it.
-            const jsonUrl = this.platform === 'blazor'
+            // On staging/production, use the full demosBaseUrl like other xplat platforms.
+            const isLocalDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+            const jsonUrl = (this.platform === 'blazor' && isLocalDev)
                 ? `${this.codeBase}${samplePath}.json`
                 : `${demosBaseUrl}${this.codeBase}${samplePath}.json`;
 
