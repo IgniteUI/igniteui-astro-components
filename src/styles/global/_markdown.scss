@@ -75,8 +75,10 @@
 			};
 			
 			border: rem(1px) solid light-dark(var(--ig-gray-200), var(--ig-primary-900));
+			border-radius: rem(4px);
 			background-color: light-dark(var(--ig-gray-50), var(--ig-gray-50)) !important;
 			color: light-dark(var(--ig-gray-900), var(--ig-gray-800));
+			padding: rem(32px);
 		}
 		
 		pre,
