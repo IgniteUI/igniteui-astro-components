@@ -21,7 +21,7 @@ const defaultText = variant === 'opensource' ? 'Open Source'
 ---
 
 <igc-badge class:list={['igd-badge', variant, className]} {...rest}>
-    <span><slot>{defaultText}</slot></span>
+    <slot><span>{defaultText}</span></slot>
 </igc-badge>
 
 <script>

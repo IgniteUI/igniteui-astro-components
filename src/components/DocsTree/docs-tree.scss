@@ -172,7 +172,12 @@ igc-tree-item[data-has-children] {
 }
 
 .docs-tree-label {
+	display: -webkit-box;
+	-webkit-line-clamp: 2;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
 	white-space: normal;
+	word-break: break-word;
 }
 
 /* Hover accent applies to leaf items (sidebar) and all linked items (TOC) */

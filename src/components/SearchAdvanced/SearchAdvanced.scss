@@ -2,15 +2,18 @@
 @use '../../styles/global/search-shared' as *;
 
 @layer components {
-	api-search-advanced { display: contents; }
+	api-search-advanced {
+		display: contents;
+		
+		
+		// Advanced header has a scope selector before the input, needs start padding
+		.igd-search-header {
+			padding-inline-start: rem(16px);
+		}
+	}
 	
 	.search-trigger {
 		color: light-dark(var(--ig-gray-600), var(--ig-gray-400));
-	}
-	
-	// Advanced header has a scope selector before the input, needs start padding
-	.igd-search-header {
-		padding-inline-start: rem(16px);
 	}
 	
 	// TODO BUG IN THE TAB COMPONENT
