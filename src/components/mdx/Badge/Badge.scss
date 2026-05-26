@@ -1,0 +1,73 @@
+@use 'igniteui-theming/sass/typography' as *;
+
+@layer components {
+    igc-badge {
+        &.preview {
+            --background-color: var(--igd-preview-bg);
+            --text-color: var(--igd-preview-color);
+            --icon-color: var(--igd-preview-color);
+            --border-color: var(--igd-preview-border);
+        }
+
+        &.new {
+            --background-color: var(--igd-new-bg);
+            --text-color: var(--igd-new-color);
+            --icon-color: var(--igd-new-color);
+            --border-color: var(--igd-new-border);
+        }
+
+        &.updated {
+            --background-color: var(--igd-updated-bg);
+            --text-color: var(--igd-updated-color);
+            --icon-color: var(--igd-updated-color);
+            --border-color: var(--igd-updated-border);
+        }
+
+        &.premium {
+            --background-color: var(--igd-premium-bg);
+            --text-color: var(--igd-premium-color);
+            --icon-color: var(--igd-premium-color);
+            --border-color: var(--igd-premium-border);
+        }
+
+        &.opensource {
+            --background-color: var(--igd-opensource-bg);
+            --text-color: var(--igd-opensource-color);
+            --icon-color: var(--igd-opensource-color);
+            --border-color: var(--igd-opensource-border);
+        }
+    }
+
+    .igd-badge {
+        --border-radius: #{rem(4px)};
+        --elevation: none;
+        vertical-align: middle;
+
+        &::part(base) {
+            @include type-style('overline') {
+                margin: 0;
+            };
+
+            border-radius: var(--border-radius);
+            border-width: rem(1px);
+            border-style: solid;
+            border-color: var(--border-color);
+        }
+
+        igc-icon {
+            --size: #{rem(18px)}
+        }
+
+        // TODO, This has to be fixed inside the component
+        span {
+            position: relative;
+            padding-inline: rem(3px);
+        }
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+        > .igd-badge {
+            align-self: center;
+        }
+    }
+}

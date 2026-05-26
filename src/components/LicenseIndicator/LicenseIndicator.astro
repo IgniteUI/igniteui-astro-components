@@ -1,5 +1,6 @@
 ---
 import './LicenseIndicator.scss';
+import Badge from '../mdx/Badge/Badge.astro';
 
 export interface Props {
   /** 'premium' shows a purple Premium badge; 'opensource' shows a green Open Source badge; false/undefined hides the badge. */
@@ -11,9 +12,9 @@ const label = license === 'premium' ? 'Premium' : 'Open Source';
 ---
 
 {license && (
-  <igc-badge class={`sidebar-badge ${license}`}>
+  <Badge variant={license} class="license-indicator-badge">
       <span>{label}</span>
 
-      {license === 'premium' && <igc-icon name="premium" collection="docs" class="sidebar-premium-icon" aria-hidden="true"></igc-icon>}
-  </igc-badge>
+      {license === 'premium' && <igc-icon name="premium" collection="docs" aria-hidden="true"></igc-icon>}
+  </Badge>
 )}

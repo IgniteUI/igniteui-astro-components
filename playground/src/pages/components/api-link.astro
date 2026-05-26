@@ -15,6 +15,8 @@ const headings = [
   { depth: 2, slug: 'function',       text: 'Function' },
   { depth: 2, slug: 'type-alias',     text: 'Type alias' },
   { depth: 2, slug: 'sub-package',    text: 'Sub-package' },
+  { depth: 2, slug: 'platform-overrides', text: 'Platform overrides' },
+  { depth: 2, slug: 'sass-links',     text: 'Sass links' },
   { depth: 2, slug: 'platform-env',   text: 'Platform env var' },
 ];
 ---
@@ -46,6 +48,15 @@ const headings = [
 
     <h2 id="sub-package">Sub-package</h2>
     <p>Use the <code>pkg</code> prop to target a sub-package: <ApiLink pkg="charts" type="CategoryChart" /></p>
+
+    <h2 id="platform-overrides">Platform overrides</h2>
+    <p><code>exclude</code> renders plain code on matching platforms: <ApiLink type="Toast" member="show" exclude="React" /></p>
+    <p><code>excludePrefixFor</code> keeps symbols unprefixed on matching platforms: <ApiLink pkg="charts" type="ChartSelection" excludePrefixFor="React" /></p>
+    <p><code>excludeSuffixFor</code> suppresses framework class suffixes on matching platforms: <ApiLink pkg="charts" type="ChartSelection" excludeSuffixFor="React" /></p>
+
+    <h2 id="sass-links">Sass links</h2>
+    <p>Sass module page with prose label: <ApiLink kind="sass" module="animations" label="animations Sass module" code={false} /></p>
+    <p>Sass API anchor with code label: <ApiLink kind="sass" module="animations" type="mixin-slide-in-left" label="slide-in-left" /></p>
 
     <h2 id="platform-env">Platform env var</h2>
     <p>Platform is set via <code>PLATFORM</code> env var in <code>astro.config.mjs</code> (defaults to <code>React</code>).</p>
