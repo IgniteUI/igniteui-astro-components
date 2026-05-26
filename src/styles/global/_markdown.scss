@@ -78,7 +78,6 @@
 			border-radius: rem(4px);
 			background-color: light-dark(var(--ig-gray-50), var(--ig-gray-50)) !important;
 			color: light-dark(var(--ig-gray-900), var(--ig-gray-800));
-			padding: rem(32px);
 		}
 		
 		pre,
@@ -205,17 +204,18 @@
 			margin-block-end: rem(26px);
 		}
 		
-		> a {
+		a {
 			font-size: inherit;
-			color: inherit;
+			color: var(--igd-on-app-bg);
 			text-decoration: underline;
 			
 			&:hover,
 			&:focus {
 				color: light-dark(var(--ig-primary-600), var(--ig-primary-100));
-				outline-offset: rem(2px);
-				outline: solid rem(1px);
-				outline-color: inherit;
+			}
+			
+			&:focus-visible {
+				outline: none;
 			}
 		}
 		
@@ -308,12 +308,10 @@
 		img {
 			display: block;
 			max-width: 100%;
-			width: 100%;
 			height: auto;
 			margin-block-end: rem(26px);
 			border-radius: var(--igd-border-radius);
 			content-visibility: auto;
-			object-fit: cover;
 		}
 	
 		// Image wrapped in a link — no underline, contain the block margin

@@ -78,7 +78,6 @@ igc-tree-item {
 	--foreground-selected: var(--igd-accent);
 	--foreground-active-selected: var(--igd-accent);
 	
-	
 	a {
 		position: absolute;
 		inset: 0;
@@ -126,8 +125,9 @@ igc-tree-item::part(label) {
 	padding-block: rem(6px);
 	text-overflow: unset;
 	white-space: unset;
-	word-break: break-all;
+	word-break: break-word;
 	overflow: unset;
+	
 }
 
 igc-tree-item[data-has-children] {
