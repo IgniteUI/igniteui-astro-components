@@ -109,7 +109,7 @@ const packages = (rawPackages as PackageEntry[] | undefined)?.map((p: PackageEnt
     typeof p === 'string' ? { label: p, value: p, href: undefined } : { label: p.label, value: p.value ?? p.label, href: p.href }
 );
 const selectedPackage = selectedPackageProp ?? (virtualSelectedPackage || undefined);
-const platformIcon = PLATFORM_ICONS[selectedPackage ?? currentPlatform ?? ''] ?? null;
+const platformIcon = PLATFORM_ICONS[selectedPackage ?? ''] ?? PLATFORM_ICONS[currentPlatform ?? ''] ?? null;
 
 const resolvedSidebar = (sidebarItems ?? sidebarData) as SidebarEntry[];
 const sidebarCrumbs = currentSlug ? getBreadcrumb(resolvedSidebar, currentSlug) : [];
@@ -135,6 +135,11 @@ const crumbs = sidebarCrumbs.length > 0 ? sidebarCrumbs : (pageTitle ? [pageTitl
                         <igc-select-item value={p.value} data-href={p.href}>{p.label}</igc-select-item>
                     ))}
                 </igc-select>
+            )}
+            {packages && packages.length > 0 && (
+                <igc-tooltip anchor="package-select" id="package-tooltip" placement="bottom-end" with-arrow>
+                    {packages.find(p => p.value === selectedPackage)?.label ?? selectedPackage ?? ''}
+                </igc-tooltip>
             )}
 
             <!-- Version selector (optional) -->
@@ -192,12 +197,27 @@ const crumbs = sidebarCrumbs.length > 0 ? sidebarCrumbs : (pageTitle ? [pageTitl
             connectedCallback() {
                 // Package selector navigation
                 const packageSelect = this.querySelector('#package-select');
+                const packageTooltip = this.querySelector<any>('#package-tooltip');
                 if (packageSelect) {
                     packageSelect.addEventListener('igcChange', (e: Event) => {
                         const val = (e as CustomEvent).detail?.value ?? (packageSelect as any).value;
                         const item = packageSelect.querySelector<HTMLElement>(`igc-select-item[value="${val}"]`);
                         const href = item?.dataset?.href;
                         if (href) window.location.href = href;
+                        // Sync tooltip content with the new selection label
+                        if (packageTooltip) {
+                            packageTooltip.textContent = item?.textContent?.trim() ?? val;
+                        }
+                    });
+                }
+                // Only show the package tooltip when the label is visually truncated
+                if (packageTooltip && packageSelect) {
+                    packageTooltip.addEventListener('igcOpening', (e: Event) => {
+                        const igcInput = (packageSelect as any).shadowRoot?.querySelector('igc-input');
+                        const nativeInput = igcInput?.shadowRoot?.querySelector('input');
+                        if (!nativeInput || nativeInput.scrollWidth <= nativeInput.clientWidth) {
+                            e.preventDefault();
+                        }
                     });
                 }
 
@@ -298,8 +318,8 @@ const crumbs = sidebarCrumbs.length > 0 ? sidebarCrumbs : (pageTitle ? [pageTitl
 </script>
 
 <script>
-    import { defineComponents, IgcIconComponent, IgcIconButtonComponent, IgcSelectComponent, IgcSelectItemComponent } from 'igniteui-webcomponents';
+    import { defineComponents, IgcIconComponent, IgcIconButtonComponent, IgcSelectComponent, IgcSelectItemComponent, IgcTooltipComponent } from 'igniteui-webcomponents';
     import '../../scripts/icon-registry';
-    defineComponents(IgcIconComponent, IgcIconButtonComponent, IgcSelectComponent, IgcSelectItemComponent);
+    defineComponents(IgcIconComponent, IgcIconButtonComponent, IgcSelectComponent, IgcSelectItemComponent, IgcTooltipComponent);
 </script>
 

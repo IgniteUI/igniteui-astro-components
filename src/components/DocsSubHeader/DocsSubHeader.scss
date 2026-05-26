@@ -103,6 +103,31 @@
 	}
 }
 
+.igd-version-select {
+	&::part(native-input) {
+		field-sizing: content;
+	}
+}
+
+.igd-package-select {
+	&::part(prefix),
+	&::part(toggle-icon) {
+		flex-shrink: 0;
+	}
+
+	&::part(input) {
+		min-width: 0;
+		overflow: hidden;
+	}
+
+	&::part(native-input) {
+		min-width: 0;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+}
+
 // Hidden by default. DocsLayout.scss reveals it on tablet/mobile (when the sidebar is hidden).
 .subheader-sidebar-toggle {
 	display: none;
@@ -177,6 +202,20 @@
 		.theme-icon--moon {
 			display: flex;
 		}
+	}
+}
+
+#package-tooltip {
+	--ig-tooltip-background: #D2DBE8;
+	--ig-tooltip-text-color: #112031;
+	--ig-tooltip-border-radius: #{rem(4px)};
+
+	&::part(base) {
+		font-family: var(--igd-font-sans);
+		font-size: #{rem(12px)};
+		font-weight: 500;
+		line-height: #{rem(18px)};
+		letter-spacing: 0;
 	}
 }
 
