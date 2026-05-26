@@ -103,6 +103,31 @@
 	}
 }
 
+.igd-version-select {
+	&::part(native-input) {
+		field-sizing: content;
+	}
+}
+
+.igd-package-select {
+	&::part(prefix),
+	&::part(toggle-icon) {
+		flex-shrink: 0;
+	}
+
+	&::part(input) {
+		min-width: 0;
+		overflow: hidden;
+	}
+
+	&::part(native-input) {
+		min-width: 0;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+}
+
 // Hidden by default. DocsLayout.scss reveals it on tablet/mobile (when the sidebar is hidden).
 .subheader-sidebar-toggle {
 	display: none;

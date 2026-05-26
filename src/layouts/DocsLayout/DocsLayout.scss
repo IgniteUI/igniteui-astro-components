@@ -338,12 +338,4 @@
 		justify-content: center;
 	}
 
-	.igd-package-select::part(native-input),
-	.igd-version-select::part(native-input) {
-		field-sizing: content;
-
-		&::part(base) {
-			min-width: 100%;
-		}
-	}
 }
