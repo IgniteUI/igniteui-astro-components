@@ -109,7 +109,7 @@ const packages = (rawPackages as PackageEntry[] | undefined)?.map((p: PackageEnt
     typeof p === 'string' ? { label: p, value: p, href: undefined } : { label: p.label, value: p.value ?? p.label, href: p.href }
 );
 const selectedPackage = selectedPackageProp ?? (virtualSelectedPackage || undefined);
-const platformIcon = PLATFORM_ICONS[selectedPackage ?? currentPlatform ?? ''] ?? null;
+const platformIcon = PLATFORM_ICONS[selectedPackage ?? ''] ?? PLATFORM_ICONS[currentPlatform ?? ''] ?? null;
 
 const resolvedSidebar = (sidebarItems ?? sidebarData) as SidebarEntry[];
 const sidebarCrumbs = currentSlug ? getBreadcrumb(resolvedSidebar, currentSlug) : [];
