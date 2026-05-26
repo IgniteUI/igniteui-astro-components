@@ -205,5 +205,19 @@
 	}
 }
 
+#package-tooltip {
+	--ig-tooltip-background: #D2DBE8;
+	--ig-tooltip-text-color: #112031;
+	--ig-tooltip-border-radius: #{rem(4px)};
+
+	&::part(base) {
+		font-family: var(--igd-font-sans);
+		font-size: #{rem(12px)};
+		font-weight: 500;
+		line-height: #{rem(18px)};
+		letter-spacing: 0;
+	}
+}
+
 }
 
