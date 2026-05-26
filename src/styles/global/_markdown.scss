@@ -14,31 +14,47 @@
 			}
 		}
 
-		p {
+		p,
+		.igd-p {
 			@include type-style('body-1');
+			
+			code {
+				white-space: nowrap;
+				/* Optional: allows the user to scroll horizontally if the code is too long */
+				max-width: 100%;
+				overflow-x: auto;
+				display: inline-block;
+				vertical-align: middle;
+			}
 		}
 		
-		h1 {
+		h1,
+		.igd-h1 {
 			@include type-style('h1');
 		}
 		
-		h2 {
+		h2,
+		.igd-h2 {
 			@include type-style('h2');
 		}
 		
-		h3 {
+		h3,
+		.igd-h3 {
 			@include type-style('h3');
 		}
 		
-		h4 {
+		h4,
+		.igd-h4 {
 			@include type-style('h4');
 		}
 		
-		h5 {
+		h5,
+		.igd-h5 {
 			@include type-style('h5');
 		}
 		
-		h6 {
+		h6,
+		.igd-h6 {
 			@include type-style('h6');
 		}
 		
@@ -59,8 +75,10 @@
 			};
 			
 			border: rem(1px) solid light-dark(var(--ig-gray-200), var(--ig-primary-900));
+			border-radius: rem(4px);
 			background-color: light-dark(var(--ig-gray-50), var(--ig-gray-50)) !important;
 			color: light-dark(var(--ig-gray-900), var(--ig-gray-800));
+			padding: rem(32px);
 		}
 		
 		pre,
@@ -94,7 +112,7 @@
 			color: light-dark(var(--ig-gray-600), var(--ig-gray-400));
 			border: rem(1px) solid light-dark(var(--ig-gray-300), #1A314A);
 			
-			padding: rem(4px) rem(8px);
+			padding: 0 rem(4px);
 			border-radius: rem(4px);
 		}
 		
@@ -154,6 +172,10 @@
 		}
 		
 		dl {
+			display: flex;
+			flex-direction: column;
+			gap: 8px;
+			
 			padding-inline-start: 0;
 			
 			dt {
@@ -286,10 +308,12 @@
 		img {
 			display: block;
 			max-width: 100%;
+			width: 100%;
 			height: auto;
 			margin-block-end: rem(26px);
 			border-radius: var(--igd-border-radius);
 			content-visibility: auto;
+			object-fit: cover;
 		}
 	
 		// Image wrapped in a link — no underline, contain the block margin
