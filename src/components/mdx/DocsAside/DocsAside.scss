@@ -26,6 +26,7 @@ blockquote {
 .igd-aside__title {
 	grid-row: 1;
 	grid-column: 2;
+	align-self: center;
 }
 
 .igd-aside__icon {
@@ -38,7 +39,7 @@ blockquote {
 	grid-row: 2;
 	
 	> p:only-child {
-		margin-inline-end: 0;
+		margin-block-end: 0;
 	}
 }
 
