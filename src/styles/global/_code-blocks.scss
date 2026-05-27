@@ -8,7 +8,7 @@
    ============================================================ */
 
 .shiki {
-	border: 1px solid light-dark(var(--ig-gray-200), var(--ig-primary-900));
+	border: 1px solid var(--ig-gray-200);
 	margin-bottom: rem(26px);
 }
 
@@ -26,25 +26,11 @@ pre.shiki code {
     word-break: break-word;
 }
 
-/* ── Light mode (default) ───────────────────────────────────
-   Shiki's inline style already sets color:var(--shiki-light).
-   Only strip the per-span background so the pre bg shows.     */
-:root:not([data-theme='dark']) pre.shiki code span {
-    background-color: transparent !important;
-}
-
-/* ── Dark mode ──────────────────────────────────────────────
-   Override Shiki's inline light-colour styles with dark vars. */
-[data-theme='dark'] pre.shiki {
-    background-color: var(--shiki-dark-bg) !important;
-}
-
-[data-theme='dark'] pre.shiki code span {
-    color: var(--shiki-dark) !important;
-    background-color: var(--shiki-dark-bg, transparent) !important;
-    font-style: var(--shiki-dark-font-style) !important;
-    font-weight: var(--shiki-dark-font-weight) !important;
-    text-decoration: var(--shiki-dark-text-decoration) !important;
+/* ── Always use the dark theme ──────────────────────────────
+   Single dark theme — Shiki outputs colors directly, no CSS
+   variable switching required.                               */
+pre.shiki {
+    background-color: var(--shiki-color-background) !important;
 }
 
 /* Copy button */

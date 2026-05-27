@@ -303,7 +303,7 @@
 	igc-input::part(container) {
 		border: 0;
 		height: 100%;
-		padding: 0 rem(16px) !important;
+		padding: 0 !important;
 		border-block-end: none !important;
 
 		&:focus-within {

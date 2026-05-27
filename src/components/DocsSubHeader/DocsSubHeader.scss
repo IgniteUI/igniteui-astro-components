@@ -18,6 +18,7 @@
 	border-block-end: var(--igd-app-outline);
 	z-index: 1;
 	background-color: var(--igd-layout-sections-bg);
+	view-transition-name: docs-subheader;
 
 	.igd-logo {
 		display: flex;

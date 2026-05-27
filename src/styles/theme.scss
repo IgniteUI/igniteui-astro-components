@@ -33,7 +33,7 @@ body {
 // The actual @font-face rules come from @fontsource-variable (imported in DocsLayout.astro).
 :root {
 	--ig-theme: fluent;
-	--font-sans: 'Instrument Sans Variable';
+	--font-heading: 'aktiv-grotesk';
 	--font-mono: 'JetBrains Mono Variable'; // fallback should be 'Cascadia Code', 'Fira Code', monospace
 }
 
@@ -42,7 +42,7 @@ body {
 @include elevations($material-elevations);
 
 @include typography(
-	$font-family: '"Instrument Sans Variable", "Segoe UI", system-ui, sans-serif',
+	$font-family: '"Inter Variable", "Segoe UI", system-ui, sans-serif',
 	$type-scale: $igd-type-scale
 );
 
@@ -55,6 +55,21 @@ body {
 // via inheritance. Scoping to .igd-page-layout keeps them isolated.
 .igd-page-layout {
 	font-family: var(--font-sans), 'Segoe UI', system-ui, sans-serif;
+}
+
+h1,
+.igd-h1,
+h2,
+.igd-h2,
+h3,
+.igd-h3,
+h4,
+.igd-h4,
+h5,
+.igd-h5,
+h6,
+.igd-h6 {
+	font-family: var(--font-heading), 'aktiv-grotesk', 'Segoe UI', system-ui, sans-serif;
 }
 
 .visually-hidden {
@@ -86,6 +101,19 @@ body {
 	opacity: 0;
 }
 igc-dialog:not(:defined) { display: none; }
+
+// Disable Astro view-transition animation for the sidebar and subheader so they
+// switch instantly — only the main content and TOC cross-fade between pages.
+::view-transition-old(docs-sidebar),
+::view-transition-old(docs-subheader) {
+	animation: none;
+	opacity: 0;
+}
+::view-transition-new(docs-sidebar),
+::view-transition-new(docs-subheader) {
+	animation: none;
+	opacity: 1;
+}
 
 igc-icon {
 	padding: 0;

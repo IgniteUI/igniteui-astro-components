@@ -104,7 +104,7 @@ const currentPlatform = virtualPlatform ?? null;
 const resolvedLinks = (productLinksProp ?? productLinks) as ProductLink[];
 const filteredLinks = resolvedLinks.filter((l: ProductLink) => l.platform !== currentPlatform);
 type PackageEntry = string | { label: string; value?: string; href?: string };
-const rawPackages = packagesProp ?? (virtualPackages.length > 0 ? virtualPackages : undefined);
+const rawPackages = packagesProp ?? (virtualPackages?.length > 0 ? virtualPackages : undefined);
 const packages = (rawPackages as PackageEntry[] | undefined)?.map((p: PackageEntry) =>
     typeof p === 'string' ? { label: p, value: p, href: undefined } : { label: p.label, value: p.value ?? p.label, href: p.href }
 );

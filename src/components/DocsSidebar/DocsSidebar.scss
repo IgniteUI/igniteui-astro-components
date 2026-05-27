@@ -8,8 +8,8 @@
 		flex-direction: column;
 		z-index: var(--igd-sidebar-z-index);
 		border-inline-end: var(--igd-app-outline);
-		padding-inline: var(--igd-padding-md);
-		padding-block: calc(var(--igd-padding-lg) + rem(14px));
+		padding-inline: rem(16px);
+		padding-block: rem(24px);
 		background-color: var(--igd-layout-sections-bg);
 		position: sticky;
 		top: var(--igd-header-height);
@@ -17,16 +17,15 @@
 		max-height: 100dvh;
 		align-self: start;
 		gap: rem(24px);
+		view-transition-name: docs-sidebar;
 	
 		.sidebar-gutter {
 			overflow-y: hidden;
-			scrollbar-gutter: stable;
 	
 			// This Makes sure the input border is visible
 			// This is the height of the input in fluent theme + 8px padding
 			// TODO this can be made smart using a css variable to override the original height of the input and used here
 			min-height: rem(40px);
-	
 	
 			igc-icon {
 				color: light-dark(var(--ig-gray-800), var(--ig-gray-300));
@@ -74,37 +73,37 @@
 		display: flex;
 		align-items: center;
 		gap: rem(8px);
+		padding: rem(4px);
 		
 		igc-badge {
 			justify-self: end;
 		}
+		
 	}
 	
 	.docs-tree-group {
 		gap: rem(8px);
+		padding-inline-end: rem(4px);
 	}
 	
 	.group-label-text {
 		@include type-style('body-2') {
+			font-weight: 600;
 			margin-block: 0;
 		};
 		
-		color: light-dark(var(--ig-gray-800), var(--ig-gray-600));
-		
-		&:hover {
-			color: var(--igd-accent);
-		}
-	}
-	
-	igc-tree-item[active] {
-		.group-label-text {
-			color: var(--igd-accent);
-		}
+		color: light-dark(var(--ig-gray-900), var(--ig-gray-500));
+		user-select: none;
 	}
 	
 	.group-label-count {
-		color: light-dark(var(--ig-gray-500), var(--ig-gray-600));
-		margin-inline-start: rem(8px)
+		color: light-dark(var(--ig-gray-700), var(--ig-gray-600));
+		background: light-dark(var(--ig-gray-100), var(--ig-gray-200));
+		padding: rem(2px) rem(8px);
+		aspect-ratio: 1;
+		border-radius: rem(4px);
+		margin-inline-start: rem(8px);
+		font-size: 12px;
 	}
 	
 	.igd-badge-container {
