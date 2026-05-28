@@ -7,11 +7,6 @@
 	.igd-main-content__markdown {
 		.license-indicator-badge {
 			margin-block-end: rem(26px);
-			
-			// TODO, This has to be fixed inside the component
-			span {
-				top: rem(1px);
-			}
 		}
 
 		p,
