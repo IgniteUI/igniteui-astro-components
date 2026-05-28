@@ -200,31 +200,23 @@ const crumbs = sidebarCrumbs.length > 0 ? sidebarCrumbs : (pageTitle ? [pageTitl
                 const packageTooltip = this.querySelector<any>('#package-tooltip');
                 if (packageSelect) {
                     // Truncates the native input value directly so the '\u2026' is baked in,
-                    // bypassing CSS text-overflow timing issues (igcInput re-renders on every
-                    // open/close, restoring the full text before the ellipsis can paint).
+                    // Keep the full package label in the native input and apply truncation
+                    // only as a visual style so assistive technologies still get the full text.
                     function applyTriggerTruncation() {
                         const igcInput = (packageSelect as any).shadowRoot?.querySelector('igc-input');
                         const nativeInput = igcInput?.shadowRoot?.querySelector('input') as HTMLInputElement | null;
                         if (!nativeInput || !nativeInput.value) return;
+
                         const text = nativeInput.value;
-                        if (text.endsWith('\u2026')) return; // already truncated
 
-                        // Use the live DOM overflow as the truncation signal.
-                        // A tolerance of 1px is used to ignore subpixel rounding noise.
-                        if (nativeInput.scrollWidth <= nativeInput.clientWidth + 1) return;
+                        // Preserve the full label for accessibility and hover disclosure.
+                        nativeInput.setAttribute('aria-label', text);
+                        nativeInput.title = text;
 
-                        // Compute the actual available content area and find the cut point.
-                        const style = getComputedStyle(nativeInput);
-                        const padH = parseFloat(style.paddingLeft) + parseFloat(style.paddingRight);
-                        const maxContentW = nativeInput.clientWidth - padH;
-
-                        const canvas = document.createElement('canvas');
-                        const ctx = canvas.getContext('2d');
-                        if (!ctx) return;
-                        ctx.font = style.font;
-                        let cut = text.length;
-                        while (cut > 0 && ctx.measureText(text.slice(0, cut) + '\u2026').width > maxContentW) cut--;
-                        nativeInput.value = text.slice(0, cut) + '\u2026';
+                        // Apply truncation only to the rendered text.
+                        nativeInput.style.overflow = 'hidden';
+                        nativeInput.style.textOverflow = 'ellipsis';
+                        nativeInput.style.whiteSpace = 'nowrap';
                     }
 
                     // Run after igcInput's Lit render cycle settles (two rAFs = after microtasks + first paint)
