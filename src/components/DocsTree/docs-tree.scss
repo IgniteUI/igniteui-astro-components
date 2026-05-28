@@ -198,7 +198,7 @@ igc-tree-item:not([data-has-children]):hover .docs-tree-label {
 .igd-label-and-badge {
 	position: relative;
 	border-radius: rem(4px);
-	padding-inline: rem(8px) 0;
+	padding-inline: rem(8px) rem(4px);
 	height: 100%;
 	z-index: -1;
 	
