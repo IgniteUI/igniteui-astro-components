@@ -418,6 +418,15 @@ class XplatCodeService {
             } catch { /* malformed package.json — leave as-is */ }
         }
 
+        // @babel/preset-env with useBuiltIns:"usage" auto-injects core-js polyfill imports,
+        // but core-js is absent from some samples' package.json, breaking the webpack build.
+        // StackBlitz runs in modern Chrome so polyfills are unnecessary — disable the injection.
+        if (this.platform === 'wc' && files['webpack.config.js']) {
+            files['webpack.config.js'] = files['webpack.config.js']
+                .replace('"useBuiltIns": "usage"', '"useBuiltIns": false')
+                .replace(/,?\s*"corejs":\s*3/, '');
+        }
+
         const platformLabel = this.platform === 'react' ? 'React' : 'Web Components';
         const mainFile = Object.keys(files).find(f => f.endsWith('index.tsx') || f.endsWith('index.ts')) || '';
         sdk.openProject(
