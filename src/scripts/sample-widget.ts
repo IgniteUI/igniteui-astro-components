@@ -184,15 +184,18 @@ function addFooter(
         footer.appendChild(btn);
     }
 
-    if ((!explicitEditor || explicitEditor === 'csb') && onCodeSandbox) {
-        const btn = document.createElement('igc-button') as HTMLElement;
-        btn.setAttribute('variant', 'outlined');
-        btn.setAttribute('aria-label', 'Edit in CodeSandbox');
-        btn.className = 'codesandbox-btn igd-edit-in-btn';
-        btn.innerHTML = codeSandboxSvg;
-        btn.addEventListener('click', onCodeSandbox);
-        footer.appendChild(btn);
-    }
+    // CodeSandbox hidden, re-enable when https://github.com/codesandbox/codesandbox-client/issues/8884 is fixed.
+    // https://github.com/codesandbox/codesandbox-client/issues/8883
+    // https://github.com/codesandbox/codesandbox-client/issues/8074
+    // if ((!explicitEditor || explicitEditor === 'csb') && onCodeSandbox) {
+    //     const btn = document.createElement('igc-button') as HTMLElement;
+    //     btn.setAttribute('variant', 'outlined');
+    //     btn.setAttribute('aria-label', 'Edit in CodeSandbox');
+    //     btn.className = 'codesandbox-btn igd-edit-in-btn';
+    //     btn.innerHTML = codeSandboxSvg;
+    //     btn.addEventListener('click', onCodeSandbox);
+    //     footer.appendChild(btn);
+    // }
 
     const fsBtn = document.createElement('igc-icon-button') as HTMLElement;
     fsBtn.setAttribute('name', 'open-link-blank');
@@ -218,9 +221,7 @@ class AngularCodeService {
         const samplePath     = getSamplePath(iframeSrc, demosBaseUrl);
         const isDv           = isDvSample(samplePath);
         const assetDir       = isDv ? 'code-viewer' : 'samples';
-        const explicitEditor = isDv ? 'csb' : null;
-
-        const fallbackStackblitz  = isDv ? null : () => this._openStackBlitzUrl(samplePath, demosBaseUrl);
+        const fallbackStackblitz  = () => this._openStackBlitzUrl(samplePath, demosBaseUrl);
         const fallbackCodeSandbox = () => this._openCodeSandboxUrl(samplePath, demosBaseUrl);
 
         try {
@@ -256,12 +257,15 @@ class AngularCodeService {
                 .forEach((file: SampleFile) =>
                     addCodeTab(igcTabs, file));
 
-            const onStackblitz = isDv ? null : () => this._openInStackBlitz(sampleData, sharedData);
-            addFooter(widget, iframeSrc, explicitEditor, onStackblitz, fallbackCodeSandbox);
+            // DV samples include all boilerplate in their own JSON, sharedData is for non DV only.
+            const onStackblitz = isDv
+                ? () => this._openInStackBlitz(sampleData, null)
+                : () => this._openInStackBlitz(sampleData, sharedData);
+            addFooter(widget, iframeSrc, null, onStackblitz, fallbackCodeSandbox);
 
         } catch (err: any) {
             console.warn('[sample-widget] Could not fetch Angular sample files:', err.message);
-            addFooter(widget, iframeSrc, explicitEditor, fallbackStackblitz, fallbackCodeSandbox);
+            addFooter(widget, iframeSrc, null, fallbackStackblitz, fallbackCodeSandbox);
         }
     }
 
@@ -274,12 +278,12 @@ class AngularCodeService {
             return;
         }
         const files: Record<string, string> = {};
-        (sharedData?.files || []).forEach((f: any) => {
-            if (f.path) files[f.path.replace(/^\.\//, '')] = f.content || '';
-        });
-        (sampleData.sampleFiles || []).forEach((f: any) => {
-            if (f.path) files[f.path.replace(/^\.\//, '')] = f.content || '';
-        });
+        const addFile = (f: any) => {
+            if (!f.path || f.path.startsWith('..')) return;
+            files[f.path.replace(/^\.\//, '')] = f.content || '';
+        };
+        (sharedData?.files || []).forEach(addFile);  // shared boilerplate for non-DV samples
+        (sampleData.sampleFiles || []).forEach(addFile);
         sdk.openProject(
             {
                 title:       'Infragistics Angular Components',
@@ -321,8 +325,9 @@ class AngularCodeService {
         const repo   = isDv ? 'igniteui-angular-examples' : 'igniteui-live-editing-samples';
         const segs   = new URL(demosBaseUrl).pathname.replace(/\/$/, '').split('/').filter(Boolean);
         const prefix = isDv ? 'samples/' : (segs.pop() || 'angular-demos') + '/';
+        const params = isDv ? '?startScript=start' : '';
         window.open(
-            `https://stackblitz.com/github/IgniteUI/${repo}/tree/${branch}/${prefix}${samplePath}`,
+            `https://stackblitz.com/github/IgniteUI/${repo}/tree/${branch}/${prefix}${samplePath}${params}`,
             '_blank',
         );
     }
@@ -346,10 +351,8 @@ class XplatCodeService {
     async init(ctx: WidgetContext): Promise<void> {
         const { widget, iframeSrc, demosBaseUrl, igcTabs, githubSrc } = ctx;
         const samplePath     = getSamplePath(iframeSrc, demosBaseUrl);
-        const addXplatFooter = () => {
-            if (!this.enableLiveEditing || !githubSrc) return;
-            addFooter(widget, iframeSrc, 'csb', null, () => this._openCodeSandbox(githubSrc, demosBaseUrl));
-        };
+        const fallbackStackblitz  = () => this._openStackBlitzUrl(githubSrc, demosBaseUrl);
+        const fallbackCodeSandbox = () => this._openCodeSandbox(githubSrc, demosBaseUrl);
 
         try {
             // Blazor's local dev server uses a self-signed cert on a non-4200 port,
@@ -371,11 +374,81 @@ class XplatCodeService {
                 .forEach((file: SampleFile) =>
                     addCodeTab(igcTabs, file));
 
-            addXplatFooter();
+            if (this.enableLiveEditing && githubSrc) {
+                // Use sdk.openProject() to avoid the StackBlitz GitHub clone freeze bug.
+                addFooter(widget, iframeSrc, null,
+                    () => this._openInStackBlitz(data),
+                    fallbackCodeSandbox);
+            }
         } catch (err: any) {
             console.warn('[sample-widget] Could not fetch xplat sample files:', err.message);
-            addXplatFooter();
+            if (this.enableLiveEditing && githubSrc) {
+                addFooter(widget, iframeSrc, null, fallbackStackblitz, fallbackCodeSandbox);
+            }
         }
+    }
+
+    private async _openInStackBlitz(sampleData: any): Promise<void> {
+        let sdk: any;
+        try {
+            sdk = await this._loadStackBlitzSdk();
+        } catch (e: any) {
+            console.warn('[sample-widget] StackBlitz SDK failed to load:', e.message);
+            return;
+        }
+        const files: Record<string, string> = {};
+        const addFile = (f: any) => {
+            // Skip paths that still have the old full repo prefix (pre-fix JSONs).
+            if (!f.path || f.path.startsWith('..') || f.path.startsWith('./samples/')) return;
+            files[f.path.replace(/^\.\//, '')] = f.content || '';
+        };
+        (sampleData.sampleFiles || []).forEach(addFile);
+
+        // webpack-dev-server binds to localhost by default; StackBlitz WebContainers need 0.0.0.0.
+        if (this.platform === 'wc' && files['package.json']) {
+            try {
+                const pkg = JSON.parse(files['package.json']);
+                if (pkg.scripts) {
+                    pkg.scripts['serve:dev'] =
+                        'node node_modules/webpack-dev-server/bin/webpack-dev-server.js' +
+                        ' --mode development --config ./webpack.config.js --hot --host 0.0.0.0 --allowed-hosts all';
+                    pkg.scripts['start'] = 'npm run serve:dev';
+                    files['package.json'] = JSON.stringify(pkg, null, 2);
+                }
+            } catch { /* malformed package.json — leave as-is */ }
+        }
+
+        const platformLabel = this.platform === 'react' ? 'React' : 'Web Components';
+        const mainFile = Object.keys(files).find(f => f.endsWith('index.tsx') || f.endsWith('index.ts')) || '';
+        sdk.openProject(
+            {
+                title:       `Infragistics ${platformLabel} Components`,
+                description: `Auto-generated from Infragistics ${platformLabel} Docs`,
+                template:    'node',
+                files,
+                tags:        [this.platform, 'igniteui', 'web', 'example'],
+            },
+            { openFile: mainFile },
+        );
+    }
+
+    private _loadStackBlitzSdk(): Promise<any> {
+        if ((window as any).StackBlitzSDK) return Promise.resolve((window as any).StackBlitzSDK);
+        return new Promise((resolve, reject) => {
+            const s   = document.createElement('script');
+            s.src     = 'https://unpkg.com/@stackblitz/sdk/bundles/sdk.umd.js';
+            s.onload  = () => resolve((window as any).StackBlitzSDK);
+            s.onerror = () => reject(new Error('Failed to load StackBlitz SDK'));
+            document.head.appendChild(s);
+        });
+    }
+
+    private _openStackBlitzUrl(githubSrc: string, demosBaseUrl: string): void {
+        const branch = getXplatBranch(demosBaseUrl);
+        window.open(
+            `https://stackblitz.com/github/IgniteUI/igniteui-${this.platform}-examples/tree/${branch}/samples/${githubSrc}`,
+            '_blank',
+        );
     }
 
     private _openCodeSandbox(githubSrc: string, demosBaseUrl: string): void {
