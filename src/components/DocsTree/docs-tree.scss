@@ -58,22 +58,10 @@ igc-tree[data-variant='toc'] igc-tree-item[selected] > [slot='label'] {
 
 igc-tree-item[data-has-children] {
 	margin-block-end: rem(8px);
-	
-	div[role='group'] {
-		&::before {
-			content: '';
-			position: absolute;
-			inset-block-start: 0;
-			inset-inline-start: rem(12px);
-			width: rem(1px);
-			height: 100%;
-			background: light-dark(var(--ig-gray-200), var(--ig-gray-300));
-		}
-	}
 }
 
 igc-tree-item {
-	--igc-tree-indentation-size: #{rem(8px)};
+	--igc-tree-indentation-size: #{rem(12px)};
 	--background: transparent;
 	--foreground: light-dark(var(--ig-gray-600), var(--ig-gray-400));
 	--background-selected: transparent;
@@ -208,9 +196,22 @@ igc-tree-item:not([data-has-children]):hover .docs-tree-label {
 }
 
 .igd-label-and-badge {
+	position: relative;
 	border-radius: rem(4px);
-	padding-inline: rem(8px);
-
+	padding-inline: rem(8px) 0;
+	height: 100%;
+	z-index: -1;
+	
+	&::before {
+		content: '';
+		position: absolute;
+		inset-block-start: 0;
+		inset-inline-end: calc(100% + (var(--igc-tree-indentation-size) / 2));
+		width: rem(1px);
+		height: calc(100% + rem(4px));
+		border-radius: 0;
+		background: light-dark(var(--ig-gray-300), var(--ig-gray-300));
+	}
 }
 
 .docs-tree-link {

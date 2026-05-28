@@ -217,7 +217,23 @@
 			}
 			
 			code {
-				color: inherit;
+				color: inherit ;
+			}
+		}
+		
+		a:has(code) {
+			&:hover,
+			&:focus {
+				code {
+					color: var(--igd-accent);
+					border-color: var(--ig-primary-100);
+				}
+			}
+		}
+		
+		label {
+			@include type-style('body-2') {
+				margin-block: 0;
 			}
 		}
 		

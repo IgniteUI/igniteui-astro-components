@@ -6,9 +6,21 @@
 		display: contents;
 		
 		
-		// Advanced header has a scope selector before the input, needs start padding
 		.igd-search-header {
-			padding-inline-start: rem(16px);
+			igc-input::part(container) {
+				&:focus-within {
+					box-shadow:
+					 0 0 0 1px var(--igd-accent),
+					inset 0 1px 0 var(--igd-accent),
+					inset 0 -1px 0 var(--igd-accent),
+					inset -1px 0 0 var(--igd-accent);
+				}
+			}
+		}
+
+	
+		#search-scope-trigger-icon {
+			margin-inline-start: rem(16px);
 		}
 	}
 	
