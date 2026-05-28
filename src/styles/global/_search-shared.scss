@@ -303,16 +303,8 @@
 	igc-input::part(container) {
 		border: 0;
 		height: 100%;
-		padding: 0 rem(16px) !important;
+		padding: 0 !important;
 		border-block-end: none !important;
-
-		&:focus-within {
-			box-shadow:
-				0 0 0 1px var(--igd-accent),
-				inset 0 1px 0 var(--igd-accent),
-				inset 0 -1px 0 var(--igd-accent),
-				inset -1px 0 0 var(--igd-accent);
-		}
 	}
 }
 
@@ -371,6 +363,7 @@
 
 .igd-search-icon {
 	color: light-dark(var(--ig-gray-900), var(--ig-gray-500));
+	margin-inline-start: rem(8px);
 }
 
 }

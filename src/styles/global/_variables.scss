@@ -16,7 +16,7 @@
 	
 	--igd-accent: var(--ig-primary-500);
 	--igd-illustration: var(--igd-accent);
-	--igd-on-accent: var(--ig-primary-500-contrast);
+	--igd-on-accent: var(--ig-primary-600-contrast);
 	--igd-border-radius: #{rem(4px)};
 	
 	--igd-app-bg: light-dark(var(--ig-surface-50), #0A0B10);
@@ -71,7 +71,7 @@
 	
 	// ASIDE MDX
 	--igd-aside-padding: #{rem(16px)};
-	--igd-aside-row-gap: #{rem(16px)};
+	--igd-aside-row-gap: #{rem(4px)};
 	--igd-aside-column-gap: #{rem(16px)};
 	--igd-aside-border-width: #{rem(2px)};
 	--igd-aside-border-radius: 0;
@@ -81,21 +81,21 @@
 	--igd-aside-info-title: light-dark(var(--ig-primary-700), var(--ig-primary-400));
 	--igd-aside-info-content: light-dark(var(--ig-primary-800), var(--ig-primary-200));
 	--igd-aside-info-icon: light-dark(var(--ig-primary-700), var(--ig-primary-400));
-	--igd-aside-info-bg: transparent;
+	--igd-aside-info-bg: light-dark(var(--ig-primary-50), var(--ig-primary-900));
 	--igd-aside-info-border: light-dark(var(--ig-primary-700), var(--ig-primary-400));
 	--igd-aside-info-code-background: light-dark(var(--ig-primary-100), var(--ig-primary-900));
 	
 	--igd-aside-warning-title: light-dark(var(--ig-secondary-700), var(--ig-secondary-400));
 	--igd-aside-warning-content: light-dark(var(--ig-secondary-700), var(--ig-secondary-300));
 	--igd-aside-warning-icon: light-dark(var(--ig-secondary-700), var(--ig-secondary-400));
-	--igd-aside-warning-bg: transparent;
+	--igd-aside-warning-bg: light-dark(var(--ig-secondary-50), var(--ig-secondary-900));
 	--igd-aside-warning-border: light-dark(var(--ig-secondary-700), var(--ig-secondary-400));
 	--igd-aside-warning-code-background: light-dark(var(--ig-secondary-100), var(--ig-secondary-900));
 	
-	--igd-aside-note-title: light-dark(var(--ig-gray-700), var(--ig-gray-400));
-	--igd-aside-note-content: light-dark(var(--ig-gray-800), var(--ig-gray-200));
+	--igd-aside-note-title: light-dark(var(--ig-gray-700), var(--ig-gray-500));
+	--igd-aside-note-content: light-dark(var(--ig-gray-800), var(--ig-gray-400));
 	--igd-aside-note-icon: light-dark(var(--ig-gray-700), var(--ig-gray-400));
-	--igd-aside-note-bg: transparent;
+	--igd-aside-note-bg: light-dark(var(--ig-gray-100), var(--ig-gray-50));
 	--igd-aside-note-border: light-dark(var(--ig-gray-700), var(--ig-gray-400));
 	--igd-aside-note-code-background: light-dark(var(--ig-sgray-100), var(--ig-secondary-900));
 	

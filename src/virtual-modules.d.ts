@@ -27,6 +27,10 @@ declare module 'virtual:docs-template/site-meta' {
   }>;
   /** Astro trailingSlash config value: 'always' | 'never' | 'ignore'. */
   export const trailingSlash: 'always' | 'never' | 'ignore';
+  /** Optional package switcher entries. */
+  export const packages: Array<string | { label: string; value?: string; href?: string }> | undefined;
+  /** Currently selected package. */
+  export const selectedPackage: string | undefined;
 }
 
 declare module 'virtual:docs-template/nav-html' {

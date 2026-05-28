@@ -18,7 +18,9 @@ igc-tree {
 	--ig-size: 1;
 	
 	position: relative;
+}
 
+igc-tree[data-variant='toc'] {
 	&::before {
 		content: '';
 		position: absolute;
@@ -26,16 +28,16 @@ igc-tree {
 		top: anchor(top);
 		height: anchor-size(height);
 		inset-inline-start: 0;
-		width: rem(1px);
+		width: rem(2px);
 		background-color: var(--igd-accent);
 		transition: top 0.2s ease, height 0.2s ease;
-		display: none;
 		z-index: 1;
 	}
-
+	
 	body.is-resizing &::before {
 		transition: none;
 	}
+	
 	&::after {
 		content: '';
 		position: absolute;
@@ -46,15 +48,6 @@ igc-tree {
 		height: 100%;
 		background: light-dark(var(--ig-gray-200), var(--ig-gray-300));
 	}
-	
-	&:has(igc-tree-item[selected])::before {
-		display: block;
-	}
-}
-
-/* Sidebar: only leaf items get selected, so item height = single row */
-igc-tree[data-variant='sidebar'] igc-tree-item[selected] {
-	anchor-name: --selected-tree-item;
 }
 
 /* TOC: groups can be selected (h2 with h3 children); anchor to the label div
@@ -63,21 +56,25 @@ igc-tree[data-variant='toc'] igc-tree-item[selected] > [slot='label'] {
 	anchor-name: --selected-tree-item;
 }
 
+igc-tree-item[data-has-children] {
+	margin-block-end: rem(8px);
+}
+
 igc-tree-item {
-	--igc-tree-indentation-size: #{rem(20px)};
+	--igc-tree-indentation-size: #{rem(12px)};
 	--background: transparent;
 	--foreground: light-dark(var(--ig-gray-600), var(--ig-gray-400));
 	--background-selected: transparent;
 	--background-active: transparent;
-	--foreground-active: var(--igd-accent);
-	--foreground-hover: var(--igd-accent);
+	--foreground-active: light-dark(var(--ig-gray-600), var(--ig-gray-400));
+	--foreground-hover: var(--igd-on-accent);
 	--background-disabled: transparent;
 	--hover-color: transparent;
 	--hover-selected-color: transparent;
 	--background-active-selected: transparent;
-	--foreground-selected: var(--igd-accent);
-	--foreground-active-selected: var(--igd-accent);
-	
+	--foreground-selected: transparent;
+	--foreground-active-selected: light-dark(var(--ig-gray-600), var(--ig-gray-400));
+	//--ig-tree-size: #{rem(32px)};
 	
 	a {
 		position: absolute;
@@ -94,22 +91,33 @@ igc-tree-item {
 	}
 	
 	cursor: default;
-	
-	&:hover,
-	&:focus {
-		> a {
-			color: var(--igd-accent);
+}
+
+igc-tree:not([data-variant='toc']) {
+	igc-tree-item::part(wrapper) {
+		@include type-style('body-2') {
+			margin-block: 0;
 		}
+		
+		padding-inline: 0;
 	}
 }
 
-igc-tree-item::part(wrapper) {
-	@include type-style('body-2') {
-		margin-block: 0;
+igc-tree[data-variant='toc'] {
+	igc-tree-item::part(wrapper) {
+		@include type-style('body-2') {
+			margin-block: 0;
+		}
+		
+		padding-inline-start: rem(24px);
+		padding-inline-end: rem(8px);
 	}
-;
-	padding-inline-start: rem(24px);
-	padding-inline-end: rem(8px);
+	
+	igc-tree-item[active] {
+		.group-label-text {
+			color: var(--igd-accent);
+		}
+	}
 }
 
 igc-tree-item::part(focused) {
@@ -123,11 +131,12 @@ igc-tree-item::part(indicator) {
 igc-tree-item::part(label) {
 	width: 100%;
 	max-height: 100%;
-	padding-block: rem(6px);
+	padding-block: 0;
 	text-overflow: unset;
 	white-space: unset;
-	word-break: break-all;
+	word-break: break-word;
 	overflow: unset;
+	
 }
 
 igc-tree-item[data-has-children] {
@@ -181,9 +190,102 @@ igc-tree-item[data-has-children] {
 }
 
 /* Hover accent applies to leaf items (sidebar) and all linked items (TOC) */
-.docs-tree-link:hover ~ .docs-tree-label,
+//.docs-tree-link:hover ~ .docs-tree-label,
 igc-tree-item:not([data-has-children]):hover .docs-tree-label {
 	color: var(--igd-accent);
+}
+
+.igd-label-and-badge {
+	position: relative;
+	border-radius: rem(4px);
+	padding-inline: rem(8px) rem(4px);
+	height: 100%;
+	z-index: -1;
+	
+	&::before {
+		content: '';
+		position: absolute;
+		inset-block-start: 0;
+		inset-inline-end: calc(100% + (var(--igc-tree-indentation-size) / 2));
+		width: rem(1px);
+		height: calc(100% + rem(4px));
+		border-radius: 0;
+		background: light-dark(var(--ig-gray-300), var(--ig-gray-300));
+	}
+}
+
+.docs-tree-link {
+	&:hover,
+	&:focus {
+		+ .igd-label-and-badge {
+			color: var(--igd-accent);
+			background-color: var(--ig-gray-100);
+		}
+	}
+}
+
+igc-tree-item[selected] {
+	igc-tree-item[selected]:not([aria-expanded]) {
+		.igd-label-and-badge {
+			color: var(--igd-on-accent);
+			background-color: var(--igd-accent);
+
+			.docs-tree-label {
+				color: var(--igd-on-accent);
+			}
+		}
+
+		&:has(.igd-label-and-badge) {
+			&:hover,
+			&:focus {
+				.igd-label-and-badge {
+					background-color: var(--igd-accent);
+
+					.docs-tree-label {
+						color: #fff;
+					}
+				}
+			}
+		}
+
+		.sidebar-premium-icon {
+			color: var(--igd-on-accent);
+		}
+
+		igc-badge {
+			&.preview {
+				--border-color: var(--igd-on-accent);
+			}
+
+			&.new {
+				--background-color: var(--igd-new-bg);
+				--text-color: var(--igd-new-color);
+				--icon-color: var(--igd-new-color);
+				--border-color: var(--igd-on-accent);
+			}
+
+			&.updated {
+				--background-color: var(--igd-updated-bg);
+				--text-color: var(--igd-updated-color);
+				--icon-color: var(--igd-updated-color);
+				--border-color: var(--igd-on-accent);
+			}
+
+			&.premium {
+				--background-color: var(--igd-premium-bg);
+				--text-color: var(--igd-premium-color);
+				--icon-color: var(--igd-premium-color);
+				--border-color: var(--igd-on-accent);
+			}
+
+			&.opensource {
+				--background-color: var(--igd-opensource-bg);
+				--text-color: var(--igd-opensource-color);
+				--icon-color: var(--igd-opensource-color);
+				--border-color: var(--igd-on-accent);
+			}
+		}
+	}
 }
 
 igc-tree[data-variant='sidebar'] {

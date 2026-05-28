@@ -17,3 +17,11 @@
 .igd-search-results {
 	padding-inline-end: rem(26px);
 }
+
+.igd-search-shell {
+	igc-input::part(container) {
+		&:focus-within {
+			box-shadow: inset 0 0 0 1px var(--igd-accent)
+		}
+	}
+}

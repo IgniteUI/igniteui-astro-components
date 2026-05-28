@@ -80,13 +80,14 @@ igc-tab {
 
 // TODO Log issue in the component this is not suppose to be affected by the ig-typography
 igc-tab::part(content) {
-	@include type-style('subtitle-1') {
+	@include type-style('detail-1', false) {
 		margin: 0;
 	}
 }
 
 igc-tab::part(tab-header) {
-	min-height: rem(60px);
+	min-height: rem(30px);
+	padding: rem(4px) rem(16px)
 }
 
 .igd-code-view {
@@ -145,7 +146,7 @@ igc-tab::part(tab-header) {
 	align-items: center;
 	justify-content: flex-end;
 	position: relative;
-	padding: rem(16px) rem(26px);
+	padding: rem(16px);
 	gap: rem(16px);
 }
 
