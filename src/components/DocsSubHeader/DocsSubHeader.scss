@@ -92,7 +92,7 @@
 	flex-shrink: 0;
 	position: relative;
 	width: fit-content;
-	max-width: rem(180px);
+	max-width: rem(250px);
 
 	&::part(base) {
 		position: absolute;
@@ -122,6 +122,7 @@
 	}
 
 	&::part(native-input) {
+		field-sizing: content;
 		min-width: 0;
 		overflow: hidden;
 		text-overflow: ellipsis;

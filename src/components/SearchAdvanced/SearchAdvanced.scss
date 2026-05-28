@@ -112,5 +112,35 @@
 	igc-divider {
 		--color: light-dark(var(--ig-gray-400), var(--ig-gray-300));
 	}
+
+	.igd-search-scope {
+		max-width: rem(250px);
+
+		&::part(input) {
+			min-width: 0;
+			overflow: hidden;
+		}
+
+		&::part(native-input) {
+			min-width: 0;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+		}
+	}
+
+	.igd-search-scope-tooltip {
+		--ig-tooltip-background: #D2DBE8;
+		--ig-tooltip-text-color: #112031;
+		--ig-tooltip-border-radius: #{rem(4px)};
+
+		&::part(base) {
+			font-family: var(--igd-font-sans);
+			font-size: #{rem(12px)};
+			font-weight: 500;
+			line-height: #{rem(18px)};
+			letter-spacing: 0;
+		}
+	}
 }
 
