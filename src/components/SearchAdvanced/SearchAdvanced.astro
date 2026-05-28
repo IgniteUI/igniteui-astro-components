@@ -114,13 +114,14 @@ const resolvedIndexUrl = indexUrl ?? `${basePath}api-search-index/manifest.json`
     <igc-dialog aria-label={placeholder} class="igd-search-dialog" hide-default-action close-on-outside-click>
         <div class="igd-search-shell">
             <header class="igd-search-header">
-                <igc-select  placement="bottom-start" distance="17" slot="prefix" class="igd-search-scope" outlined aria-label="Search scope" value="current">
+                <igc-select  placement="bottom-start" distance="17" id="search-scope-select" slot="prefix" class="igd-search-scope" outlined aria-label="Search scope" value="current">
                     {platformIcon && <igc-icon id="search-scope-trigger-icon" name={platformIcon} collection="docs" slot="prefix" aria-hidden="true"></igc-icon>}
                     <igc-select-item value="current">
                         <span data-scope-label>Current package</span>
                     </igc-select-item>
                     <igc-select-item value="all">All packages</igc-select-item>
                 </igc-select>
+                <igc-tooltip anchor="search-scope-select" class="igd-search-scope-tooltip" placement="bottom" with-arrow></igc-tooltip>
 
                 <igc-divider vertical></igc-divider>
 
@@ -170,6 +171,7 @@ const resolvedIndexUrl = indexUrl ?? `${basePath}api-search-index/manifest.json`
     IgcListComponent,
     IgcListItemComponent,
     IgcDividerComponent,
+    IgcTooltipComponent,
   } from 'igniteui-webcomponents';
   import '../../scripts/icon-registry';
 
@@ -185,6 +187,7 @@ const resolvedIndexUrl = indexUrl ?? `${basePath}api-search-index/manifest.json`
     IgcListComponent,
     IgcListItemComponent,
     IgcDividerComponent,
+    IgcTooltipComponent,
   );
 
   type IndexedPage = {
@@ -246,6 +249,7 @@ const resolvedIndexUrl = indexUrl ?? `${basePath}api-search-index/manifest.json`
     private input!: IgcInputComponent;
     private clearBtn!: IgcIconButtonComponent;
     private scopeSelect: IgcSelectComponent | null = null;
+    private scopeTooltip: HTMLElement | null = null;
     private scopeTriggerIcon: HTMLElement | null = null;
     private platformIconName: string = '';
     private tabsEl!: IgcTabsComponent;
@@ -296,6 +300,7 @@ const resolvedIndexUrl = indexUrl ?? `${basePath}api-search-index/manifest.json`
       this.input     = this.querySelector<IgcInputComponent>('igc-input.igd-search-input')!;
       this.clearBtn  = this.querySelector<IgcIconButtonComponent>('.igd-search-clear')!;
       this.scopeSelect = this.querySelector<IgcSelectComponent>('igc-select.igd-search-scope');
+      this.scopeTooltip = this.querySelector<HTMLElement>('.igd-search-scope-tooltip');
       this.scopeTriggerIcon = this.querySelector('#search-scope-trigger-icon');
       this.platformIconName = this.dataset.platformIcon || '';
       this.tabsEl    = this.querySelector<IgcTabsComponent>('igc-tabs.igd-search-tabs')!;
@@ -391,6 +396,30 @@ const resolvedIndexUrl = indexUrl ?? `${basePath}api-search-index/manifest.json`
         this.scopeSelect.addEventListener('igcChange', () => {
           this.scope = this.scopeSelect!.value === 'all' ? 'all' : 'current';
           if (this.currentQuery) this.runSearch();
+          this.syncScopeTooltip();
+        });
+
+        // igcInput re-renders with full text after the dropdown closes; re-apply truncation.
+        this.scopeSelect.addEventListener('igcClosed', () =>
+          requestAnimationFrame(() => this.applyScopeTruncation())
+        );
+      }
+
+      // Apply truncation once the dialog is fully open and the select has real dimensions.
+      this.dialog.addEventListener('igcOpened', () =>
+        requestAnimationFrame(() => requestAnimationFrame(() => this.applyScopeTruncation()))
+      );
+
+      // Only show the scope tooltip when the label is visually truncated
+      if (this.scopeTooltip && this.scopeSelect) {
+        this.scopeTooltip.addEventListener('igcOpening', (e: Event) => {
+          const igcInput = (this.scopeSelect as any).shadowRoot?.querySelector('igc-input');
+          const nativeInput = igcInput?.shadowRoot?.querySelector('input');
+          const truncated = nativeInput?.value?.endsWith('\u2026');
+          const overflows = nativeInput && nativeInput.scrollWidth > nativeInput.clientWidth;
+          if (!truncated && !overflows) {
+            e.preventDefault();
+          }
         });
       }
     }
@@ -422,6 +451,35 @@ const resolvedIndexUrl = indexUrl ?? `${basePath}api-search-index/manifest.json`
         this.scopeSelect.value = 'all';
         this.scope = 'all';
       }
+      this.syncScopeTooltip();
+    }
+
+    private syncScopeTooltip() {
+      if (!this.scopeTooltip || !this.scopeSelect) return;
+      const val = this.scopeSelect.value;
+      const item = this.scopeSelect.querySelector<HTMLElement>(`igc-select-item[value="${val}"]`);
+      this.scopeTooltip.textContent = item?.textContent?.trim() ?? val ?? '';
+    }
+
+    private applyScopeTruncation() {
+      if (!this.scopeSelect) return;
+      const igcInput = (this.scopeSelect as any).shadowRoot?.querySelector('igc-input');
+      const nativeInput = igcInput?.shadowRoot?.querySelector('input') as HTMLInputElement | null;
+      if (!nativeInput || !nativeInput.value) return;
+      const text = nativeInput.value;
+      if (text.endsWith('\u2026')) return; // already truncated
+      // Use DOM overflow as the signal (1px tolerance for subpixel rounding noise).
+      if (nativeInput.scrollWidth <= nativeInput.clientWidth + 1) return;
+      const style = getComputedStyle(nativeInput);
+      const padH = parseFloat(style.paddingLeft) + parseFloat(style.paddingRight);
+      const maxContentW = nativeInput.clientWidth - padH;
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+      ctx.font = style.font;
+      let cut = nativeInput.value.length;
+      while (cut > 0 && ctx.measureText(text.slice(0, cut) + '\u2026').width > maxContentW) cut--;
+      nativeInput.value = text.slice(0, cut) + '\u2026';
     }
 
     private closeModal() {
