@@ -237,22 +237,35 @@ class SidebarFilter extends HTMLElement {
   private restoreScroll(isClientNav: boolean): void {
     const sc = this.scrollEl;
     if (!sc) return;
-    requestAnimationFrame(() => {
-      sc.scrollTop = isClientNav
-        ? (parseInt(safeGet(SCROLL_KEY) || '0', 10) || 0)
-        : this.activeScrollOffset(sc);
-      sc.style.visibility = '';
-    });
+    if (isClientNav) {
+      // igc-tree-item is already defined; one rAF is enough for layout.
+      requestAnimationFrame(() => {
+        // Snap to the pre-navigation position first so the sidebar appears
+        // where the user last saw it, then smooth-scroll the short remaining
+        // distance to center the active item.
+        sc.scrollTop = parseInt(safeGet(SCROLL_KEY) || '0', 10) || 0;
+        sc.style.visibility = '';
+        sc.scrollTo({ top: this.activeScrollOffset(sc), behavior: 'smooth' });
+      });
+    } else {
+      // Hard page load: wait for igc-tree-item so Lit microtasks drain first.
+      customElements.whenDefined('igc-tree-item').then(() =>
+        requestAnimationFrame(() => {
+          sc.scrollTop = this.activeScrollOffset(sc);
+          sc.style.visibility = '';
+        })
+      );
+    }
   }
 
   private activeScrollOffset(sc: HTMLElement): number {
-    const active   = this.querySelector<HTMLAnchorElement>('a[aria-current="page"]');
+    const active = this.querySelector<HTMLAnchorElement>('a[aria-current="page"]');
     if (!active) return 0;
     const linkRect = active.getBoundingClientRect();
     const cRect    = sc.getBoundingClientRect();
-    if (linkRect.top < cRect.top)       return sc.scrollTop + (linkRect.top  - cRect.top);
-    if (linkRect.bottom > cRect.bottom) return sc.scrollTop + (linkRect.bottom - cRect.bottom);
-    return sc.scrollTop;
+    // Center the active item in the scroll container.
+    const itemTop = sc.scrollTop + (linkRect.top - cRect.top);
+    return itemTop - (sc.clientHeight / 2) + (linkRect.height / 2);
   }
 
   // ── Filter ───────────────────────────────────────────────────────────────
