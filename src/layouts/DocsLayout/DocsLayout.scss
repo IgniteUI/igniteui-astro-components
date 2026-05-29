@@ -313,10 +313,6 @@
 	}
 }
 
-igc-divider:not([variant="vertical"]) {
-	margin-block: rem(24px);
-}
-
 @media (max-width: #{$bp-hide-toc}) {
 	.igd-main-content__inner {
 		aside {

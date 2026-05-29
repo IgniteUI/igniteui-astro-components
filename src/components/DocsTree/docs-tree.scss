@@ -56,8 +56,12 @@ igc-tree[data-variant='toc'] igc-tree-item[selected] > [slot='label'] {
 	anchor-name: --selected-tree-item;
 }
 
+igc-tree-item + igc-tree-item[data-has-children] {
+	margin-block-start: rem(4px);
+}
+
 igc-tree-item[data-has-children] {
-	margin-block-end: rem(8px);
+	margin-block-end: rem(4px);
 }
 
 igc-tree-item {
