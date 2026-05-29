@@ -85,6 +85,11 @@
 			margin-block-end: rem(26px);
 		}
 		
+		pre.astro-code {
+			padding: rem(24px);
+			border-radius: rem(8px);
+		}
+		
 		kbd {
 			@include type-style('code', false) {
 				margin: 0;
