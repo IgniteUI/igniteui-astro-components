@@ -3,6 +3,8 @@ export type PlatformName = 'Angular' | 'React' | 'WebComponents' | 'Blazor';
 export interface ApiPackageConfig {
     /** TypeDoc documentation root URL (no trailing slash). */
     docRoot: string;
+    /** Optional direct URL to the compact ApiLink symbol index for this package/version. */
+    apiLinkIndexUrl?: string;
     /**
      * Package identifier as it appears in the TypeDoc URL path.
      * Core packages use hyphens ("igniteui-react"),
@@ -20,10 +22,9 @@ export interface ApiPackageConfig {
      */
     preserveCase?: boolean;
     /**
-     * Optional suffix appended to the class name before lowercasing, e.g.
-     * Angular DV packages append "Component" so `CategoryChart` resolves to
-     * `igniteui_angular_charts.igxcategorychartcomponent.html`.
-     * Only applied when `prefixed={true}`.
+     * Preferred class-name suffix used by ApiLink. The generated registry tries
+     * both the suffixed and unsuffixed names, so this does not mean every API
+     * symbol is expected to have the suffix.
      */
     classSuffix?: string;
     /**
@@ -35,6 +36,8 @@ export interface ApiPackageConfig {
 
 export interface PlatformContext {
     name: PlatformName;
+    /** Optional root for compact ApiLink symbol index files, e.g. https://www.infragistics.com/api/react/api-link-index. */
+    apiLinkIndexRoot?: string;
     /** Lower-case slug used in URLs, e.g. "angular" */
     lower: string;
     /** Component class prefix, e.g. "Igx" / "Igr" / "Igc" / "Igb" */

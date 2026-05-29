@@ -1,10 +1,13 @@
 # ApiLink
 
-Renders an inline API link with platform-aware URL generation.
+Renders an inline API documentation link with platform-aware resolution.
 
-For TypeDoc symbols, it renders an inline `<a><code>` link to a class,
-interface, enum, type alias, variable, or function. It can also render Sass API
-links when `kind="sass"`.
+For TypeDoc symbols, `ApiLink` first queries the generated api-docs link index.
+That index contains the real symbol names, packages, URL segments, and member
+anchors produced by api-docs. If the index is unavailable, `ApiLink` falls back
+to legacy URL generation so migrated MDX continues to build.
+
+Sass links are separate and still use `kind="sass"`.
 
 ## Import
 
@@ -12,28 +15,70 @@ links when `kind="sass"`.
 import ApiLink from 'igniteui-astro-components/components/mdx/ApiLink.astro';
 ```
 
-## TypeDoc props
+## Preferred Usage
+
+Author MDX with the unprefixed API name:
+
+```mdx
+<ApiLink type="Grid" />
+<ApiLink type="Grid" member="rowSelection" />
+<ApiLink type="CategoryChart" />
+```
+
+The resolver handles platform prefix/suffix candidates, package lookup, kind
+lookup, URL segment lookup, and member anchor lookup.
+
+## TypeDoc Props
 
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
-| `type` | `string` | *(required)* | Short symbol name without platform prefix, e.g. `"Toast"`. |
-| `kind` | `'class' \| 'interface' \| 'enum' \| 'type' \| 'variable' \| 'function'` | `'class'` | TypeDoc symbol kind — determines the URL path segment. |
-| `member` | `string` | — | Optional member name (property/method). Appended as a `#anchor`. |
-| `pkg` | `string` | `'core'` | Package key: `'core'` \| `'charts'` \| `'grids'` \| `'gauges'` \| `'maps'` \| `'inputs'` \| `'layouts'` \| `'excel'` \| `'spreadsheet'` \| `'datasources'`. |
-| `label` | `string` | auto | Override the display text. Defaults to the prefixed name (+ `.member` when provided). |
-| `prefixed` | `boolean` | `true` | When `true`, prepends the platform prefix (`Igr`/`Igx`/`Igc`/`Igb`) to `type`. Set `false` for already-qualified names or non-prefixed symbols like function names. |
-| `suffix` | `boolean` | `true` | When `true`, appends the platform class suffix (e.g. `Component` for Angular). Set `false` for utility classes that do not carry a suffix. |
-| `exclude` | `string` | — | Comma-separated platform names where the link should not render. Matching platforms render the label as plain inline `<code>`. |
-| `excludeSuffixFor` | `string` | — | Comma-separated platform names where `classSuffix` should not be appended, even when `suffix` is `true`. |
-| `excludePrefixFor` | `string` | — | Comma-separated platform names where the platform prefix should not be prepended, even when `prefixed` is `true`. |
+| `type` | `string` | *(required)* | Short symbol name without platform prefix, e.g. `"Grid"` instead of `"IgrGrid"`. |
+| `member` | `string` | — | Optional member name. Resolved through the generated member map when available. |
+| `label` | `string` | auto | Override the display text. |
+| `pkg` | `string` | — | Ambiguity override only. Use when the same symbol exists in multiple packages and the combined index cannot choose safely. |
+| `kind` | `'class' \| 'interface' \| 'enum' \| 'type' \| 'variable' \| 'function'` | auto / legacy `'class'` | Optional narrowing. Usually unnecessary when the index is available. |
+| `prefixed` | `boolean` | `true` | Legacy override for symbols that are never platform-prefixed. Avoid for new docs when the index can resolve the symbol. |
+| `suffix` | `boolean` | `true` | Legacy override for symbols that never use the platform class suffix. Avoid for new docs when the index can resolve the symbol. |
+| `exclude` | `string` | — | Migration marker for platforms where the symbol should render as plain `<code>`. The index will eventually make this unnecessary. |
+| `excludeSuffixFor` | `string` | — | Deprecated migration escape hatch. Do not add new usages. |
+| `excludePrefixFor` | `string` | — | Deprecated migration escape hatch. Do not add new usages. |
 
-Platform names use the display form from `PlatformContext.name`: `Angular`,
-`React`, `WebComponents`, or `Blazor`.
+Platform names use `PlatformContext.name`: `Angular`, `React`,
+`WebComponents`, or `Blazor`.
 
-## Sass props
+## Examples
 
-Use `kind="sass"` for Sass API reference links. Sass links read their base URL
-from `platformContext.sassApiUrl`.
+```mdx
+{/* Let the generated index find package, kind, and exact symbol name. */}
+<ApiLink type="Grid" />
+
+{/* Member anchors are resolved from the generated member map. */}
+<ApiLink type="Grid" member="rowSelection" />
+
+{/* Use pkg only when the symbol name is ambiguous across packages. */}
+<ApiLink type="Workbook" pkg="excel" />
+
+{/* Temporary migration marker for unavailable platforms. */}
+<ApiLink type="Toast" member="show" exclude="Blazor,WebComponents" />
+```
+
+## ApiLink Index
+
+The index is generated by api-docs and exposed as JSON files under:
+
+```txt
+{apiLinkIndexRoot}/manifest.json
+{apiLinkIndexRoot}/{version}.json
+{apiLinkIndexRoot}/{package}/{version}.json
+```
+
+`ApiLink` uses the combined version index by default. When `pkg` is present, it
+uses the package-scoped index as an explicit disambiguation path.
+
+## Sass Props
+
+Use `kind="sass"` for Sass API reference links. Sass links do not use the
+api-docs link index; they read their base URL from `platformContext.sassApiUrl`.
 
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
@@ -43,70 +88,12 @@ from `platformContext.sassApiUrl`.
 | `label` | `string` | auto | Override the display text. Defaults to `type`, then `module`, then an empty string. |
 | `code` | `boolean` | `true` | Wrap the label in `<code>`. Set `false` for prose labels. |
 
-## Examples
-
 ```mdx
-{/* Core class — auto-prefix applied */}
-<ApiLink type="Toast" />
-{/* → <a href="…/classes/igniteui-react.igrtoast.html"><code>IgrToast</code></a> */}
-
-{/* Class member */}
-<ApiLink type="Toast" member="show" label="Show" />
-
-{/* Sub-package */}
-<ApiLink pkg="charts" type="CategoryChart" />
-
-{/* Function — no prefix, no suffix */}
-<ApiLink kind="function" type="configureTheme" prefixed={false} />
-
-{/* Type alias */}
-<ApiLink kind="type" type="AbsolutePosition" prefixed={false} />
-
-{/* Interface */}
-<ApiLink kind="interface" type="ComboTemplateProps" prefixed={false} />
-
-{/* Enum */}
-<ApiLink kind="enum" type="CalendarSelection" />
-
-{/* Utility class without platform suffix */}
-<ApiLink type="SortingStrategy" suffix={false} />
-
-{/* Hide a broken API link on selected platforms */}
-<ApiLink type="Toast" member="show" exclude="Blazor,WebComponents" />
-
-{/* Keep the symbol unprefixed only for React */}
-<ApiLink kind="interface" type="ComboTemplateProps" excludePrefixFor="React" />
-
-{/* Suppress the Angular class suffix for this symbol */}
-<ApiLink type="FilteringOperand" excludeSuffixFor="Angular" />
-
-{/* Sass module page */}
 <ApiLink kind="sass" module="animations" label="animations Sass module" code={false} />
-
-{/* Sass symbol anchor */}
 <ApiLink kind="sass" module="animations" type="mixin-slide-in-left" label="slide-in-left" />
 ```
 
-## Platform context
-
-The current platform is read from the `PLATFORM` environment variable (set at build time). Use `siteMetaIntegration({ platform })` or `createDocsSite({ platform })` in `astro.config.ts`:
-
-```ts
-createDocsSite({ platform: 'react' });
-// prefix → 'Igr', docRoot → 'https://www.infragistics.com/products/ignite-ui-react/docs/typescript/latest'
-```
-
-Supported platforms and their prefixes:
-
-| Platform | Prefix | Class suffix |
-|----------|--------|--------------|
-| `Angular` | `Igx` | `Component` (DV pkgs only) |
-| `React` | `Igr` | — |
-| `WebComponents` | `Igc` | — |
-| `Blazor` | `Igb` | — |
-
-For Sass links, make sure `platformContext.sassApiUrl` is configured. The URL is
-assembled as:
+Sass URL shape:
 
 ```txt
 {sassApiUrl}/{module}#{type}
