@@ -6,9 +6,12 @@
 
   function initCopyButtons(): void {
     document.querySelectorAll<HTMLPreElement>('pre.astro-code, pre.shiki').forEach((pre) => {
-      if (pre.querySelector('.copy-btn')) return;
+      if (pre.closest('.copy-code-wrapper')) return;
 
-      pre.classList.add('copy-code-host');
+      const wrapper = document.createElement('div');
+      wrapper.className = 'copy-code-wrapper';
+      pre.parentNode!.insertBefore(wrapper, pre);
+      wrapper.appendChild(pre);
 
       const btn = document.createElement('igc-icon-button') as HTMLElement;
       btn.setAttribute('variant', 'flat');
@@ -61,7 +64,7 @@
         }
       });
 
-      pre.appendChild(btn);
+      wrapper.appendChild(btn);
     });
   }
 
@@ -70,24 +73,30 @@
 </script>
 
 <style is:global>
-  pre.astro-code.copy-code-host,
-  pre.shiki.copy-code-host {
+  .copy-code-wrapper {
     position: relative;
   }
 
-  pre.astro-code.copy-code-host > .copy-btn,
-  pre.shiki.copy-code-host > .copy-btn {
+  .copy-code-wrapper > .copy-btn {
     position: absolute;
-    top: 0.5rem;
-    right: 0.5rem;
+    top: 0.375rem;
+    right: 0.375rem;
     opacity: 0;
-    transition: opacity 0.15s ease;
+    transition: opacity 0.2s ease;
+    z-index: 1;
+    --ig-size: var(--ig-size-small);
+    color: rgba(255, 255, 255, 0.7);
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 4px;
   }
 
-  pre.astro-code.copy-code-host:hover > .copy-btn,
-  pre.astro-code.copy-code-host:focus-within > .copy-btn,
-  pre.shiki.copy-code-host:hover > .copy-btn,
-  pre.shiki.copy-code-host:focus-within > .copy-btn {
+  .copy-code-wrapper:hover > .copy-btn,
+  .copy-code-wrapper:focus-within > .copy-btn {
     opacity: 1;
+  }
+
+  .copy-code-wrapper > .copy-btn:hover {
+    background: rgba(255, 255, 255, 0.15);
+    color: #fff;
   }
 </style>
