@@ -30,9 +30,6 @@ const SCROLL_SELECTOR = '[data-sidebar-scroll]';
 const ITEM_SELECTOR   = 'igc-tree-item[data-path]';
 const GROUP_SELECTOR  = 'igc-tree-item[data-group-key]';
 
-/** Frames over which `withDocumentScrollLocked` pins scrollY. ~250ms @ 60fps — long enough to interrupt the browser's smooth-scroll animation no matter which frame it starts on. */
-const SCROLL_LOCK_FRAMES = 15;
-
 let _isClientSideNav = false;
 
 // ── Storage helpers ──────────────────────────────────────────────────────────
@@ -153,13 +150,16 @@ class SidebarFilter extends HTMLElement {
   // ── Events ───────────────────────────────────────────────────────────────
 
   private bindEvents(): void {
-    // igc-input fires 'igcInput' instead of the native 'input' event.
-    this.input.addEventListener('igcInput',  this.onFilterInput as EventListener);
+    this.input.addEventListener('igcInput', this.onFilterInput as EventListener);
     this.input.addEventListener('keydown',  this.onFilterKeydown);
+    this.input.addEventListener('focusin',  this.onFilterFocus);
+    this.input.addEventListener('focusout', this.onFilterBlur);
     this.clearBtn.addEventListener('click', this.onClearClick);
-
     this.bindTreeEvents();
   }
+
+  private onFilterFocus = (): void => { document.documentElement.style.setProperty('scroll-behavior', 'auto', 'important'); };
+  private onFilterBlur  = (): void => { document.documentElement.style.removeProperty('scroll-behavior'); };
 
   /** Bind only the tree expand/collapse events (no filter input). */
   private bindTreeEvents(): void {
@@ -170,33 +170,34 @@ class SidebarFilter extends HTMLElement {
   }
 
   private onFilterInput = (): void => {
+    this.pinScrollY();
     safeSet(FILTER_KEY, this.input.value);
-    this.withDocumentScrollLocked(() => this.applyFilter(this.input.value, 'user'));
+    this.applyFilter(this.input.value, 'user');
+  };
+
+  private onFilterKeydown = (e: KeyboardEvent): void => {
+    this.pinScrollY();
+    if (e.key === 'Escape' && this.input.value) this.resetFilter();
   };
 
   /**
-   * Pin scrollY across fn(). Chrome-only workaround: typing in a
-   * sticky-contained input triggers a browser-internal scroll that ignores
-   * `scroll-margin` / `overflow-anchor`, animated by global
-   * `scroll-behavior: smooth`. No CSS fix; snap back for a short window.
+   * Chrome-only: input mutations in this sticky-contained input trigger a
+   * browser-internal scroll. Snap scrollY back every frame for ~200ms, long
+   * enough to cover Lit's batched re-renders after exitFilterMode. rAF runs
+   * before paint so the snap is invisible. Each call resets `pinFrames`, so
+   * held-key repeats extend the window rather than starting parallel loops.
    */
-  private withDocumentScrollLocked(fn: () => void): void {
-    const savedY = window.scrollY;
-    fn();
-    let framesLeft = SCROLL_LOCK_FRAMES;
-    const pin = (): void => {
-      if (window.scrollY !== savedY) {
-        window.scrollTo({ top: savedY, behavior: 'instant' as ScrollBehavior });
-      }
-      if (--framesLeft > 0) requestAnimationFrame(pin);
+  private pinFrames = 0;
+  private pinScrollY = (): void => {
+    const wasActive = this.pinFrames > 0;
+    const y = window.scrollY;
+    this.pinFrames = 10;
+    if (wasActive) return;
+    const tick = (): void => {
+      if (window.scrollY !== y) window.scrollTo({ top: y, behavior: 'instant' as ScrollBehavior });
+      if (--this.pinFrames > 0) requestAnimationFrame(tick);
     };
-    pin();
-  }
-
-  private onFilterKeydown = (e: KeyboardEvent): void => {
-    this.withDocumentScrollLocked(() => {
-      if (e.key === 'Escape' && this.input.value) this.resetFilter();
-    });
+    tick();
   };
 
   private onClearClick = (): void => {
@@ -419,12 +420,11 @@ class SidebarFilter extends HTMLElement {
   }
 
   private resetFilter(): void {
-    this.withDocumentScrollLocked(() => {
-      this.input.value = '';
-      this.syncClearButton('');
-      safeRemove(FILTER_KEY);
-      this.exitFilterMode();
-    });
+    this.pinScrollY();
+    this.input.value = '';
+    this.syncClearButton('');
+    safeRemove(FILTER_KEY);
+    this.exitFilterMode();
   }
 }
 
