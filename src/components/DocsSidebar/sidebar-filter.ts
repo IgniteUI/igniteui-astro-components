@@ -152,14 +152,9 @@ class SidebarFilter extends HTMLElement {
   private bindEvents(): void {
     this.input.addEventListener('igcInput', this.onFilterInput as EventListener);
     this.input.addEventListener('keydown',  this.onFilterKeydown);
-    this.input.addEventListener('focusin',  this.onFilterFocus);
-    this.input.addEventListener('focusout', this.onFilterBlur);
     this.clearBtn.addEventListener('click', this.onClearClick);
     this.bindTreeEvents();
   }
-
-  private onFilterFocus = (): void => { document.documentElement.style.setProperty('scroll-behavior', 'auto', 'important'); };
-  private onFilterBlur  = (): void => { document.documentElement.style.removeProperty('scroll-behavior'); };
 
   /** Bind only the tree expand/collapse events (no filter input). */
   private bindTreeEvents(): void {
@@ -181,21 +176,28 @@ class SidebarFilter extends HTMLElement {
   };
 
   /**
-   * Chrome-only: input mutations in this sticky-contained input trigger a
-   * browser-internal scroll. Snap scrollY back every frame for ~200ms, long
-   * enough to cover Lit's batched re-renders after exitFilterMode. rAF runs
-   * before paint so the snap is invisible. Each call resets `pinFrames`, so
-   * held-key repeats extend the window rather than starting parallel loops.
+   * Chrome-only: filter mutations trigger a browser-internal scroll. Pin
+   * scrollY via rAF for ~200ms (before-paint, invisible) and force
+   * `scroll-behavior: auto` so it's an instant jump, not a smooth animation
+   * we'd have to fight each frame. Prior inline value is restored at end.
    */
   private pinFrames = 0;
+  private prevScrollBehavior: string | null = null;
   private pinScrollY = (): void => {
     const wasActive = this.pinFrames > 0;
     const y = window.scrollY;
     this.pinFrames = 10;
     if (wasActive) return;
+    this.prevScrollBehavior = document.documentElement.style.getPropertyValue('scroll-behavior');
+    document.documentElement.style.setProperty('scroll-behavior', 'auto', 'important');
     const tick = (): void => {
       if (window.scrollY !== y) window.scrollTo({ top: y, behavior: 'instant' as ScrollBehavior });
       if (--this.pinFrames > 0) requestAnimationFrame(tick);
+      else {
+        if (this.prevScrollBehavior) document.documentElement.style.setProperty('scroll-behavior', this.prevScrollBehavior);
+        else                         document.documentElement.style.removeProperty('scroll-behavior');
+        this.prevScrollBehavior = null;
+      }
     };
     tick();
   };
