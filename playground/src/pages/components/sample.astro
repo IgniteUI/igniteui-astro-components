@@ -1,0 +1,228 @@
+---
+import DocsLayout from '../../../../src/layouts/DocsLayout/DocsLayout.astro';
+import DocsSidebar from '../../../../src/components/DocsSidebar/DocsSidebar.astro';
+import DocsToc from '../../../../src/components/DocsToc/DocsToc.astro';
+import SampleWidget from '../../../../src/components/mdx/Sample/Sample.astro';
+import MockSample from '../../components/MockSample.astro';
+import { SITE_TITLE, SIDEBAR } from '../../site-config';
+
+const slug = 'components/sample';
+
+const headings = [
+  { depth: 2, slug: 'full-widget',    text: 'Full widget (TSX + CSS)' },
+  { depth: 2, slug: 'angular-tabs',   text: 'Angular-style tabs (TS + HTML + SCSS)' },
+  { depth: 2, slug: 'iframe-only',    text: 'iframe only' },
+  { depth: 2, slug: 'fullscreen-btn', text: 'iframe + fullscreen button' },
+];
+
+const angularTabs = [
+  {
+    label: 'TS',
+    lang: 'typescript',
+    content: `import { Component } from '@angular/core';
+import { IgxGridComponent, IgxColumnComponent } from 'igniteui-angular/grids';
+
+const DATA = [
+  { ID: 1, Name: 'Alice Johnson', City: 'London',  Role: 'Engineer'  },
+  { ID: 2, Name: 'Bob Martinez',  City: 'Berlin',  Role: 'Designer'  },
+  { ID: 3, Name: 'Carol Zhang',   City: 'Tokyo',   Role: 'Manager'   },
+  { ID: 4, Name: 'David Kim',     City: 'Seoul',   Role: 'Architect' },
+  { ID: 5, Name: 'Eve Mueller',   City: 'Vienna',  Role: 'Engineer'  },
+];
+
+@Component({
+    selector: 'app-grid-sample',
+    templateUrl: './grid-sample.component.html',
+    styleUrls: ['./grid-sample.component.scss'],
+    imports: [IgxGridComponent, IgxColumnComponent]
+})
+export class GridSampleComponent {
+    public data = DATA;
+    public formatCurrency(value: number) {
+        return '$' + value.toFixed(2);
+    }
+}`,
+  },
+  {
+    label: 'HTML',
+    lang: 'html',
+    content: `<div class="grid__wrapper">
+  <igx-grid [data]="data" height="340px" width="100%">
+    <igx-column field="ID"   header="ID"   dataType="number" width="80px"></igx-column>
+    <igx-column field="Name" header="Name" sortable="true"   width="200px"></igx-column>
+    <igx-column field="City" header="City" sortable="true"   width="160px"></igx-column>
+    <igx-column field="Role" header="Role" sortable="true"></igx-column>
+  </igx-grid>
+</div>`,
+  },
+  {
+    label: 'SCSS',
+    lang: 'scss',
+    content: `.grid__wrapper {
+    padding-top: 16px;
+    margin: 0 16px;
+}`,
+  },
+  {
+    label: 'MODULE',
+    lang: 'typescript',
+    content: `import { NgModule } from '@angular/core';
+import { BrowserModule } from '@angular/platform-browser';
+import { IgxGridModule } from 'igniteui-angular';
+import { GridSampleComponent } from './grid-sample.component';
+
+@NgModule({
+  declarations: [GridSampleComponent],
+  imports: [BrowserModule, IgxGridModule],
+  bootstrap: [GridSampleComponent],
+})
+export class AppModule {}`,
+  },
+  {
+    label: 'APP.ROUTES',
+    lang: 'typescript',
+    content: `import { Routes } from '@angular/router';
+import { GridSampleComponent } from './grid-sample/grid-sample.component';
+
+export const routes: Routes = [
+  { path: '', component: GridSampleComponent },
+];`,
+  },
+  {
+    label: 'MAIN.TS',
+    lang: 'typescript',
+    content: `import { bootstrapApplication } from '@angular/platform-browser';
+import { AppComponent } from './app/app.component';
+import { appConfig } from './app/app.config';
+
+bootstrapApplication(AppComponent, appConfig).catch(console.error);`,
+  },
+  {
+    label: 'APP.CONFIG',
+    lang: 'typescript',
+    content: `import { ApplicationConfig } from '@angular/core';
+import { provideRouter } from '@angular/router';
+import { routes } from './app.routes';
+
+export const appConfig: ApplicationConfig = {
+  providers: [provideRouter(routes)],
+};`,
+  },
+  {
+    label: 'ENVIRONMENT',
+    lang: 'typescript',
+    content: `export const environment = {
+  production: false,
+  apiUrl: 'https://api.example.com',
+  licenseKey: 'YOUR_LICENSE_KEY',
+};`,
+  },
+  {
+    label: 'GRID.SERVICE',
+    lang: 'typescript',
+    content: `import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+
+@Injectable({ providedIn: 'root' })
+export class GridService {
+  constructor(private http: HttpClient) {}
+
+  getData(): Observable<any[]> {
+    return this.http.get<any[]>('/api/data');
+  }
+}`,
+  },
+  {
+    label: 'PIPE',
+    lang: 'typescript',
+    content: `import { Pipe, PipeTransform } from '@angular/core';
+
+@Pipe({ name: 'currency', standalone: true })
+export class CurrencyFormatPipe implements PipeTransform {
+  transform(value: number, symbol = '$'): string {
+    return symbol + value.toFixed(2);
+  }
+}`,
+  },
+  {
+    label: 'DIRECTIVES',
+    lang: 'typescript',
+    content: `import { Directive, ElementRef, HostListener } from '@angular/core';
+
+@Directive({ selector: '[appHighlight]', standalone: true })
+export class HighlightDirective {
+  constructor(private el: ElementRef) {}
+
+  @HostListener('mouseenter') onEnter() {
+    this.el.nativeElement.style.backgroundColor = 'lightyellow';
+  }
+
+  @HostListener('mouseleave') onLeave() {
+    this.el.nativeElement.style.backgroundColor = '';
+  }
+}`,
+  },
+  {
+    label: 'SPEC',
+    lang: 'typescript',
+    content: `import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { GridSampleComponent } from './grid-sample.component';
+
+describe('GridSampleComponent', () => {
+  let fixture: ComponentFixture<GridSampleComponent>;
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [GridSampleComponent],
+    }).compileComponents();
+    fixture = TestBed.createComponent(GridSampleComponent);
+  });
+
+  it('should create', () => {
+    expect(fixture.componentInstance).toBeTruthy();
+  });
+});`,
+  },
+];
+---
+
+<DocsLayout title="Sample" siteTitle={SITE_TITLE} hasSidebar currentSlug={slug}>
+  <DocsSidebar slot="sidebar" items={SIDEBAR} currentSlug={slug} />
+  <DocsToc slot="toc" headings={headings} offsetTarget=".docs-subheader" />
+
+    <h1>Sample</h1>
+    <p>
+      Renders a live demo widget with an embedded iframe, source-code tabs,
+      and live-edit buttons. The shell is rendered server-side; tab switching,
+      copy buttons, and iframe lazy-loading are handled by
+      <code>sample-widget.ts</code> on the client.
+    </p>
+    <p>
+      All iframes load from <code>/mock-demo</code> in this playground.
+      <strong>MockSample</strong> pre-renders code tabs with mock content so
+      the full shell is visible without a real demos server.
+    </p>
+
+    <h2 id="full-widget">Full widget (TSX + CSS)</h2>
+    <p>Default React-style tabs. Click any tab to switch, hover a code pane to reveal COPY CODE.</p>
+    <MockSample id="mock-sample-1" src="/mock-demo" height={360} alt="React Grid Example" />
+
+    <h2 id="angular-tabs">Angular-style tabs (TS + HTML + SCSS)</h2>
+    <p>Pass a custom <code>tabs</code> array to render any combination of code tabs.</p>
+    <MockSample id="mock-sample-angular" src="/mock-demo" height={360} alt="Angular Grid Example" tabs={angularTabs} />
+
+    <h2 id="iframe-only">iframe only</h2>
+    <p>
+      Use <code>iframeOnly</code> to strip the navbar and footer - useful when
+      embedding a demo inline without the widget chrome.
+    </p>
+    <SampleWidget src="/mock-demo" height={260} alt="React Example" iframeOnly />
+
+    <h2 id="fullscreen-btn">iframe + fullscreen button</h2>
+    <p>
+      <code>iframeOnly</code> combined with <code>fullscreenBtn</code> renders a
+      "View in full screen" link below the iframe.
+    </p>
+    <SampleWidget src="/mock-demo" height={200} alt="React Example" iframeOnly fullscreenBtn />
+</DocsLayout>

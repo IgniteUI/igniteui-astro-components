@@ -38,5 +38,5 @@ export type {
 } from './lib/sidebar/types';
 export * from './lib/sidebar/helpers';
 
-// Platform context
-export * from './lib/platform-context';
+// Platform context types
+export * from './lib/types';

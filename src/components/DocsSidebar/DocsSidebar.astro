@@ -8,7 +8,8 @@
  * Package: igniteui-webcomponents (public, MIT) — change the import path
  * in the <script> block below to use @infragistics/igniteui-webcomponents.
  */
-import { sidebar as sidebarData } from 'virtual:docs-template/site-meta';
+import { sidebar as sidebarData, trailingSlash as configuredTrailingSlash } from 'virtual:docs-template/site-meta';
+import logoRaw from '../../assets/ig-logo.svg?raw';
 import SidebarFilterInput from './SidebarFilterInput.astro';
 import './DocsSidebar.scss';
 import SidebarLabel from './SidebarLabel.astro';
@@ -24,16 +25,30 @@ interface Props {
    * Useful when consuming the component without `siteMetaIntegration`.
    */
   items?: SidebarEntry[];
+  /** Show the filter input above the tree. Defaults to true. */
+  showFilter?: boolean;
+  /**
+   * Append trailing slash to sidebar links.
+   * Defaults to the value derived from the site's `trailingSlash` Astro config
+   * (exposed via the virtual module). Falls back to `true` if not configured.
+   */
+  trailingSlash?: boolean;
 }
 
-const { currentSlug = '', items: itemsProp } = Astro.props;
+const useTrailingSlash = configuredTrailingSlash !== 'never';
+const { currentSlug = '', items: itemsProp, showFilter = true, trailingSlash = useTrailingSlash } = Astro.props;
 const items = (itemsProp ?? sidebarData) as SidebarEntry[];
-const nodes = toTreeNodes(items, currentSlug);
+const nodes = toTreeNodes(items, currentSlug, { trailingSlash });
 const activeId = normalizeSlug(currentSlug);
 ---
 
 <sidebar-filter class="docs-sidebar" id="docs-sidebar" data-no-results="No topics match">
-    <SidebarFilterInput/>
+    <div class="sidebar-gutter">
+        <div class="sidebar-logo" aria-hidden="true">
+            <Fragment set:html={logoRaw} />
+        </div>
+{ showFilter && <SidebarFilterInput/> }
+    </div>
     <div class="sidebar-scroll" data-sidebar-scroll>
         <DocsTree
             nodes={ nodes }
@@ -45,6 +60,7 @@ const activeId = normalizeSlug(currentSlug);
         />
     </div>
 </sidebar-filter>
+<div class="docs-sidebar-backdrop" id="docs-sidebar-backdrop" aria-hidden="true"></div>
 
 <script>
     // Register Ignite UI Web Components used by the sidebar filter input.
@@ -53,17 +69,27 @@ const activeId = normalizeSlug(currentSlug);
     //   import { ... } from '@infragistics/igniteui-webcomponents';
     import {
         defineComponents,
+        IgcBadgeComponent,
         IgcInputComponent,
         IgcButtonComponent,
         IgcIconComponent,
     } from 'igniteui-webcomponents';
 
-    defineComponents(IgcInputComponent, IgcButtonComponent, IgcIconComponent);
+    defineComponents(IgcBadgeComponent, IgcInputComponent, IgcButtonComponent, IgcIconComponent);
 
     // Icons (sidebar-filter-search, sidebar-filter-clear) are registered via
     // the icon registry which picks up all SVGs from src/assets/icons/.
     import '../../scripts/icon-registry';
 
     import './sidebar-filter';
+
+    // Close the sidebar overlay when the backdrop is clicked.
+    document.addEventListener('click', (e) => {
+        if ((e.target as Element | null)?.closest('#docs-sidebar-backdrop')) {
+            document.body.removeAttribute('data-sidebar-open');
+            const toggle = document.querySelector<HTMLElement>('[data-sidebar-toggle]');
+            toggle?.setAttribute('aria-expanded', 'false');
+        }
+    });
 </script>
 

@@ -124,8 +124,16 @@ $dark-palette: (
 
 [data-theme='light'] {
 	@include palette($light-palette);
+	--igd-scrollbar-thumb: var(--ig-gray-300);
+	--igd-scrollbar-track:transparent;
+	
+	color-scheme: light;
 }
 
 [data-theme='dark'] {
 	@include palette($dark-palette);
+	--igd-scrollbar-thumb: var(--ig-gray-300);
+	--igd-scrollbar-track: transparent;
+	
+	color-scheme: dark;
 }

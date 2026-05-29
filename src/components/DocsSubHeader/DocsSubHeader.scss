@@ -1,10 +1,14 @@
 @use 'igniteui-theming/sass/typography' as *;
-@use '../../styles/global/breakpoints' as *;
 
-.docs-subheader {
+@layer components {
+
+.igd-docs-subheader {
 	position: sticky;
 	inset: 0;
 	display: grid;
+	
+	// Subgrid: mirror the parent .igd-page-layout column tracks so the logo
+	// column aligns with the sidebar column at all breakpoints.
 	grid-template-columns: var(--igd-page-layout-grid);
 	align-items: center;
 	width: 100%;
@@ -14,39 +18,38 @@
 	border-block-end: var(--igd-app-outline);
 	z-index: 1;
 	background-color: var(--igd-layout-sections-bg);
-	
+	view-transition-name: docs-subheader;
+
 	.igd-logo {
 		display: flex;
 		align-items: center;
 		height: 100%;
-		
-		@media (min-width: #{$bp-mobile-horizontal-max}) {
-			padding-inline: var(--igd-padding-lg);
-		}
-		
-		svg {
+		padding-inline: rem(32px) rem(16px);
+
+		> svg {
 			min-width: rem(79px);
 			height: rem(22px);
 			opacity: 0;
-			transform: translateY(-4px);
 			transition: opacity 200ms ease, transform 200ms ease;
 			position: absolute;
-			
+
 			.logo-type {
 				fill: var(--igd-logo-type);
 			}
 		}
-		
-		h1 {
+
+		> h1 {
+			@include type-style('body-2') {
+				margin: 0;
+			};
+			
 			opacity: 1;
-			transform: translateY(0);
 			transition: opacity 200ms ease, transform 200ms ease;
-			margin: 0;
 		}
-		
+
 		border-inline-end: var(--igd-app-outline);
 	}
-	
+
 	// Logo area: text visible by default, logo hidden.
 	// When the GlobalNavBar scrolls out of view, .docs-subheader--pinned is added
 	// and the logo fades in while the text fades out.
@@ -57,7 +60,7 @@
 				transform: translateY(0);
 				position: relative;
 			}
-			
+
 			h1 {
 				opacity: 0;
 				transform: translateY(4px);
@@ -67,3 +70,156 @@
 		}
 	}
 }
+
+.igd-docs-subheader__content {
+	display: flex;
+	align-items: center;
+	height: 100%;
+	gap: rem(16px);
+	min-width: 0;
+
+	> igc-select:first-of-type {
+		margin-inline-start: auto;
+	}
+
+	&:last-child {
+		margin-inline-end: rem(32px);
+	}
+}
+
+.igd-package-select,
+.igd-version-select {
+	flex-shrink: 0;
+	position: relative;
+	width: fit-content;
+	max-width: rem(250px);
+
+	&::part(base) {
+		position: absolute;
+		inset-block-start: 100%;
+		inset-inline-end: 0;
+		width: max-content;
+		min-width: 100%;
+		z-index: 100;
+	}
+}
+
+.igd-version-select {
+	&::part(native-input) {
+		field-sizing: content;
+	}
+}
+
+.igd-package-select {
+	&::part(prefix),
+	&::part(toggle-icon) {
+		flex-shrink: 0;
+	}
+
+	&::part(input) {
+		min-width: 0;
+		overflow: hidden;
+	}
+
+	&::part(native-input) {
+		field-sizing: content;
+		min-width: 0;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+}
+
+// Hidden by default. DocsLayout.scss reveals it on tablet/mobile (when the sidebar is hidden).
+.subheader-sidebar-toggle {
+	display: none;
+
+	--foreground: light-dark(var(--ig-gray-900), var(--ig-gray-900));
+	--background: transparent;
+	--border-color: transparent;
+
+	--hover-foreground: var(--igd-accent);
+	--hover-background: transparent;
+
+	--focus-foreground: var(--igd-accent);
+	--focus-background: transparent;
+
+	--active-foreground: var(--igd-accent);
+	--active-background: transparent;
+
+	.toggle-icon--hamburger {
+		display: none;
+	}
+}
+
+// When the subheader becomes sticky, swap dropdown-indicator → hamburger.
+.igd-docs-subheader--pinned .subheader-sidebar-toggle {
+	.toggle-icon--dropdown {
+		display: none;
+	}
+
+	.toggle-icon--hamburger {
+		display: flex;
+	}
+}
+
+// Theme toggle: show sun in dark mode, moon in light mode.
+.subheader-theme-toggle {
+	--foreground: light-dark(var(--ig-gray-900), var(--ig-gray-900));
+	--background: transparent;
+	--border-color: transparent;
+	
+	--hover-foreground: var(--igd-accent);
+	--hover-background: transparent;
+	
+	--focus-foreground: var(--igd-accent);
+	--focus-background: transparent;
+	
+	--active-foreground: var(--igd-accent);
+	--active-background: transparent;
+	
+	.theme-icon {
+		display: flex;
+	}
+
+	.theme-icon--moon {
+		display: none;
+	}
+
+	:root[data-theme='dark'] & {
+		.theme-icon--sun {
+			display: flex;
+		}
+
+		.theme-icon--moon {
+			display: none;
+		}
+	}
+
+	:root:not([data-theme='dark']) & {
+		.theme-icon--sun {
+			display: none;
+		}
+
+		.theme-icon--moon {
+			display: flex;
+		}
+	}
+}
+
+#package-tooltip {
+	--ig-tooltip-background: #D2DBE8;
+	--ig-tooltip-text-color: #112031;
+	--ig-tooltip-border-radius: #{rem(4px)};
+
+	&::part(base) {
+		font-family: var(--igd-font-sans);
+		font-size: #{rem(12px)};
+		font-weight: 500;
+		line-height: #{rem(18px)};
+		letter-spacing: 0;
+	}
+}
+
+}
+

@@ -20,7 +20,10 @@
 import { defineConfig } from 'astro/config';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
+import mdx from '@astrojs/mdx';
 import { getPlatformHead } from '../src/platform.ts';
+import { rehypeHeadingAnchors } from '../src/plugins/rehype-heading-anchors.ts';
+import { rehypeTableWrapper } from '../src/plugins/rehype-table-wrapper.ts';
 
 // Default the platform context used by ApiLink / ApiRef / PlatformBlock.
 process.env.PLATFORM ??= 'React';
@@ -64,6 +67,7 @@ export const title = '';
 export const sidebar = [];
 export const productLinks = [];
 export const headEntries = ${JSON.stringify(platformHeadEntries)};
+export const trailingSlash = 'ignore';
         `;
       }
       if (id === resolved(navHtmlId)) {
@@ -99,7 +103,14 @@ export default defineConfig({
   outDir: './dist',
   // Disable image optimization — playground pages just use plain <img>.
   image: { service: { entrypoint: 'astro/assets/services/noop' } },
-  integrations: [],
+  integrations: [mdx()],
+  markdown: {
+    shikiConfig: {
+      theme: 'dark-plus',
+      wrap: true,
+    },
+    rehypePlugins: [rehypeHeadingAnchors, rehypeTableWrapper],
+  },
   vite: {
     plugins: [virtualDocsModules()],
     css: {

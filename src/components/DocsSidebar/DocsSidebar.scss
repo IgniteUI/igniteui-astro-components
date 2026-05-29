@@ -1,18 +1,116 @@
 @use 'igniteui-theming/sass/typography' as *;
 
-.docs-sidebar {
-	display: flex;
-	flex-direction: column;
-	z-index: 0;
-	border-inline-end: var(--igd-app-outline);
-	padding-inline: var(--igd-padding-lg);
-	padding-block: calc(var(--igd-padding-lg) + rem(14px));
-	background-color: var(--igd-layout-sections-bg);
-	overflow-y: auto;
-	position: sticky;
-	top: var(--igd-header-height);
-	height: calc(100dvh - var(--igd-header-height));
-	max-height: 100dvh;
-	align-self: start;
-	gap: rem(24px);
+@layer components {
+	// Desktop base. On tablet/mobile DocsLayout.scss turns this into a slide-in overlay.
+	.docs-sidebar {
+		--igd-sidebar-z-index: 0;
+		display: flex;
+		flex-direction: column;
+		z-index: var(--igd-sidebar-z-index);
+		border-inline-end: var(--igd-app-outline);
+		padding-inline: rem(16px);
+		padding-block: rem(24px);
+		background-color: var(--igd-layout-sections-bg);
+		position: sticky;
+		top: var(--igd-header-height);
+		height: calc(100dvh - var(--igd-header-height));
+		max-height: 100dvh;
+		align-self: start;
+		gap: rem(24px);
+		view-transition-name: docs-sidebar;
+	
+		.sidebar-gutter {
+			overflow-y: hidden;
+	
+			// This Makes sure the input border is visible
+			// This is the height of the input in fluent theme + 8px padding
+			// TODO this can be made smart using a css variable to override the original height of the input and used here
+			min-height: rem(40px);
+	
+			igc-icon {
+				color: light-dark(var(--ig-gray-800), var(--ig-gray-300));
+			}
+	
+			&:empty {
+				display: none;
+			}
+		}
+	}
+	
+	// Hidden by default. DocsLayout.scss reveals it on tablet/mobile when the sidebar is open.
+	.docs-sidebar-backdrop {
+		display: none;
+	}
+	
+	.sidebar-logo {
+		display: none;
+		margin-block-end: rem(8px);
+		padding-inline-start: rem(20px);
+	
+		> svg {
+			width: rem(79px);
+	
+			.logo-type {
+				fill: var(--igd-logo-type);
+			}
+		}
+	}
+	
+	.sidebar-scroll {
+		overflow-y: auto;
+		scrollbar-gutter: stable;
+	}
+	
+	.sidebar-premium-icon {
+		--size: #{rem(24px)};
+		
+		justify-self: end;
+		color: var(--igd-premium-color);
+		flex-shrink: 0;
+	}
+	
+	.igd-label-and-badge {
+		display: flex;
+		align-items: center;
+		gap: rem(8px);
+		padding: rem(4px);
+		
+		igc-badge {
+			justify-self: end;
+		}
+		
+	}
+	
+	.docs-tree-group {
+		gap: rem(8px);
+		padding-inline-end: rem(4px);
+	}
+	
+	.group-label-text {
+		@include type-style('body-2') {
+			//font-weight: 600;
+			margin-block: 0;
+		};
+		
+		color: light-dark(var(--ig-gray-900), var(--ig-gray-500));
+		user-select: none;
+	}
+	
+	.group-label-count {
+		color: light-dark(var(--ig-gray-700), var(--ig-gray-600));
+		background: light-dark(var(--ig-gray-100), var(--ig-gray-200));
+		padding: rem(2px) rem(8px);
+		aspect-ratio: 1;
+		border-radius: rem(4px);
+		margin-inline-start: rem(8px);
+		font-size: 12px;
+	}
+	
+	.igd-badge-container {
+		display: flex;
+		align-items: center;
+		gap: rem(4px);
+		margin-left: auto;
+	}
 }
+

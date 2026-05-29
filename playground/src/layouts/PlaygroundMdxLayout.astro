@@ -1,0 +1,41 @@
+---
+/**
+ * Layout for MDX playground pages.
+ *
+ * Astro passes `headings` (MarkdownHeading[]) and `frontmatter` automatically
+ * when a .mdx file sets `layout:` in its frontmatter. All other DocsLayout
+ * wiring (sidebar, TOC, subheader) is assembled here so the MDX file itself
+ * stays pure content.
+ */
+import type { MarkdownHeading } from 'astro';
+import DocsLayout from '../../../src/layouts/DocsLayout/DocsLayout.astro';
+import DocsSidebar from '../../../src/components/DocsSidebar/DocsSidebar.astro';
+import DocsToc from '../../../src/components/DocsToc/DocsToc.astro';
+import DocsSubHeader from '../../../src/components/DocsSubHeader/DocsSubHeader.astro';
+import SearchAdvanced from '../../../src/components/SearchAdvanced/SearchAdvanced.astro';
+import { SITE_TITLE, SIDEBAR, PRODUCT_LINKS, SEARCH_TABS, PACKAGES, VERSIONS } from '../site-config';
+
+interface Props {
+    frontmatter: {
+        title: string;
+        slug: string;
+        [key: string]: unknown;
+    };
+    headings: MarkdownHeading[];
+}
+
+const { frontmatter, headings } = Astro.props;
+---
+
+<DocsLayout title={frontmatter.title} siteTitle={SITE_TITLE} hasSidebar currentSlug={frontmatter.slug}>
+    <DocsSubHeader slot="subheader" pageTitle={frontmatter.title} currentSlug={frontmatter.slug}
+        siteTitle={SITE_TITLE} productLinks={PRODUCT_LINKS} showThemeToggle={true}
+        packages={[...PACKAGES]} selectedPackage={PACKAGES[0]}
+        versions={[...VERSIONS]} selectedVersion={VERSIONS[0]}
+    >
+        <SearchAdvanced slot="search" tabs={SEARCH_TABS} showScope={true} />
+    </DocsSubHeader>
+    <DocsSidebar slot="sidebar" items={SIDEBAR} currentSlug={frontmatter.slug} />
+    <DocsToc slot="toc" headings={headings} offsetTarget=".docs-subheader" />
+    <slot />
+</DocsLayout>

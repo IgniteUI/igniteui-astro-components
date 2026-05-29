@@ -18,15 +18,21 @@ import { isGroup, isInitiallyOpen, joinPath, normalizeSlug } from '../../lib/sid
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 
-const linkHref = (slug: string): string => {
+const linkHref = (slug: string, trailingSlash: boolean): string => {
   const normalized = normalizeSlug(slug);
-  return normalized ? `${base}/${normalized}/` : `${base}/`;
+  const suffix = trailingSlash ? '/' : '';
+  if (!normalized) {
+    // Root (docs index): ensure href is at least '/' when base is empty.
+    return `${base}${suffix}` || '/';
+  }
+  return `${base}/${normalized}${suffix}`;
 };
 
 const toNode = (
   entry: SidebarEntry,
   ancestors: string[],
   currentSlug: string,
+  trailingSlash: boolean,
 ): TreeNode => {
   const path = joinPath(ancestors, entry.label);
 
@@ -36,7 +42,7 @@ const toNode = (
       label: entry.label,
       expanded: isInitiallyOpen(entry, currentSlug) || undefined,
       children: entry.items.map((child) =>
-        toNode(child, [...ancestors, entry.label], currentSlug),
+        toNode(child, [...ancestors, entry.label], currentSlug, trailingSlash),
       ),
       itemData: {
         path,
@@ -49,18 +55,24 @@ const toNode = (
   return {
     id: normalizeSlug(entry.slug),
     label: entry.label,
-    href: linkHref(entry.slug),
+    href: linkHref(entry.slug, trailingSlash),
     itemData: {
       path,
       label: entry.label,
       slug: entry.slug,
     },
     linkAttrs: entry.attrs,
-    meta: entry.badge ? { badge: entry.badge } : undefined,
+    meta: entry.badges?.length ? { badges: entry.badges } : undefined,
   };
 };
+
+export interface ToTreeNodesOptions {
+  /** Append trailing slash to sidebar links. Defaults to `true`. */
+  trailingSlash?: boolean;
+}
 
 export const toTreeNodes = (
   entries: SidebarEntry[],
   currentSlug: string,
-): TreeNode[] => entries.map((entry) => toNode(entry, [], currentSlug));
+  { trailingSlash = true }: ToTreeNodesOptions = {},
+): TreeNode[] => entries.map((entry) => toNode(entry, [], currentSlug, trailingSlash));

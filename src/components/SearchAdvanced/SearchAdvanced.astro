@@ -1,0 +1,944 @@
+---
+import './SearchAdvanced.scss';
+/**
+ * SearchAdvanced
+ *
+ * Client-side search dialog that loads a JSON search index and performs
+ * all matching against symbol and member names — never against page body content.
+ *
+ * Result UI:
+ *   • Configurable tabs (only non-empty categories are shown, with their count)
+ *   • "All" tab (always present) shows up to N results per category
+ *   • Other tabs show all matches for that category
+ *
+ * Built so it has no runtime dependency on Starlight CSS — the trigger
+ * button, dialog, and all styles are self-contained.
+ */
+
+export interface SearchTab {
+  /** Unique identifier for this tab/category */
+  id: string;
+  /** Display label for the tab */
+  label: string;
+  /**
+   * Kind codes from the index that map to this category.
+   * Use `['__name__']` for the special "page names" category.
+   * For member kinds: 'p' = property, 'a' = accessor, 'm' = method, 'e' = event, 'c' = constructor.
+   */
+  kindCodes: string[];
+}
+
+export interface Props {
+  /** CSS class for the outer element */
+  class?: string;
+  /**
+   * URL (or path) to the search index.
+   *
+   * Supports two modes:
+   * - **Single file**: URL pointing to a JSON file with a `{ pages: [...] }` shape.
+   * - **Manifest**: URL pointing to a `manifest.json` with a `{ files: [...] }` shape.
+   *   Each listed file is fetched relative to the manifest URL and their pages
+   *   are merged. This supports incremental / per-version builds.
+   *
+   * Defaults to `${BASE_URL}api-search-index/manifest.json`.
+   */
+  indexUrl?: string;
+  /** Search input placeholder. Defaults to "Search" */
+  placeholder?: string;
+  /** Show scope selector (current package / all packages). Defaults to false */
+  showScope?: boolean;
+  /** Tab categories to show (besides the always-present "All" tab). Defaults to none (only "All") */
+  tabs?: SearchTab[];
+  /** Maximum results per category shown in the "All" tab. Defaults to 10 */
+  allTabLimit?: number;
+  /** Current platform key (angular, react, blazor, web-components). Used to show the platform logo in the scope selector. */
+  platform?: string;
+}
+
+const PLATFORM_ICONS: Record<string, string> = {
+  angular: 'angular-logo',
+  react: 'react-logo',
+  blazor: 'blazor-logo',
+  'web-components': 'wc-logo',
+};
+
+const {
+  class: className,
+  indexUrl,
+  placeholder = 'Search',
+  showScope = false,
+  tabs = [],
+  allTabLimit = 10,
+  platform = '',
+} = Astro.props;
+
+const platformIcon = platform ? (PLATFORM_ICONS[platform] ?? null) : null;
+
+// Strip any origin (scheme + host) from BASE_URL so only the path prefix is
+// used. When Astro builds in SSG mode the Node.js process may have
+// process.env.BASE_URL set to a full URL (e.g. "http://localhost:4567") which
+// leaks into import.meta.env.BASE_URL for server-side template expressions and
+// causes the data attributes to embed an absolute origin that breaks previews.
+const rawBase = import.meta.env.BASE_URL ?? '/';
+const basePath = (() => {
+  try { return new URL(rawBase).pathname; } catch { return rawBase; }
+})().replace(/\/?$/, '/');
+const resolvedIndexUrl = indexUrl ?? `${basePath}api-search-index/manifest.json`;
+---
+
+<api-search-advanced
+  class={className}
+  data-base={basePath}
+  data-index-url={resolvedIndexUrl}
+  data-tabs={JSON.stringify(tabs)}
+  data-all-tab-limit={allTabLimit}
+  data-show-scope={showScope ? 'true' : 'false'}
+  data-platform-icon={platformIcon ?? ''}
+>
+  <button
+    data-open-modal
+    disabled
+    aria-label={placeholder}
+    aria-keyshortcuts="Control+K"
+    class="search-trigger"
+
+  >
+    <igc-icon name="search" collection="docs" aria-hidden="true"></igc-icon>
+    <span class="search-trigger__lable" aria-hidden="true">{placeholder}</span>
+
+    <kbd class="search-trigger__hint" style="display: none;">
+      <kbd>Ctrl</kbd><kbd>K</kbd>
+    </kbd>
+  </button>
+
+    <igc-dialog aria-label={placeholder} class="igd-search-dialog" hide-default-action close-on-outside-click>
+        <div class="igd-search-shell">
+            <header class="igd-search-header">
+                <igc-select  placement="bottom-start" distance="17" id="search-scope-select" slot="prefix" class="igd-search-scope" outlined aria-label="Search scope" value="current">
+                    {platformIcon && <igc-icon id="search-scope-trigger-icon" name={platformIcon} collection="docs" slot="prefix" aria-hidden="true"></igc-icon>}
+                    <igc-select-item value="current">
+                        <span data-scope-label>Current package</span>
+                    </igc-select-item>
+                    <igc-select-item value="all">All packages</igc-select-item>
+                </igc-select>
+                <igc-tooltip anchor="search-scope-select" class="igd-search-scope-tooltip" placement="bottom" with-arrow></igc-tooltip>
+
+                <igc-divider vertical></igc-divider>
+
+                <igc-input
+                    type="text"
+                    class="igd-search-input"
+                    placeholder={placeholder}
+                    autocomplete="off"
+                    outlined
+                    aria-label={placeholder}
+                >
+                    <igc-icon class="igd-search-icon" name="search" collection="docs" slot="prefix" aria-hidden="true"></igc-icon>
+                    <igc-icon-button slot="suffix" class="igd-search-clear" variant="flat" type="button" aria-label="Clear search" name="clear" collection="docs" hidden></igc-icon-button>
+                </igc-input>
+
+                <button
+                    type="button"
+                    data-close-modal
+                    class="search-trigger search-close"
+                    aria-label="Close search"
+                >
+                    <igc-icon name="close" collection="docs" aria-hidden="true"></igc-icon>
+                </button>
+            </header>
+
+            <igc-divider></igc-divider>
+
+            <div class="igd-search-status" aria-live="polite"></div>
+
+            <igc-tabs class="igd-search-tabs" activation="manual" hidden></igc-tabs>
+            <igc-list class="igd-search-results--flat" hidden></igc-list>
+        </div>
+    </igc-dialog>
+</api-search-advanced>
+
+<script>
+  import {
+    defineComponents,
+    IgcInputComponent,
+    IgcDialogComponent,
+    IgcSelectComponent,
+    IgcSelectItemComponent,
+    IgcIconButtonComponent,
+    IgcIconComponent,
+    IgcTabsComponent,
+    IgcTabComponent,
+    IgcListComponent,
+    IgcListItemComponent,
+    IgcDividerComponent,
+    IgcTooltipComponent,
+  } from 'igniteui-webcomponents';
+  import '../../scripts/icon-registry';
+
+  defineComponents(
+    IgcInputComponent,
+    IgcDialogComponent,
+    IgcSelectComponent,
+    IgcSelectItemComponent,
+    IgcIconButtonComponent,
+    IgcIconComponent,
+    IgcTabsComponent,
+    IgcTabComponent,
+    IgcListComponent,
+    IgcListItemComponent,
+    IgcDividerComponent,
+    IgcTooltipComponent,
+  );
+
+  type IndexedPage = {
+    u: string;
+    n: string;
+    k: string;
+    v: string;
+    p: string;
+    g: string;
+    m: Array<[string, string]>;
+  };
+
+  type TabConfig = {
+    id: string;
+    label: string;
+    kindCodes: string[];
+  };
+
+  type Match = {
+    name: string;
+    pageName: string;
+    url: string;
+    category: string;
+    matchTier: number;
+    qPos: number;
+    hasPrefix: boolean;
+    typeWeight: number;
+    kindLabel: string;
+    metaLabel: string;
+    packageLabel: string;
+  };
+
+  const PAGE_KIND_LABEL: Record<string, string> = {
+    class:     'class',
+    interface: 'interface',
+    enum:      'enum',
+    type:      'type',
+    variable:  'variable',
+    function:  'function',
+    module:    'module',
+  };
+
+  const PAGE_KIND_WEIGHT: Record<string, number> = {
+    class: 0, interface: 1, enum: 2, type: 3, function: 4, variable: 5, module: 6,
+  };
+
+  const KIND_CODE_TO_LABEL: Record<string, string> = {
+    p: 'property',
+    a: 'accessor',
+    m: 'method',
+    e: 'event',
+    c: 'constructor',
+  };
+
+  const INPUT_DEBOUNCE_MS = 100;
+
+  class ApiSearchAdvanced extends HTMLElement {
+    private dialog!: IgcDialogComponent;
+    private input!: IgcInputComponent;
+    private clearBtn!: IgcIconButtonComponent;
+    private scopeSelect: IgcSelectComponent | null = null;
+    private scopeTooltip: HTMLElement | null = null;
+    private scopeTriggerIcon: HTMLElement | null = null;
+    private platformIconName: string = '';
+    private tabsEl!: IgcTabsComponent;
+    private statusEl!: HTMLElement;
+    private flatListEl!: HTMLElement;
+    private indexPromise: Promise<IndexedPage[]> | null = null;
+    private currentTab: string = 'all';
+    private currentMatches: Map<string, Match[]> = new Map();
+    private currentQuery: string = '';
+    private debounceTimer: ReturnType<typeof setTimeout> | null = null;
+    private basePath: string = '/';
+    private indexUrl: string = '';
+    private currentPlatform: string = '';
+    private currentPkg: string = '';
+    private currentVersion: string = '';
+    private scope: 'current' | 'all' = 'current';
+    private categories: TabConfig[] = [];
+    private allTabLimit: number = 10;
+    private showScope: boolean = false;
+    private kindCodeToCategory: Map<string, string> = new Map();
+
+    connectedCallback() {
+      this.basePath = this.dataset.base || '/';
+      this.indexUrl = this.dataset.indexUrl || `${this.basePath}api-search-index.json`;
+      this.allTabLimit = parseInt(this.dataset.allTabLimit || '10', 10) || 10;
+      this.showScope = this.dataset.showScope === 'true';
+
+      // Parse tab configuration
+      try {
+        const tabsData: TabConfig[] = JSON.parse(this.dataset.tabs || '[]');
+        this.categories = tabsData;
+      } catch {
+        this.categories = [];
+      }
+
+      // Build kind code → category mapping
+      for (const cat of this.categories) {
+        for (const code of cat.kindCodes) {
+          if (code !== '__name__') {
+            this.kindCodeToCategory.set(code, cat.id);
+          }
+        }
+      }
+
+      const openBtn  = this.querySelector<HTMLButtonElement>('button[data-open-modal]')!;
+      const closeBtn = this.querySelector<HTMLButtonElement>('button[data-close-modal]')!;
+      this.dialog    = this.querySelector<IgcDialogComponent>('igc-dialog')!;
+      this.input     = this.querySelector<IgcInputComponent>('igc-input.igd-search-input')!;
+      this.clearBtn  = this.querySelector<IgcIconButtonComponent>('.igd-search-clear')!;
+      this.scopeSelect = this.querySelector<IgcSelectComponent>('igc-select.igd-search-scope');
+      this.scopeTooltip = this.querySelector<HTMLElement>('.igd-search-scope-tooltip');
+      this.scopeTriggerIcon = this.querySelector('#search-scope-trigger-icon');
+      this.platformIconName = this.dataset.platformIcon || '';
+      this.tabsEl    = this.querySelector<IgcTabsComponent>('igc-tabs.igd-search-tabs')!;
+      this.statusEl  = this.querySelector<HTMLElement>('.igd-search-status')!;
+      this.flatListEl = this.querySelector<HTMLElement>('.igd-search-results--flat')!;
+
+      // Update the keyboard shortcut hint for the current OS.
+      const shortcut = this.querySelector<HTMLElement>('kbd.search-trigger__hint');
+      if (shortcut) {
+        if (/Mac|iPhone|iPod|iPad/i.test(navigator.userAgent)) {
+          const modKey = shortcut.querySelector('kbd');
+          if (modKey) modKey.textContent = '\u2318';
+          openBtn.setAttribute('aria-keyshortcuts', 'Meta+K');
+        }
+        shortcut.style.display = '';
+      }
+
+      // Auto-detect platform icon from the enclosing docs-subheader-menu when not
+      // explicitly provided via the `platform` prop.
+      if (!this.platformIconName) {
+        const subheader = document.querySelector<HTMLElement>('docs-subheader-menu');
+        const detectedPlatform = subheader?.dataset.platform || '';
+        const ICONS: Record<string, string> = {
+          angular: 'angular-logo', react: 'react-logo',
+          blazor: 'blazor-logo', 'web-components': 'wc-logo',
+        };
+        this.platformIconName = ICONS[detectedPlatform] || '';
+      }
+
+      // Dynamically insert the trigger prefix icon when the platform was resolved
+      // at runtime (i.e. not server-side rendered via the explicit `platform` prop).
+      if (this.platformIconName && this.scopeSelect && !this.scopeTriggerIcon) {
+        const triggerIcon = document.createElement('igc-icon') as HTMLElement;
+        triggerIcon.id = 'search-scope-trigger-icon';
+        triggerIcon.setAttribute('name', this.platformIconName);
+        triggerIcon.setAttribute('collection', 'docs');
+        triggerIcon.setAttribute('slot', 'prefix');
+        triggerIcon.setAttribute('aria-hidden', 'true');
+        this.scopeSelect.prepend(triggerIcon);
+        this.scopeTriggerIcon = triggerIcon;
+      }
+
+      if (this.showScope) {
+        this.detectCurrentContext();
+        this.updateScopeOption();
+      }
+
+      const open = async () => {
+        await this.dialog.show();
+        document.body.toggleAttribute('data-search-modal-open', true);
+        this.loadIndex();
+        this.input.focus();
+      };
+
+      openBtn.addEventListener('click', open);
+      openBtn.disabled = false;
+
+      closeBtn.addEventListener('click', () => this.closeModal());
+
+      this.dialog.addEventListener('igcClosed', () => {
+        document.body.toggleAttribute('data-search-modal-open', false);
+      });
+
+      // Close dialog when a result link is clicked — covers both tab panels and the flat list
+      this.querySelector<HTMLElement>('.igd-search-shell')!.addEventListener('click', (e) => {
+        if ((e.target as Element).closest('a[href]')) {
+          this.dialog.hide();
+        }
+      });
+
+      window.addEventListener('keydown', (e) => {
+        if ((e.metaKey === true || e.ctrlKey === true) && e.key === 'k') {
+          this.dialog.open ? this.closeModal() : open();
+          e.preventDefault();
+        }
+      });
+
+      this.input.addEventListener('igcInput', () => this.onInput());
+      this.clearBtn.addEventListener('click', () => {
+        this.input.value = '';
+        this.input.focus();
+        this.onInput();
+      });
+
+      // Track the active tab — igc-tabs handles content visibility automatically
+      this.tabsEl.addEventListener('igcChange', (e) => {
+        const tab = (e as CustomEvent<IgcTabComponent>).detail;
+        const tabId = (tab as HTMLElement)?.dataset?.tabId || 'all';
+        this.currentTab = tabId;
+      });
+
+      if (this.scopeSelect) {
+        this.scopeSelect.addEventListener('igcChange', () => {
+          this.scope = this.scopeSelect!.value === 'all' ? 'all' : 'current';
+          if (this.currentQuery) this.runSearch();
+          this.syncScopeTooltip();
+        });
+
+        // igcInput re-renders with full text after the dropdown closes; re-apply truncation.
+        this.scopeSelect.addEventListener('igcClosed', () =>
+          requestAnimationFrame(() => this.applyScopeTruncation())
+        );
+      }
+
+      // Apply truncation once the dialog is fully open and the select has real dimensions.
+      this.dialog.addEventListener('igcOpened', () =>
+        requestAnimationFrame(() => requestAnimationFrame(() => this.applyScopeTruncation()))
+      );
+
+      // Only show the scope tooltip when the label is visually truncated
+      if (this.scopeTooltip && this.scopeSelect) {
+        this.scopeTooltip.addEventListener('igcOpening', (e: Event) => {
+          const igcInput = (this.scopeSelect as any).shadowRoot?.querySelector('igc-input');
+          const nativeInput = igcInput?.shadowRoot?.querySelector('input');
+          const truncated = nativeInput?.value?.endsWith('\u2026');
+          const overflows = nativeInput && nativeInput.scrollWidth > nativeInput.clientWidth;
+          if (!truncated && !overflows) {
+            e.preventDefault();
+          }
+        });
+      }
+    }
+
+    private detectCurrentContext() {
+      const path = window.location.pathname;
+      const stripped = path.startsWith(this.basePath) ? path.slice(this.basePath.length) : path.replace(/^\/+/, '');
+      const segs = stripped.split('/').filter(Boolean);
+      const baseSegs = this.basePath.split('/').filter(Boolean);
+      this.currentPlatform = baseSegs[baseSegs.length - 1] || '';
+      this.currentPkg = segs[0] || '';
+      this.currentVersion = segs[1] || '';
+    }
+
+    private updateScopeOption() {
+      if (!this.scopeSelect) return;
+      const item = this.scopeSelect.querySelector<HTMLElement & { value: string; disabled: boolean }>('igc-select-item[value="current"]');
+      if (!item) return;
+      if (this.currentPkg && this.currentVersion) {
+        const labelEl = item.querySelector('[data-scope-label]');
+        if (labelEl) {
+          labelEl.textContent = `${this.currentPkg} ${this.currentVersion}`;
+        } else {
+          item.textContent = `${this.currentPkg} ${this.currentVersion}`;
+        }
+      } else {
+        item.disabled = true;
+        item.hidden = true;
+        this.scopeSelect.value = 'all';
+        this.scope = 'all';
+      }
+      this.syncScopeTooltip();
+    }
+
+    private syncScopeTooltip() {
+      if (!this.scopeTooltip || !this.scopeSelect) return;
+      const val = this.scopeSelect.value;
+      const item = this.scopeSelect.querySelector<HTMLElement>(`igc-select-item[value="${val}"]`);
+      this.scopeTooltip.textContent = item?.textContent?.trim() ?? val ?? '';
+    }
+
+    private applyScopeTruncation() {
+      if (!this.scopeSelect) return;
+      const igcInput = (this.scopeSelect as any).shadowRoot?.querySelector('igc-input');
+      const nativeInput = igcInput?.shadowRoot?.querySelector('input') as HTMLInputElement | null;
+      if (!nativeInput || !nativeInput.value) return;
+      nativeInput.style.overflow = 'hidden';
+      nativeInput.style.textOverflow = 'ellipsis';
+      nativeInput.style.whiteSpace = 'nowrap';
+    }
+
+    private closeModal() {
+      this.dialog.hide();
+    }
+
+    private loadIndex(): Promise<IndexedPage[]> {
+      if (this.indexPromise) return this.indexPromise;
+      this.indexPromise = this.fetchIndex();
+      return this.indexPromise;
+    }
+
+    private async fetchIndex(): Promise<IndexedPage[]> {
+      let data: unknown;
+      try {
+        const r = await fetch(this.indexUrl);
+        if (!r.ok) return [];
+        data = await r.json();
+      } catch {
+        return [];
+      }
+
+      // Single-file format: { pages: [...] }
+      if (Array.isArray((data as any)?.pages)) {
+        return (data as any).pages as IndexedPage[];
+      }
+
+      // Manifest format: { files: ["pkg/version.json", ...] }
+      if (Array.isArray((data as any)?.files)) {
+        const baseUrl = this.indexUrl.replace(/[^/]*$/, '');
+        const fetches: Promise<IndexedPage[]>[] = ((data as any).files as string[]).map(async (file: string) => {
+          try {
+            const res = await fetch(`${baseUrl}${file}`);
+            if (!res.ok) return [];
+            const d = await res.json();
+            return Array.isArray(d?.pages) ? d.pages as IndexedPage[] : [];
+          } catch {
+            return [];
+          }
+        });
+        const results = await Promise.all(fetches);
+        return results.flat();
+      }
+
+      return [];
+    }
+
+    private onInput() {
+      if (this.debounceTimer !== null) clearTimeout(this.debounceTimer);
+      this.debounceTimer = setTimeout(() => this.runSearch(), INPUT_DEBOUNCE_MS);
+    }
+
+    private async runSearch() {
+      const raw = (this.input.value as string) ?? '';
+      const q = raw.trim().toLowerCase();
+      this.currentQuery = q;
+      this.clearBtn.hidden = !raw;
+      // igc-input uses [slot="suffix"]:not([hidden]) to show the suffix container.
+      // It doesn't observe attribute mutations on slotted elements, so we must
+      // force a re-render whenever the clear button's visibility changes.
+      (this.input as unknown as { requestUpdate(): void }).requestUpdate?.();
+
+      if (!q) {
+        this.clearResults();
+        return;
+      }
+
+      this.statusEl.textContent = 'Searching\u2026';
+
+      let pages: IndexedPage[];
+      try {
+        pages = await this.loadIndex();
+      } catch (err) {
+        this.statusEl.textContent = `Search unavailable: ${(err as Error).message}`;
+        return;
+      }
+
+      if (q !== this.currentQuery) return;
+
+      const buckets = this.classify(pages, q);
+      this.currentMatches = buckets;
+      if (this.currentTab !== 'all' && (buckets.get(this.currentTab)?.length ?? 0) === 0) {
+        this.currentTab = 'all';
+      }
+      this.renderTabs();
+      this.renderResults();
+    }
+
+    private clearResults() {
+      this.statusEl.textContent = '';
+      this.tabsEl.hidden = true;
+      this.tabsEl.innerHTML = '';
+      this.flatListEl.hidden = true;
+      this.flatListEl.innerHTML = '';
+      this.currentMatches = new Map();
+    }
+
+    private async runBrowse() {
+      this.statusEl.textContent = '';
+
+      let pages: IndexedPage[];
+      try {
+        pages = await this.loadIndex();
+      } catch (err) {
+        this.statusEl.textContent = `Search unavailable: ${(err as Error).message}`;
+        return;
+      }
+
+      const nameCategories = this.categories.filter(c => c.kindCodes.includes('__name__'));
+
+      let scoped: IndexedPage[];
+      if (this.showScope && this.scope === 'current' && this.currentPkg && this.currentVersion) {
+        scoped = pages.filter((p) =>
+          p.p === this.currentPlatform &&
+          p.g === this.currentPkg &&
+          p.v === this.currentVersion
+        );
+      } else if (this.showScope) {
+        const platformPages = this.currentPlatform
+          ? pages.filter((p) => p.p === this.currentPlatform)
+          : pages;
+        scoped = pickHighestVersionWinners(platformPages);
+      } else {
+        scoped = pickHighestVersionWinners(pages);
+      }
+
+      const buckets: Map<string, Match[]> = new Map();
+      for (const cat of this.categories) buckets.set(cat.id, []);
+
+      for (const page of scoped) {
+        const isPlatformPrefixed = /^(Igx|Igr|Igc|Igb)[A-Z]/.test(page.n);
+        const pageWeight = PAGE_KIND_WEIGHT[page.k] ?? 8;
+        const meta = `${page.g} / ${page.v}`;
+
+        for (const nameCat of nameCategories) {
+          buckets.get(nameCat.id)?.push({
+            name: page.n,
+            pageName: page.n,
+            url: page.u,
+            category: nameCat.id,
+            matchTier: 0,
+            qPos: 0,
+            hasPrefix: isPlatformPrefixed,
+            typeWeight: pageWeight,
+            kindLabel: PAGE_KIND_LABEL[page.k] || page.k,
+            metaLabel: meta,
+            packageLabel: meta,
+          });
+        }
+
+        for (const [memberName, kindCode] of page.m) {
+          const catId = this.kindCodeToCategory.get(kindCode);
+          if (!catId) continue;
+          buckets.get(catId)?.push({
+            name: memberName,
+            pageName: page.n,
+            url: page.u + '#' + memberName,
+            category: catId,
+            matchTier: 0,
+            qPos: 0,
+            hasPrefix: isPlatformPrefixed,
+            typeWeight: pageWeight,
+            kindLabel: KIND_CODE_TO_LABEL[kindCode] || kindCode,
+            metaLabel: `${page.n} / ${page.g}`,
+            packageLabel: meta,
+          });
+        }
+      }
+
+      // Sort all buckets alphabetically by name
+      for (const list of buckets.values()) {
+        list.sort((a, b) => a.name.localeCompare(b.name));
+      }
+
+      this.currentMatches = buckets;
+
+      if (this.currentTab !== 'all' && (buckets.get(this.currentTab)?.length ?? 0) === 0) {
+        this.currentTab = 'all';
+      }
+
+      this.renderTabs();
+      this.renderResults();
+    }
+
+    private classify(pages: IndexedPage[], q: string): Map<string, Match[]> {
+      const buckets: Map<string, Match[]> = new Map();
+      for (const cat of this.categories) {
+        buckets.set(cat.id, []);
+      }
+
+      // Determine which categories handle page names
+      const nameCategories = this.categories.filter(c => c.kindCodes.includes('__name__'));
+
+      let scoped: IndexedPage[];
+      if (this.showScope && this.scope === 'current' && this.currentPkg && this.currentVersion) {
+        scoped = pages.filter((p) =>
+          p.p === this.currentPlatform &&
+          p.g === this.currentPkg &&
+          p.v === this.currentVersion
+        );
+      } else if (this.showScope) {
+        const platformPages = this.currentPlatform
+          ? pages.filter((p) => p.p === this.currentPlatform)
+          : pages;
+        scoped = pickHighestVersionWinners(platformPages);
+      } else {
+        scoped = pickHighestVersionWinners(pages);
+      }
+
+      for (const page of scoped) {
+        const isPlatformPrefixed = /^(Igx|Igr|Igc|Igb)[A-Z]/.test(page.n);
+        const pageWeight = PAGE_KIND_WEIGHT[page.k] ?? 8;
+        const meta = `${page.g} / ${page.v}`;
+
+        // Match page names
+        const tier = matchTier(page.n, q);
+        if (tier !== null) {
+          for (const nameCat of nameCategories) {
+            if (!buckets.has(nameCat.id)) buckets.set(nameCat.id, []);
+            buckets.get(nameCat.id)!.push({
+              name: page.n,
+              pageName: page.n,
+              url: page.u,
+              category: nameCat.id,
+              matchTier: tier,
+              qPos: positionInName(page.n, q),
+              hasPrefix: isPlatformPrefixed,
+              typeWeight: pageWeight,
+              kindLabel: PAGE_KIND_LABEL[page.k] || page.k,
+              metaLabel: meta,
+              packageLabel: meta,
+            });
+          }
+
+          // If no categories defined, put everything in a default bucket
+          if (nameCategories.length === 0 && this.categories.length === 0) {
+            if (!buckets.has('__all__')) buckets.set('__all__', []);
+            buckets.get('__all__')!.push({
+              name: page.n,
+              pageName: page.n,
+              url: page.u,
+              category: '__all__',
+              matchTier: tier,
+              qPos: positionInName(page.n, q),
+              hasPrefix: isPlatformPrefixed,
+              typeWeight: pageWeight,
+              kindLabel: PAGE_KIND_LABEL[page.k] || page.k,
+              metaLabel: meta,
+              packageLabel: meta,
+            });
+          }
+        }
+
+        // Match members
+        for (const [memberName, kindCode] of page.m) {
+          const memberTier = matchTier(memberName, q);
+          if (memberTier === null) continue;
+
+          const catId = this.kindCodeToCategory.get(kindCode);
+          if (catId) {
+            if (!buckets.has(catId)) buckets.set(catId, []);
+            buckets.get(catId)!.push({
+              name: memberName,
+              pageName: page.n,
+              url: page.u + '#' + memberName,
+              category: catId,
+              matchTier: memberTier,
+              qPos: positionInName(memberName, q),
+              hasPrefix: isPlatformPrefixed,
+              typeWeight: pageWeight,
+              kindLabel: KIND_CODE_TO_LABEL[kindCode] || kindCode,
+              metaLabel: `${page.n} / ${page.g}`,
+              packageLabel: meta,
+            });
+          } else if (this.categories.length === 0) {
+            // No tabs configured — all results go into one bucket
+            if (!buckets.has('__all__')) buckets.set('__all__', []);
+            buckets.get('__all__')!.push({
+              name: memberName,
+              pageName: page.n,
+              url: page.u + '#' + memberName,
+              category: '__all__',
+              matchTier: memberTier,
+              qPos: positionInName(memberName, q),
+              hasPrefix: isPlatformPrefixed,
+              typeWeight: pageWeight,
+              kindLabel: KIND_CODE_TO_LABEL[kindCode] || kindCode,
+              metaLabel: `${page.n} / ${page.g}`,
+              packageLabel: meta,
+            });
+          }
+        }
+      }
+
+      // Sort each bucket
+      for (const [catId, list] of buckets.entries()) {
+        const isNameCat = nameCategories.some(c => c.id === catId);
+        if (isNameCat) {
+          list.sort((a, b) => {
+            if (a.typeWeight !== b.typeWeight) return a.typeWeight - b.typeWeight;
+            return a.name.localeCompare(b.name);
+          });
+        } else {
+          list.sort((a, b) => {
+            if (a.matchTier !== b.matchTier) return a.matchTier - b.matchTier;
+            if (a.hasPrefix !== b.hasPrefix) return a.hasPrefix ? -1 : 1;
+            if (a.qPos !== b.qPos) return a.qPos - b.qPos;
+            if (a.typeWeight !== b.typeWeight) return a.typeWeight - b.typeWeight;
+            return a.name.localeCompare(b.name);
+          });
+        }
+      }
+
+      return buckets;
+    }
+
+    private renderTabs() {
+      const totalCount = Array.from(this.currentMatches.values()).reduce((s, l) => s + l.length, 0);
+
+      // No-categories fallback: hide tabs, render a plain list
+      if (this.categories.length === 0) {
+        this.tabsEl.hidden = true;
+        this.tabsEl.innerHTML = '';
+        const list = this.currentMatches.get('__all__') ?? [];
+        this.flatListEl.innerHTML = list.map(m => this.matchHtml(m)).join('');
+        this.flatListEl.hidden = list.length === 0;
+        return;
+      }
+
+      this.flatListEl.hidden = true;
+      this.flatListEl.innerHTML = '';
+
+      // Build each igc-tab with its results embedded in the default slot (tab body)
+      const tabsHtml: string[] = [];
+
+      // "All" tab — truncated per category with "Show more" buttons
+      const allContent: string[] = [];
+      for (const cat of this.categories) {
+        const list = this.currentMatches.get(cat.id) ?? [];
+        if (list.length === 0) continue;
+        const slice = list.slice(0, this.allTabLimit);
+        const items = slice.map(m => this.matchHtml(m)).join('');
+        const moreBtn = list.length > slice.length
+          ? `<igc-button variant="flat" class="igd-search-more-btn" data-tab="${cat.id}">See` +
+              ` all ${list.length} ${escapeHtml(cat.label.toLowerCase())}` +
+            `</igc-button>`
+          : '';
+        allContent.push(
+          `<span class="igd-search-category-header">${escapeHtml(cat.label)}</span>` +
+          `<igc-list class="igd-search-results">${items}</igc-list>` +
+          moreBtn + `<igc-divider></igc-divider>`
+        );
+      }
+      tabsHtml.push(
+        `<igc-tab data-tab-id="all" label="All"${this.currentTab === 'all' ? ' selected' : ''}>` +
+          `<span slot="suffix" class="igd-search-tab-count">/${totalCount}/</span>` +
+          allContent.join('') +
+        `</igc-tab>`
+      );
+
+      // Per-category tabs — full result list in each tab body
+      for (const cat of this.categories) {
+        const list = this.currentMatches.get(cat.id) ?? [];
+        if (list.length === 0) continue;
+        const isSelected = this.currentTab === cat.id;
+        tabsHtml.push(
+          `<igc-tab data-tab-id="${cat.id}" label="${escapeHtml(cat.label)}"${isSelected ? ' selected' : ''}>` +
+            `<span slot="suffix" class="igd-search-tab-count">/${list.length}/</span>` +
+            `<igc-list class="igd-search-results">${list.map(m => this.matchHtml(m)).join('')}</igc-list>` +
+          `</igc-tab>`
+        );
+      }
+
+      this.tabsEl.innerHTML = tabsHtml.join('');
+      this.tabsEl.hidden = totalCount === 0;
+
+      // Wire "Show more" buttons — select the target tab (its content is already rendered)
+      this.tabsEl.querySelectorAll<HTMLButtonElement>('.igd-search-more-btn').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const tabId = btn.dataset.tab!;
+          this.currentTab = tabId;
+          const tabEl = this.tabsEl.querySelector<HTMLElement>(`igc-tab[data-tab-id="${tabId}"]`);
+          if (tabEl) this.tabsEl.select(tabEl as any);
+        });
+      });
+    }
+
+    private renderResults() {
+      const totalCount = Array.from(this.currentMatches.values()).reduce((s, l) => s + l.length, 0);
+      if (totalCount === 0) {
+        this.statusEl.innerHTML = this.currentQuery
+          ? `No results for "<strong class="igd-search-query">${escapeHtml(this.currentQuery)}</strong>".`
+          : 'No results.';
+      } else {
+        this.statusEl.textContent = '';
+      }
+      // Content is embedded inside igc-tab bodies by renderTabs(); nothing extra to do here.
+    }
+
+    private matchHtml(m: Match): string {
+      const highlightedName = highlight(m.name, this.currentQuery);
+      const nameCategories = this.categories.filter(c => c.kindCodes.includes('__name__'));
+      const isNameMatch = nameCategories.some(c => c.id === m.category);
+      const subtitle = isNameMatch || m.category === '__all__'
+        ? `<span class="igd-search-kind">${escapeHtml(m.packageLabel)}</span>`
+        : `<span class="igd-search-kind">${escapeHtml(m.packageLabel)}</span><span class="igd-search-meta">in ${escapeHtml(m.pageName)}</span>`;
+      return `<igc-list-item>
+        <a href="${m.url}" class="igd-search-link">
+          <span class="igd-search-result-title">${highlightedName}</span>
+          <span class="igd-search-result-sub">${subtitle}</span>
+        </a>
+        
+      </igc-list-item>`;
+    }
+  }
+
+  function matchTier(name: string, q: string): number | null {
+    const n = name.toLowerCase();
+    if (n === q) return 0;
+    if (n.startsWith(q)) return 1;
+    if (n.includes(q)) return 2;
+    return null;
+  }
+
+  function positionInName(name: string, q: string): number {
+    const i = name.toLowerCase().indexOf(q);
+    return i < 0 ? 99 : Math.min(i, 99);
+  }
+
+  function compareVersions(a: string, b: string): number {
+    const ap = a.replace(/[^0-9.]/g, '').split('.').map(Number);
+    const bp = b.replace(/[^0-9.]/g, '').split('.').map(Number);
+    for (let i = 0; i < Math.max(ap.length, bp.length); i++) {
+      const d = (ap[i] || 0) - (bp[i] || 0);
+      if (d !== 0) return d;
+    }
+    return 0;
+  }
+
+  function pickHighestVersionWinners(pages: IndexedPage[]): IndexedPage[] {
+    const winners = new Map<string, IndexedPage>();
+    for (const p of pages) {
+      const key = `${p.p}|${p.g}|${p.k}|${p.n}`;
+      const existing = winners.get(key);
+      if (!existing || compareVersions(p.v, existing.v) > 0) {
+        winners.set(key, p);
+      }
+    }
+    return Array.from(winners.values());
+  }
+
+  function highlight(text: string, q: string): string {
+    if (!q) return escapeHtml(text);
+    const i = text.toLowerCase().indexOf(q);
+    if (i < 0) return escapeHtml(text);
+    return (
+      escapeHtml(text.slice(0, i)) +
+      '<mark>' + escapeHtml(text.slice(i, i + q.length)) + '</mark>' +
+      escapeHtml(text.slice(i + q.length))
+    );
+  }
+
+  function escapeHtml(s: string): string {
+    return s
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  customElements.define('api-search-advanced', ApiSearchAdvanced);
+</script>

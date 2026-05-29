@@ -1,18 +1,18 @@
 ---
 import { ClientRouter } from 'astro:transitions';
-import '@fontsource-variable/instrument-sans/wght.css';
-import '@fontsource-variable/instrument-sans/wght-italic.css';
+import '@fontsource-variable/inter/wght.css';
+import '@fontsource-variable/inter/wght-italic.css';
 import '@fontsource-variable/jetbrains-mono/wght.css';
 import '@fontsource-variable/jetbrains-mono/wght-italic.css';
 import GlobalNavBar from '../../components/GlobalNavBar/GlobalNavBar.astro';
 import GlobalFooter from '../../components/GlobalFooter/GlobalFooter.astro';
 import DocsSubHeader from '../../components/DocsSubHeader/DocsSubHeader.astro';
 import DocsBreadcrumb from '../../components/DocsBreadcrumb/DocsBreadcrumb.astro';
+import LicenseIndicator from '../../components/LicenseIndicator/LicenseIndicator.astro';
 import MobileSidebarToggle from '../../components/MobileSidebarToggle/MobileSidebarToggle.astro';
 import { widgetScriptSrc, platform as virtualPlatform } from 'virtual:docs-template/nav-html';
-import { title as siteTitle, headEntries } from 'virtual:docs-template/site-meta';
+import { title as siteTitle, headEntries, navLang } from 'virtual:docs-template/site-meta';
 import '../../styles/theme.scss';
-import '../../styles/custom.scss';
 import './DocsLayout.scss';
 
 export interface Props {
@@ -28,10 +28,34 @@ export interface Props {
    * Useful when consuming without `siteMetaIntegration`.
    */
   siteTitle?: string;
+  /**
+   * Value of the `license` frontmatter field from the MDX page.
+   * 'commercial' → Premium badge, 'MIT' → Open Source badge, omit → no badge.
+   */
+  license?: string;
+  /** Set to true on 404 pages to add the `igd-page-layout--404` modifier class. */
+  is404?: boolean;
+  /** Package names for the subheader package selector. When omitted the selector is hidden. */
+  packages?: string[];
+  /** Currently selected package (must match one of `packages`). */
+  selectedPackage?: string;
+  /** Label rendered before the package selector. Defaults to `'Package'`. */
+  packageLabel?: string;
+  /** Version labels for the subheader version selector. When omitted the selector is hidden. */
+  versions?: string[];
+  /** Currently selected version (must match one of `versions`). */
+  selectedVersion?: string;
+  /** Label rendered before the version selector. Defaults to `'Version'`. */
+  versionLabel?: string;
+  /** Show a light/dark theme toggle button in the subheader. */
+  showThemeToggle?: boolean;
+  /** `localStorage` key for persisting the theme. Defaults to `'docs-theme'`. */
+  themeStorageKey?: string;
 }
 
-const { title, description, keywords, hasToc = true, hasSidebar = true, currentSlug = '', siteTitle: siteTitleProp } = Astro.props;
+const { title, description, keywords, hasToc = true, hasSidebar = true, currentSlug = '', siteTitle: siteTitleProp, license, is404 = false, packages, selectedPackage, packageLabel, versions, selectedVersion, versionLabel, showThemeToggle, themeStorageKey } = Astro.props;
 const resolvedSiteTitle = siteTitleProp ?? siteTitle;
+const licenseType = license === 'commercial' ? 'premium' : license === 'MIT' ? 'opensource' : false;
 const navTheme = (virtualPlatform ?? import.meta.env.VITE_NAV_THEME ?? 'igniteui') as string;
 const showGlobalNav = navTheme !== 'none';
 const pageTitle = title ? `${title} | ${resolvedSiteTitle}` : resolvedSiteTitle;
@@ -55,14 +79,51 @@ type HeadEntry = { tag: string; attrs?: Record<string, string | boolean | undefi
   <slot name="head" />
   <ClientRouter />
   <script is:inline>
-    // Force light theme on load and after every View Transitions swap
-    try { localStorage.setItem('starlight-theme', 'light'); } catch (_) {}
-    document.documentElement.setAttribute('data-theme', 'light');
-    document.addEventListener('astro:after-swap', function () {
-      document.documentElement.setAttribute('data-theme', 'light');
+    // Restore persisted theme (or default to light) on load and after every View Transitions swap
+    function applyStoredTheme() {
+      var stored;
+      try { stored = localStorage.getItem('docs-theme'); } catch (_) {}
+      document.documentElement.setAttribute('data-theme', stored || 'light');
+    }
+    applyStoredTheme();
+    document.addEventListener('astro:after-swap', applyStoredTheme);
+
+    // Enable smooth scrolling only after the page is fully loaded so the
+    // browser's scroll-position restoration on refresh is instant (no visible
+    // animated scroll). Remove it before a View Transition swap so navigation
+    // between pages is also instant, then re-enable after the new page loads.
+    document.addEventListener('astro:page-load', function () {
+      document.documentElement.style.scrollBehavior = 'smooth';
+    });
+    document.addEventListener('astro:before-swap', function () {
+      document.documentElement.style.removeProperty('scroll-behavior');
     });
 
-    // Preserve dynamically-injected <style> tags across View Transitions
+    // Root cause: Sample.astro SSR-renders an <igc-tab selected>. During Astro's
+    // client-side swap, <igc-tabs> connects and Lit runs firstUpdated() after
+    // Astro's moveToLocation() has already called scrollTo(0,0), but before
+    // astro:page-load. IgcTabsComponent then applies the selected tab and calls
+    // scrollIntoView() for its tab header, which can move the page down to the
+    // sample widget.
+    //
+    // Re-apply scroll-to-top on astro:page-load inside rAF, after Lit microtasks
+    // and selected-tab scrollIntoView() have settled. Do not override hash
+    // navigation, because hash fragments should keep their anchor behavior.
+    document.addEventListener('astro:page-load', function () {
+      if (!location.hash) {
+        requestAnimationFrame(function () {
+          if (!location.hash && window.scrollY > 0) {
+            window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+          }
+        });
+      }
+    });
+
+    // Preserve dynamically-injected <style> tags across View Transitions.
+    // Only styles added by JS at runtime (e.g. the IG nav widget) need
+    // preserving — Astro re-injects its own component styles on every page
+    // automatically. Tagging the initial styles caused duplicates: the
+    // preserved copy + the freshly-injected copy from the new page.
     var _styleIndex = 0;
     function tagStyle(style) {
       var isAstroStyle = Array.from(style.attributes).some(function (a) { return a.name.startsWith('data-astro'); });
@@ -70,7 +131,6 @@ type HeadEntry = { tag: string; attrs?: Record<string, string | boolean | undefi
         style.setAttribute('data-vt-preserved', String(++_styleIndex));
       }
     }
-    document.head.querySelectorAll('style').forEach(tagStyle);
     new MutationObserver(function (mutations) {
       mutations.forEach(function (m) {
         m.addedNodes.forEach(function (node) {
@@ -116,9 +176,15 @@ type HeadEntry = { tag: string; attrs?: Record<string, string | boolean | undefi
       var rafId = 0;
       function update() {
         var footerTop = footer.getBoundingClientRect().top;
+        // Footer is off-screen below — sidebar needs no clamping.
+        if (footerTop >= window.innerHeight) {
+          if (sidebar.style.maxHeight) sidebar.style.maxHeight = '';
+          return;
+        }
         var sidebarTop = sidebar.getBoundingClientRect().top;
-        var maxH = Math.min(window.innerHeight - sidebarTop, footerTop - sidebarTop);
-        sidebar.style.maxHeight = Math.max(0, maxH) + 'px';
+        var maxH = Math.max(0, Math.min(window.innerHeight - sidebarTop, footerTop - sidebarTop));
+        var next = maxH + 'px';
+        if (sidebar.style.maxHeight !== next) sidebar.style.maxHeight = next;
       }
       function schedule() {
         if (rafId) return;
@@ -129,7 +195,7 @@ type HeadEntry = { tag: string; attrs?: Record<string, string | boolean | undefi
       // covers viewport-only changes such as DevTools docking/undocking.
       window.addEventListener('resize', schedule, { passive: true });
       var ro = new ResizeObserver(schedule);
-      ro.observe(document.documentElement);
+      ro.observe(footer);
       schedule();
       _cleanupSidebarHeights = function() {
         window.removeEventListener('scroll', schedule);
@@ -140,11 +206,26 @@ type HeadEntry = { tag: string; attrs?: Record<string, string | boolean | undefi
     }
     document.addEventListener('astro:page-load', initSidebarHeights);
     initSidebarHeights();
+
+    // Toggle data-scrolled-y / data-scrolled-x on each .igd-table-wrapper
+    // so the sticky header/column can show a double border while scrolled.
+    function initTableScrollStates() {
+      document.querySelectorAll('.igd-table-wrapper').forEach(function(wrapper) {
+        function update() {
+          wrapper.toggleAttribute('data-scrolled-y', wrapper.scrollTop > 0);
+          wrapper.toggleAttribute('data-scrolled-x', wrapper.scrollLeft > 0);
+        }
+        wrapper.addEventListener('scroll', update, { passive: true });
+        update();
+      });
+    }
+    document.addEventListener('astro:page-load', initTableScrollStates);
+    initTableScrollStates();
   </script>
 </head>
 <body>
     <!-- INFRAGISTICS HEADER/NAVIGATION -->
-    { showGlobalNav && <GlobalNavBar/> }
+    { showGlobalNav && <GlobalNavBar lang={navLang}/> }
 
     <!-- MAIN PAGE GRID LAYOUT -->
     <!-- We don't set the CSS grid directly to the body -->
@@ -155,9 +236,12 @@ type HeadEntry = { tag: string; attrs?: Record<string, string | boolean | undefi
      the .igd-page-layout not on the body.
      Any igc component rendered dynamically on body level should have .ig-typography in order to have proper type styles.
     -->
-    <div class="igd-page-layout ig-typography">
+    <div class={`igd-page-layout${is404 ? ' igd-page-layout--404' : ''}`}>
         <!-- TODO: WE DONT NEED TO CALCULAtE THE IG HEADER HEIGHT ANYMORE - REMOVE IT -->
-        <DocsSubHeader style={ `--docs-global-nav-height: ${ showGlobalNav ? '4.7rem': '0' }` } data-nav-height-wrapper/>
+        <!-- <DocsSubHeader style={ `--docs-global-nav-height: ${ showGlobalNav ? '4.7rem': '0' }` } data-nav-height-wrapper/> -->
+        <slot name="subheader">
+          <DocsSubHeader pageTitle={title} currentSlug={currentSlug} siteTitle={siteTitleProp} packages={packages} selectedPackage={selectedPackage} packageLabel={packageLabel} versions={versions} selectedVersion={selectedVersion} versionLabel={versionLabel} showThemeToggle={showThemeToggle} themeStorageKey={themeStorageKey} />
+        </slot>
 
 
         { hasSidebar && (
@@ -165,10 +249,14 @@ type HeadEntry = { tag: string; attrs?: Record<string, string | boolean | undefi
             <slot name="sidebar"/>
         ) }
 
+        <!-- Mobile TOC trigger row — only visible on mobile, provided by the page -->
+        <slot name="mobile-toc" />
+
         <div class="igd-main-content">
             <div class="igd-main-content__inner">
                 <div class="igd-main-content__page">
                     <main class="igd-main-content__markdown">
+                        <LicenseIndicator license={licenseType} />
                         <DocsBreadcrumb pageTitle={ title } currentSlug={ currentSlug } siteTitle={ siteTitleProp }/>
                         <slot/>
                     </main>
@@ -184,7 +272,7 @@ type HeadEntry = { tag: string; attrs?: Record<string, string | boolean | undefi
 
         <!-- Footer is inside the grid so the sidebar's sticky containing block extends through it.
              The JS initSidebarHeights() clamps sidebar max-height to prevent visual overlap. -->
-        <GlobalFooter/>
+        <GlobalFooter lang={navLang}/>
     </div>
 </body>
 </html>

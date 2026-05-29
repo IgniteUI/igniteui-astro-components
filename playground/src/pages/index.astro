@@ -2,7 +2,9 @@
 import DocsLayout from '../../../src/layouts/DocsLayout/DocsLayout.astro';
 import DocsSidebar from '../../../src/components/DocsSidebar/DocsSidebar.astro';
 import DocsToc from '../../../src/components/DocsToc/DocsToc.astro';
-import { SITE_TITLE, SIDEBAR, PRODUCT_LINKS } from '../site-config';
+import DocsSubHeader from '../../../src/components/DocsSubHeader/DocsSubHeader.astro';
+import SearchAdvanced from '../../../src/components/SearchAdvanced/SearchAdvanced.astro';
+import { SITE_TITLE, SIDEBAR, PRODUCT_LINKS, SEARCH_TABS, PACKAGES, VERSIONS } from '../site-config';
 
 const headings = [
     { depth: 2, slug: 'pages', text: 'Pages' },
@@ -11,11 +13,22 @@ const headings = [
     { depth: 3, slug: 'mdx-components', text: 'MDX components' },
     { depth: 2, slug: 'how-it-works', text: 'How it works' },
     { depth: 3, slug: 'adding-a-demo-page', text: 'Adding a demo page' },
+    { depth: 2, slug: 'styles', text: 'Styles' },
 ];
 ---
 
 <DocsLayout title="Playground" siteTitle={ SITE_TITLE } hasSidebar currentSlug="">
-    <DocsSidebar slot="sidebar" items={ SIDEBAR } currentSlug=""/>
+  <DocsSubHeader slot="subheader" pageTitle="Playground" currentSlug="" siteTitle={ SITE_TITLE }
+    productLinks={ PRODUCT_LINKS } showThemeToggle={true}
+    packages={ [...PACKAGES] } selectedPackage={ PACKAGES[0] }
+    versions={ [...VERSIONS] } selectedVersion={ VERSIONS[0] }
+  >
+    <SearchAdvanced slot="search" tabs={SEARCH_TABS} showScope={true} />
+  </DocsSubHeader>
+  <DocsSidebar slot="sidebar" items={SIDEBAR} currentSlug="" />
+  <DocsToc slot="toc" headings={headings} offsetTarget=".docs-subheader" />
+
+
     <h1>igniteui-astro-components playground</h1>
     <p>
         This is a local sandbox for the components shipped from
@@ -39,15 +52,22 @@ const headings = [
     <h3 id="navigation-components">Navigation components</h3>
     <ul>
         <li><a href="/components/nav-bar">Global nav &amp; footer</a> — top navigation bar and site footer.</li>
+        <li><a href="/components/docs-subheader">DocsSubHeader</a> — secondary fixed bar with breadcrumb, search, package/version selectors, theme toggle, and product links.</li>
     </ul>
 
     <h3 id="mdx-components">MDX components</h3>
     <ul>
         <li><a href="/components/api-link">ApiLink</a> — inline link to an API reference entry.</li>
         <li><a href="/components/api-ref">ApiRef</a> — full API reference block.</li>
+        <li><a href="/components/badge">Badge</a> — inline status chips (preview, new, updated, premium, opensource).</li>
         <li><a href="/components/docs-aside">DocsAside</a> — note, tip, warning, and danger callout blocks.</li>
         <li><a href="/components/platform-block">PlatformBlock</a> — conditionally renders content per platform.
         </li>
+    </ul>
+
+    <h2 id="styles">Styles</h2>
+    <ul>
+        <li><a href="/components/styleguide">Style Guide</a> — all HTML text and typography elements rendered through the theme.</li>
     </ul>
 
     <h2 id="how-it-works">How it works</h2>
@@ -72,5 +92,5 @@ const headings = [
         <code>DocsLayout</code> and the component under test from
         <code>../../../../src/</code>, and add a link to the list above.
     </p>
-    <DocsToc slot="toc" headings={ headings } offsetTarget=".docs-subheader"/>
+    <!--<DocsToc slot="toc" headings={ headings } offsetTarget=".docs-subheader"/>-->
 </DocsLayout>

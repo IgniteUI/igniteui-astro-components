@@ -1,0 +1,106 @@
+---
+import DocsLayout from '../../../../src/layouts/DocsLayout/DocsLayout.astro';
+import DocsSidebar from '../../../../src/components/DocsSidebar/DocsSidebar.astro';
+import DocsToc from '../../../../src/components/DocsToc/DocsToc.astro';
+import DocsSubHeader from '../../../../src/components/DocsSubHeader/DocsSubHeader.astro';
+import SearchAdvanced from '../../../../src/components/SearchAdvanced/SearchAdvanced.astro';
+import { SITE_TITLE, SIDEBAR, PRODUCT_LINKS, SEARCH_TABS, PACKAGES, VERSIONS } from '../../site-config';
+
+const slug = 'components/search-advanced';
+
+const headings = [
+  { depth: 2, slug: 'overview',         text: 'Overview' },
+  { depth: 2, slug: 'index-format',     text: 'Index format' },
+  { depth: 2, slug: 'tabs',             text: 'Tabs' },
+  { depth: 2, slug: 'scope-selector',   text: 'Scope selector' },
+  { depth: 2, slug: 'keyboard',         text: 'Keyboard shortcut' },
+  { depth: 2, slug: 'usage',            text: 'Usage' },
+];
+---
+
+<DocsLayout title="SearchAdvanced" siteTitle={SITE_TITLE} hasSidebar currentSlug={slug}>
+  <DocsSubHeader slot="subheader" pageTitle="SearchAdvanced" currentSlug={slug} siteTitle={SITE_TITLE}
+    productLinks={PRODUCT_LINKS} showThemeToggle={true}
+    packages={[...PACKAGES]} selectedPackage={PACKAGES[0]}
+    versions={[...VERSIONS]} selectedVersion={VERSIONS[0]}
+  >
+    <SearchAdvanced slot="search" tabs={SEARCH_TABS} showScope={true} />
+  </DocsSubHeader>
+  <DocsSidebar slot="sidebar" items={SIDEBAR} currentSlug={slug} />
+  <DocsToc slot="toc" headings={headings} offsetTarget=".docs-subheader" />
+
+
+    <h1>SearchAdvanced</h1>
+    <p>
+      The <code>SearchAdvanced</code> component provides a structured API-symbol search dialog.
+      All matching is performed client-side against a JSON index — never against page body content.
+      The trigger button in the subheader above opens a live demo backed by the playground's
+      <code>api-search-index/</code> data.
+    </p>
+
+    <h2 id="overview">Overview</h2>
+    <p>
+      Unlike the Pagefind-based <code>Search</code> component, <code>SearchAdvanced</code>
+      targets an explicitly shaped JSON index of API symbols (class names, properties, methods,
+      events, etc.). Results are grouped into configurable tab categories and ranked by match
+      quality.
+    </p>
+
+    <h2 id="index-format">Index format</h2>
+    <p>
+      The component accepts either a single JSON file with a <code>{"{ pages: [...] }"}</code>
+      shape or a <code>manifest.json</code> listing multiple per-package/version files
+      (incremental builds). Each page entry carries:
+    </p>
+    <ul>
+      <li><strong>u</strong> — URL</li>
+      <li><strong>n</strong> — symbol name</li>
+      <li><strong>k</strong> — kind (<code>class</code>, <code>interface</code>, <code>enum</code>, …)</li>
+      <li><strong>v</strong> — version</li>
+      <li><strong>p</strong> — platform</li>
+      <li><strong>g</strong> — package</li>
+      <li><strong>m</strong> — members array of <code>[memberName, kindCode]</code> tuples</li>
+    </ul>
+
+    <h2 id="tabs">Tabs</h2>
+    <p>
+      Pass a <code>tabs</code> array to declare result categories. Each tab specifies an
+      <code>id</code>, a display <code>label</code>, and <code>kindCodes</code> that map
+      index entries to that category. Use <code>['__name__']</code> for page-level symbols.
+      Tabs with zero matches are hidden automatically. An "All" tab is always present.
+    </p>
+    <pre><code>{`const SEARCH_TABS = [
+  { id: 'components', label: 'Components', kindCodes: ['__name__'] },
+  { id: 'members',    label: 'Members',    kindCodes: ['p', 'a', 'm', 'e', 'c'] },
+];`}</code></pre>
+
+    <h2 id="scope-selector">Scope selector</h2>
+    <p>
+      Set <code>showScope</code> to <code>true</code> to render a dropdown that lets users
+      restrict results to the current package/version (derived from the URL) or search all
+      packages at once. When the current page is not inside a versioned package path the
+      "Current package" option is hidden automatically.
+    </p>
+
+    <h2 id="keyboard">Keyboard shortcut</h2>
+    <p>
+      The trigger button supports <kbd>Ctrl</kbd>&nbsp;<kbd>K</kbd>
+      (or <kbd>⌘</kbd>&nbsp;<kbd>K</kbd> on macOS) to open and close the dialog from
+      anywhere on the page.
+    </p>
+
+    <h2 id="usage">Usage</h2>
+    <pre><code>{`<DocsSubHeader slot="subheader" ...>
+  <SearchAdvanced
+    slot="search"
+    tabs={SEARCH_TABS}
+    showScope={true}
+    allTabLimit={10}
+  />
+</DocsSubHeader>`}</code></pre>
+    <p>
+      The <code>indexUrl</code> prop defaults to
+      <code>{"${BASE_URL}api-search-index/manifest.json"}</code> and can be overridden
+      to point at any compatible JSON file.
+    </p>
+</DocsLayout>F
