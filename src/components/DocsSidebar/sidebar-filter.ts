@@ -150,11 +150,9 @@ class SidebarFilter extends HTMLElement {
   // ── Events ───────────────────────────────────────────────────────────────
 
   private bindEvents(): void {
-    // igc-input fires 'igcInput' instead of the native 'input' event.
-    this.input.addEventListener('igcInput',  this.onFilterInput as EventListener);
+    this.input.addEventListener('igcInput', this.onFilterInput as EventListener);
     this.input.addEventListener('keydown',  this.onFilterKeydown);
     this.clearBtn.addEventListener('click', this.onClearClick);
-
     this.bindTreeEvents();
   }
 
@@ -167,12 +165,41 @@ class SidebarFilter extends HTMLElement {
   }
 
   private onFilterInput = (): void => {
+    this.pinScrollY();
     safeSet(FILTER_KEY, this.input.value);
     this.applyFilter(this.input.value, 'user');
   };
 
   private onFilterKeydown = (e: KeyboardEvent): void => {
+    this.pinScrollY();
     if (e.key === 'Escape' && this.input.value) this.resetFilter();
+  };
+
+  /**
+   * Chrome-only: filter mutations trigger a browser-internal scroll. Pin
+   * scrollY via rAF for ~200ms (before-paint, invisible) and force
+   * `scroll-behavior: auto` so it's an instant jump, not a smooth animation
+   * we'd have to fight each frame. Prior inline value is restored at end.
+   */
+  private pinFrames = 0;
+  private prevScrollBehavior: string | null = null;
+  private pinScrollY = (): void => {
+    const wasActive = this.pinFrames > 0;
+    const y = window.scrollY;
+    this.pinFrames = 10;
+    if (wasActive) return;
+    this.prevScrollBehavior = document.documentElement.style.getPropertyValue('scroll-behavior');
+    document.documentElement.style.setProperty('scroll-behavior', 'auto', 'important');
+    const tick = (): void => {
+      if (window.scrollY !== y) window.scrollTo({ top: y, behavior: 'instant' as ScrollBehavior });
+      if (--this.pinFrames > 0) requestAnimationFrame(tick);
+      else {
+        if (this.prevScrollBehavior) document.documentElement.style.setProperty('scroll-behavior', this.prevScrollBehavior);
+        else                         document.documentElement.style.removeProperty('scroll-behavior');
+        this.prevScrollBehavior = null;
+      }
+    };
+    tick();
   };
 
   private onClearClick = (): void => {
@@ -408,6 +435,7 @@ class SidebarFilter extends HTMLElement {
   }
 
   private resetFilter(): void {
+    this.pinScrollY();
     this.input.value = '';
     this.syncClearButton('');
     safeRemove(FILTER_KEY);

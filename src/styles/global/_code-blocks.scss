@@ -33,31 +33,44 @@ pre.shiki {
     background-color: var(--shiki-color-background) !important;
 }
 
-/* Copy button */
-pre.shiki {
-    position: relative; /* ensure anchor for absolute button */
+.copy-code-wrapper {
+	position: relative;
 }
 
-pre.shiki igc-icon-button.copy-btn {
-    position: absolute;
-    top: 0.5rem;
-    right: 0.5rem;
-    opacity: 0;
-    transition: opacity 0.15s ease;
-
-    --ig-icon-button-foreground: var(--ig-gray-600);
-    --ig-icon-button-foreground-hover: var(--igd-accent);
-    --ig-icon-button-background: transparent;
-    --ig-icon-button-background-hover: transparent;
-    --ig-icon-button-background-focus: transparent;
-    --ig-icon-button-border-color: transparent;
-    --ig-icon-button-border-color-hover: transparent;
+.copy-code-wrapper > .copy-btn {
+	position: absolute;
+	inset-block-start: rem(8px);
+	inset-inline-end: rem(8px);
+	opacity: 0;
+	z-index: 1;
+	
+	--foreground: var(--ig-primary-600-contrast);
+	--hover-foreground: var(--ig-primary-600-contrast);
+	--focus-foreground: var(--ig-primary-600-contrast);
+	--active-foreground: var(--ig-primary-600-contrast);
+	--background: var(--ig-primary-500);
+	--hover-background: var(--ig-primary-500);
+	--focus-background: var(--ig-primary-500);
+	--active-background: var(--ig-primary-500);
+	--border-color: transparent;
+	--border-color-hover: transparent;
+	--border-color-focus: transparent;
+	
+	&:has([name="check"]) {
+		--foreground: var(--ig-success-300-contrast);
+		--hover-foreground: var(--ig-success-300-contrast);
+		--focus-foreground: var(--ig-success-300-contrast);
+		--active-foreground: var(--ig-success-300-contrast);
+		
+		--background: var(--ig-success-300);
+		--hover-background: var(--ig-success-300);
+		--focus-background: var(--ig-success-300);
+		--active-background: var(--ig-success-300);
+	}
 }
 
-pre.shiki:hover igc-icon-button.copy-btn,
-pre.shiki:focus-within igc-icon-button.copy-btn,
-pre.shiki igc-icon-button.copy-btn:focus {
-    opacity: 1;
+.copy-code-wrapper:hover > .copy-btn,
+.copy-code-wrapper:focus-within > .copy-btn {
+	opacity: 1;
 }
-
 
