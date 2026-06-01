@@ -30,6 +30,15 @@ Six levels of section headings. Each level has a specific semantic role — choo
 <h5>Heading level 5 — avoid unless strictly necessary</h5>
 <h6>Heading level 6 — deepest level</h6>
 
+```html
+<h1>Heading level 1 — page title, one per page</h1>
+<h2>Heading level 2 — major section</h2>
+<h3>Heading level 3 — sub-section</h3>
+<h4>Heading level 4 — deeper sub-section</h4>
+<h5>Heading level 5 — avoid unless strictly necessary</h5>
+<h6>Heading level 6 — deepest level</h6>
+```
+
 ### Typography utility classes
 
 When you need the *visual style* of a heading level on a different element —
@@ -72,6 +81,11 @@ paragraphs applied by the documentation theme. Long lines should wrap naturally
 at the container boundary without any explicit `word-break` override
 unless the content contains very long unbreakable strings.
 
+```html
+<p>A paragraph of body text — the most common block-level element for prose.</p>
+<p>A second paragraph, separated from the first by vertical margin.</p>
+```
+
 ---
 
 ## Inline text elements
@@ -97,6 +111,17 @@ unless the content contains very long unbreakable strings.
 | `<a href target="_blank">` | <a href="https://www.infragistics.com" target="_blank" rel="noopener">Infragistics website</a> | External links — opens in a new tab, gets the external link icon |
 | `<span>` | <span style="color: var(--ig-primary-500)">Styled span</span> | Generic inline container for styling |
 
+```html
+<strong>Bold importance</strong>, <b>bold without semantics</b>,
+<em>emphasised</em>, <i>italic</i>, <u>underlined</u>, <s>strikethrough</s>,
+<del>deleted</del> and <ins>inserted</ins> content, <mark>highlighted</mark>,
+<small>small print</small>, H<sub>2</sub>O, E=mc<sup>2</sup>,
+<abbr title="Cascading Style Sheets">CSS</abbr>, <dfn>a defined term</dfn>,
+<time datetime="2026-05-15">15 May 2026</time>,
+<a href="https://example.com" target="_blank" rel="noopener">an external link</a>,
+and a <span style="color: var(--ig-primary-500)">styled span</span>.
+```
+
 ---
 
 ## Lists
@@ -110,6 +135,19 @@ unless the content contains very long unbreakable strings.
     - Nested item B.1
     - Nested item B.2
 - Third item
+
+```html
+<ul>
+  <li>First item</li>
+  <li>Second item
+    <ul>
+      <li>Nested item A</li>
+      <li>Nested item B</li>
+    </ul>
+  </li>
+  <li>Third item</li>
+</ul>
+```
 
 ### Ordered list — `<ol>`
 
@@ -126,6 +164,20 @@ unless the content contains very long unbreakable strings.
    2. Navigate to localhost
 4. Build for production
 
+```html
+<ol>
+  <li>Install dependencies</li>
+  <li>Configure the project
+    <ol>
+      <li>Set up environment variables</li>
+      <li>Edit the config file</li>
+    </ol>
+  </li>
+  <li>Run the dev server</li>
+  <li>Build for production</li>
+</ol>
+```
+
 ### Description list — `<dl>`
 
 <dl>
@@ -136,6 +188,213 @@ unless the content contains very long unbreakable strings.
   <dt>Description list</dt>
   <dd>A container pairing one or more terms with their descriptions.</dd>
 </dl>
+
+```html
+<dl>
+  <dt>Description term</dt>
+  <dd>The term being defined or described.</dd>
+  <dt>Description details</dt>
+  <dd>The value or explanation associated with the preceding term.</dd>
+</dl>
+```
+
+---
+
+## Tables
+
+**Markdown** tables are automatically wrapped in an accessible scroll container
+(`.igd-table-wrapper`) by the `rehypeTableWrapper` plugin. The wrapper gives the
+table a border, a sticky header row, and a sticky first column, and it scrolls
+independently once the content grows past `--igd-table-max-height`.
+
+Raw **HTML** `<table>` elements are **not** auto-wrapped — add the
+`.igd-table-wrapper` yourself, as the expandable example below does. A table
+nested inside an already-wrapped table needs no extra wrapper; it shares the
+same container and is styled like any other table.
+
+### Standard table
+
+A plain Markdown table. The header row pins to the top while scrolling
+vertically, and the first column pins to the left while scrolling horizontally.
+
+| Property | Type | Default | Reflects | Description |
+|---|---|---|---|---|
+| `value` | `string` | `""` | no | Current value of the input field. |
+| `name` | `string` | `""` | yes | Name of the control, submitted with the form. |
+| `label` | `string` | `""` | no | Text label rendered above the input. |
+| `placeholder` | `string` | `""` | no | Placeholder shown while the field is empty. |
+| `disabled` | `boolean` | `false` | yes | Disables the control and skips it on submit. |
+| `required` | `boolean` | `false` | yes | Marks the field as required for validation. |
+| `readonly` | `boolean` | `false` | yes | Makes the field non-editable but still focusable. |
+| `outlined` | `boolean` | `false` | yes | Renders the outlined visual variant. |
+| `size` | `"small" \| "medium" \| "large"` | `"medium"` | yes | Controls the density of the component. |
+| `invalid` | `boolean` | `false` | yes | Reflects the current validation state. |
+
+The Markdown source for the table above — Markdown tables are wrapped
+automatically, so no extra markup is needed:
+
+```md
+| Property | Type | Default | Reflects | Description |
+|---|---|---|---|---|
+| `value` | `string` | `""` | no | Current value of the input field. |
+| `disabled` | `boolean` | `false` | yes | Disables the control and skips it on submit. |
+```
+
+### Expandable rows
+
+Add `class="igd-table-expandable"` to a table to turn it into a disclosure
+table. Each record is a pair of rows — a **summary** row with a chevron toggle
+in its first cell, immediately followed by a hidden **detail** row. The toggle
+is a visually hidden but keyboard-operable checkbox, so a row opens on click or
+with <kbd>Space</kbd> while focused. It is **CSS-only** (a `:has()` selector) —
+no JavaScript required.
+
+<div class="igd-table-wrapper" role="region" aria-label="Expandable rows table" tabindex="0">
+  <table class="igd-table-expandable">
+    <thead>
+      <tr>
+        <th scope="col" aria-label="Expand row"></th>
+        <th scope="col">Property</th>
+        <th scope="col">Type</th>
+        <th scope="col">Default</th>
+        <th scope="col">Reflects</th>
+        <th scope="col">Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="igd-row-summary">
+        <td>
+          <label class="igd-row-toggle">
+            <input type="checkbox" aria-label="Toggle details for value" />
+            <igc-icon name="chevron" collection="docs" class="igd-row-chevron"></igc-icon>
+          </label>
+        </td>
+        <td><code>value</code></td>
+        <td><code>string</code></td>
+        <td><code>""</code></td>
+        <td><code>no</code></td>
+        <td style="white-space: nowrap;">Current value of the input field, two-way bindable.</td>
+      </tr>
+      <tr class="igd-row-detail">
+        <td colspan="6">
+          <div class="igd-row-detail-inner">
+            The current value of the input. Supports two-way binding and emits
+            <code>igcInput</code> on every keystroke and <code>igcChange</code> when the
+            value is committed.
+          </div>
+        </td>
+      </tr>
+      <tr class="igd-row-summary">
+        <td>
+          <label class="igd-row-toggle">
+            <input type="checkbox" aria-label="Toggle details for size" />
+            <igc-icon name="chevron" collection="docs" class="igd-row-chevron"></igc-icon>
+          </label>
+        </td>
+        <td><code>size</code></td>
+        <td><code>"small" | "medium" | "large"</code></td>
+        <td><code>"medium"</code></td>
+        <td><code>yes</code></td>
+        <td style="white-space: nowrap;">Controls the density of the component.</td>
+      </tr>
+      <tr class="igd-row-detail">
+        <td colspan="6">
+          <div class="igd-row-detail-inner">
+            Determines the component's density. The accepted values map to the
+            following vertical padding (a nested table inside the detail panel):
+            <table>
+              <thead>
+                <tr>
+                  <th scope="col">Value</th>
+                  <th scope="col">Block padding</th>
+                  <th scope="col">Recommended for</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>small</code></td>
+                  <td><code>4px</code></td>
+                  <td>Dense data layouts</td>
+                </tr>
+                <tr>
+                  <td><code>medium</code></td>
+                  <td><code>8px</code></td>
+                  <td>Default forms</td>
+                </tr>
+                <tr>
+                  <td><code>large</code></td>
+                  <td><code>12px</code></td>
+                  <td>Touch / mobile targets</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </td>
+      </tr>
+      <tr class="igd-row-summary">
+        <td>
+          <label class="igd-row-toggle">
+            <input type="checkbox" aria-label="Toggle details for disabled" />
+            <igc-icon name="chevron" collection="docs" class="igd-row-chevron"></igc-icon>
+          </label>
+        </td>
+        <td><code>disabled</code></td>
+        <td><code>boolean</code></td>
+        <td><code>false</code></td>
+        <td><code>yes</code></td>
+        <td style="white-space: nowrap;">Disables the control and skips it on submit.</td>
+      </tr>
+      <tr class="igd-row-detail">
+        <td colspan="6">
+          <div class="igd-row-detail-inner">
+            Disables the control. A disabled field is skipped during form submission and
+            is removed from the tab order.
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+Each record is two rows. Repeat the `igd-row-summary` / `igd-row-detail` pair for
+every expandable record:
+
+```html
+<div class="igd-table-wrapper" role="region" aria-label="Expandable rows table" tabindex="0">
+  <table class="igd-table-expandable">
+    <thead>
+      <tr>
+        <th scope="col" aria-label="Expand row"></th>
+        <th scope="col">Property</th>
+        <th scope="col">Type</th>
+        <th scope="col">Default</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Summary row: the toggle lives in the first cell -->
+      <tr class="igd-row-summary">
+        <td>
+          <label class="igd-row-toggle">
+            <input type="checkbox" aria-label="Toggle details for value" />
+            <igc-icon name="chevron" collection="docs" class="igd-row-chevron"></igc-icon>
+          </label>
+        </td>
+        <td><code>value</code></td>
+        <td><code>string</code></td>
+        <td><code>""</code></td>
+      </tr>
+      <!-- Detail row: hidden until the summary row's checkbox is checked -->
+      <tr class="igd-row-detail">
+        <td colspan="4">
+          <div class="igd-row-detail-inner">
+            The current value of the input.
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+```
 
 ---
 
@@ -153,6 +412,17 @@ document processing.</q>
 
 <cite>Design Patterns: Elements of Reusable Object-Oriented Software</cite> — standalone
 `<cite>` for a creative work title.
+
+```html
+<blockquote cite="https://developer.mozilla.org/en-US/docs/Web/HTML">
+  <q>HTML is the most basic building block of the Web.</q>
+</blockquote>
+
+<p>As the spec states: <q cite="https://html.spec.whatwg.org/">a language for
+interactive documents</q>.</p>
+
+<cite>Design Patterns: Elements of Reusable Object-Oriented Software</cite>
+```
 
 ---
 
@@ -181,6 +451,13 @@ console.log(greet('World')); // Hello, World!
     Indentation is respected.
 — &lt;pre&gt; alone</pre>
 
+```html
+<p>Use <code>console.log()</code> for debugging.</p>
+<p>Press <kbd>Ctrl</kbd>+<kbd>K</kbd> to open search.</p>
+<p>Output: <samp>Error: connection refused on port 3000</samp></p>
+<p>The formula uses variable <var>x</var> as input.</p>
+```
+
 ---
 
 ## Semantic & misc
@@ -204,6 +481,20 @@ Like this second line — useful in addresses or poetry, not for spacing paragra
 The `<wbr>` element suggests a line-break opportunity inside a long
 word: `superlong`<wbr />`concatenated`<wbr />`identifier`<wbr />`name`.
 
+```html
+<figure>
+  A self-contained content block.
+  <figcaption>An optional caption.</figcaption>
+</figure>
+
+<hr />
+
+First line.<br />
+Second line after a line break.
+
+A long<wbr />concatenated<wbr />identifier with break opportunities.
+```
+
 ---
 
 ## Images
@@ -218,8 +509,16 @@ a descriptive `alt` attribute for accessibility.
   alt="A random placeholder landscape photo"
   width="800"
   height="400"
-  style="max-width: 100%; height: auto; border-radius: 0.5rem; display: block;"
 />
+
+```html
+<img
+  src="/path/to/image.jpg"
+  alt="A descriptive alternative text"
+  width="800"
+  height="400"
+/>
+```
 
 ### Responsive image — `<picture>` + `<source>`
 
@@ -233,9 +532,16 @@ The `<picture>` element wraps multiple `<source>` candidates.
     alt="A responsive placeholder image that changes by viewport width"
     width="800"
     height="400"
-    style="max-width: 100%; height: auto; border-radius: 0.5rem; display: block;"
   />
 </picture>
+
+```html
+<picture>
+  <source media="(min-width: 800px)" srcset="/img/wide.jpg" />
+  <source media="(min-width: 400px)" srcset="/img/medium.jpg" />
+  <img src="/img/small.jpg" alt="Responsive image" width="800" height="400" />
+</picture>
+```
 
 ### Image with caption — `<figure>` + `<figcaption>`
 
@@ -245,13 +551,19 @@ The `<picture>` element wraps multiple `<source>` candidates.
     alt="A placeholder photo demonstrating figure and figcaption"
     width="800"
     height="350"
-    style="max-width: 100%; height: auto; border-radius: 0.5rem; display: block;"
   />
   <figcaption>
     Fig. 1 — A placeholder image wrapped in a <code>&lt;figure&gt;</code> element
     with a <code>&lt;figcaption&gt;</code> caption below.
   </figcaption>
 </figure>
+
+```html
+<figure>
+  <img src="/img/photo.jpg" alt="Descriptive text" width="800" height="350" />
+  <figcaption>Fig. 1 — a caption rendered below the image.</figcaption>
+</figure>
+```
 
 ### Inline SVG — `<svg>`
 
@@ -270,10 +582,16 @@ SVG markup can be embedded directly in HTML. It scales losslessly and inherits
   strokeLinejoin="round"
   aria-label="Inline SVG star icon"
   role="img"
-  style="display: block; margin-block: 1rem; color: var(--sl-color-accent);"
 >
   <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
 </svg>
+
+```html
+<svg width="120" height="120" viewBox="0 0 24 24" fill="none"
+     stroke="currentColor" stroke-width="1.5" role="img" aria-label="Star icon">
+  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+</svg>
+```
 
 ---
 
@@ -283,6 +601,15 @@ The `LicenseIndicator` component renders an `igc-badge` to signal licensing stat
 
 <LicenseIndicator license="premium" />
 <LicenseIndicator license="opensource" />
+
+```astro
+---
+import LicenseIndicator from 'igniteui-astro-components/components/LicenseIndicator/LicenseIndicator.astro';
+---
+
+<LicenseIndicator license="premium" />
+<LicenseIndicator license="opensource" />
+```
 
 ---
 
@@ -309,6 +636,11 @@ Icons from the `docs` collection, rendered with `<igc-icon name="…" collection
   ))}
 </div>
 
+```html
+<igc-icon name="search" collection="docs"></igc-icon>
+<igc-icon name="github-logo" collection="docs"></igc-icon>
+```
+
 ---
 
 ## Embedded media
@@ -333,6 +665,16 @@ when the user clicks play.
   </figcaption>
 </figure>
 
+```html
+<iframe
+  src="https://www.youtube.com/embed/VIDEO_ID"
+  title="Video title"
+  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+  allowfullscreen
+  loading="lazy"
+></iframe>
+```
+
 ### Native video — `<video>`
 
 The `<video>` element plays media files directly in the browser.
@@ -342,7 +684,6 @@ The `<video>` element plays media files directly in the browser.
     controls
     preload="metadata"
     poster="https://picsum.photos/seed/videoposter/800/450"
-    style="width: 100%; border-radius: 0.5rem;"
   >
     <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4" />
     <source src="https://www.w3schools.com/html/mov_bbb.ogg" type="video/ogg" />
@@ -353,6 +694,14 @@ The `<video>` element plays media files directly in the browser.
     <code>poster</code>, and two <code>&lt;source&gt;</code> formats (MP4 + OGG).
   </figcaption>
 </figure>
+
+```html
+<video controls preload="metadata" poster="/img/poster.jpg">
+  <source src="/media/clip.mp4" type="video/mp4" />
+  <source src="/media/clip.ogg" type="video/ogg" />
+  Your browser does not support the video element.
+</video>
+```
 
 ### Native audio — `<audio>`
 
