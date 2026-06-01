@@ -448,6 +448,8 @@
 		video {
 			display: block;
 			max-width: 100%;
+			width: 100%;
+			aspect-ratio: 16 / 9;
 			height: auto;
 			border-radius: var(--igd-border-radius);
 			margin-block-end: rem(26px);
@@ -673,6 +675,108 @@
 			tfoot th:first-child {
 				background-color: var(--igd-table-header-bg);
 				z-index: 3;
+			}
+		}
+
+		// Expandable-row variant — add class="igd-table-expandable" to the <table>.
+		// Each expandable record is a pair of rows: a summary <tr.igd-row-summary>
+		// whose first cell holds the toggle, immediately followed by a hidden
+		// <tr.igd-row-detail>. The toggle is a label wrapping a visually-hidden but
+		// still keyboard-operable checkbox; a :has() selector reveals the detail
+		// row when it is checked — no JavaScript required.
+		table.igd-table-expandable {
+			// Narrow gutter column that only holds the chevron toggle.
+			thead th:first-child,
+			.igd-row-summary td:first-child {
+				width: rem(48px);
+				text-align: center;
+				padding-inline: rem(12px);
+			}
+
+			.igd-row-summary td:first-child {
+				vertical-align: middle;
+			}
+
+			.igd-row-toggle {
+				display: inline-flex;
+				align-items: center;
+				justify-content: center;
+				cursor: pointer;
+				color: var(--igd-table-header-fg);
+
+				// Hide the checkbox visually but keep it focusable and operable —
+				// not display/visibility:none, which would remove it from the tab
+				// order and the accessibility tree.
+				input {
+					position: absolute;
+					width: rem(1px);
+					height: rem(1px);
+					margin: rem(-1px);
+					padding: 0;
+					border: 0;
+					overflow: hidden;
+					clip: rect(0 0 0 0);
+					clip-path: inset(50%);
+					white-space: nowrap;
+				}
+
+				input:focus-visible + .igd-row-chevron {
+					outline: rem(2px) solid var(--igd-accent);
+					outline-offset: rem(2px);
+					border-radius: rem(2px);
+				}
+			}
+
+			.igd-row-chevron {
+				--size: #{rem(18px)};
+
+				flex-shrink: 0;
+				transform: rotate(-90deg);
+				transition: transform 0.2s ease;
+			}
+
+			// Detail rows stay collapsed until their summary's checkbox is checked.
+			.igd-row-detail {
+				display: none;
+			}
+
+			.igd-row-summary:has(.igd-row-toggle input:checked) {
+				.igd-row-chevron {
+					transform: rotate(0deg);
+				}
+
+				// Drop the divider between an open summary row and its detail panel
+				// so the two read as one unit.
+				td {
+					border-block-end: none;
+				}
+
+				+ .igd-row-detail {
+					display: table-row;
+				}
+			}
+
+			// The detail cell spans every column — undo the sticky first-column
+			// treatment so it reads as a full-width panel rather than a data cell.
+			.igd-row-detail > td {
+				position: static;
+				vertical-align: top;
+				border-block-start: none;
+				padding-block-start: 0;
+
+				&::after {
+					display: none;
+				}
+			}
+
+			.igd-row-detail-inner {
+				@include type-style('detail-1', false) {
+					margin: 0;
+				}
+				
+				color: var(--igd-table-fg);
+				
+				
 			}
 		}
 	}
