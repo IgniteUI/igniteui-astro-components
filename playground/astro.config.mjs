@@ -106,10 +106,7 @@ export default defineConfig({
   integrations: [mdx()],
   markdown: {
     shikiConfig: {
-      themes: {
-        light: 'catppuccin-latte',
-        dark: 'catppuccin-mocha',
-      },
+      theme: 'dark-plus',
       wrap: true,
     },
     rehypePlugins: [rehypeHeadingAnchors, rehypeTableWrapper],

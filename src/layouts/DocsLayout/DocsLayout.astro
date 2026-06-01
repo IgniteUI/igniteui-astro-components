@@ -1,7 +1,7 @@
 ---
 import { ClientRouter } from 'astro:transitions';
-import '@fontsource-variable/instrument-sans/wght.css';
-import '@fontsource-variable/instrument-sans/wght-italic.css';
+import '@fontsource-variable/inter/wght.css';
+import '@fontsource-variable/inter/wght-italic.css';
 import '@fontsource-variable/jetbrains-mono/wght.css';
 import '@fontsource-variable/jetbrains-mono/wght-italic.css';
 import GlobalNavBar from '../../components/GlobalNavBar/GlobalNavBar.astro';
@@ -10,6 +10,7 @@ import DocsSubHeader from '../../components/DocsSubHeader/DocsSubHeader.astro';
 import DocsBreadcrumb from '../../components/DocsBreadcrumb/DocsBreadcrumb.astro';
 import LicenseIndicator from '../../components/LicenseIndicator/LicenseIndicator.astro';
 import MobileSidebarToggle from '../../components/MobileSidebarToggle/MobileSidebarToggle.astro';
+import CopyCode from '../../components/CopyCode/CopyCode.astro';
 import { widgetScriptSrc, platform as virtualPlatform } from 'virtual:docs-template/nav-html';
 import { title as siteTitle, headEntries, navLang } from 'virtual:docs-template/site-meta';
 import '../../styles/theme.scss';
@@ -269,6 +270,8 @@ type HeadEntry = { tag: string; attrs?: Record<string, string | boolean | undefi
                 ) }
             </div>
         </div>
+
+        <CopyCode />
 
         <!-- Footer is inside the grid so the sidebar's sticky containing block extends through it.
              The JS initSidebarHeights() clamps sidebar max-height to prevent visual overlap. -->

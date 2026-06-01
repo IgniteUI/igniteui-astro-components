@@ -18,6 +18,7 @@
 	border-block-end: var(--igd-app-outline);
 	z-index: 1;
 	background-color: var(--igd-layout-sections-bg);
+	view-transition-name: docs-subheader;
 
 	.igd-logo {
 		display: flex;
@@ -91,7 +92,7 @@
 	flex-shrink: 0;
 	position: relative;
 	width: fit-content;
-	max-width: rem(180px);
+	max-width: rem(250px);
 
 	&::part(base) {
 		position: absolute;
@@ -121,6 +122,7 @@
 	}
 
 	&::part(native-input) {
+		field-sizing: content;
 		min-width: 0;
 		overflow: hidden;
 		text-overflow: ellipsis;

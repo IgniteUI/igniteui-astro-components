@@ -8,7 +8,7 @@
    ============================================================ */
 
 .shiki {
-	border: 1px solid light-dark(var(--ig-gray-200), var(--ig-primary-900));
+	border: 1px solid var(--ig-gray-200);
 	margin-bottom: rem(26px);
 }
 
@@ -26,52 +26,51 @@ pre.shiki code {
     word-break: break-word;
 }
 
-/* ── Light mode (default) ───────────────────────────────────
-   Shiki's inline style already sets color:var(--shiki-light).
-   Only strip the per-span background so the pre bg shows.     */
-:root:not([data-theme='dark']) pre.shiki code span {
-    background-color: transparent !important;
-}
-
-/* ── Dark mode ──────────────────────────────────────────────
-   Override Shiki's inline light-colour styles with dark vars. */
-[data-theme='dark'] pre.shiki {
-    background-color: var(--shiki-dark-bg) !important;
-}
-
-[data-theme='dark'] pre.shiki code span {
-    color: var(--shiki-dark) !important;
-    background-color: var(--shiki-dark-bg, transparent) !important;
-    font-style: var(--shiki-dark-font-style) !important;
-    font-weight: var(--shiki-dark-font-weight) !important;
-    text-decoration: var(--shiki-dark-text-decoration) !important;
-}
-
-/* Copy button */
+/* ── Always use the dark theme ──────────────────────────────
+   Single dark theme — Shiki outputs colors directly, no CSS
+   variable switching required.                               */
 pre.shiki {
-    position: relative; /* ensure anchor for absolute button */
+    background-color: var(--shiki-color-background) !important;
 }
 
-pre.shiki igc-icon-button.copy-btn {
-    position: absolute;
-    top: 0.5rem;
-    right: 0.5rem;
-    opacity: 0;
-    transition: opacity 0.15s ease;
-
-    --ig-icon-button-foreground: var(--ig-gray-600);
-    --ig-icon-button-foreground-hover: var(--igd-accent);
-    --ig-icon-button-background: transparent;
-    --ig-icon-button-background-hover: transparent;
-    --ig-icon-button-background-focus: transparent;
-    --ig-icon-button-border-color: transparent;
-    --ig-icon-button-border-color-hover: transparent;
+.copy-code-wrapper {
+	position: relative;
 }
 
-pre.shiki:hover igc-icon-button.copy-btn,
-pre.shiki:focus-within igc-icon-button.copy-btn,
-pre.shiki igc-icon-button.copy-btn:focus {
-    opacity: 1;
+.copy-code-wrapper > .copy-btn {
+	position: absolute;
+	inset-block-start: rem(8px);
+	inset-inline-end: rem(8px);
+	opacity: 0;
+	z-index: 1;
+	
+	--foreground: var(--ig-primary-600-contrast);
+	--hover-foreground: var(--ig-primary-600-contrast);
+	--focus-foreground: var(--ig-primary-600-contrast);
+	--active-foreground: var(--ig-primary-600-contrast);
+	--background: var(--ig-primary-500);
+	--hover-background: var(--ig-primary-500);
+	--focus-background: var(--ig-primary-500);
+	--active-background: var(--ig-primary-500);
+	--border-color: transparent;
+	--border-color-hover: transparent;
+	--border-color-focus: transparent;
+	
+	&:has([name="check"]) {
+		--foreground: var(--ig-success-300-contrast);
+		--hover-foreground: var(--ig-success-300-contrast);
+		--focus-foreground: var(--ig-success-300-contrast);
+		--active-foreground: var(--ig-success-300-contrast);
+		
+		--background: var(--ig-success-300);
+		--hover-background: var(--ig-success-300);
+		--focus-background: var(--ig-success-300);
+		--active-background: var(--ig-success-300);
+	}
 }
 
+.copy-code-wrapper:hover > .copy-btn,
+.copy-code-wrapper:focus-within > .copy-btn {
+	opacity: 1;
+}
 

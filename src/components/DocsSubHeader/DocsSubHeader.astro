@@ -104,7 +104,7 @@ const currentPlatform = virtualPlatform ?? null;
 const resolvedLinks = (productLinksProp ?? productLinks) as ProductLink[];
 const filteredLinks = resolvedLinks.filter((l: ProductLink) => l.platform !== currentPlatform);
 type PackageEntry = string | { label: string; value?: string; href?: string };
-const rawPackages = packagesProp ?? (virtualPackages.length > 0 ? virtualPackages : undefined);
+const rawPackages = packagesProp ?? (virtualPackages?.length > 0 ? virtualPackages : undefined);
 const packages = (rawPackages as PackageEntry[] | undefined)?.map((p: PackageEntry) =>
     typeof p === 'string' ? { label: p, value: p, href: undefined } : { label: p.label, value: p.value ?? p.label, href: p.href }
 );
@@ -199,6 +199,35 @@ const crumbs = sidebarCrumbs.length > 0 ? sidebarCrumbs : (pageTitle ? [pageTitl
                 const packageSelect = this.querySelector('#package-select');
                 const packageTooltip = this.querySelector<any>('#package-tooltip');
                 if (packageSelect) {
+                    // Truncates the native input value directly so the '\u2026' is baked in,
+                    // Keep the full package label in the native input and apply truncation
+                    // only as a visual style so assistive technologies still get the full text.
+                    function applyTriggerTruncation() {
+                        const igcInput = (packageSelect as any).shadowRoot?.querySelector('igc-input');
+                        const nativeInput = igcInput?.shadowRoot?.querySelector('input') as HTMLInputElement | null;
+                        if (!nativeInput || !nativeInput.value) return;
+
+                        const text = nativeInput.value;
+
+                        // Preserve the full label for accessibility and hover disclosure.
+                        nativeInput.setAttribute('aria-label', text);
+                        nativeInput.title = text;
+
+                        // Apply truncation only to the rendered text.
+                        nativeInput.style.overflow = 'hidden';
+                        nativeInput.style.textOverflow = 'ellipsis';
+                        nativeInput.style.whiteSpace = 'nowrap';
+                    }
+
+                    // Run after igcInput's Lit render cycle settles (two rAFs = after microtasks + first paint)
+                    requestAnimationFrame(() => requestAnimationFrame(() => applyTriggerTruncation()));
+
+                    // igcInput re-renders with the full text each time the dropdown closes;
+                    // re-apply truncation afterwards.
+                    packageSelect.addEventListener('igcClosed', () =>
+                        requestAnimationFrame(() => applyTriggerTruncation())
+                    );
+
                     packageSelect.addEventListener('igcChange', (e: Event) => {
                         const val = (e as CustomEvent).detail?.value ?? (packageSelect as any).value;
                         const item = packageSelect.querySelector<HTMLElement>(`igc-select-item[value="${val}"]`);
@@ -215,7 +244,11 @@ const crumbs = sidebarCrumbs.length > 0 ? sidebarCrumbs : (pageTitle ? [pageTitl
                     packageTooltip.addEventListener('igcOpening', (e: Event) => {
                         const igcInput = (packageSelect as any).shadowRoot?.querySelector('igc-input');
                         const nativeInput = igcInput?.shadowRoot?.querySelector('input');
-                        if (!nativeInput || nativeInput.scrollWidth <= nativeInput.clientWidth) {
+                        // Show when we applied manual truncation (ends with '\u2026') or
+                        // when there is natural CSS overflow.
+                        const truncated = nativeInput?.value?.endsWith('\u2026');
+                        const overflows = nativeInput && nativeInput.scrollWidth > nativeInput.clientWidth;
+                        if (!truncated && !overflows) {
                             e.preventDefault();
                         }
                     });
