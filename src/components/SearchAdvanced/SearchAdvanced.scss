@@ -108,6 +108,26 @@
 	.igd-search-tab-count {
 		color: light-dark(var(--ig-gray-500), var(--ig-gray-300));
 	}
+
+	.igd-search-refine-hint {
+		@include type-style('caption') {
+			margin: 0;
+		}
+
+		padding-inline-start: calc(#{rem(26px)} + #{rem(16px)});
+		margin-block-start: rem(16px);
+		color: light-dark(var(--ig-gray-600), var(--ig-gray-400));
+	}
+
+	.igd-search-refine-hint {
+		@include type-style('caption') {
+			margin: 0;
+		}
+
+		padding-inline-start: calc(#{rem(26px)} + #{rem(16px)});
+		margin-block-start: rem(16px);
+		color: light-dark(var(--ig-gray-600), var(--ig-gray-400));
+	}
 	
 	igc-divider {
 		--color: light-dark(var(--ig-gray-400), var(--ig-gray-300));
