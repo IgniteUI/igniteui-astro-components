@@ -63,7 +63,7 @@ igc-button {
 	}
 	
 	color: light-dark(var(--ig-gray-600), var(--ig-gray-700));
-	padding-inline: rem(24px);
+	padding-inline: 0;
 	
 	&:empty {
 		display: none;

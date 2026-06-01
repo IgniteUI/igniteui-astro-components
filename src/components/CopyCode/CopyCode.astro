@@ -1,0 +1,73 @@
+<script>
+  import '../../scripts/icon-registry';
+  import { defineComponents, IgcIconButtonComponent, IgcIconComponent } from 'igniteui-webcomponents';
+
+  defineComponents(IgcIconButtonComponent, IgcIconComponent);
+
+  function initCopyButtons(): void {
+    document.querySelectorAll<HTMLPreElement>('pre.astro-code, pre.shiki').forEach((pre) => {
+      if (pre.closest('.copy-code-wrapper')) return;
+
+      const wrapper = document.createElement('div');
+      wrapper.className = 'copy-code-wrapper';
+      pre.parentNode!.insertBefore(wrapper, pre);
+      wrapper.appendChild(pre);
+
+      const btn = document.createElement('igc-icon-button') as HTMLElement;
+      btn.setAttribute('variant', 'flat');
+      btn.setAttribute('aria-label', 'Copy code');
+      btn.className = 'copy-btn';
+
+      const icon = document.createElement('igc-icon') as HTMLElement;
+      icon.setAttribute('name', 'copy');
+      icon.setAttribute('collection', 'docs');
+      btn.appendChild(icon);
+
+      btn.addEventListener('click', () => {
+        const code = pre.querySelector('code');
+        const text = code ? (code.textContent ?? '') : (pre.textContent ?? '');
+
+        const resetState = () => {
+          icon.setAttribute('name', 'copy');
+          btn.setAttribute('aria-label', 'Copy code');
+        };
+
+        const showCopied = () => {
+          icon.setAttribute('name', 'check');
+          btn.setAttribute('aria-label', 'Copied!');
+          setTimeout(resetState, 1500);
+        };
+
+        const showFailed = () => {
+          btn.setAttribute('aria-label', 'Copy failed');
+          setTimeout(resetState, 1500);
+        };
+
+        const fallback = (value: string): boolean => {
+          const ta = document.createElement('textarea');
+          ta.value = value;
+          ta.setAttribute('readonly', '');
+          ta.style.cssText = 'position:fixed;opacity:0;pointer-events:none';
+          document.body.appendChild(ta);
+          ta.select();
+          ta.setSelectionRange(0, value.length);
+          try { return document.execCommand('copy'); } catch { return false; }
+          finally { document.body.removeChild(ta); }
+        };
+
+        if (navigator.clipboard?.writeText) {
+          navigator.clipboard.writeText(text).then(showCopied).catch(() => {
+            fallback(text) ? showCopied() : showFailed();
+          });
+        } else {
+          fallback(text) ? showCopied() : showFailed();
+        }
+      });
+
+      wrapper.appendChild(btn);
+    });
+  }
+
+  initCopyButtons();
+  document.addEventListener('astro:page-load', initCopyButtons);
+</script>

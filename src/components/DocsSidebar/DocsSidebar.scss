@@ -16,10 +16,12 @@
 		height: calc(100dvh - var(--igd-header-height));
 		max-height: 100dvh;
 		align-self: start;
-		gap: rem(24px);
+		gap: rem(8px);
 		view-transition-name: docs-sidebar;
 	
 		.sidebar-gutter {
+			display: grid;
+			gap: rem(8px);
 			overflow-y: hidden;
 	
 			// This Makes sure the input border is visible
