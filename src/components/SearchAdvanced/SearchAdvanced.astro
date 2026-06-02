@@ -536,6 +536,17 @@ const resolvedIndexUrl = indexUrl ?? `${basePath}api-search-index/manifest.json`
         return;
       }
 
+      // Avoid searching on very short queries — a single or two-character query matches
+      // virtually everything and causes the classify + render path to freeze the main thread.
+      if (q.length < 3) {
+        this.statusEl.textContent = 'Type at least 3 characters to search\u2026';
+        this.tabsEl.hidden = true;
+        this.tabsEl.innerHTML = '';
+        this.flatListEl.hidden = true;
+        this.flatListEl.innerHTML = '';
+        return;
+      }
+
       this.statusEl.textContent = 'Searching\u2026';
 
       let pages: IndexedPage[];
@@ -829,15 +840,20 @@ const resolvedIndexUrl = indexUrl ?? `${basePath}api-search-index/manifest.json`
         `</igc-tab>`
       );
 
-      // Per-category tabs — full result list in each tab body
+      // Per-category tabs — capped to avoid freezing the main thread when many
+      // results match (e.g. a short query against a large cross-version index).
+      const MAX_PER_CATEGORY_TAB = 100;
       for (const cat of this.categories) {
         const list = this.currentMatches.get(cat.id) ?? [];
         if (list.length === 0) continue;
         const isSelected = this.currentTab === cat.id;
+        const displayList = list.slice(0, MAX_PER_CATEGORY_TAB);
+        const hasMore = list.length > MAX_PER_CATEGORY_TAB;
         tabsHtml.push(
           `<igc-tab data-tab-id="${cat.id}" label="${escapeHtml(cat.label)}"${isSelected ? ' selected' : ''}>` +
             `<span slot="suffix" class="igd-search-tab-count">/${list.length}/</span>` +
-            `<igc-list class="igd-search-results">${list.map(m => this.matchHtml(m)).join('')}</igc-list>` +
+            `<igc-list class="igd-search-results">${displayList.map(m => this.matchHtml(m)).join('')}</igc-list>` +
+            (hasMore ? `<p class="igd-search-refine-hint">Showing first ${MAX_PER_CATEGORY_TAB} of ${list.length} matches &mdash; refine your search to narrow results.</p>` : '') +
           `</igc-tab>`
         );
       }
