@@ -38,11 +38,11 @@
 			}
 		}
 
-		> h1 {
+		> .igd-logo-text {
 			@include type-style('body-2') {
 				margin: 0;
 			};
-			
+
 			opacity: 1;
 			transition: opacity 200ms ease, transform 200ms ease;
 		}
@@ -61,7 +61,7 @@
 				position: relative;
 			}
 
-			h1 {
+			.igd-logo-text {
 				opacity: 0;
 				transform: translateY(4px);
 				position: absolute;
