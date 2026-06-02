@@ -3,8 +3,6 @@ export type PlatformName = 'Angular' | 'React' | 'WebComponents' | 'Blazor';
 export interface ApiPackageConfig {
     /** TypeDoc documentation root URL (no trailing slash). */
     docRoot: string;
-    /** Optional direct URL to the compact ApiLink symbol index for this package/version. */
-    apiLinkIndexUrl?: string;
     /**
      * Package identifier as it appears in the TypeDoc URL path.
      * Core packages use hyphens ("igniteui-react"),
@@ -36,8 +34,10 @@ export interface ApiPackageConfig {
 
 export interface PlatformContext {
     name: PlatformName;
-    /** Optional root for compact ApiLink symbol index files, e.g. https://www.infragistics.com/api/react/api-link-index. */
-    apiLinkIndexRoot?: string;
+    /** Optional compact ApiLink symbol index loaded by the docs host at build time. */
+    apiLinkIndex?: {
+        symbols?: Record<string, unknown>;
+    };
     /** Lower-case slug used in URLs, e.g. "angular" */
     lower: string;
     /** Component class prefix, e.g. "Igx" / "Igr" / "Igc" / "Igb" */

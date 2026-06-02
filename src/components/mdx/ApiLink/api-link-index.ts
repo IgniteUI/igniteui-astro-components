@@ -34,62 +34,10 @@ export type ApiLinkIndexResolution =
     | { status: 'missing' }
     | { status: 'unavailable' };
 
-const indexCache = new Map<string, Promise<ApiLinkIndexFile | null>>();
-
-const trimTrailingSlash = (value: string) => value.replace(/\/+$/, '');
 const upperFirst = (value: string) => value ? value.charAt(0).toUpperCase() + value.slice(1) : value;
 
 function addUnique(values: string[], value?: string): void {
     if (value && !values.includes(value)) values.push(value);
-}
-
-function getVersionFromDocRoot(docRoot: string, packageId: string): string | undefined {
-    const root = trimTrailingSlash(docRoot);
-    const marker = `/${packageId}/`;
-    const markerIndex = root.lastIndexOf(marker);
-    if (markerIndex === -1) return undefined;
-
-    return root.slice(markerIndex + marker.length).split('/').filter(Boolean)[0];
-}
-
-function getApiLinkIndexRoot(ctx: PlatformContext, pkgConfig: ApiPackageConfig): string | undefined {
-    if (ctx.apiLinkIndexRoot) return trimTrailingSlash(ctx.apiLinkIndexRoot);
-
-    const root = trimTrailingSlash(pkgConfig.docRoot);
-    const marker = `/${pkgConfig.packageId}/`;
-    const markerIndex = root.lastIndexOf(marker);
-    if (markerIndex === -1) return undefined;
-
-    return `${root.slice(0, markerIndex)}/api-link-index`;
-}
-
-async function resolveIndexUrl(options: {
-    ctx: PlatformContext;
-    pkgConfig: ApiPackageConfig;
-    packageScoped: boolean;
-}): Promise<string | undefined> {
-    const { ctx, pkgConfig, packageScoped } = options;
-    if (packageScoped && pkgConfig.apiLinkIndexUrl) return pkgConfig.apiLinkIndexUrl;
-
-    const version = getVersionFromDocRoot(pkgConfig.docRoot, pkgConfig.packageId);
-    const root = getApiLinkIndexRoot(ctx, pkgConfig);
-    if (!version || !root) return undefined;
-
-    return packageScoped
-        ? `${root}/${pkgConfig.packageId}/${version}.json`
-        : `${root}/${version}.json`;
-}
-
-async function loadApiLinkIndex(url?: string): Promise<ApiLinkIndexFile | null> {
-    if (!url) return null;
-
-    if (!indexCache.has(url)) {
-        indexCache.set(url, fetch(url)
-            .then(response => response.ok ? response.json() : null)
-            .catch(() => null));
-    }
-
-    return indexCache.get(url)!;
 }
 
 function buildCandidateNames(options: {
@@ -136,6 +84,7 @@ function resolveIndexedMember(symbol: ApiLinkIndexSymbol, member: string | undef
 function findIndexedSymbol(options: {
     index: ApiLinkIndexFile;
     candidates: string[];
+    packageId?: string;
     explicitKind?: TypeDocKind;
     member?: string;
     pkgConfig: ApiPackageConfig;
@@ -148,6 +97,7 @@ function findIndexedSymbol(options: {
 
         const symbolList = Array.isArray(value) ? value : [value];
         for (const symbol of symbolList) {
+            if (options.packageId && symbol.p && symbol.p !== options.packageId) continue;
             if (options.explicitKind && symbol.k && symbol.k !== options.explicitKind) continue;
             const memberAnchor = resolveIndexedMember(symbol, options.member, options.pkgConfig);
             if (memberAnchor === null) continue;
@@ -179,12 +129,7 @@ export async function resolveApiLinkFromIndex(options: {
     prefixed: boolean;
     suffix: boolean;
 }): Promise<ApiLinkIndexResolution> {
-    const indexUrl = await resolveIndexUrl({
-        ctx: options.ctx,
-        pkgConfig: options.pkgConfig,
-        packageScoped: options.explicitPkg,
-    });
-    const index = await loadApiLinkIndex(indexUrl);
+    const index = options.ctx.apiLinkIndex as ApiLinkIndexFile | undefined;
     if (!index?.symbols) {
         return { status: 'unavailable' };
     }
@@ -204,6 +149,7 @@ export async function resolveApiLinkFromIndex(options: {
     const indexed = findIndexedSymbol({
         index,
         candidates,
+        packageId: options.explicitPkg ? options.pkgConfig.packageId : undefined,
         explicitKind: options.explicitKind,
         member: options.member,
         pkgConfig: options.pkgConfig,
