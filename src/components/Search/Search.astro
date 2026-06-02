@@ -186,7 +186,9 @@ import './Search.scss';
     }
     updateSearchHint();
 
-    document.getElementById('search-trigger')?.addEventListener('click', () => openSearch());
+    document.addEventListener('click', (e: Event) => {
+      if ((e.target as Element).closest('#search-trigger')) openSearch();
+    });
 
     document.addEventListener('keydown', (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
@@ -202,26 +204,24 @@ import './Search.scss';
     });
 
     let debounceTimer: ReturnType<typeof setTimeout> | null = null;
-    document.querySelector('igc-input.igd-search-input')?.addEventListener('igcInput', () => {
+    document.addEventListener('igcInput', (e: Event) => {
+      if (!(e.target as Element).closest('igc-input.igd-search-input')) return;
       if (debounceTimer !== null) clearTimeout(debounceTimer);
       const val = (document.querySelector<any>('igc-input.igd-search-input')?.value as string) ?? '';
       debounceTimer = setTimeout(() => runSearch(val), INPUT_DEBOUNCE_MS);
     });
 
-    document.querySelector('.igd-search-clear')?.addEventListener('click', () => {
-      const input = document.querySelector<any>('igc-input.igd-search-input');
-      if (!input) return;
-      input.value = '';
-      input.focus();
-      runSearch('');
-    });
-
-    document.querySelector('.igd-search-shell .search-close')?.addEventListener('click', () => {
-      document.querySelector<any>('igc-dialog.igd-search-dialog')?.hide();
-    });
-
-    document.querySelector('.igd-search-shell')?.addEventListener('click', (e: Event) => {
-      if ((e.target as Element).closest('a[href]')) {
+    document.addEventListener('click', (e: Event) => {
+      const target = e.target as Element;
+      if (target.closest('.igd-search-clear')) {
+        const input = document.querySelector<any>('igc-input.igd-search-input');
+        if (!input) return;
+        input.value = '';
+        input.focus();
+        runSearch('');
+      } else if (target.closest('.igd-search-shell .search-close')) {
+        document.querySelector<any>('igc-dialog.igd-search-dialog')?.hide();
+      } else if (target.closest('.igd-search-shell') && target.closest('a[href]')) {
         document.querySelector<any>('igc-dialog.igd-search-dialog')?.hide();
       }
     });
