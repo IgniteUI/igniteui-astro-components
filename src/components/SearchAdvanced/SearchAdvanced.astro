@@ -255,7 +255,8 @@ const resolvedIndexUrl = indexUrl ?? `${basePath}api-search-index/manifest.json`
     private tabsEl!: IgcTabsComponent;
     private statusEl!: HTMLElement;
     private flatListEl!: HTMLElement;
-    private indexPromise: Promise<IndexedPage[]> | null = null;
+    private currentIndexPromise: Promise<IndexedPage[]> | null = null;
+    private allIndexPromise: Promise<IndexedPage[]> | null = null;
     private currentTab: string = 'all';
     private currentMatches: Map<string, Match[]> = new Map();
     private currentQuery: string = '';
@@ -395,6 +396,9 @@ const resolvedIndexUrl = indexUrl ?? `${basePath}api-search-index/manifest.json`
       if (this.scopeSelect) {
         this.scopeSelect.addEventListener('igcChange', () => {
           this.scope = this.scopeSelect!.value === 'all' ? 'all' : 'current';
+          // Start loading the full index as soon as the user switches to 'all'
+          // so it is ready when they type (or re-run the current query).
+          if (this.scope === 'all') this.loadIndex();
           if (this.currentQuery) this.runSearch();
           this.syncScopeTooltip();
         });
@@ -476,9 +480,24 @@ const resolvedIndexUrl = indexUrl ?? `${basePath}api-search-index/manifest.json`
     }
 
     private loadIndex(): Promise<IndexedPage[]> {
-      if (this.indexPromise) return this.indexPromise;
-      this.indexPromise = this.fetchIndex();
-      return this.indexPromise;
+      if (this.showScope && this.scope === 'current' && this.currentPkg && this.currentVersion) {
+        if (!this.currentIndexPromise) this.currentIndexPromise = this.fetchCurrentVersion();
+        return this.currentIndexPromise;
+      }
+      if (!this.allIndexPromise) this.allIndexPromise = this.fetchIndex();
+      return this.allIndexPromise;
+    }
+
+    private async fetchCurrentVersion(): Promise<IndexedPage[]> {
+      const baseUrl = this.indexUrl.replace(/[^/]*$/, '');
+      try {
+        const res = await fetch(`${baseUrl}${this.currentPkg}/${this.currentVersion}.json`);
+        if (!res.ok) return [];
+        const d = await res.json();
+        return Array.isArray(d?.pages) ? d.pages as IndexedPage[] : [];
+      } catch {
+        return [];
+      }
     }
 
     private async fetchIndex(): Promise<IndexedPage[]> {
