@@ -32,12 +32,14 @@ const nodes = headingsToTreeNodes(headings, tocConfig);
 ---
 
 {nodes.length > 0 && (
-    <docs-toc class="toc-sidebar" data-offset-target={offsetTarget}>
-        <h2 class="toc-sidebar__heading" id="toc-heading">{label}</h2>
-        <nav aria-labelledby="toc-heading">
-            <DocsTree nodes={nodes} variant="toc" />
-        </nav>
-    </docs-toc>
+    <aside class="toc-wrapper">
+        <docs-toc class="toc-sidebar" data-offset-target={offsetTarget}>
+            <h2 class="toc-sidebar__heading" id="toc-heading">{label}</h2>
+            <nav aria-labelledby="toc-heading">
+                <DocsTree nodes={nodes} variant="toc" />
+            </nav>
+        </docs-toc>
+    </aside>
 )}
 
 <script>
@@ -69,7 +71,7 @@ const nodes = headingsToTreeNodes(headings, tocConfig);
             this.resizeObserver?.disconnect();
             this.resizeObserver = undefined;
             this.offsetEl = null;
-            document.documentElement.style.removeProperty('scroll-padding-top');
+            document.documentElement.style.removeProperty('--igd-toc-subheader-bottom');
             if (this.rafId !== undefined) {
                 cancelAnimationFrame(this.rafId);
                 this.rafId = undefined;
@@ -154,6 +156,8 @@ const nodes = headingsToTreeNodes(headings, tocConfig);
             if (!this.offsetEl) return;
 
             this.syncScrollPadding();
+            // Re-sync after layout settles (fonts, reflow) on initial load / navigation.
+            requestAnimationFrame(() => this.syncScrollPadding());
 
             // Re-measure when the header itself resizes (responsive collapse,
             // font-load reflow, etc.).
@@ -163,8 +167,9 @@ const nodes = headingsToTreeNodes(headings, tocConfig);
 
         private syncScrollPadding() {
             if (!this.offsetEl) return;
-            const px = Math.round(this.offsetEl.getBoundingClientRect().bottom + 8);
-            document.documentElement.style.scrollPaddingTop = `${px}px`;
+            const px = Math.round(this.offsetEl.getBoundingClientRect().bottom);
+            // Write only the measured subheader height; the CSS adds --igd-toc-scroll-offset on top.
+            document.documentElement.style.setProperty('--igd-toc-subheader-bottom', `${px}px`);
         }
 
         private update() {
@@ -267,4 +272,3 @@ const nodes = headingsToTreeNodes(headings, tocConfig);
         });
     });
 </script>
-

@@ -20,7 +20,7 @@ const headings = [
 <DocsLayout title="Search" siteTitle={SITE_TITLE} hasSidebar currentSlug={slug}>
   <DocsSubHeader slot="subheader" pageTitle="Search" currentSlug={slug} siteTitle={SITE_TITLE}
     productLinks={PRODUCT_LINKS} showThemeToggle={true}
-    packages={[...PACKAGES]} selectedPackage={PACKAGES[0]}
+    packages={[...PACKAGES]} selectedPackage={PACKAGES[0].value}
     versions={[...VERSIONS]} selectedVersion={VERSIONS[0]}
   >
     <Search slot="search" />

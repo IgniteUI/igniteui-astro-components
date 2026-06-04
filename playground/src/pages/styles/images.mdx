@@ -1,0 +1,111 @@
+---
+layout: ../../layouts/PlaygroundMdxLayout.astro
+title: Images
+slug: styles/images
+---
+
+# Images
+
+Reference for all image and vector elements.
+
+---
+
+## Basic image — `<img>`
+
+Always include a descriptive `alt` attribute for accessibility.
+
+```md
+![A descriptive alternative text](https://picsum.photos/seed/igniteui/800/400)
+```
+
+<img
+  src="https://picsum.photos/seed/igniteui/800/400"
+  alt="A random placeholder landscape photo"
+  width="800"
+  height="400"
+/>
+
+```html
+<img
+  src="/path/to/image.jpg"
+  alt="A descriptive alternative text"
+  width="800"
+  height="400"
+/>
+```
+
+---
+
+## Responsive image — `<picture>` + `<source>`
+
+```html
+<picture>
+  <source media="(min-width: 800px)" srcset="/img/wide.jpg" />
+  <source media="(min-width: 400px)" srcset="/img/medium.jpg" />
+  <img src="/img/small.jpg" alt="Responsive image" width="800" height="400" />
+</picture>
+```
+
+<picture>
+  <source media="(min-width: 800px)" srcSet="https://picsum.photos/seed/wide/1200/400" />
+  <source media="(min-width: 400px)" srcSet="https://picsum.photos/seed/medium/800/400" />
+  <img
+    src="https://picsum.photos/seed/small/400/300"
+    alt="A responsive placeholder image that changes by viewport width"
+    width="800"
+    height="400"
+  />
+</picture>
+
+---
+
+## Image with caption — `<figure>` + `<figcaption>`
+
+```html
+<figure>
+  <img src="/img/photo.jpg" alt="Descriptive text" width="800" height="350" />
+  <figcaption>Fig. 1 — a caption rendered below the image.</figcaption>
+</figure>
+```
+
+<figure>
+  <img
+    src="https://picsum.photos/seed/caption/800/350"
+    alt="A placeholder photo demonstrating figure and figcaption"
+    width="800"
+    height="350"
+  />
+  <figcaption>
+    Fig. 1 — A placeholder image wrapped in a <code>&lt;figure&gt;</code> element
+    with a <code>&lt;figcaption&gt;</code> caption below.
+  </figcaption>
+</figure>
+
+---
+
+## Inline SVG — `<svg>`
+
+SVG markup can be embedded directly in HTML. It scales losslessly and inherits `currentColor` from the surrounding text.
+
+```html
+<svg width="120" height="120" viewBox="0 0 24 24" fill="none"
+     stroke="currentColor" stroke-width="1.5" role="img" aria-label="Star icon">
+  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+</svg>
+```
+
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="120"
+  height="120"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  strokeWidth="1.5"
+  strokeLinecap="round"
+  strokeLinejoin="round"
+  aria-label="Inline SVG star icon"
+  role="img"
+>
+  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+</svg>

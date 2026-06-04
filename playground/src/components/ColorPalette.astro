@@ -1,0 +1,181 @@
+---
+/**
+ * Color palette showcase for the style guide.
+ * Renders every color family as a row of individually-rounded swatches.
+ * Hover a swatch to see its CSS variable name.
+ */
+
+const families = [
+	{ name: 'primary',   label: 'Primary',   accent: true  },
+	{ name: 'secondary', label: 'Secondary', accent: true  },
+	{ name: 'gray',      label: 'Gray',      accent: false },
+	{ name: 'surface',   label: 'Surface',   accent: false },
+	{ name: 'info',      label: 'Info',      accent: false },
+	{ name: 'success',   label: 'Success',   accent: false },
+	{ name: 'warn',      label: 'Warn',      accent: false },
+	{ name: 'error',     label: 'Error',     accent: false },
+] as const;
+
+const mainShades   = ['50', '100', '200', '300', '400', '500', '600', '700', '800', '900'] as const;
+const accentShades = ['A100', 'A200', 'A400', 'A700'] as const;
+---
+
+<div class="igd-palette">
+	{families.map(({ name, label, accent }) => (
+		<div class="igd-palette__family">
+			<div class="igd-palette__meta">
+				<span class="igd-palette__name">{label}</span>
+				<code class="igd-palette__hint">--ig-{name}-*</code>
+			</div>
+			<div class="igd-palette__strip">
+				<div class="igd-palette__swatches">
+					{mainShades.map(shade => (
+						<div
+							class={`igd-palette__swatch${shade === '500' ? ' igd-palette__swatch--main' : ''}`}
+							style={`background:var(--ig-${name}-${shade});color:var(--ig-${name}-${shade}-contrast);--c:var(--ig-${name}-${shade});`}
+							data-var={`--ig-${name}-${shade}`}
+							title={`--ig-${name}-${shade}`}
+							aria-label={`--ig-${name}-${shade}`}
+						>
+							<span class="igd-palette__shade">{shade}</span>
+						</div>
+					))}
+				</div>
+				{accent && (
+					<div class="igd-palette__accents">
+						{accentShades.map(shade => (
+							<div
+								class="igd-palette__swatch"
+								style={`background:var(--ig-${name}-${shade});color:var(--ig-${name}-${shade}-contrast);--c:var(--ig-${name}-${shade});`}
+								data-var={`--ig-${name}-${shade}`}
+								title={`--ig-${name}-${shade}`}
+								aria-label={`--ig-${name}-${shade}`}
+							>
+								<span class="igd-palette__shade">{shade}</span>
+							</div>
+						))}
+					</div>
+				)}
+			</div>
+		</div>
+	))}
+</div>
+
+<style>
+	.igd-palette {
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+		padding-block-start: 2.5rem; /* room for tooltips on first row */
+	}
+
+	.igd-palette__family {
+		display: grid;
+		grid-template-columns: 6rem 1fr;
+		align-items: center;
+		gap: 1rem;
+		padding: 0.625rem 0.875rem;
+		background: var(--ig-gray-50);
+		border: 1px solid var(--ig-gray-100);
+		border-radius: 10px;
+	}
+
+	.igd-palette__meta {
+		display: flex;
+		flex-direction: column;
+		gap: 0.2rem;
+	}
+
+	.igd-palette__name {
+		font-size: 0.75rem;
+		font-weight: 700;
+		color: var(--ig-gray-800);
+	}
+
+	.igd-palette__hint {
+		font-size: 0.5625rem;
+		color: var(--ig-gray-500);
+		letter-spacing: 0;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+
+	.igd-palette__strip {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		overflow-x: auto;
+	}
+
+	.igd-palette__swatches,
+	.igd-palette__accents {
+		display: flex;
+		gap: 3px;
+	}
+
+	.igd-palette__accents {
+		padding-inline-start: 0.5rem;
+		border-inline-start: 2px solid var(--ig-gray-200);
+	}
+
+	.igd-palette__swatch {
+		position: relative;
+		width: 2.75rem;
+		height: 3.5rem;
+		flex-shrink: 0;
+		border-radius: 6px;
+		/* background and color are applied via inline style */
+		/* subtle border makes light swatches visible against the card bg */
+		box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.08);
+		display: flex;
+		align-items: flex-end;
+		justify-content: center;
+		padding-block-end: 0.3rem;
+		cursor: default;
+		transition: transform 0.12s ease, box-shadow 0.12s ease;
+	}
+
+	/* Highlight the 500 "brand" shade */
+	.igd-palette__swatch--main {
+		box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.08), 0 0 0 2px var(--c), 0 0 0 4px var(--ig-gray-50);
+	}
+
+	.igd-palette__swatch:hover {
+		transform: translateY(-4px) scale(1.06);
+		box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.12), 0 6px 16px rgba(0, 0, 0, 0.15);
+		z-index: 2;
+	}
+
+	/* CSS tooltip */
+	.igd-palette__swatch::after {
+		content: attr(data-var);
+		position: absolute;
+		bottom: calc(100% + 6px);
+		left: 50%;
+		transform: translateX(-50%);
+		background: var(--ig-gray-900);
+		color: var(--ig-gray-50);
+		font-size: 0.5625rem;
+		font-family: var(--font-mono, monospace);
+		white-space: nowrap;
+		padding: 3px 6px;
+		border-radius: 4px;
+		pointer-events: none;
+		opacity: 0;
+		transition: opacity 0.1s ease;
+		z-index: 10;
+	}
+
+	.igd-palette__swatch:hover::after {
+		opacity: 1;
+	}
+
+	.igd-palette__shade {
+		font-size: 0.5rem;
+		font-weight: 700;
+		font-family: var(--font-mono, monospace);
+		line-height: 1;
+		opacity: 0.8;
+	}
+</style>

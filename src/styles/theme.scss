@@ -23,6 +23,7 @@
 html {
 	font-size: 16px;
 	background: var(--igd-app-bg);
+	scroll-padding-top: calc(var(--igd-toc-subheader-bottom) + var(--igd-toc-scroll-offset));
 }
 
 body {
@@ -33,8 +34,7 @@ body {
 // The actual @font-face rules come from @fontsource-variable (imported in DocsLayout.astro).
 :root {
 	--ig-theme: fluent;
-	--font-heading: 'aktiv-grotesk';
-	--font-mono: 'JetBrains Mono Variable'; // fallback should be 'Cascadia Code', 'Fira Code', monospace
+	--font-mono: 'JetBrains Mono Variable';
 }
 
 @include sizing();
@@ -42,35 +42,12 @@ body {
 @include elevations($material-elevations);
 
 @include typography(
-	$font-family: '"Inter Variable", "Segoe UI", system-ui, sans-serif',
+	$font-family: aktiv-grotesk,
 	$type-scale: $igd-type-scale
 );
 
 // scroll-behavior is applied via JS (astro:page-load) so it is not active
 // during the browser's initial scroll-position restoration on page refresh.
-
-// Scope our brand font to the docs content area only.
-// The IG nav and footer have their own font-family rules in their CDN
-// stylesheets — setting font-family on html/body would override those
-// via inheritance. Scoping to .igd-page-layout keeps them isolated.
-.igd-page-layout {
-	font-family: var(--font-sans), 'Segoe UI', system-ui, sans-serif;
-}
-
-h1,
-.igd-h1,
-h2,
-.igd-h2,
-h3,
-.igd-h3,
-h4,
-.igd-h4,
-h5,
-.igd-h5,
-h6,
-.igd-h6 {
-	font-family: var(--font-heading), 'Inter Variable', 'Segoe UI', system-ui, sans-serif;
-}
 
 .visually-hidden {
 	visibility: hidden;
@@ -106,17 +83,13 @@ igc-dialog:not(:defined) { display: none; }
 // switch instantly — only the main content and TOC cross-fade between pages.
 ::view-transition-old(docs-sidebar),
 ::view-transition-old(docs-subheader) {
-	animation: none;
-	opacity: 0;
+	animation: none !important;
+	opacity: 0 !important;
 }
 ::view-transition-new(docs-sidebar),
 ::view-transition-new(docs-subheader) {
-	animation: none;
-	opacity: 1;
-}
-
-igc-icon {
-	padding: 0;
+	animation: none !important;
+	opacity: 1 !important;
 }
 
 // Global scrollbar styling.
@@ -143,31 +116,4 @@ igc-icon {
 ::-webkit-scrollbar-thumb {
 	background-color: var(--igd-scrollbar-thumb);
 	border-radius: rem(5px);
-}
-
-// Explicit theme overrides — bypass CSS variable resolution issues in
-// ::-webkit-scrollbar pseudo-elements.
-// html[data-theme='...'] targets the document scrollbar (html is the scroller).
-// [data-theme='...'] ::-webkit-scrollbar-* targets inner scrollable elements.
-
-// Light
-html[data-theme='light']::-webkit-scrollbar-track,
-[data-theme='light'] ::-webkit-scrollbar-track {
-	background-color: rgba(0, 0, 0, 0.05);
-}
-
-html[data-theme='light']::-webkit-scrollbar-thumb,
-[data-theme='light'] ::-webkit-scrollbar-thumb {
-	background-color: rgba(0, 0, 0, 0.25);
-}
-
-// Dark
-html[data-theme='dark']::-webkit-scrollbar-track,
-[data-theme='dark'] ::-webkit-scrollbar-track {
-	background-color: rgba(255, 255, 255, 0.05);
-}
-
-html[data-theme='dark']::-webkit-scrollbar-thumb,
-[data-theme='dark'] ::-webkit-scrollbar-thumb {
-	background-color: rgba(255, 255, 255, 0.25);
 }

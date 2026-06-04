@@ -20,6 +20,7 @@
 import { defineConfig } from 'astro/config';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
+import fs from 'node:fs';
 import mdx from '@astrojs/mdx';
 import { getPlatformHead } from '../src/platform.ts';
 import { rehypeHeadingAnchors } from '../src/plugins/rehype-heading-anchors.ts';
@@ -33,6 +34,59 @@ process.env.BASE_URL ??= 'http://localhost:4567';
 
 // Platform head entries (IG CSS + JS) injected into <head> by DocsLayout.
 const platformHeadEntries = getPlatformHead('angular', 'en');
+
+/**
+ * Dev-only Vite plugin: handles POST /api/icons/replace
+ * so the IconGallery upload button can replace SVG files in src/assets/icons/.
+ * Only active during `astro dev` — no-op in production builds.
+ */
+function iconUploadPlugin() {
+  return {
+    name: 'playground:icon-upload',
+    configureServer(server) {
+      server.middlewares.use('/api/icons/replace', async (req, res) => {
+        if (req.method !== 'POST') {
+          res.writeHead(405).end('Method Not Allowed');
+          return;
+        }
+
+        let body = '';
+        for await (const chunk of req) body += chunk;
+
+        let filename, content;
+        try {
+          ({ filename, content } = JSON.parse(body));
+        } catch {
+          res.writeHead(400).end('Invalid JSON');
+          return;
+        }
+
+        // Security: only allow simple .svg filenames, no path traversal
+        if (typeof filename !== 'string' || !/^[\w\-]+\.svg$/.test(filename)) {
+          res.writeHead(400).end('Invalid filename');
+          return;
+        }
+
+        const iconsDir = path.resolve(repoRoot, '../src/assets/icons');
+        const dest = path.join(iconsDir, filename);
+
+        // Ensure destination is inside the icons directory
+        if (!dest.startsWith(iconsDir + path.sep)) {
+          res.writeHead(403).end('Forbidden');
+          return;
+        }
+
+        try {
+          fs.writeFileSync(dest, content, 'utf8');
+          // Let Vite's filesystem watcher detect the change naturally (triggers HMR)
+          res.writeHead(200, { 'Content-Type': 'application/json' }).end(JSON.stringify({ ok: true }));
+        } catch (err) {
+          res.writeHead(500).end(String(err));
+        }
+      });
+    },
+  };
+}
 
 /**
  * Vite plugin that supplies stub implementations of the two virtual modules
@@ -112,7 +166,7 @@ export default defineConfig({
     rehypePlugins: [rehypeHeadingAnchors, rehypeTableWrapper],
   },
   vite: {
-    plugins: [virtualDocsModules()],
+    plugins: [iconUploadPlugin(), virtualDocsModules()],
     css: {
       preprocessorOptions: {
         scss: {

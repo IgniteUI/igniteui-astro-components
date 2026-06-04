@@ -1,0 +1,53 @@
+---
+layout: ../../layouts/PlaygroundMdxLayout.astro
+title: Icons
+slug: styles/icons
+---
+import IconGallery from '../../components/IconGallery.astro';
+
+# Icons
+
+The `docs` collection provides all icons and illustrations used across the documentation site.
+Icons are registered as a Web Component via `<igc-icon>` from Ignite UI Web Components.
+Illustrations are standalone SVG files used directly as inline markup — not through `<igc-icon>`.
+
+## Using icons
+
+```html
+<igc-icon name="search" collection="docs"></igc-icon>
+```
+
+Use the `name` attribute to select an icon. The `collection="docs"` attribute is always required.
+You can size and colour icons with CSS:
+
+```css
+igc-icon {
+  --size: 24px;
+  color: var(--ig-primary-500);
+}
+```
+
+## Adding a new icon
+
+1. Drop a new `.svg` file into `src/assets/icons/`
+2. Open `src/scripts/icon-manifest.ts` and add the icon name to `ICON_LIST` in the appropriate position
+3. If it's a brand/logo icon (framework logo, tool logo) also add it to the `BRAND_ICONS` set — it will then appear under the **Brand** tab instead of **UI Icons**
+4. Restart the dev server (or wait for HMR) — the icon registers automatically via `icon-registry.ts`
+
+The icon name is derived from the filename stem: `star.svg` → `name="star"`.
+
+## Replacing an existing icon
+
+1. Download the current SVG using the **SVG** button in the gallery below
+2. Edit the file as needed (keep the same filename)
+3. Replace the file in `src/assets/icons/` (or `src/assets/illustrations/` for illustrations)
+4. Rebuild or trigger HMR — the updated SVG will be picked up automatically
+
+## Adding a new illustration
+
+Illustrations live in `src/assets/illustrations/` and are rendered as inline SVG — they are **not** used with `<igc-icon>`.
+Drop a new `.svg` file into that folder and it will appear in the **Illustrations** tab automatically on next build.
+
+## Icon gallery
+
+<IconGallery />

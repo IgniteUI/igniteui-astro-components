@@ -12,16 +12,23 @@
 import './Search.scss';
 ---
 
-<button
-    id="search-trigger"
-    class="search-trigger"
-    aria-label="Search documentation"
-    title="Search (Ctrl+K)"
->
-    <igc-icon name="search" collection="docs" aria-hidden="true"></igc-icon>
-    <span class="search-trigger__label">Search</span>
-    <kbd class="search-trigger__hint" style="display:none;"><kbd>Ctrl</kbd><kbd>K</kbd></kbd>
-</button>
+<div class="search-decoration">
+    <igc-input
+        id="search-trigger"
+        class="search-trigger"
+        type="text"
+        placeholder="Search"
+        readonly
+        role="button"
+        aria-haspopup="dialog"
+        aria-controls="search-dialog"
+        aria-label="Search documentation"
+        title="Search (Ctrl+K)"
+    >
+        <igc-icon name="search" collection="docs" slot="prefix" aria-hidden="true"></igc-icon>
+        <kbd class="search-trigger__hint" slot="suffix" style="display:none;"><kbd>Ctrl</kbd><kbd>K</kbd></kbd>
+    </igc-input>
+</div>
 
 <igc-dialog id="search-dialog" class="igd-search-dialog" aria-label="Search" hide-default-action close-on-outside-click>
     <div class="igd-search-shell">
@@ -46,18 +53,14 @@ import './Search.scss';
                     hidden
                 ></igc-icon-button>
             </igc-input>
-            <button
-                type="button"
-                class="search-trigger search-close"
-                aria-label="Close search"
-            >
-                <igc-icon name="close" collection="docs" aria-hidden="true"></igc-icon>
-            </button>
         </header>
-        <igc-divider></igc-divider>
         <div class="igd-search-status" aria-live="polite"></div>
         <igc-list class="igd-search-results" hidden></igc-list>
     </div>
+    <igc-button slot="footer" class="search-close" variant="flat">
+        Close
+        <igc-icon slot="suffix" name="close" collection="docs" aria-hidden="true"></igc-icon>
+    </igc-button>
 </igc-dialog>
 
 <script>
@@ -65,6 +68,7 @@ import './Search.scss';
     defineComponents,
     IgcIconComponent,
     IgcIconButtonComponent,
+    IgcButtonComponent,
     IgcDialogComponent,
     IgcInputComponent,
     IgcListComponent,
@@ -76,6 +80,7 @@ import './Search.scss';
   defineComponents(
     IgcIconComponent,
     IgcIconButtonComponent,
+    IgcButtonComponent,
     IgcDialogComponent,
     IgcInputComponent,
     IgcListComponent,
@@ -141,7 +146,7 @@ import './Search.scss';
     );
 
     if (results.length === 0) {
-      statusEl.innerHTML = `No results for “<strong class="igd-search-query">${escapeHtml(query)}</strong>”.`;
+      statusEl.innerHTML = `<span>No results for “<strong class="igd-search-query">${escapeHtml(query)}</strong>”.</span>`;
       listEl.innerHTML   = '';
       listEl.hidden      = true;
       return;
@@ -173,6 +178,10 @@ import './Search.scss';
   if (!_w.__searchListeners) {
     _w.__searchListeners = true;
 
+    document.addEventListener('igcClosed', (e: Event) => {
+      if ((e.target as Element).matches('igc-dialog.igd-search-dialog'));
+    });
+
     function updateSearchHint() {
       const hint = document.querySelector<HTMLElement>('kbd.search-trigger__hint');
       if (!hint) return;
@@ -188,6 +197,13 @@ import './Search.scss';
 
     document.addEventListener('click', (e: Event) => {
       if ((e.target as Element).closest('#search-trigger')) openSearch();
+    });
+
+    document.addEventListener('keydown', (e: KeyboardEvent) => {
+      if ((e.key === 'Enter' || e.key === ' ') && document.activeElement?.id === 'search-trigger') {
+        e.preventDefault();
+        openSearch();
+      }
     });
 
     document.addEventListener('keydown', (e: KeyboardEvent) => {
@@ -219,7 +235,7 @@ import './Search.scss';
         input.value = '';
         input.focus();
         runSearch('');
-      } else if (target.closest('.igd-search-shell .search-close')) {
+      } else if (target.closest('.search-close')) {
         document.querySelector<any>('igc-dialog.igd-search-dialog')?.hide();
       } else if (target.closest('.igd-search-shell') && target.closest('a[href]')) {
         document.querySelector<any>('igc-dialog.igd-search-dialog')?.hide();
