@@ -1,0 +1,85 @@
+---
+layout: ../../layouts/PlaygroundMdxLayout.astro
+title: Embedded Media
+slug: styles/media
+---
+
+# Embedded Media
+
+Reference for embedding video and audio in `.md` and `.mdx` files.
+
+---
+
+## YouTube embed — `<iframe>`
+
+Uses the facade pattern: a thumbnail is shown first; the heavy YouTube `<iframe>` is only injected into the DOM when the user clicks play.
+
+```html
+<iframe
+  src="https://www.youtube.com/embed/VIDEO_ID"
+  title="Video title"
+  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+  allowfullscreen
+  loading="lazy"
+></iframe>
+```
+
+<figure>
+  <iframe
+    style="width: 100%; aspect-ratio: 16 / 9; border: 0; border-radius: 0.5rem; display: block;"
+    src="https://www.youtube.com/embed/t2SuyaeAINg"
+    title="Infragistics Ultimate 25.2 Release Overview"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+    allowfullscreen
+    loading="lazy"
+  ></iframe>
+  <figcaption>
+    <a href="https://www.youtube.com/watch?v=t2SuyaeAINg" target="_blank" rel="noopener">Infragistics Ultimate 25.2 Release Overview</a>
+  </figcaption>
+</figure>
+
+---
+
+## Native video — `<video>`
+
+```html
+<video controls preload="metadata" poster="/img/poster.jpg">
+  <source src="/media/clip.mp4" type="video/mp4" />
+  <source src="/media/clip.ogg" type="video/ogg" />
+  Your browser does not support the video element.
+</video>
+```
+
+<figure>
+  <video
+    controls
+    preload="metadata"
+    poster="https://picsum.photos/seed/videoposter/800/450"
+  >
+    <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4" />
+    <source src="https://www.w3schools.com/html/mov_bbb.ogg" type="video/ogg" />
+    Your browser does not support the <code>video</code> element.
+  </video>
+  <figcaption>
+    Fig. 1 — Native <code>&lt;video&gt;</code> with <code>controls</code>,
+    <code>poster</code>, and two <code>&lt;source&gt;</code> formats (MP4 + OGG).
+  </figcaption>
+</figure>
+
+---
+
+## Native audio — `<audio>`
+
+```html
+<audio controls preload="metadata">
+  <source src="/media/clip.ogg" type="audio/ogg" />
+  <source src="/media/clip.mp3" type="audio/mpeg" />
+  Your browser does not support the audio element.
+</audio>
+```
+
+<audio controls preload="metadata">
+  <source src="https://www.w3schools.com/html/horse.ogg" type="audio/ogg" />
+  <source src="https://www.w3schools.com/html/horse.mp3" type="audio/mpeg" />
+  Your browser does not support the <code>audio</code> element.
+</audio>

@@ -66,6 +66,12 @@
 			}
 		}
 		
+		p + p {
+			// Make use of margin collapse the bigger value wins, since normal P have 16px on the bottom when
+			// we have p after p we have 24 in between them
+			margin-block-start: rem(24px);
+		}
+		
 		color: light-dark(var(--ig-gray-800), var(--ig-gray-500));
 		
 		padding: var(--igd-page-padding);
@@ -164,7 +170,7 @@
 			}
 		}
 		
-		iframe {
+		iframe:not(.igd-code-view iframe) {
 			border: rem(1px) solid light-dark(var(--ig-gray-200), var(--ig-gray-100));
 			margin-block-end: rem(26px);
 			border-radius: rem(8px);
@@ -176,7 +182,7 @@
 		ol:not(li ol),
 		dl:not(dd dl)
 		{
-			margin-bottom: rem(26px) !important;
+			margin-bottom: rem(26px);
 		}
 		
 		dl {
@@ -294,10 +300,6 @@
 			display: flex;
 			align-items: center;
 			gap: rem(8px);
-			// CSS baseline: ensure in-page anchor links scroll the heading clear of
-			// the sticky subheader. The JS-driven scroll-padding-top set by DocsToc
-			// (using the measured subheader bottom) takes precedence when available.
-			scroll-margin-top: rem(18px);
 	
 			&:hover .igd-anchor-link {
 				opacity: 1;
@@ -315,18 +317,18 @@
 	
 			// igc-icon-button internal sizing
 			--ig-size: 1;
-			--foreground: var(--ig-secondary-500);
-			--background: light-dark(var(--ig-gray-100), var(--ig-secondary-900));
-			--border-color: light-dark(var(--ig-gray-100), var(--ig-secondary-500));
+			--foreground: var(--ig-primary-600);
+			--background: var(--ig-primary-50);
+			--border-color: var(--ig-primary-100);
 			
-			--hover-foreground: var(--ig-secondary-500);
-			--hover-background: light-dark(var(--ig-gray-100), var(--ig-secondary-900));
+			--hover-foreground: var(--ig-primary-600);
+			--hover-background: var(--ig-primary-50);
 			
-			--focus-foreground: var(--ig-secondary-500);
-			--focus-background: light-dark(var(--ig-gray-100), var(--ig-secondary-900));
+			--focus-foreground: var(--ig-primary-600);
+			--focus-background: var(--ig-primary-50);
 			
-			--active-foreground: var(--ig-secondary-500);
-			--active-background: light-dark(var(--ig-gray-100), var(--ig-secondary-900));
+			--active-foreground: var(--ig-primary-600);
+			--active-background: var(--ig-primary-50);
 	
 			&::part(focused) {
 				&:after {
@@ -341,7 +343,7 @@
 			}
 	
 			igc-icon {
-				--size: rem(24px);
+				--ig-icon-size: rem(32px);
 			}
 		}
 		

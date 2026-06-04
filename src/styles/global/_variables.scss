@@ -8,22 +8,23 @@
 
 /* DOCS PALETTE */
 :root {
-	--igd-font-sans: "Instrument Sans", "Segoe UI", system-ui, sans-serif;
+	--igd-font-sans: aktiv-grotesk, "Segoe UI", system-ui, sans-serif;
 	--igd-font-mono: "JetBrains Mono", "Fira Code", "Cascadia Code", monospace;
 
 	// Those are the real igniteui logo type colors not related to the palette
 	--igd-logo-type: light-dark(#27265f, #fff);
 	
-	--igd-accent: var(--ig-primary-500);
+	--igd-accent: var(--ig-primary-600);
 	--igd-illustration: var(--igd-accent);
 	--igd-on-accent: var(--ig-primary-600-contrast);
 	--igd-border-radius: #{rem(4px)};
+	--igd-border-radius-xl: #{rem(10px)};
 	
 	--igd-app-bg: light-dark(var(--ig-surface-50), #0A0B10);
 	--igd-on-app-bg: light-dark(var(--ig-surface-900-contrast), var(--ig-surface-50-contrast));
 	
 	--igd-layout-sections-bg: var(--igd-app-bg);
-	--igd-app-outline-color: light-dark(var(--ig-gray-400), var(--igd-accent));
+	--igd-app-outline-color: light-dark(var(--ig-gray-200), var(--ig-gray-100));
 	--igd-app-outline-size: #{rem(1px)};
 	--igd-app-outline-style: solid;
 	--igd-app-outline: var(--igd-app-outline-size) var(--igd-app-outline-style) var(--igd-app-outline-color);
@@ -32,14 +33,22 @@
 	
 	// Desktop default. DocsLayout.scss overrides to 50px on mobile + tablet.
 	--igd-header-height: #{rem(75px)};
+	
+	// IG header height
+	--ig-header-height: #{rem(76px)};
+
+	/** Gap between the sticky header and the heading when clicking a TOC link. */
+	--igd-toc-scroll-offset: #{rem(24px)};
+	/** Set by DocsToc JS — measured bottom edge of the sticky subheader. */
+	--igd-toc-subheader-bottom: 0px;
 
 	--sticky-sidebar-top: 0;
 
 	--igd-members-spacing: var(--igd-border-radius) #{rem(16px)};
 
-	--igd-page-layout-grid: #{rem(300px)} 1fr;
+	--igd-page-layout-grid: #{rem(290px)} 1fr;
 
-	--igd-page-padding: #{rem(50px)};
+	--igd-page-padding: #{rem(48px)};
 	
 	// Padding
 	--igd-padding-sm: #{rem(16px)};
@@ -73,7 +82,7 @@
 	--igd-aside-padding: #{rem(16px)};
 	--igd-aside-row-gap: #{rem(4px)};
 	--igd-aside-column-gap: #{rem(16px)};
-	--igd-aside-border-width: #{rem(2px)};
+	--igd-aside-border-width: #{rem(4px)};
 	--igd-aside-border-radius: 0;
 	--igd-aside-margin-bottom: #{rem(26px)};
 	--igd-aside-border-style: solid;

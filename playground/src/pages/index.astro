@@ -26,7 +26,10 @@ const headings = [
     <SearchAdvanced slot="search" tabs={SEARCH_TABS} showScope={true} />
   </DocsSubHeader>
   <DocsSidebar slot="sidebar" items={SIDEBAR} currentSlug="" />
-  <DocsToc slot="toc" headings={headings} offsetTarget=".docs-subheader" />
+  <DocsToc slot="toc" headings={headings} offsetTarget=".docs-subheader"
+    packages={[...PACKAGES]} selectedPackage={PACKAGES[0].value}
+    versions={[...VERSIONS]} selectedVersion={VERSIONS[0]}
+  />
 
 
     <h1>igniteui-astro-components playground</h1>
@@ -67,7 +70,9 @@ const headings = [
 
     <h2 id="styles">Styles</h2>
     <ul>
-        <li><a href="/components/styleguide">Style Guide</a> — all HTML text and typography elements rendered through the theme.</li>
+        <li><a href="/styles/colors">Styles</a> — Colors, Typography, Lists, Tables, Code, Images, and more — one focused page per topic.</li>
+        <li><a href="/styles/colors">Colors</a> — the full color palette exposed as CSS custom properties.</li>
+        <li><a href="/styles/typography">Typography</a> — heading scale, body text, inline elements, and icon catalogue.</li>
     </ul>
 
     <h2 id="how-it-works">How it works</h2>

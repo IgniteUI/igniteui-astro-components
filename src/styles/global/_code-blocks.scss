@@ -35,6 +35,7 @@ pre.shiki {
 
 .copy-code-wrapper {
 	position: relative;
+	z-index: 0;
 }
 
 .copy-code-wrapper > .copy-btn {

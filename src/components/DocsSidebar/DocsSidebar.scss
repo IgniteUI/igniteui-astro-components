@@ -8,30 +8,22 @@
 		flex-direction: column;
 		z-index: var(--igd-sidebar-z-index);
 		border-inline-end: var(--igd-app-outline);
-		padding-inline: rem(16px);
-		padding-block: rem(24px);
+		padding: 0;
 		background-color: var(--igd-layout-sections-bg);
 		position: sticky;
 		top: var(--igd-header-height);
 		height: calc(100dvh - var(--igd-header-height));
 		max-height: 100dvh;
 		align-self: start;
-		gap: rem(8px);
 		view-transition-name: docs-sidebar;
 	
 		.sidebar-gutter {
 			display: grid;
-			gap: rem(8px);
+			gap: rem(16px);
 			overflow-y: hidden;
-	
-			// This Makes sure the input border is visible
-			// This is the height of the input in fluent theme + 8px padding
-			// TODO this can be made smart using a css variable to override the original height of the input and used here
-			min-height: rem(40px);
-	
-			igc-icon {
-				color: light-dark(var(--ig-gray-800), var(--ig-gray-300));
-			}
+			padding: rem(16px);
+			border-bottom: var(--igd-app-outline);
+			min-height: rem(73px);
 	
 			&:empty {
 				display: none;
@@ -60,11 +52,13 @@
 	
 	.sidebar-scroll {
 		overflow-y: auto;
-		scrollbar-gutter: stable;
+		padding-block: rem(12px);
+		scroll-behavior: smooth;
+		overscroll-behavior: contain;
 	}
 	
 	.sidebar-premium-icon {
-		--size: #{rem(24px)};
+		--size: #{rem(20px)};
 		
 		justify-self: end;
 		color: var(--igd-premium-color);
@@ -75,7 +69,6 @@
 		display: flex;
 		align-items: center;
 		gap: rem(8px);
-		padding: rem(4px);
 		
 		igc-badge {
 			justify-self: end;
@@ -85,12 +78,12 @@
 	
 	.docs-tree-group {
 		gap: rem(8px);
-		padding-inline-end: rem(4px);
+		padding: rem(12px) rem(8px);
 	}
 	
 	.group-label-text {
 		@include type-style('body-2') {
-			//font-weight: 600;
+			font-weight: 700;
 			margin-block: 0;
 		};
 		
@@ -113,6 +106,10 @@
 		align-items: center;
 		gap: rem(4px);
 		margin-left: auto;
+		
+		igc-badge::part(base) {
+			max-height: 20px;
+		}
 	}
 }
 

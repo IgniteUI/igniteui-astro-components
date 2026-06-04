@@ -18,60 +18,103 @@ igc-tree {
 	--ig-size: 1;
 	
 	position: relative;
+	padding-inline: rem(12px);
 }
 
-igc-tree[data-variant='toc'] {
-	&::before {
-		content: '';
-		position: absolute;
-		position-anchor: --selected-tree-item;
-		top: anchor(top);
-		height: anchor-size(height);
-		inset-inline-start: 0;
-		width: rem(2px);
-		background-color: var(--igd-accent);
-		transition: top 0.2s ease, height 0.2s ease;
-		z-index: 1;
-	}
-	
-	body.is-resizing &::before {
-		transition: none;
-	}
-	
-	&::after {
-		content: '';
-		position: absolute;
-		width: rem(1px);
-		inset-inline-start: 0;
-		top: 0;
-		z-index: 0;
-		height: 100%;
-		background: light-dark(var(--ig-gray-200), var(--ig-gray-300));
-	}
-}
+// TODO KEEP THIS IF WEE NEED ADDITIONAL VISUAL INDICATOR FOR THE TOC
+//igc-tree[data-variant='toc'] {
+//	&::before {
+//		content: '';
+//		position: absolute;
+//		position-anchor: --selected-tree-item;
+//		top: anchor(top);
+//		height: anchor-size(height);
+//		inset-inline-start: 0;
+//		width: rem(2px);
+//		background-color: var(--igd-accent);
+//		transition: top 0.2s ease, height 0.2s ease;
+//		z-index: 1;
+//	}
+//
+//	body.is-resizing &::before {
+//		transition: none;
+//	}
+//
+//	&::after {
+//		content: '';
+//		position: absolute;
+//		width: rem(1px);
+//		inset-inline-start: 0;
+//		top: 0;
+//		z-index: 0;
+//		height: 100%;
+//		background: light-dark(var(--ig-gray-200), var(--ig-gray-300));
+//	}
+//}
 
 /* TOC: groups can be selected (h2 with h3 children); anchor to the label div
    so height tracks only the row, not the expanded children below */
-igc-tree[data-variant='toc'] igc-tree-item[selected] > [slot='label'] {
-	anchor-name: --selected-tree-item;
+//igc-tree[data-variant='toc'] igc-tree-item[selected] > [slot='label'] {
+//	anchor-name: --selected-tree-item;
+//}
+
+
+igc-tree[data-variant='sidebar'] {
+	//igc-tree-item[data-has-children] {
+	//	margin-block-end: rem(8px);
+	//}
+	
+	igc-tree-item + igc-tree-item[data-has-children] {
+		margin-block-start: rem(4px);
+	}
+	
+	
+	.docs-tree-label {
+		@include type-style('body-2') {
+			margin-block: 0;
+			line-height: rem(20px);
+		}
+	}
+	
 }
 
-igc-tree-item + igc-tree-item[data-has-children] {
-	margin-block-start: rem(4px);
-}
-
-igc-tree-item[data-has-children] {
-	margin-block-end: rem(4px);
+igc-tree[data-variant='toc'] {
+	igc-tree-item[data-depth='0']::part(label) {
+		font-weight: 600 !important;
+		color: var(--ig-gray-900);
+	}
+	
+	igc-tree-item:not([data-has-children]) {
+		margin-block: rem(6px);
+	}
+	
+	igc-tree-item:not([data-depth='0'], [data-has-children]) {
+		margin-left: rem(16px);
+	}
+	
+	igc-tree-item[data-depth='0'] {
+		margin-block: rem(16px) 0;
+	}
+	
+	igc-tree-item::part(wrapper) {
+		line-height: 22.75px !important;
+		margin: 0 !important;
+	}
+	
+	> igc-tree-item:first-of-type {
+		margin-block-start: 0;
+	}
 }
 
 igc-tree-item {
-	--igc-tree-indentation-size: #{rem(12px)};
+	--igc-tree-indentation-size: 0;
 	--background: transparent;
 	--foreground: light-dark(var(--ig-gray-600), var(--ig-gray-400));
 	--background-selected: transparent;
 	--background-active: transparent;
 	--foreground-active: light-dark(var(--ig-gray-600), var(--ig-gray-400));
-	--foreground-hover: var(--igd-on-accent);
+	--foreground-hover: light-dark(var(--ig-gray-600), var(--ig-gray-400));
+	--hover-background: light-dark(var(--ig-gray-600), var(--ig-gray-400));
 	--background-disabled: transparent;
 	--hover-color: transparent;
 	--hover-selected-color: transparent;
@@ -112,9 +155,6 @@ igc-tree[data-variant='toc'] {
 		@include type-style('body-2') {
 			margin-block: 0;
 		}
-		
-		padding-inline-start: rem(24px);
-		padding-inline-end: rem(8px);
 	}
 	
 	igc-tree-item[active] {
@@ -157,6 +197,7 @@ igc-tree-item[data-has-children] {
 	color: inherit;
 	transform: rotate(-90deg);
 	transition: transform 0.2s ease;
+	margin-inline-end: rem(1px);
 }
 
 igc-tree-item[aria-expanded='false'] > [slot='label'] {
@@ -184,6 +225,21 @@ igc-tree-item[data-has-children] {
 	--foreground-hover: light-dark(var(--ig-gray-900), var(--ig-gray-50));
 }
 
+// This are the igc-tree-item that dont have igc-tree-item inside
+igc-tree-item:not([data-has-children]) {
+	&::part(wrapper) {
+		--size: auto;
+		
+		margin-block: rem(2px) !important;
+	}
+}
+
+igc-tree-item:not([data-depth='0'], [data-has-children]) {
+	.docs-tree-label {
+		font-weight: 400;
+	}
+}
+
 .docs-tree-label {
 	display: -webkit-box;
 	-webkit-line-clamp: 2;
@@ -202,27 +258,28 @@ igc-tree-item:not([data-has-children]):hover .docs-tree-label {
 .igd-label-and-badge {
 	position: relative;
 	border-radius: rem(4px);
-	padding-inline: rem(8px) rem(4px);
+	padding-block: rem(8px);
+	padding-inline-start: rem(12px);
+	padding-inline-end: rem(8px);
 	height: 100%;
 	z-index: -1;
 	
-	&::before {
-		content: '';
-		position: absolute;
-		inset-block-start: 0;
-		inset-inline-end: calc(100% + (var(--igc-tree-indentation-size) / 2));
-		width: rem(1px);
-		height: calc(100% + rem(4px));
-		border-radius: 0;
-		background: light-dark(var(--ig-gray-300), var(--ig-gray-300));
-	}
+	//&::before {
+	//	content: '';
+	//	position: absolute;
+	//	inset-block-start: 0;
+	//	inset-inline-end: calc(100% + (var(--igc-tree-indentation-size) / 2));
+	//	width: rem(1px);
+	//	height: calc(100% + rem(4px));
+	//	border-radius: 0;
+	//	background: light-dark(var(--ig-gray-300), var(--ig-gray-300));
+	//}
 }
 
 .docs-tree-link {
 	&:hover,
 	&:focus {
 		+ .igd-label-and-badge {
-			color: var(--igd-accent);
 			background-color: var(--ig-gray-100);
 		}
 	}

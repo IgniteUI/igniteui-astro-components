@@ -95,36 +95,27 @@ const resolvedIndexUrl = indexUrl ?? `${basePath}api-search-index/manifest.json`
   data-show-scope={showScope ? 'true' : 'false'}
   data-platform-icon={platformIcon ?? ''}
 >
-  <button
-    data-open-modal
-    disabled
-    aria-label={placeholder}
-    aria-keyshortcuts="Control+K"
-    class="search-trigger"
-
-  >
-    <igc-icon name="search" collection="docs" aria-hidden="true"></igc-icon>
-    <span class="search-trigger__lable" aria-hidden="true">{placeholder}</span>
-
-    <kbd class="search-trigger__hint" style="display: none;">
-      <kbd>Ctrl</kbd><kbd>K</kbd>
-    </kbd>
-  </button>
+    <div class="search-decoration">
+      <igc-input
+        data-open-modal
+        readonly
+        placeholder={placeholder}
+        aria-label={placeholder}
+        aria-keyshortcuts="Control+K"
+        aria-haspopup="dialog"
+        role="button"
+        class="search-trigger"
+      >
+        <igc-icon name="search" collection="docs" slot="prefix" aria-hidden="true"></igc-icon>
+        <kbd class="search-trigger__hint" slot="suffix" style="display: none;">
+          <kbd>Ctrl</kbd><kbd>K</kbd>
+        </kbd>
+      </igc-input>
+    </div>
 
     <igc-dialog aria-label={placeholder} class="igd-search-dialog" hide-default-action close-on-outside-click>
         <div class="igd-search-shell">
             <header class="igd-search-header">
-                <igc-select  placement="bottom-start" distance="17" id="search-scope-select" slot="prefix" class="igd-search-scope" outlined aria-label="Search scope" value="current">
-                    {platformIcon && <igc-icon id="search-scope-trigger-icon" name={platformIcon} collection="docs" slot="prefix" aria-hidden="true"></igc-icon>}
-                    <igc-select-item value="current">
-                        <span data-scope-label>Current package</span>
-                    </igc-select-item>
-                    <igc-select-item value="all">All packages</igc-select-item>
-                </igc-select>
-                <igc-tooltip anchor="search-scope-select" class="igd-search-scope-tooltip" placement="bottom" with-arrow></igc-tooltip>
-
-                <igc-divider vertical></igc-divider>
-
                 <igc-input
                     type="text"
                     class="igd-search-input"
@@ -137,22 +128,27 @@ const resolvedIndexUrl = indexUrl ?? `${basePath}api-search-index/manifest.json`
                     <igc-icon-button slot="suffix" class="igd-search-clear" variant="flat" type="button" aria-label="Clear search" name="clear" collection="docs" hidden></igc-icon-button>
                 </igc-input>
 
-                <button
-                    type="button"
-                    data-close-modal
-                    class="search-trigger search-close"
-                    aria-label="Close search"
-                >
-                    <igc-icon name="close" collection="docs" aria-hidden="true"></igc-icon>
-                </button>
+                <igc-select  placement="bottom-start" distance="17" id="search-scope-select" slot="prefix" class="igd-search-scope" outlined aria-label="Search scope" value="current">
+                    {platformIcon && <igc-icon id="search-scope-trigger-icon" name={platformIcon} collection="docs" slot="prefix" aria-hidden="true"></igc-icon>}
+                    <igc-select-item value="current">
+                        <span data-scope-label>Current package</span>
+                    </igc-select-item>
+                    <igc-select-item value="all">All packages</igc-select-item>
+                </igc-select>
+                <igc-tooltip anchor="search-scope-select" class="igd-search-scope-tooltip" placement="bottom" with-arrow></igc-tooltip>
+
             </header>
-
+            <div class="igd-search-content">
+                <div class="igd-search-status" aria-live="polite"></div>
+                <igc-tabs class="igd-search-tabs" activation="manual" hidden></igc-tabs>
+                <igc-list class="igd-search-results--flat" hidden></igc-list>
+            </div>
             <igc-divider></igc-divider>
-
-            <div class="igd-search-status" aria-live="polite"></div>
-
-            <igc-tabs class="igd-search-tabs" activation="manual" hidden></igc-tabs>
-            <igc-list class="igd-search-results--flat" hidden></igc-list>
+            <footer class="igd-search-footer">
+                <igc-button slot="footer" data-close-modal class="search-close" variant="outlined">
+                    Close
+                </igc-button>
+            </footer>
         </div>
     </igc-dialog>
 </api-search-advanced>
@@ -162,6 +158,7 @@ const resolvedIndexUrl = indexUrl ?? `${basePath}api-search-index/manifest.json`
     defineComponents,
     IgcInputComponent,
     IgcDialogComponent,
+    IgcButtonComponent,
     IgcSelectComponent,
     IgcSelectItemComponent,
     IgcIconButtonComponent,
@@ -178,6 +175,7 @@ const resolvedIndexUrl = indexUrl ?? `${basePath}api-search-index/manifest.json`
   defineComponents(
     IgcInputComponent,
     IgcDialogComponent,
+    IgcButtonComponent,
     IgcSelectComponent,
     IgcSelectItemComponent,
     IgcIconButtonComponent,
@@ -295,8 +293,8 @@ const resolvedIndexUrl = indexUrl ?? `${basePath}api-search-index/manifest.json`
         }
       }
 
-      const openBtn  = this.querySelector<HTMLButtonElement>('button[data-open-modal]')!;
-      const closeBtn = this.querySelector<HTMLButtonElement>('button[data-close-modal]')!;
+      const openBtn  = this.querySelector<HTMLElement>('[data-open-modal]')!;
+      const closeBtn = this.querySelector<HTMLElement>('[data-close-modal]')!;
       this.dialog    = this.querySelector<IgcDialogComponent>('igc-dialog')!;
       this.input     = this.querySelector<IgcInputComponent>('igc-input.igd-search-input')!;
       this.clearBtn  = this.querySelector<IgcIconButtonComponent>('.igd-search-clear')!;
@@ -350,19 +348,27 @@ const resolvedIndexUrl = indexUrl ?? `${basePath}api-search-index/manifest.json`
       }
 
       const open = async () => {
-        await this.dialog.show();
+        const sw = window.innerWidth - document.documentElement.clientWidth;
+        if (sw) document.body.style.paddingRight = `${sw}px`;
         document.body.toggleAttribute('data-search-modal-open', true);
+        await this.dialog.show();
         this.loadIndex();
         this.input.focus();
       };
 
       openBtn.addEventListener('click', open);
-      openBtn.disabled = false;
+      openBtn.addEventListener('keydown', (e: KeyboardEvent) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          open();
+        }
+      });
 
       closeBtn.addEventListener('click', () => this.closeModal());
 
       this.dialog.addEventListener('igcClosed', () => {
         document.body.toggleAttribute('data-search-modal-open', false);
+        document.body.style.paddingRight = '';
       });
 
       // Close dialog when a result link is clicked — covers both tab panels and the flat list
@@ -854,7 +860,7 @@ const resolvedIndexUrl = indexUrl ?? `${basePath}api-search-index/manifest.json`
       }
       tabsHtml.push(
         `<igc-tab data-tab-id="all" label="All"${this.currentTab === 'all' ? ' selected' : ''}>` +
-          `<span slot="suffix" class="igd-search-tab-count">/${totalCount}/</span>` +
+          `<span slot="suffix" class="igd-search-tab-count">${totalCount}</span>` +
           allContent.join('') +
         `</igc-tab>`
       );
@@ -870,7 +876,7 @@ const resolvedIndexUrl = indexUrl ?? `${basePath}api-search-index/manifest.json`
         const hasMore = list.length > MAX_PER_CATEGORY_TAB;
         tabsHtml.push(
           `<igc-tab data-tab-id="${cat.id}" label="${escapeHtml(cat.label)}"${isSelected ? ' selected' : ''}>` +
-            `<span slot="suffix" class="igd-search-tab-count">/${list.length}/</span>` +
+            `<span slot="suffix" class="igd-search-tab-count">${list.length}</span>` +
             `<igc-list class="igd-search-results">${displayList.map(m => this.matchHtml(m)).join('')}</igc-list>` +
             (hasMore ? `<p class="igd-search-refine-hint">Showing first ${MAX_PER_CATEGORY_TAB} of ${list.length} matches &mdash; refine your search to narrow results.</p>` : '') +
           `</igc-tab>`
@@ -895,7 +901,7 @@ const resolvedIndexUrl = indexUrl ?? `${basePath}api-search-index/manifest.json`
       const totalCount = Array.from(this.currentMatches.values()).reduce((s, l) => s + l.length, 0);
       if (totalCount === 0) {
         this.statusEl.innerHTML = this.currentQuery
-          ? `No results for "<strong class="igd-search-query">${escapeHtml(this.currentQuery)}</strong>".`
+          ? `<span>No results for "<strong class="igd-search-query">${escapeHtml(this.currentQuery)}</strong>".</span>`
           : 'No results.';
       } else {
         this.statusEl.textContent = '';

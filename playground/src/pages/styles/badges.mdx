@@ -1,0 +1,57 @@
+---
+layout: ../../layouts/PlaygroundMdxLayout.astro
+title: Badges
+slug: styles/badges
+---
+import LicenseIndicator from '../../../../src/components/LicenseIndicator/LicenseIndicator.astro';
+
+# Badges
+
+Badges communicate the licensing tier of a page's content at a glance. Every component or API page should carry a badge so readers immediately know what subscription level is required.
+
+## Placement
+
+Place the badge **at the very top of the page**, directly above the `# H1` heading. This is the first thing a reader sees and sets expectations before they read a single word.
+
+```mdx
+---
+layout: ../../layouts/PlaygroundMdxLayout.astro
+title: My Component
+---
+import LicenseIndicator from '@components/LicenseIndicator/LicenseIndicator.astro';
+
+<LicenseIndicator license="premium" />
+
+# My Component
+```
+
+## When to use each badge
+
+| Badge | Use when… |
+|---|---|
+| **Premium** | The page documents a component, feature, or API that requires a commercial Ignite UI license (e.g. Data Grid, Pivot Grid, Scheduler). |
+| **Open Source** | The page documents a component or feature that is freely available under an open-source license. |
+
+When in doubt, check whether the package the component belongs to is distributed under a commercial or OSS license.
+
+## Preview
+
+<LicenseIndicator license="premium" />
+
+<LicenseIndicator license="opensource" />
+
+## Usage
+
+```astro
+---
+import LicenseIndicator from '@components/LicenseIndicator/LicenseIndicator.astro';
+---
+
+<!-- Premium page -->
+<LicenseIndicator license="premium" />
+
+<!-- Open source page -->
+<LicenseIndicator license="opensource" />
+```
+
+The `license` prop accepts `"premium"` or `"opensource"`. Omitting it (or passing `false`) renders nothing.

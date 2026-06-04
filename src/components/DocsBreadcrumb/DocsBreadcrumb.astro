@@ -45,9 +45,7 @@ const crumbs            = sidebarCrumbs.length > 0 ? sidebarCrumbs : (pageTitle 
         ) }
         { crumbs.map((label, i) => (
             <li class="docs-breadcrumb-item">
-                <span class="docs-breadcrumb-sep" aria-hidden="true">
-                /
-                </span>
+                <igc-icon name="chevron" collection="docs" class="docs-breadcrumb-sep" aria-hidden="true"></igc-icon>
                 <span class="docs-breadcrumb-crumb" title={ label }>{ label }</span>
             </li>
         )) }

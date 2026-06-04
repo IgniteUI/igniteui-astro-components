@@ -1,0 +1,84 @@
+---
+layout: ../../layouts/PlaygroundMdxLayout.astro
+title: Lists
+slug: styles/lists
+---
+
+# Lists
+
+Reference for all list types available in `.md` and `.mdx` files.
+
+---
+
+## Unordered list
+
+Use a `-` or `*` prefix for bullet points. Indent two spaces to nest.
+
+```md
+- First item
+- Second item
+  - Nested item A
+  - Nested item B
+    - Nested item B.1
+- Third item
+```
+
+- First item
+- Second item
+  - Nested item A
+  - Nested item B
+    - Nested item B.1
+    - Nested item B.2
+- Third item
+
+---
+
+## Ordered list
+
+Use `1.`, `2.`, etc. Indent three spaces to nest ordered items.
+
+```md
+1. Install dependencies
+2. Configure the project
+   1. Set up environment variables
+   2. Edit the config file
+3. Run the dev server
+4. Build for production
+```
+
+1. Install dependencies
+2. Configure the project
+   1. Set up environment variables
+   2. Edit the config file
+      1. Set the base URL
+      2. Set the output directory
+      3. Enable source maps
+   3. Install optional plugins
+3. Run the dev server
+   1. Open the browser
+   2. Navigate to localhost
+4. Build for production
+
+---
+
+## Description list
+
+Use raw HTML for description lists — Markdown has no shorthand for `<dl>`.
+
+```html
+<dl>
+  <dt>Description term</dt>
+  <dd>The term being defined or described.</dd>
+  <dt>Description details</dt>
+  <dd>The value or explanation associated with the preceding term.</dd>
+</dl>
+```
+
+<dl>
+  <dt>Description term</dt>
+  <dd>The term being defined or described.</dd>
+  <dt>Description details</dt>
+  <dd>The value or explanation associated with the preceding term.</dd>
+  <dt>Description list</dt>
+  <dd>A container pairing one or more terms with their descriptions.</dd>
+</dl>

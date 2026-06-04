@@ -14,6 +14,7 @@
 	background: var(--igd-app-bg);
 	color: var(--igd-on-app-bg);
 	margin: 0;
+	position: relative;
 	z-index: 0;
 
 	&:not(:has(.igd-right-sidebar)) {
@@ -28,6 +29,7 @@
 .igd-main-content {
 	display: grid;
 	position: relative;
+	//background: var(--ig-surface-500);
 
 	&:not(:has(.igd-right-sidebar)) {
 		.igd-main-pane {
@@ -35,48 +37,6 @@
 				margin: 0
 			}
 		}
-	}
-
-	// ── Static square grid background ────────────────────────────────────────────
-	// Pure CSS: two repeating-linear-gradients intersected via mask-composite
-	// create 4×4px squares at a 35px grid pitch.
-	// A radial vignette mask (3rd layer) fades them toward the edges.
-	&::before {
-		content: '';
-		position: absolute;
-		inset: 0;
-		inset-block-start: 0;
-		pointer-events: none;
-		user-select: none;
-		z-index: 0;
-
-		$pitch: 35px;
-		$sq:     3px;
-		$pad:   15.5px;
-
-		background-color: light-dark(var(--ig-gray-500), var(--igd-accent));
-
-		// Two mask layers intersected:
-		//   horizontal-strips ∩ vertical-strips → squares with no edge fade
-		mask-image:
-			// 1. Horizontal 4px bands at 35px pitch  (repeating-linear 0deg = top-to-bottom)
-			repeating-linear-gradient(0deg,
-			transparent 0,           transparent #{$pad},
-			black        #{$pad},    black        #{$pad + $sq},
-			transparent  #{$pad + $sq}, transparent #{$pitch}
-			),
-			// 2. Vertical 4px bands at 35px pitch  (repeating-linear 90deg = left-to-right)
-			repeating-linear-gradient(90deg,
-			transparent 0,           transparent #{$pad},
-			black        #{$pad},    black        #{$pad + $sq},
-			transparent  #{$pad + $sq}, transparent #{$pitch}
-			);
-
-		mask-size: #{$pitch} #{$pitch}, #{$pitch} #{$pitch};
-		mask-composite: intersect;
-		-webkit-mask-composite: source-in;
-
-		opacity: .5;
 	}
 }
 
@@ -137,15 +97,6 @@
 		border-inline: var(--igd-app-outline);
 		width: clamp(rem(1200px), 100%, rem(1200px));
 	}
-	
-	.igd-main-content__inner {
-		gap: rem(70px);
-		padding-inline: rem(70px) rem(32px);
-	}
-	
-	.toc-sidebar {
-		border-inline: var(--igd-app-outline);
-	}
 }
 
 // ── Mobile + Tablet (< 1280px) — everything below desktop ──────────────────
@@ -168,19 +119,7 @@
 	.igd-logo {
 		display: none;
 	}
-
-	// Search: collapse trigger to icon-only and reveal the mobile-only close UI.
-	.search-trigger {
-		max-width: none;
-		width: auto;
-	}
-
-	.search-trigger__label,
-	.search-trigger__lable,
-	.search-trigger__hint {
-		display: none;
-	}
-
+	
 	.igd-search-mobile-bar {
 		display: flex;
 	}
@@ -246,14 +185,20 @@
 	.sidebar-gutter {
 		min-height: rem(80px);
 	}
+	
+	.igd-search-shell {
+		grid-template-rows: auto calc(100% - (var(--search-header-footer-height) * 2)) auto;
+	}
+	
+	.igd-search-footer {
+		display: flex;
+		align-items: center;
+		justify-content: end;
+	}
 }
 
 // ── Mobile only (< 768px) ──────────────────────────────────────────────────
 @media (max-width: #{$bp-mobile-max}) {
-	.igd-main-content::before {
-		display: none;
-	}
-
 	.igd-version-select {
 		max-width: rem(90px);
 	}
@@ -286,30 +231,13 @@
 	// (those files load after this one in the Astro bundle).
 	.igd-page-layout .search-dialog,
 	.igd-page-layout .igd-search-dialog::part(base) {
+		--border-radius: #{rem(8px)};
+		
 		margin: 0;
 		width: 100%;
 		max-width: 100%;
 		height: 100dvh;
 		max-height: 100dvh;
-		border-radius: 0;
-	}
-	
-	.search-trigger.search-close {
-		display: flex;
-		flex-shrink: 0;
-		padding-inline: var(--igd-padding-sm);
-	}
-	
-	igc-input {
-		&::part(container) {
-			&:focus-within {
-				box-shadow:
-					0 0 0 1px var(--igd-accent),
-					inset 0 1px 0 var(--igd-accent),
-					inset 0 -1px 0 var(--igd-accent),
-					 -1px 0 0 var(--igd-accent);
-			}
-		}
 	}
 }
 

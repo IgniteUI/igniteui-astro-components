@@ -31,16 +31,17 @@
 	--nav-btn-hover-bg: transparent;
 	--nav-height: auto;
 	
+	position: relative;
+	z-index: 1;
+	
 	background: var(--igd-layout-sections-bg);
 	color: var(--nav-color, inherit);
 	
 	// Element selectors are never hashed by CSS Modules — no :global() needed.
 	header {
-		position: static;
 		top: 0;
 		left: 0;
 		right: 0;
-		z-index: 1000;
 		font-family: aktiv-grotesk, sans-serif;
 		
 		:global(.navbar) {
@@ -56,7 +57,7 @@
 	// Class names below come from the injected headerHtml / static fallback markup.
 	// CSS Modules would hash them, breaking the match — :global() prevents that.
 	:global(.globalnav__primary) {
-		padding-inline: rem(16px);
+		padding-inline: rem(9px);
 		border-bottom: var(--igd-app-outline) !important;
 		
 		@media (max-width: #{$bp-tablet-max}) {

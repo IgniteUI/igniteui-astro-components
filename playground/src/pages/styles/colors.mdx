@@ -1,0 +1,66 @@
+---
+layout: ../../layouts/PlaygroundMdxLayout.astro
+title: Colors
+slug: styles/colors
+---
+import ColorPalette from '../../components/ColorPalette.astro';
+
+# Colors
+
+The theme exposes a complete color palette as CSS custom properties. Every family has shades `50` (lightest) through `900` (darkest). **Primary** and **Secondary** also include accent shades `A100`–`A700`.
+
+## Using colors
+
+Reference any shade directly in CSS using `var()`:
+
+```css
+.my-element {
+  background: var(--ig-primary-500);
+  color: var(--ig-primary-500-contrast);
+}
+```
+
+The pattern is always `--ig-{family}-{shade}`. For a contrasting foreground use the companion `--ig-{family}-{shade}-contrast` variable — see [Contrast pairs](#contrast-pairs) below.
+
+## Color families
+
+Each family has a semantic role. Pick the one that matches your intent, not the shade you like visually.
+
+| Family | Role |
+|---|---|
+| **Primary** | Main brand actions — contained buttons, links, active/focus states |
+| **Secondary** | Accents, FABs, selection controls, highlighted chips |
+| **Gray** | Body text, labels, borders, dividers, disabled states |
+| **Surface** | Page backgrounds, card surfaces, panel fills |
+| **Info** | Informational banners and inline hints |
+| **Success** | Positive feedback, completion indicators, valid states |
+| **Warn** | Caution alerts, optional-step callouts |
+| **Error** | Errors, validation failures, destructive actions |
+
+### Choosing a shade
+
+| Range | Typical use |
+|---|---|
+| `50–200` | Tinted backgrounds, hover fills, subtle highlights |
+| `300–400` | Borders, icon fills, secondary text on light surfaces |
+| `500` | The "brand" shade — default for interactive elements |
+| `600–700` | Hover/active state darkening of `500` |
+| `800–900` | Strong emphasis text, dark overlays |
+
+## Contrast pairs
+
+Every shade ships with a companion contrast variable that resolves to a legible foreground color (black or white) for text placed on that background:
+
+```css
+/* text placed on a primary-500 background will always be readable */
+background: var(--ig-primary-500);
+color: var(--ig-primary-500-contrast);
+```
+
+Always use the contrast variable instead of a hard-coded colour whenever your text sits on a themed background.
+
+## Palette
+
+Hover any swatch to see its CSS variable name.
+
+<ColorPalette />
