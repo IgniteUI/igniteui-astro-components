@@ -10,20 +10,22 @@
 	top: var(--igd-header-height);
 	max-width: var(--ig-toc-width);
 	width: 100%;
-	min-width: rem(280px);
+	min-width: rem(256px);
 	max-height: calc(100vh - var(--igd-header-height));
 	overflow-y: auto;
-	padding: rem(24px);
+	padding-block: rem(24px);
+}
+
+.toc-wrapper {
 	border-inline-end: var(--igd-app-outline);
 	border-block-end: var(--igd-app-outline);
 	background-color: var(--igd-layout-sections-bg);
+	height: 100%;
 }
 
 
 .toc-sidebar__heading {
-	@include type-style('body-2') {
-		margin: 0;
-	};
+	@include type-style('body-2');
 	
 	color: var(--ig-gray-500);
 	padding-block-end: rem(8px);

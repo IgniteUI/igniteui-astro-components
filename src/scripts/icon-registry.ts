@@ -12,44 +12,13 @@
  */
 
 import { registerIconFromText } from 'igniteui-webcomponents';
+import { ICON_LIST, DOCS_COLLECTION } from './icon-manifest';
 
-export const DOCS_COLLECTION = 'docs';
-
-/**
- * Legacy aliases: maps the icon name used in markup → actual filename stem.
- * Only needed when the desired name differs from the filename (minus .svg).
- */
-const ALIASES: Record<string, string> = {
-  'expand':     'expand-icon',
-  'react-logo': 'react',
-  'wc-logo':    'web-component-logo',
-};
-
-// Vite glob — imports raw SVG content at build time (preferred over URL fetching).
-// Relative path so this works regardless of the consuming project's root.
-const svgModules = import.meta.glob('../assets/icons/*.svg', { query: '?raw', import: 'default', eager: true }) as Record<string, string>;
+export { DOCS_COLLECTION };
 
 export function registerIcons(): void {
-  // Build a stem → svg content map from the glob results
-  const stemToSvg = new Map<string, string>();
-  for (const [path, svg] of Object.entries(svgModules)) {
-    const stem = path.split('/').pop()!.replace(/\.svg$/, '');
-    stemToSvg.set(stem, svg);
-  }
-
-  // Register each icon: prefer alias name, fall back to stem as the icon name
-  const registered = new Set<string>();
-  for (const [alias, stem] of Object.entries(ALIASES)) {
-    if (stemToSvg.has(stem)) {
-      registerIconFromText(alias, stemToSvg.get(stem)!, DOCS_COLLECTION);
-      registered.add(stem);
-    }
-  }
-  // Register remaining icons using their filename stem as the name
-  for (const [stem, svg] of stemToSvg) {
-    if (!registered.has(stem)) {
-      registerIconFromText(stem, svg, DOCS_COLLECTION);
-    }
+  for (const { name, svg } of ICON_LIST) {
+    registerIconFromText(name, svg, DOCS_COLLECTION);
   }
 }
 

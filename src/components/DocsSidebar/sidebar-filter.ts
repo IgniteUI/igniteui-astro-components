@@ -265,34 +265,19 @@ class SidebarFilter extends HTMLElement {
     const sc = this.scrollEl;
     if (!sc) return;
     if (isClientNav) {
-      // igc-tree-item is already defined; one rAF is enough for layout.
       requestAnimationFrame(() => {
-        // Snap to the pre-navigation position first so the sidebar appears
-        // where the user last saw it, then smooth-scroll the short remaining
-        // distance to center the active item.
-        sc.scrollTop = parseInt(safeGet(SCROLL_KEY) || '0', 10) || 0;
+        sc.scrollTo({ top: parseInt(safeGet(SCROLL_KEY) || '0', 10) || 0, behavior: 'instant' });
         sc.style.visibility = '';
-        sc.scrollTo({ top: this.activeScrollOffset(sc), behavior: 'smooth' });
       });
     } else {
-      // Hard page load: wait for igc-tree-item so Lit microtasks drain first.
       customElements.whenDefined('igc-tree-item').then(() =>
         requestAnimationFrame(() => {
-          sc.scrollTop = this.activeScrollOffset(sc);
           sc.style.visibility = '';
+          const active = this.querySelector<HTMLAnchorElement>('a[aria-current="page"]');
+          active?.scrollIntoView({ block: 'nearest' });
         })
       );
     }
-  }
-
-  private activeScrollOffset(sc: HTMLElement): number {
-    const active = this.querySelector<HTMLAnchorElement>('a[aria-current="page"]');
-    if (!active) return 0;
-    const linkRect = active.getBoundingClientRect();
-    const cRect    = sc.getBoundingClientRect();
-    // Center the active item in the scroll container.
-    const itemTop = sc.scrollTop + (linkRect.top - cRect.top);
-    return itemTop - (sc.clientHeight / 2) + (linkRect.height / 2);
   }
 
   // ── Filter ───────────────────────────────────────────────────────────────

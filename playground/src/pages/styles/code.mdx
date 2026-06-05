@@ -1,0 +1,66 @@
+---
+layout: ../../layouts/PlaygroundMdxLayout.astro
+title: Code
+slug: styles/code
+---
+
+# Code
+
+Reference for all code and preformatted text elements.
+
+---
+
+## Inline elements
+
+| Element | Example | Use when |
+|---|---|---|
+| `` `code` `` | Use `console.log()` for debugging | Inline code snippets, file names, values |
+| `<kbd>` | Press <kbd>Ctrl</kbd>+<kbd>K</kbd> to open search | Keyboard input or shortcuts |
+| `<samp>` | Output: <samp>Error: connection refused on port 3000</samp> | Program or terminal output |
+| `<var>` | The formula uses variable <var>x</var> as input | Mathematical or programming variables |
+
+```html
+<p>Use <code>console.log()</code> for debugging.</p>
+<p>Press <kbd>Ctrl</kbd>+<kbd>K</kbd> to open search.</p>
+<p>Output: <samp>Error: connection refused on port 3000</samp></p>
+<p>The formula uses variable <var>x</var> as input.</p>
+```
+
+---
+
+## Fenced code block
+
+Use a fenced code block with a language hint for syntax highlighting:
+
+````md
+```ts
+function greet(name: string): string {
+  return `Hello, ${name}!`;
+}
+```
+````
+
+```ts
+function greet(name: string): string {
+  return `Hello, ${name}!`;
+}
+
+console.log(greet('World')); // Hello, World!
+```
+
+---
+
+## Preformatted text
+
+Use `<pre>` alone for preformatted text without code semantics. Leading whitespace and indentation are preserved exactly as written.
+
+```html
+<pre>Plain preformatted text without code semantics.
+  Leading whitespace    is    preserved.
+    Indentation is respected.</pre>
+```
+
+<pre>Plain preformatted text without code semantics.
+  Leading whitespace    is    preserved.
+    Indentation is respected.
+— &lt;pre&gt; alone</pre>

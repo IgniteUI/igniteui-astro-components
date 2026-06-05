@@ -17,9 +17,6 @@ import { productLinks, sidebar as sidebarData, title as siteTitle, packages as v
 import Search from '../Search/Search.astro';
 import type { SidebarEntry } from '../../lib/sidebar/types';
 import { getBreadcrumb } from '../../lib/sidebar/helpers';
-import logoRaw from '../../assets/ig-logo.svg?raw';
-import moonRaw from '../../assets/icons/moon.svg?raw';
-import sunRaw from '../../assets/icons/sun.svg?raw';
 import './DocsSubHeader.scss';
 
 const PLATFORM_ICONS: Record<string, string> = {
@@ -28,6 +25,15 @@ const PLATFORM_ICONS: Record<string, string> = {
   blazor: 'blazor-logo',
   'web-components': 'wc-logo',
 };
+
+function getPlatformIcon(text: string): string | null {
+  const t = text.toLowerCase();
+  if (t.includes('angular'))                                                         return 'angular-logo';
+  if (t.includes('react'))                                                           return 'react-logo';
+  if (t.includes('blazor'))                                                          return 'blazor-logo';
+  if (t.includes('web-component') || t.includes('webcomponent') || t.includes('wc')) return 'wc-logo';
+  return null;
+}
 
 interface ProductLink {
   label: string;
@@ -97,7 +103,7 @@ const {
   versionLabel = 'Version',
   showThemeToggle = false,
   themeStorageKey = 'docs-theme',
-  logoText = 'IgniteUI',
+  logoText = 'Ignite UI',
 } = Astro.props;
 const resolvedSiteTitle = siteTitleProp ?? siteTitle;
 const currentPlatform = virtualPlatform ?? null;
@@ -108,74 +114,69 @@ const rawPackages = packagesProp ?? (virtualPackages?.length > 0 ? virtualPackag
 const packages = (rawPackages as PackageEntry[] | undefined)?.map((p: PackageEntry) =>
     typeof p === 'string' ? { label: p, value: p, href: undefined } : { label: p.label, value: p.value ?? p.label, href: p.href }
 );
-const selectedPackage = selectedPackageProp ?? (virtualSelectedPackage || undefined);
+const selectedPackage = selectedPackageProp ?? (virtualSelectedPackage || undefined) ?? packages?.[0]?.value;
 const platformIcon = PLATFORM_ICONS[selectedPackage ?? ''] ?? PLATFORM_ICONS[currentPlatform ?? ''] ?? null;
 
 const resolvedSidebar = (sidebarItems ?? sidebarData) as SidebarEntry[];
 const sidebarCrumbs = currentSlug ? getBreadcrumb(resolvedSidebar, currentSlug) : [];
 const crumbs = sidebarCrumbs.length > 0 ? sidebarCrumbs : (pageTitle ? [pageTitle] : []);
+
+const PLATFORM_LABELS: Record<string, string> = {
+  angular: 'Angular',
+  react: 'React',
+  blazor: 'Blazor',
+  'web-components': 'Web Components',
+};
+const platformLabel = currentPlatform ? (PLATFORM_LABELS[currentPlatform] ?? null) : null;
 ---
 
 <docs-subheader-menu class="igd-docs-subheader" data-platform={currentPlatform ?? ''}>
-
         <div class="igd-logo">
-            <Fragment set:html={logoRaw} />
-            <h1>{logoText}</h1>
+            <!-- Sidebar toggle — visible only when the sidebar is hidden (tablet + mobile) -->
+            <igc-icon-button
+                    class="subheader-sidebar-toggle"
+                    variant="flat"
+                    data-sidebar-toggle
+                    aria-label="Toggle sidebar navigation"
+                    aria-expanded="false"
+                    title="Toggle sidebar">
+                <igc-icon name="hamburger-menu" collection="docs" aria-hidden="true"></igc-icon>
+            </igc-icon-button>
+            <div class="igd-logo__text">
+                <h1>{logoText}</h1>
+                {platformLabel && <span class="igd-logo__platform">for {platformLabel}</span>}
+            </div>
         </div>
 
         <div class="igd-docs-subheader__content">
             <!-- Search (overridable via named slot) -->
             <slot name="search"><Search /></slot>
 
-            <!-- Package selector (optional) -->
+            <!-- Package selector -->
             {packages && packages.length > 0 && (
-                <igc-select distance="17" id="package-select" class="igd-package-select" outlined value={selectedPackage} aria-label={packageLabel}>
+                <igc-select distance="4" id="package-select" class="igd-package-select" outlined value={selectedPackage} aria-label={packageLabel}>
                     {platformIcon && <igc-icon name={platformIcon} collection="docs" slot="prefix" aria-hidden="true"></igc-icon>}
-                    {packages.map((p) => (
-                        <igc-select-item value={p.value} data-href={p.href}>{p.label}</igc-select-item>
-                    ))}
+                    {packages.map((p) => {
+                        const icon = getPlatformIcon(p.value ?? '') ?? getPlatformIcon(p.label ?? '');
+                        return (
+                            <igc-select-item value={p.value} data-href={p.href}>
+                                {icon && <igc-icon slot="prefix" name={icon} collection="docs" aria-hidden="true"></igc-icon>}
+                                {p.label}
+                            </igc-select-item>
+                        );
+                    })}
                 </igc-select>
             )}
-            {packages && packages.length > 0 && (
-                <igc-tooltip anchor="package-select" id="package-tooltip" placement="bottom-end" with-arrow>
-                    {packages.find(p => p.value === selectedPackage)?.label ?? selectedPackage ?? ''}
-                </igc-tooltip>
-            )}
 
-            <!-- Version selector (optional) -->
+            <!-- Version selector -->
             {versions && versions.length > 0 && (
-                <igc-select distance="17" class="igd-version-select" id="version-select" outlined value={selectedVersion} aria-label={versionLabel}>
+                <igc-select distance="4" id="version-select" class="igd-version-select" outlined value={selectedVersion} aria-label={versionLabel}>
                     {versions.map((v) => (
-                            <igc-select-item value={v}>{v}</igc-select-item>
+                        <igc-select-item value={v}>{v}</igc-select-item>
                     ))}
                 </igc-select>
             )}
 
-            <!-- Toggle Astro light/dark mode -->
-            {showThemeToggle && (
-                <igc-icon-button
-                    class="subheader-theme-toggle"
-                    variant="flat"
-                    data-theme-toggle
-                    data-theme-key={themeStorageKey}
-                    aria-label="Toggle theme"
-                    title="Toggle light/dark theme">
-                    <span class="theme-icon theme-icon--sun" aria-hidden="true"><Fragment set:html={sunRaw} /></span>
-                    <span class="theme-icon theme-icon--moon" aria-hidden="true"><Fragment set:html={moonRaw} /></span>
-                </igc-icon-button>
-            )}
-
-            <!-- Sidebar toggle — visible only when the sidebar is hidden (tablet + mobile) -->
-            <igc-icon-button
-                class="subheader-sidebar-toggle"
-                variant="flat"
-                data-sidebar-toggle
-                aria-label="Toggle sidebar navigation"
-                aria-expanded="false"
-                title="Toggle sidebar">
-                <igc-icon name="dropdown-indicator-bold" collection="docs" class="toggle-icon toggle-icon--dropdown" aria-hidden="true"></igc-icon>
-                <igc-icon name="hamburger-menu" collection="docs" class="toggle-icon toggle-icon--hamburger" aria-hidden="true"></igc-icon>
-            </igc-icon-button>
 
             <!-- TODO WHY WE NEED THIS? -->
             <!--{filteredLinks.length > 0 && (-->
@@ -278,71 +279,6 @@ const crumbs = sidebarCrumbs.length > 0 ? sidebarCrumbs : (pageTitle ? [pageTitl
                     document.body.removeAttribute('data-sidebar-open');
                     sidebarBtn?.setAttribute('aria-expanded', 'false');
                 });
-
-                // Theme toggle
-                const themeBtn = this.querySelector<HTMLElement>('[data-theme-toggle]');
-                if (themeBtn) {
-                    themeBtn.addEventListener('click', () => {
-                        const current = document.documentElement.getAttribute('data-theme');
-                        const next = current === 'dark' ? 'light' : 'dark';
-                        document.documentElement.setAttribute('data-theme', next);
-                        const key = themeBtn.dataset.themeKey || 'docs-theme';
-                        try { localStorage.setItem(key, next); } catch (_) {}
-
-                        // Force WebKit to repaint the document scrollbar so
-                        // ::-webkit-scrollbar-* styles pick up the new data-theme.
-                        const html = document.documentElement;
-                        const saved = html.style.overflow;
-                        html.style.overflow = 'hidden';
-                        html.offsetHeight; // trigger reflow
-                        html.style.overflow = saved;
-                    });
-                }
-
-                // Swap text → logo when the GlobalNavBar scrolls out of view.
-                const globalNav = document.querySelector('[data-astro-transition-persist="global-nav-bar"]');
-                if (globalNav) {
-                    const observer = new IntersectionObserver(
-                        ([entry]) => {
-                            this.classList.toggle('igd-docs-subheader--pinned', !entry.isIntersecting);
-                        },
-                        { threshold: 0 }
-                    );
-                    observer.observe(globalNav);
-
-                    // On page navigation, always reset to the unpinned state.
-                    // The observer fires mid-transition (GlobalNavBar briefly clipped)
-                    // and would leave --pinned set when the new page loads at scroll=0.
-                    document.addEventListener('astro:before-swap', () => {
-                        this.classList.remove('igd-docs-subheader--pinned');
-                    });
-                }
-
-                // Close open selects on scroll, and prevent the browser's
-                // focus-triggered scrollIntoView from jumping the page when a
-                // select is clicked while the user is scrolled down.
-                const selectsForScroll = Array.from(
-                    this.querySelectorAll<HTMLElement>('#package-select, #version-select')
-                );
-                selectsForScroll.forEach(select => {
-                    let savedY: number | null = null;
-                    let guardTimer: ReturnType<typeof setTimeout> | null = null;
-
-                    // pointerdown fires before focus is assigned to save scroll position
-                    select.addEventListener('pointerdown', () => {
-                        savedY = window.scrollY;
-                        if (guardTimer) clearTimeout(guardTimer);
-                        guardTimer = setTimeout(() => { savedY = null; guardTimer = null; }, 300);
-                    });
-
-                    window.addEventListener('scroll', () => {
-                        if (savedY !== null) {
-                            window.scrollTo({ top: savedY, left: 0, behavior: 'instant' });
-                            return;
-                        }
-                        if ((select as any).open) (select as any).hide();
-                    }, { passive: true });
-                });
             }
         }
 
@@ -351,8 +287,51 @@ const crumbs = sidebarCrumbs.length > 0 ? sidebarCrumbs : (pageTitle ? [pageTitl
 </script>
 
 <script>
-    import { defineComponents, IgcIconComponent, IgcIconButtonComponent, IgcSelectComponent, IgcSelectItemComponent, IgcTooltipComponent } from 'igniteui-webcomponents';
-    import '../../scripts/icon-registry';
-    defineComponents(IgcIconComponent, IgcIconButtonComponent, IgcSelectComponent, IgcSelectItemComponent, IgcTooltipComponent);
+    import { defineComponents, IgcIconComponent, IgcIconButtonComponent, IgcSelectComponent, IgcSelectItemComponent } from 'igniteui-webcomponents';
+    import { registerIcons } from '../../scripts/icon-registry';
+    defineComponents(IgcIconComponent, IgcIconButtonComponent, IgcSelectComponent, IgcSelectItemComponent);
+    registerIcons();
+
+    function getPlatformIcon(text: string): string | null {
+        const t = text.toLowerCase();
+        if (t.includes('angular'))                                                         return 'angular-logo';
+        if (t.includes('react'))                                                           return 'react-logo';
+        if (t.includes('blazor'))                                                          return 'blazor-logo';
+        if (t.includes('web-component') || t.includes('webcomponent') || t.includes('wc')) return 'wc-logo';
+        return null;
+    }
+
+    function syncTriggerIcon(select: Element, val: string) {
+        const icon = getPlatformIcon(val);
+        let prefixIcon = select.querySelector<any>(':scope > igc-icon[slot="prefix"]');
+        if (icon) {
+            if (!prefixIcon) {
+                prefixIcon = document.createElement('igc-icon') as any;
+                prefixIcon.setAttribute('slot', 'prefix');
+                prefixIcon.setAttribute('aria-hidden', 'true');
+                prefixIcon.setAttribute('collection', 'docs');
+                select.prepend(prefixIcon);
+            }
+            prefixIcon.setAttribute('name', icon);
+        } else if (prefixIcon) {
+            prefixIcon.remove();
+        }
+    }
+
+    function initSelectors() {
+        const packageSelect = document.querySelector('#package-select');
+        if (packageSelect) {
+            packageSelect.addEventListener('igcChange', (e: Event) => {
+                const val = (e as CustomEvent).detail?.value ?? (packageSelect as any).value;
+                const item = packageSelect.querySelector<HTMLElement>(`igc-select-item[value="${val}"]`);
+                syncTriggerIcon(packageSelect, val);
+                const href = item?.dataset?.href;
+                if (href) window.location.href = href;
+            });
+        }
+    }
+
+    document.addEventListener('astro:page-load', initSelectors);
+    initSelectors();
 </script>
 
