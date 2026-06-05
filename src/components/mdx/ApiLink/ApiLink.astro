@@ -14,34 +14,44 @@ import {
 } from './api-link-index';
 import './ApiLink.scss';
 
+/** Props for Sass API documentation links (`kind="sass"`). */
 type SassProps = {
+    /** Selects Sass API link mode. */
     kind: 'sass';
+    /** Anchor fragment without `#`, e.g. `mixin-slide-in-left`. */
     type?: string;
+    /** Sass module path segment, e.g. `animations` or `themes`. */
     module?: string;
+    /** Wrap the rendered label in `<code>`. Defaults to `true`. */
     code?: boolean;
+    /** Override the rendered label. */
     label?: string;
 };
 
+/** Props for TypeDoc API documentation links. */
 type TypeDocProps = {
+    /** Optional TypeDoc kind narrowing. Usually resolved by the generated index. */
     kind?: TypeDocKind;
+    /** Short API symbol name without platform prefix. */
     type: string;
+    /** Optional member/property/method name on the symbol. */
     member?: string;
+    /** Optional package filter for ambiguous symbols. */
     pkg?: string;
+    /** Override the rendered label. */
     label?: string;
+    /** Legacy override for symbols that are not platform-prefixed. */
     prefixed?: boolean;
+    /** Legacy override for symbols that do not use the platform class suffix. */
     suffix?: boolean;
-    exclude?: string;
-    excludeSuffixFor?: string;
-    excludePrefixFor?: string;
 };
 
 type Props = SassProps | TypeDocProps;
 
 const ctx = Astro.locals.platformContext as PlatformContext;
-const { name: platformName, prefix, apiPackages } = ctx;
+const { prefix, apiPackages } = ctx;
 const label = Astro.props.label;
 
-const splitList = (value?: string) => value ? value.split(',').map(item => item.trim()).filter(Boolean) : [];
 const upperFirst = (value: string) => value ? value.charAt(0).toUpperCase() + value.slice(1) : value;
 
 function buildLegacyUrl(options: {
@@ -88,7 +98,6 @@ function getIndexedDisplayName(resolvedName: string, fallbackName: string, type:
 let url: string;
 let displayLabel: string;
 let renderCode: boolean;
-let isExcluded = false;
 
 if (Astro.props.kind === 'sass') {
     const { type, module, code = true } = Astro.props;
@@ -110,16 +119,12 @@ if (Astro.props.kind === 'sass') {
         pkg = 'core',
         prefixed = true,
         suffix = true,
-        exclude,
-        excludeSuffixFor,
-        excludePrefixFor,
     } = Astro.props;
     const explicitKind = 'kind' in Astro.props ? Astro.props.kind : undefined;
     const kind: TypeDocKind = explicitKind ?? 'class';
 
-    isExcluded = splitList(exclude).includes(platformName);
-    const effectivePrefixed = prefixed && !splitList(excludePrefixFor).includes(platformName);
-    const effectiveSuffix = suffix && !splitList(excludeSuffixFor).includes(platformName);
+    const effectivePrefixed = prefixed;
+    const effectiveSuffix = suffix;
 
     // pkg is an ambiguity override. Without an explicit pkg prop, search the
     // combined api-docs index so symbols can resolve from any package.
@@ -139,29 +144,25 @@ if (Astro.props.kind === 'sass') {
     displayLabel = label ?? (member ? `${baseType}.${member}` : baseType);
     renderCode = true;
 
-    if (!isExcluded) {
-        const indexed = await resolveApiLinkFromIndex({
-            ctx,
-            pkgConfig,
-            explicitPkg,
-            type,
-            member,
-            explicitKind,
-            prefix,
-            prefixed: effectivePrefixed,
-            suffix: effectiveSuffix,
-        });
+    const indexed = await resolveApiLinkFromIndex({
+        ctx,
+        pkgConfig,
+        explicitPkg,
+        type,
+        member,
+        explicitKind,
+        prefix,
+        prefixed: effectivePrefixed,
+        suffix: effectiveSuffix,
+    });
 
-        if (indexed.status === 'resolved') {
-            url = indexed.url;
-            const indexedDisplay = getIndexedDisplayName(indexed.symbolName, baseType, type, pkgConfig.classSuffix);
-            displayLabel = label ?? (indexed.memberName ? `${indexedDisplay}.${indexed.memberName}` : indexedDisplay);
-        } else if (indexed.status === 'missing') {
-            isExcluded = true;
-        }
+    if (indexed.status === 'resolved') {
+        url = indexed.url;
+        const indexedDisplay = getIndexedDisplayName(indexed.symbolName, baseType, type, pkgConfig.classSuffix);
+        displayLabel = label ?? (indexed.memberName ? `${indexedDisplay}.${indexed.memberName}` : indexedDisplay);
+    } else if (indexed.status === 'missing' && import.meta.env.DEV) {
+        console.warn(`[ApiLink] Registry miss for ${type}${member ? `.${member}` : ''}; using legacy URL fallback.`);
     }
 }
 ---
-{isExcluded
-    ? <code>{displayLabel}</code>
-    : <a href={url}>{renderCode ? <code>{displayLabel}</code> : displayLabel}</a>}
+<a href={url}>{renderCode ? <code>{displayLabel}</code> : displayLabel}</a>

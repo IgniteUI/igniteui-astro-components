@@ -39,9 +39,6 @@ lookup, URL segment lookup, and member anchor lookup.
 | `kind` | `'class' \| 'interface' \| 'enum' \| 'type' \| 'variable' \| 'function'` | auto / legacy `'class'` | Optional narrowing. Usually unnecessary when the index is available. |
 | `prefixed` | `boolean` | `true` | Legacy override for symbols that are never platform-prefixed. Avoid for new docs when the index can resolve the symbol. |
 | `suffix` | `boolean` | `true` | Legacy override for symbols that never use the platform class suffix. Avoid for new docs when the index can resolve the symbol. |
-| `exclude` | `string` | — | Migration marker for platforms where the symbol should render as plain `<code>`. The index will eventually make this unnecessary. |
-| `excludeSuffixFor` | `string` | — | Deprecated migration escape hatch. Do not add new usages. |
-| `excludePrefixFor` | `string` | — | Deprecated migration escape hatch. Do not add new usages. |
 
 Platform names use `PlatformContext.name`: `Angular`, `React`,
 `WebComponents`, or `Blazor`.
@@ -57,9 +54,6 @@ Platform names use `PlatformContext.name`: `Angular`, `React`,
 
 {/* Use pkg only when the symbol name is ambiguous across packages. */}
 <ApiLink type="Workbook" pkg="excel" />
-
-{/* Temporary migration marker for unavailable platforms. */}
-<ApiLink type="Toast" member="show" exclude="Blazor,WebComponents" />
 ```
 
 ## ApiLink Index

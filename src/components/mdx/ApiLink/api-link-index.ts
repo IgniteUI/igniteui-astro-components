@@ -36,10 +36,6 @@ export type ApiLinkIndexResolution =
 
 const upperFirst = (value: string) => value ? value.charAt(0).toUpperCase() + value.slice(1) : value;
 
-function addUnique(values: string[], value?: string): void {
-    if (value && !values.includes(value)) values.push(value);
-}
-
 function buildCandidateNames(options: {
     type: string;
     explicitKind?: TypeDocKind;
@@ -48,31 +44,27 @@ function buildCandidateNames(options: {
     suffix: boolean;
     classSuffix?: string;
 }): string[] {
-    const candidates: string[] = [];
-    const baseNames: string[] = [];
+    const candidates = new Set<string>();
+    const baseNames = new Set<string>();
 
-    if (options.prefixed) addUnique(baseNames, `${options.prefix}${options.type}`);
-    addUnique(baseNames, options.type);
+    if (options.prefixed) baseNames.add(`${options.prefix}${options.type}`);
+    baseNames.add(options.type);
 
     for (const baseName of baseNames) {
         if ((!options.explicitKind || options.explicitKind === 'class') && options.suffix && options.classSuffix) {
-            addUnique(candidates, `${baseName}${options.classSuffix}`);
+            candidates.add(`${baseName}${options.classSuffix}`);
         }
-        addUnique(candidates, baseName);
+        candidates.add(baseName);
     }
 
-    return candidates;
+    return [...candidates];
 }
 
-function resolveIndexedMember(symbol: ApiLinkIndexSymbol, member: string | undefined, pkgConfig: ApiPackageConfig): { memberName: string; memberAnchor: string } | null {
+function resolveIndexedMember(symbol: ApiLinkIndexSymbol, member: string | undefined): { memberName: string; memberAnchor: string } | null {
     if (!member) return { memberName: '', memberAnchor: '' };
 
     const members = symbol.m ?? {};
-    const candidates: string[] = [];
-    addUnique(candidates, member);
-    if (pkgConfig.pascalCaseMembers) addUnique(candidates, upperFirst(member));
-    addUnique(candidates, upperFirst(member));
-    addUnique(candidates, member.toLowerCase());
+    const candidates = new Set([member, upperFirst(member), member.toLowerCase()]);
 
     for (const candidate of candidates) {
         if (Object.hasOwn(members, candidate)) {
@@ -96,7 +88,6 @@ function findIndexedSymbol(options: {
     packageId?: string;
     explicitKind?: TypeDocKind;
     member?: string;
-    pkgConfig: ApiPackageConfig;
 }) {
     const symbols = options.index.symbols ?? {};
 
@@ -108,7 +99,7 @@ function findIndexedSymbol(options: {
         for (const symbol of symbolList) {
             if (options.packageId && symbol.p && symbol.p !== options.packageId) continue;
             if (options.explicitKind && symbol.k && symbol.k !== options.explicitKind) continue;
-            const memberMatch = resolveIndexedMember(symbol, options.member, options.pkgConfig);
+            const memberMatch = resolveIndexedMember(symbol, options.member);
             if (memberMatch === null) continue;
             return { name, symbol, memberName: memberMatch.memberName, memberAnchor: memberMatch.memberAnchor };
         }
@@ -143,10 +134,6 @@ export async function resolveApiLinkFromIndex(options: {
         return { status: 'unavailable' };
     }
 
-    if (Object.keys(index.symbols).length === 0) {
-        return { status: 'missing' };
-    }
-
     const candidates = buildCandidateNames({
         type: options.type,
         explicitKind: options.explicitKind,
@@ -161,7 +148,6 @@ export async function resolveApiLinkFromIndex(options: {
         packageId: options.explicitPkg ? options.pkgConfig.packageId : undefined,
         explicitKind: options.explicitKind,
         member: options.member,
-        pkgConfig: options.pkgConfig,
     });
 
     if (!indexed) return { status: 'missing' };
