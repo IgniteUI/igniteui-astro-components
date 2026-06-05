@@ -118,6 +118,23 @@ function absolutizeIndexUrl(indexedPath: string, docRoot: string): string {
     }
 }
 
+function getCandidateClassSuffixes(options: {
+    ctx: PlatformContext;
+    explicitPkg: boolean;
+    pkgConfig: ApiPackageConfig;
+}): Array<string | undefined> {
+    if (options.explicitPkg) {
+        return [options.pkgConfig.classSuffix];
+    }
+
+    const suffixes = new Set<string | undefined>();
+    for (const pkg of Object.values(options.ctx.apiPackages)) {
+        suffixes.add(pkg.classSuffix);
+    }
+
+    return [...suffixes];
+}
+
 export async function resolveApiLinkFromIndex(options: {
     ctx: PlatformContext;
     pkgConfig: ApiPackageConfig;
@@ -134,17 +151,23 @@ export async function resolveApiLinkFromIndex(options: {
         return { status: 'unavailable' };
     }
 
-    const candidates = buildCandidateNames({
-        type: options.type,
-        explicitKind: options.explicitKind,
-        prefix: options.prefix,
-        prefixed: options.prefixed,
-        suffix: options.suffix,
-        classSuffix: options.pkgConfig.classSuffix,
-    });
+    const candidates = new Set<string>();
+    for (const classSuffix of getCandidateClassSuffixes(options)) {
+        for (const candidate of buildCandidateNames({
+            type: options.type,
+            explicitKind: options.explicitKind,
+            prefix: options.prefix,
+            prefixed: options.prefixed,
+            suffix: options.suffix,
+            classSuffix,
+        })) {
+            candidates.add(candidate);
+        }
+    }
+
     const indexed = findIndexedSymbol({
         index,
-        candidates,
+        candidates: [...candidates],
         packageId: options.explicitPkg ? options.pkgConfig.packageId : undefined,
         explicitKind: options.explicitKind,
         member: options.member,
