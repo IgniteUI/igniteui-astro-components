@@ -102,22 +102,21 @@
 // ── Mobile + Tablet (< 1280px) — everything below desktop ──────────────────
 @media (max-width: #{$bp-tablet-max}) {
 	:root {
-		--igd-header-height: #{rem(50px)};
-		--igd-page-padding: #{rem(38px)};
+		--igd-header-height: #{rem(60px)};
+		--igd-page-padding: #{rem(24px)};
 	}
-
+	
 	// Single-column page grid; subheader follows via subgrid.
 	.igd-page-layout {
-		--igd-page-layout-grid: 1fr;
+		--igd-page-layout-grid: auto 1fr;
+	}
+	
+	.igd-logo__text {
+		display: none;
 	}
 	
 	.igd-main-content {
 		grid-row: 2;
-	}
-
-	// Logo only shown on desktop, where it can sit in its own sidebar-aligned column.
-	.igd-logo {
-		display: none;
 	}
 	
 	.igd-search-mobile-bar {
@@ -164,6 +163,13 @@
 			backdrop-filter: blur(10px);
 		}
 	}
+	
+	body[data-sidebar-open],
+	body[data-search-modal-open] {
+		.globalnav {
+			z-index: 0;
+		}
+	}
 
 	// Subheader sidebar toggle reveals when the sidebar is not persistent.
 	.subheader-sidebar-toggle {
@@ -172,9 +178,8 @@
 	}
 
 	// Logo inside the slide-in sidebar (visible only when sidebar is an overlay).
-	.sidebar-logo {
+	.igd-sidebar-logo {
 		display: flex;
-		margin-block-end: rem(16px);
 	}
 
 	.igd-main-content__inner {
@@ -184,27 +189,23 @@
 	// This is the height of the input in fluent theme + 8px padding + height of the logo above
 	.sidebar-gutter {
 		min-height: rem(80px);
-	}
-	
-	.igd-search-shell {
-		grid-template-rows: auto calc(100% - (var(--search-header-footer-height) * 2)) auto;
-	}
-	
-	.igd-search-footer {
-		display: flex;
 		align-items: center;
-		justify-content: end;
 	}
 }
 
 // ── Mobile only (< 768px) ──────────────────────────────────────────────────
 @media (max-width: #{$bp-mobile-max}) {
+	
+	.igniteui-page-logo {
+		display: block;
+	}
+	
 	.igd-version-select {
 		max-width: rem(90px);
 	}
 
 	.igd-docs-subheader {
-		padding-inline-end: rem(16px);
+		padding-inline: rem(16px);
 	}
 
 	.igd-docs-subheader__content:last-child {
@@ -239,6 +240,17 @@
 		height: 100dvh;
 		max-height: 100dvh;
 	}
+	
+	
+	.igd-search-shell {
+		grid-template-rows: auto calc(100% - (var(--search-header-footer-height) * 2)) auto;
+	}
+	
+	.igd-search-footer {
+		display: flex;
+		align-items: center;
+		justify-content: end;
+	}
 }
 
 @media (max-width: #{$bp-hide-toc}) {
@@ -248,7 +260,6 @@
 		}
 	}
 	
-	
 	.igd-main-content__page {
 		border: none;
 	}
@@ -257,7 +268,7 @@
 // ── Tablet + Desktop (≥ 768px) ─────────────────────────────────────────────
 @media (min-width: #{$bp-tablet-min}) {
 	.sidebar-gutter {
-		&:has(.sidebar-logo:only-child) {
+		&:has(.igd-sidebar-logo:only-child) {
 			display: none;
 		}
 	}

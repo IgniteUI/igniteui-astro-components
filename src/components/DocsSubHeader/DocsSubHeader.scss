@@ -76,21 +76,9 @@
 		--ig-flat-button-icon-color-focus: var(--igd-accent);
 		--border-border-radius: var(--igd-border-radius-xl);
 		--border-background: light-dark(var(--ig-gray-50), var(--ig-gray-50));
-		--border-color: transparent;
-		--hover-border-color: transparent;
+		--border-color: var(--ig-gray-400);
+		--hover-border-color: var(--ig-gray-400);
 		--focused-border-color: var(--igd-accent);
-		
-		&::part(container) {
-			&::before {
-				display: none;
-			}
-		}
-		
-		&:focus-within {
-			&::part(container) {
-				border-color: var(--focused-border-color);
-			}
-		}
 	}
 }
 
@@ -104,6 +92,24 @@
 
 	&:last-child {
 		margin-inline-end: rem(24px);
+	}
+	
+	> igc-input {
+		--border-color: transparent;
+		--hover-border-color: transparent;
+		--size: #{rem(38px)};
+		
+		&::part(container) {
+			&::before {
+				display: none;
+			}
+		}
+		
+		&:focus-within {
+			&::part(container) {
+				border-color: var(--focused-border-color);
+			}
+		}
 	}
 }
 
@@ -147,21 +153,6 @@
 
 	--active-foreground: var(--igd-accent);
 	--active-background: transparent;
-
-	.toggle-icon--hamburger {
-		display: none;
-	}
-}
-
-// When the subheader becomes sticky, swap dropdown-indicator → hamburger.
-.igd-docs-subheader--pinned .subheader-sidebar-toggle {
-	.toggle-icon--dropdown {
-		display: none;
-	}
-
-	.toggle-icon--hamburger {
-		display: flex;
-	}
 }
 
 #package-tooltip {

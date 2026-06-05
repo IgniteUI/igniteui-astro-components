@@ -144,7 +144,7 @@
 	.igd-search-more-btn {
 		--focus-visible-border-color: transparent;
 		--border-radius: #{rem(4px)};
-		--foreground: light-dark(var(--ig-gray-700), var(--ig-gray-500));
+		--foreground: var(--igd-accent);
 		--icon-color: var(--igd-accent);
 		--icon-color-hover: var(--igd-accent);
 		--hover-background: transparent;
@@ -277,9 +277,9 @@
 			
 			padding: 0;
 			
-			//&::after {
-			//	display: none;
-			//}
+			&::after {
+				border-radius: 4px;
+			}
 		}
 	}
 	
@@ -295,6 +295,10 @@
 		animation-delay: 1s , 300ms;
 		background:  conic-gradient(from var(--rot) at 50% 50%, var(--igd-accent) -56.25deg, var(--igd-accent) 43.12deg, var(--ig-secondary-500) 180deg, var(--igd-accent) 303.75deg, var(--igd-accent) 403.12deg);
 		box-sizing: border-box;
+		
+		igc-input {
+			--border-color: transparent;
+		}
 	}
 	
 	.search-trigger {
