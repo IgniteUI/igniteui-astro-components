@@ -30,7 +30,7 @@ type ApiLinkIndexFile = {
 };
 
 export type ApiLinkIndexResolution =
-    | { status: 'resolved'; url: string; symbolName: string; memberAnchor: string }
+    | { status: 'resolved'; url: string; symbolName: string; memberName: string; memberAnchor: string }
     | { status: 'missing' }
     | { status: 'unavailable' };
 
@@ -64,8 +64,8 @@ function buildCandidateNames(options: {
     return candidates;
 }
 
-function resolveIndexedMember(symbol: ApiLinkIndexSymbol, member: string | undefined, pkgConfig: ApiPackageConfig): string | null {
-    if (!member) return '';
+function resolveIndexedMember(symbol: ApiLinkIndexSymbol, member: string | undefined, pkgConfig: ApiPackageConfig): { memberName: string; memberAnchor: string } | null {
+    if (!member) return { memberName: '', memberAnchor: '' };
 
     const members = symbol.m ?? {};
     const candidates: string[] = [];
@@ -75,7 +75,16 @@ function resolveIndexedMember(symbol: ApiLinkIndexSymbol, member: string | undef
     addUnique(candidates, member.toLowerCase());
 
     for (const candidate of candidates) {
-        if (members[candidate]) return members[candidate];
+        if (Object.hasOwn(members, candidate)) {
+            return { memberName: candidate, memberAnchor: members[candidate] };
+        }
+    }
+
+    const normalized = member.toLowerCase();
+    for (const [registryMember, memberAnchor] of Object.entries(members)) {
+        if (registryMember.toLowerCase() === normalized) {
+            return { memberName: registryMember, memberAnchor };
+        }
     }
 
     return null;
@@ -99,9 +108,9 @@ function findIndexedSymbol(options: {
         for (const symbol of symbolList) {
             if (options.packageId && symbol.p && symbol.p !== options.packageId) continue;
             if (options.explicitKind && symbol.k && symbol.k !== options.explicitKind) continue;
-            const memberAnchor = resolveIndexedMember(symbol, options.member, options.pkgConfig);
-            if (memberAnchor === null) continue;
-            return { name, symbol, memberAnchor };
+            const memberMatch = resolveIndexedMember(symbol, options.member, options.pkgConfig);
+            if (memberMatch === null) continue;
+            return { name, symbol, memberName: memberMatch.memberName, memberAnchor: memberMatch.memberAnchor };
         }
     }
 
@@ -162,6 +171,7 @@ export async function resolveApiLinkFromIndex(options: {
         status: 'resolved',
         url: absolutizeIndexUrl(path, options.pkgConfig.docRoot),
         symbolName: indexed.name,
+        memberName: indexed.memberName,
         memberAnchor: indexed.memberAnchor,
     };
 }

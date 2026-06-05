@@ -155,7 +155,7 @@ if (Astro.props.kind === 'sass') {
         if (indexed.status === 'resolved') {
             url = indexed.url;
             const indexedDisplay = getIndexedDisplayName(indexed.symbolName, baseType, type, pkgConfig.classSuffix);
-            displayLabel = label ?? (member ? `${indexedDisplay}.${member}` : indexedDisplay);
+            displayLabel = label ?? (indexed.memberName ? `${indexedDisplay}.${indexed.memberName}` : indexedDisplay);
         } else if (indexed.status === 'missing') {
             isExcluded = true;
         }
