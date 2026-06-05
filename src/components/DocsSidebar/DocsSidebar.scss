@@ -36,17 +36,27 @@
 		display: none;
 	}
 	
-	.sidebar-logo {
+	// Hidden by default; shown on mobile/tablet where the sidebar is a slide-in overlay.
+	.igd-sidebar-logo {
 		display: none;
-		margin-block-end: rem(8px);
-		padding-inline-start: rem(20px);
-	
-		> svg {
-			width: rem(79px);
-	
-			.logo-type {
-				fill: var(--igd-logo-type);
-			}
+		flex-direction: column;
+		justify-content: center;
+		padding: rem(16px) rem(20px) rem(8px);
+
+		h1 {
+			@include type-style('h3') {
+				margin-block-end: rem(4px);
+				line-height: 1;
+			};
+			color: var(--ig-gray-800);
+		}
+
+		.igd-logo__platform {
+			@include type-style('subtitle', false) {
+				line-height: 1;
+				margin: 0;
+			};
+			color: var(--ig-gray-500);
 		}
 	}
 	

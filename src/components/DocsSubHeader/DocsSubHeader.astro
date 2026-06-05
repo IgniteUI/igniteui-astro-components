@@ -114,7 +114,7 @@ const rawPackages = packagesProp ?? (virtualPackages?.length > 0 ? virtualPackag
 const packages = (rawPackages as PackageEntry[] | undefined)?.map((p: PackageEntry) =>
     typeof p === 'string' ? { label: p, value: p, href: undefined } : { label: p.label, value: p.value ?? p.label, href: p.href }
 );
-const selectedPackage = selectedPackageProp ?? (virtualSelectedPackage || undefined);
+const selectedPackage = selectedPackageProp ?? (virtualSelectedPackage || undefined) ?? packages?.[0]?.value;
 const platformIcon = PLATFORM_ICONS[selectedPackage ?? ''] ?? PLATFORM_ICONS[currentPlatform ?? ''] ?? null;
 
 const resolvedSidebar = (sidebarItems ?? sidebarData) as SidebarEntry[];
@@ -131,8 +131,17 @@ const platformLabel = currentPlatform ? (PLATFORM_LABELS[currentPlatform] ?? nul
 ---
 
 <docs-subheader-menu class="igd-docs-subheader" data-platform={currentPlatform ?? ''}>
-
         <div class="igd-logo">
+            <!-- Sidebar toggle — visible only when the sidebar is hidden (tablet + mobile) -->
+            <igc-icon-button
+                    class="subheader-sidebar-toggle"
+                    variant="flat"
+                    data-sidebar-toggle
+                    aria-label="Toggle sidebar navigation"
+                    aria-expanded="false"
+                    title="Toggle sidebar">
+                <igc-icon name="hamburger-menu" collection="docs" aria-hidden="true"></igc-icon>
+            </igc-icon-button>
             <div class="igd-logo__text">
                 <h1>{logoText}</h1>
                 {platformLabel && <span class="igd-logo__platform">for {platformLabel}</span>}
@@ -168,17 +177,6 @@ const platformLabel = currentPlatform ? (PLATFORM_LABELS[currentPlatform] ?? nul
                 </igc-select>
             )}
 
-            <!-- Sidebar toggle — visible only when the sidebar is hidden (tablet + mobile) -->
-            <igc-icon-button
-                class="subheader-sidebar-toggle"
-                variant="flat"
-                data-sidebar-toggle
-                aria-label="Toggle sidebar navigation"
-                aria-expanded="false"
-                title="Toggle sidebar">
-                <igc-icon name="dropdown-indicator-bold" collection="docs" class="toggle-icon toggle-icon--dropdown" aria-hidden="true"></igc-icon>
-                <igc-icon name="hamburger-menu" collection="docs" class="toggle-icon toggle-icon--hamburger" aria-hidden="true"></igc-icon>
-            </igc-icon-button>
 
             <!-- TODO WHY WE NEED THIS? -->
             <!--{filteredLinks.length > 0 && (-->

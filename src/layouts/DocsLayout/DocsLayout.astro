@@ -7,6 +7,7 @@ import GlobalFooter from '../../components/GlobalFooter/GlobalFooter.astro';
 import DocsSubHeader from '../../components/DocsSubHeader/DocsSubHeader.astro';
 import DocsBreadcrumb from '../../components/DocsBreadcrumb/DocsBreadcrumb.astro';
 import LicenseIndicator from '../../components/LicenseIndicator/LicenseIndicator.astro';
+import igLogoRaw from '../../assets/ig-logo.svg?raw';
 import MobileSidebarToggle from '../../components/MobileSidebarToggle/MobileSidebarToggle.astro';
 import CopyCode from '../../components/CopyCode/CopyCode.astro';
 import { widgetScriptSrc, platform as virtualPlatform } from 'virtual:docs-template/nav-html';
@@ -254,8 +255,10 @@ type HeadEntry = { tag: string; attrs?: Record<string, string | boolean | undefi
 
         <div class="igd-main-content">
             <div class="igd-main-content__inner">
+
                 <div class="igd-main-content__page">
                     <main class="igd-main-content__markdown">
+                        <Fragment set:html={igLogoRaw} />
                         <LicenseIndicator license={licenseType} />
                         <DocsBreadcrumb pageTitle={ title } currentSlug={ currentSlug } siteTitle={ siteTitleProp }/>
                         <slot/>
