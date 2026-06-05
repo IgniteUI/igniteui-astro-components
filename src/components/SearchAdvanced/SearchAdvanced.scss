@@ -2,41 +2,26 @@
 @use '../../styles/global/search-shared' as *;
 
 @layer components {
+	.igd-search-shell {
+		grid-template-rows: auto calc(100% - (var(--search-header-footer-height) * 1));
+	}
+	
 	api-search-advanced {
 		display: contents;
 		
-		
-		.igd-search-header {
-			igc-input::part(container) {
-				&:focus-within {
-					box-shadow:
-					 0 0 0 1px var(--igd-accent),
-					inset 0 1px 0 var(--igd-accent),
-					inset 0 -1px 0 var(--igd-accent),
-					inset -1px 0 0 var(--igd-accent);
-				}
-			}
-		}
-
-	
 		#search-scope-trigger-icon {
 			margin-inline-start: rem(16px);
 		}
 	}
 	
-	.search-trigger {
-		color: light-dark(var(--ig-gray-600), var(--ig-gray-400));
-	}
-	
 	// TODO BUG IN THE TAB COMPONENT
 	igc-tabs::part(inner) {
 		flex-grow: 1;
-		
 	}
 	
 	igc-tabs {
 		igc-divider {
-			margin-block: rem(26px);
+			margin-block: rem(16px) rem(24px);
 			
 			&:last-of-type {
 				display: none;
@@ -53,7 +38,6 @@
 	
 	.igd-search-tabs {
 		--item-background: var(--igd-layout-sections-bg);
-		--indicator-color: transparent;
 		--button-color: var(--igd-accent);
 		--button-hover-color: var(--igd-accent);
 		--button-background: var(--igd-layout-sections-bg);
@@ -92,34 +76,62 @@
 		
 		igc-tab::part(content),
 		igc-tab::part(base) {
-			@include type-style('overline') {
+			@include type-style('body-2') {
 				margin: 0;
 			}
+		}
+		
+		igc-tab::part(base) {
+			gap: rem(4px);
 		}
 		
 		igc-tab::part(tab-body) {
 			overflow-y: auto;
 			flex: 1 1 auto;
 			min-height: 0;
-			padding-block: rem(26px);
+			padding-block: rem(16px);
+			padding-inline: 0;
+			border-block-start: var(--igd-app-outline);
 		}
 	}
 	
 	.igd-search-tab-count {
-		color: light-dark(var(--ig-gray-500), var(--ig-gray-300));
+		color: light-dark(var(--ig-gray-400), var(--ig-gray-300));
+		
+		&::before {
+			content: '(';
+		}
+		&::after {
+			content: ')';
+		}
+	}
+
+	.igd-search-refine-hint {
+		@include type-style('caption') {
+			margin: 0;
+		}
+
+		padding-inline-start: calc(#{rem(26px)} + #{rem(16px)});
+		margin-block-start: rem(16px);
+		color: light-dark(var(--ig-gray-600), var(--ig-gray-400));
+	}
+
+	.igd-search-refine-hint {
+		@include type-style('caption') {
+			margin: 0;
+		}
+
+		padding-inline-start: calc(#{rem(26px)} + #{rem(16px)});
+		margin-block-start: rem(16px);
+		color: light-dark(var(--ig-gray-600), var(--ig-gray-400));
 	}
 	
 	igc-divider {
-		--color: light-dark(var(--ig-gray-400), var(--ig-gray-300));
+		--color: light-dark(var(--ig-gray-200), var(--ig-gray-300));
 	}
 
 	.igd-search-scope {
 		max-width: rem(250px);
-
-		&::part(input) {
-			min-width: 0;
-			overflow: hidden;
-		}
 
 		&::part(native-input) {
 			min-width: 0;

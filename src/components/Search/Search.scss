@@ -1,27 +1,21 @@
 @use 'igniteui-theming' as *;
 @use '../../styles/global/search-shared' as *;
 
-.igd-search-result-excerpt {
-	@include type-style('caption') {
-		margin: 0;
-	}
-
-	color: light-dark(var(--ig-gray-600), var(--ig-gray-400));
-
-	mark {
-		background: transparent;
-		color: var(--igd-accent);
-	}
-}
-
-.igd-search-results {
-	padding-inline-end: rem(26px);
-}
-
-.igd-search-shell {
-	igc-input::part(container) {
-		&:focus-within {
-			box-shadow: inset 0 0 0 1px var(--igd-accent)
+@layer components {
+	.igd-search-result-excerpt {
+		@include type-style('caption') {
+			margin: 0;
 		}
+		
+		color: light-dark(var(--ig-gray-600), var(--ig-gray-400));
+		
+		mark {
+			background: transparent;
+			color: var(--igd-accent);
+		}
+	}
+	
+	.igd-search-shell {
+		grid-template-rows: auto 1fr auto;
 	}
 }

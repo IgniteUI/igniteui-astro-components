@@ -43,6 +43,7 @@
     "./components/GlobalNavBar.astro": "./src/components/GlobalNavBar/GlobalNavBar.astro",
     "./components/GlobalFooter.astro": "./src/components/GlobalFooter/GlobalFooter.astro",
     "./components/DocsSubHeader.astro": "./src/components/DocsSubHeader/DocsSubHeader.astro",
+    "./components/CopyCode.astro":  "./src/components/CopyCode/CopyCode.astro",
     "./components/Search.astro": "./src/components/Search/Search.astro",
     "./components/SearchAdvanced.astro": "./src/components/SearchAdvanced/SearchAdvanced.astro",
     "./components/ThemingWidget.astro": "./src/components/ThemingWidget/ThemingWidget.astro",

@@ -1,7 +1,6 @@
 @use 'igniteui-theming/sass/typography' as *;
 
 @layer components {
-
 .igd-docs-subheader {
 	position: sticky;
 	inset: 0;
@@ -19,55 +18,67 @@
 	z-index: 1;
 	background-color: var(--igd-layout-sections-bg);
 	view-transition-name: docs-subheader;
+	padding-inline-start: rem(24px);
 
 	.igd-logo {
 		display: flex;
 		align-items: center;
 		height: 100%;
-		padding-inline: rem(32px) rem(16px);
+		padding-inline: 0 rem(16px);
 
-		> svg {
-			min-width: rem(79px);
-			height: rem(22px);
-			opacity: 0;
-			transition: opacity 200ms ease, transform 200ms ease;
-			position: absolute;
+		.igd-logo__text {
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
 
-			.logo-type {
-				fill: var(--igd-logo-type);
+			> h1 {
+				@include type-style('h3') {
+					margin-block-end: rem(6px);
+					line-height: 1;
+				};
+				
+				color: var(--ig-gray-800);
 			}
 		}
 
-		> h1 {
-			@include type-style('body-2') {
+		.igd-logo__platform {
+			@include type-style('subtitle', false) {
+				line-height: 1;
 				margin: 0;
 			};
 			
-			opacity: 1;
-			transition: opacity 200ms ease, transform 200ms ease;
+			color: var(--ig-gray-500);
+			
 		}
-
-		border-inline-end: var(--igd-app-outline);
 	}
-
-	// Logo area: text visible by default, logo hidden.
-	// When the GlobalNavBar scrolls out of view, .docs-subheader--pinned is added
-	// and the logo fades in while the text fades out.
-	&--pinned {
-		.igd-logo {
-			svg {
-				opacity: 1;
-				transform: translateY(0);
-				position: relative;
-			}
-
-			h1 {
-				opacity: 0;
-				transform: translateY(4px);
-				position: absolute;
-				pointer-events: none;
-			}
-		}
+	
+	// TODO THIS AND THE FILTER CAN BE UNDEr ONCE CLASS SINCE THE THEME IS THE SAME NO NEED TO REPEAT
+	igc-input {
+		--ig-input-group-input-suffix-color: light-dark(var(--ig-gray-900), var(--ig-gray-800));
+		--ig-input-group-input-suffix-color--filled: light-dark(var(--ig-gray-900), var(--ig-gray-800));
+		--ig-input-group-input-suffix-color--focused: light-dark(var(--ig-gray-900), var(--ig-gray-800));
+		--ig-input-group-idle-text-color: light-dark(var(--ig-gray-900), var(--ig-gray-800));
+		--ig-input-group-filled-text-color: light-dark(var(--ig-gray-900), var(--ig-gray-900));
+		--ig-input-group-placeholder-color: var(--ig-gray-500);
+		--ig-input-group-hover-placeholder-color: var(--ig-gray-500);
+		
+		--input-prefix-background: transparent;
+		--input-prefix-background--focused: transparent;
+		--input-prefix-background--filled: transparent;
+		
+		--input-suffix-background: transparent;
+		--input-suffix-background--focused: transparent;
+		--input-suffix-background--filled: transparent;
+		
+		--ig-flat-button-hover-background: transparent;
+		--ig-flat-button-focus-background: transparent;
+		--ig-flat-button-icon-color-hover: var(--igd-accent);
+		--ig-flat-button-icon-color-focus: var(--igd-accent);
+		--border-border-radius: var(--igd-border-radius-xl);
+		--border-background: light-dark(var(--ig-gray-50), var(--ig-gray-50));
+		--border-color: var(--ig-gray-400);
+		--hover-border-color: var(--ig-gray-400);
+		--focused-border-color: var(--igd-accent);
 	}
 }
 
@@ -77,13 +88,28 @@
 	height: 100%;
 	gap: rem(16px);
 	min-width: 0;
-
-	> igc-select:first-of-type {
-		margin-inline-start: auto;
-	}
+	justify-content: end;
 
 	&:last-child {
-		margin-inline-end: rem(32px);
+		margin-inline-end: rem(24px);
+	}
+	
+	> igc-input {
+		--border-color: transparent;
+		--hover-border-color: transparent;
+		--size: #{rem(38px)};
+		
+		&::part(container) {
+			&::before {
+				display: none;
+			}
+		}
+		
+		&:focus-within {
+			&::part(container) {
+				border-color: var(--focused-border-color);
+			}
+		}
 	}
 }
 
@@ -104,29 +130,10 @@
 	}
 }
 
-.igd-version-select {
-	&::part(native-input) {
-		field-sizing: content;
-	}
-}
-
+.igd-version-select,
 .igd-package-select {
-	&::part(prefix),
-	&::part(toggle-icon) {
-		flex-shrink: 0;
-	}
-
-	&::part(input) {
-		min-width: 0;
-		overflow: hidden;
-	}
-
 	&::part(native-input) {
 		field-sizing: content;
-		min-width: 0;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		white-space: nowrap;
 	}
 }
 
@@ -146,65 +153,6 @@
 
 	--active-foreground: var(--igd-accent);
 	--active-background: transparent;
-
-	.toggle-icon--hamburger {
-		display: none;
-	}
-}
-
-// When the subheader becomes sticky, swap dropdown-indicator → hamburger.
-.igd-docs-subheader--pinned .subheader-sidebar-toggle {
-	.toggle-icon--dropdown {
-		display: none;
-	}
-
-	.toggle-icon--hamburger {
-		display: flex;
-	}
-}
-
-// Theme toggle: show sun in dark mode, moon in light mode.
-.subheader-theme-toggle {
-	--foreground: light-dark(var(--ig-gray-900), var(--ig-gray-900));
-	--background: transparent;
-	--border-color: transparent;
-	
-	--hover-foreground: var(--igd-accent);
-	--hover-background: transparent;
-	
-	--focus-foreground: var(--igd-accent);
-	--focus-background: transparent;
-	
-	--active-foreground: var(--igd-accent);
-	--active-background: transparent;
-	
-	.theme-icon {
-		display: flex;
-	}
-
-	.theme-icon--moon {
-		display: none;
-	}
-
-	:root[data-theme='dark'] & {
-		.theme-icon--sun {
-			display: flex;
-		}
-
-		.theme-icon--moon {
-			display: none;
-		}
-	}
-
-	:root:not([data-theme='dark']) & {
-		.theme-icon--sun {
-			display: none;
-		}
-
-		.theme-icon--moon {
-			display: flex;
-		}
-	}
 }
 
 #package-tooltip {

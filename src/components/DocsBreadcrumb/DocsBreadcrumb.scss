@@ -3,20 +3,24 @@
 .docs-breadcrumb {
 	width: 100%;
 	padding: 0;
-	margin-block-end: rem(26px);
+	margin-block-end: rem(16px);
+	
+	ul, ol {
+		margin-block-end: 0 !important;
+	}
 }
 
 .docs-breadcrumb-list {
-	@include type-style('overline') {
+	@include type-style('body-2') {
 		margin: 0;
 	};
 	
 	display: flex;
 	flex-wrap: wrap;
 	align-items: center;
-	gap: rem(4px);
 	list-style: none;
 	padding: 0;
+	gap: 6px;
 	color: light-dark(var(--ig-gray-700), var(--ig-gray-400));
 }
 
@@ -36,6 +40,7 @@
 	gap: rem(4px);
 	white-space: nowrap;
 	overflow: hidden;
+	padding: 0;
 }
 
 .docs-breadcrumb-home {
@@ -44,8 +49,12 @@
 }
 
 .docs-breadcrumb-sep {
+	--size: #{rem(16px)};
+	
 	flex-shrink: 0;
 	user-select: none;
+	rotate: -90deg;
+	color: light-dark(var(--ig-gray-500), var(--ig-gray-600));
 }
 
 .docs-breadcrumb-crumb {

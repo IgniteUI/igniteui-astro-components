@@ -1,0 +1,108 @@
+@use 'igniteui-theming' as *;
+
+.icon-gallery {
+    container-type: inline-size;
+}
+
+igc-tabs.icon-gallery-tabs {
+    --tabs-wrapper-padding: 0;
+}
+
+.icon-gallery__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(9rem, 1fr));
+    gap: rem(16px);
+    padding-block: rem(16px);
+
+    &--illustrations {
+        grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr));
+    }
+}
+
+.icon-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem 0.75rem 0.75rem;
+    border: 1px solid light-dark(var(--ig-gray-200), var(--ig-gray-100));
+    border-radius: 0.625rem;
+    background: light-dark(var(--ig-surface-500), var(--ig-surface-400));
+    transition: border-color 0.15s, box-shadow 0.15s;
+
+    &:hover {
+        border-color: var(--ig-primary-300);
+        box-shadow: 0 2px 8px light-dark(rgba(0, 0, 0, .06), rgba(0, 0, 0, .3));
+    }
+}
+
+.icon-card__preview {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+	margin-block: rem(16px);
+
+    igc-icon {
+        --size: 28px;
+        color: inherit;
+    }
+
+    &--illustration {
+        height: rem(32px);
+       
+
+        svg {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            fill: currentColor;
+
+            path,
+            rect,
+            circle,
+            polygon,
+            polyline,
+            ellipse {
+                fill: currentColor;
+            }
+        }
+    }
+}
+
+.icon-card__name {
+    @include type-style('caption') {
+		margin-block-end: rem(24px);
+	};
+	
+    text-align: center;
+    word-break: break-all;
+    color: light-dark(var(--ig-gray-700), var(--ig-gray-800));
+}
+
+.icon-card__actions {
+    display: flex;
+	flex-direction: column;
+    gap: rem(8px);
+    width: 100%;
+   
+
+    igc-button {
+        flex: 1;
+
+        &::part(base) {
+            @include type-style('caption') {
+				margin: 0;
+			};
+        }
+
+        &.icon-card__btn--copied::part(base) {
+            background: light-dark(var(--ig-success-100), var(--ig-success-200));
+            border-color: var(--ig-success-400);
+            color: var(--ig-success-700);
+        }
+    }
+}
+
+dialog::backdrop {
+	opacity: 1;
+}
