@@ -96,6 +96,15 @@ const resolvedIndexUrl = indexUrl ?? `${basePath}api-search-index/manifest.json`
   data-platform-icon={platformIcon ?? ''}
 >
     <div class="search-decoration">
+      <igc-icon-button
+        class="search-trigger-mobile"
+        variant="flat"
+        aria-label={placeholder}
+        aria-haspopup="dialog"
+        data-open-modal
+      >
+        <igc-icon name="search" collection="docs" aria-hidden="true"></igc-icon>
+      </igc-icon-button>
       <igc-input
         data-open-modal
         readonly
@@ -143,7 +152,6 @@ const resolvedIndexUrl = indexUrl ?? `${basePath}api-search-index/manifest.json`
                 <igc-tabs class="igd-search-tabs"></igc-tabs>
                 <igc-list class="igd-search-results--flat" hidden></igc-list>
             </div>
-            <igc-divider></igc-divider>
             <footer class="igd-search-footer">
                 <igc-button slot="footer" data-close-modal class="search-close" variant="outlined">
                     Close
@@ -293,7 +301,8 @@ const resolvedIndexUrl = indexUrl ?? `${basePath}api-search-index/manifest.json`
         }
       }
 
-      const openBtn  = this.querySelector<HTMLElement>('[data-open-modal]')!;
+      const openBtn  = this.querySelector<HTMLElement>('igc-input[data-open-modal]')!;
+      const openBtns = this.querySelectorAll<HTMLElement>('[data-open-modal]');
       const closeBtn = this.querySelector<HTMLElement>('[data-close-modal]')!;
       this.dialog    = this.querySelector<IgcDialogComponent>('igc-dialog')!;
       this.input     = this.querySelector<IgcInputComponent>('igc-input.igd-search-input')!;
@@ -356,13 +365,13 @@ const resolvedIndexUrl = indexUrl ?? `${basePath}api-search-index/manifest.json`
         this.input.focus();
       };
 
-      openBtn.addEventListener('click', open);
-      openBtn.addEventListener('keydown', (e: KeyboardEvent) => {
+      openBtns.forEach(btn => btn.addEventListener('click', open));
+      openBtns.forEach(btn => btn.addEventListener('keydown', (e: KeyboardEvent) => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
           open();
         }
-      });
+      }));
 
       closeBtn.addEventListener('click', () => this.closeModal());
 

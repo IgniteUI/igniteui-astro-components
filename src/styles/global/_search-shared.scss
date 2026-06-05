@@ -334,7 +334,16 @@
 			font-size: 19px;
 		}
 	}
+	.search-trigger-mobile {
+		display: none;
+		--background: var(--igd-layout-sections-bg);
+		--hover-background: var(--igd-layout-sections-bg);
+		--focus-background: var(--igd-layout-sections-bg);
+		--focus-hover-background: var(--igd-layout-sections-bg);
+		--active-background: var(--igd-layout-sections-bg);
+	}
 }
+
 
 @keyframes rotation {
 	from {

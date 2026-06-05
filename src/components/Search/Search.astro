@@ -13,6 +13,15 @@ import './Search.scss';
 ---
 
 <div class="search-decoration">
+    <igc-icon-button
+        class="search-trigger-mobile"
+        variant="flat"
+        aria-label="Search documentation"
+        aria-haspopup="dialog"
+        aria-controls="search-dialog"
+    >
+        <igc-icon name="search" collection="docs" aria-hidden="true"></igc-icon>
+    </igc-icon-button>
     <igc-input
         id="search-trigger"
         class="search-trigger"
@@ -54,13 +63,16 @@ import './Search.scss';
                 ></igc-icon-button>
             </igc-input>
         </header>
-        <div class="igd-search-status" aria-live="polite"></div>
-        <igc-list class="igd-search-results" hidden></igc-list>
+        <div class="igd-search-content">
+            <div class="igd-search-status" aria-live="polite"></div>
+            <igc-list class="igd-search-results" hidden></igc-list>
+        </div>
+        <footer class="igd-search-footer">
+            <igc-button class="search-close" variant="outlined">
+                Close
+            </igc-button>
+        </footer>
     </div>
-    <igc-button slot="footer" class="search-close" variant="flat">
-        Close
-        <igc-icon slot="suffix" name="close" collection="docs" aria-hidden="true"></igc-icon>
-    </igc-button>
 </igc-dialog>
 
 <script>
@@ -168,6 +180,9 @@ import './Search.scss';
   async function openSearch() {
     const dialog = document.querySelector<any>('igc-dialog.igd-search-dialog');
     if (!dialog) return;
+    const sw = window.innerWidth - document.documentElement.clientWidth;
+    if (sw) document.body.style.paddingRight = `${sw}px`;
+    document.body.toggleAttribute('data-search-modal-open', true);
     await dialog.show();
     loadPagefind();
     requestAnimationFrame(() => {
@@ -179,7 +194,10 @@ import './Search.scss';
     _w.__searchListeners = true;
 
     document.addEventListener('igcClosed', (e: Event) => {
-      if ((e.target as Element).matches('igc-dialog.igd-search-dialog'));
+      if ((e.target as Element).matches('igc-dialog.igd-search-dialog')) {
+        document.body.toggleAttribute('data-search-modal-open', false);
+        document.body.style.paddingRight = '';
+      }
     });
 
     function updateSearchHint() {
@@ -196,7 +214,7 @@ import './Search.scss';
     updateSearchHint();
 
     document.addEventListener('click', (e: Event) => {
-      if ((e.target as Element).closest('#search-trigger')) openSearch();
+      if ((e.target as Element).closest('#search-trigger') || (e.target as Element).closest('.search-trigger-mobile')) openSearch();
     });
 
     document.addEventListener('keydown', (e: KeyboardEvent) => {

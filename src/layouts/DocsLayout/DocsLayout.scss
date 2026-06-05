@@ -195,6 +195,24 @@
 
 // ── Mobile only (< 768px) ──────────────────────────────────────────────────
 @media (max-width: #{$bp-mobile-max}) {
+	.search-decoration {
+		width: 40px;
+		aspect-ratio: 1;
+		
+		.search-trigger {
+			display: none;
+		}
+	}
+	
+	.search-trigger-mobile {
+		--size: 100%;
+		--border-radius: #{rem(10px)};
+		
+		display: flex;
+		
+		width: 100%;
+		height: 100%;
+	}
 	
 	.igniteui-page-logo {
 		display: block;
@@ -244,12 +262,17 @@
 	
 	.igd-search-shell {
 		grid-template-rows: auto calc(100% - (var(--search-header-footer-height) * 2)) auto;
+		
+		igc-divider {
+			margin-block-start: auto;
+		}
 	}
 	
 	.igd-search-footer {
 		display: flex;
 		align-items: center;
 		justify-content: end;
+		border-block-start: var(--igd-app-outline);
 	}
 }
 
@@ -276,5 +299,4 @@
 	.igd-page-layout {
 		justify-content: center;
 	}
-
 }
