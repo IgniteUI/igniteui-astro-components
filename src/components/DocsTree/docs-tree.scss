@@ -60,14 +60,9 @@ igc-tree {
 
 
 igc-tree[data-variant='sidebar'] {
-	//igc-tree-item[data-has-children] {
-	//	margin-block-end: rem(8px);
-	//}
-	
 	igc-tree-item + igc-tree-item[data-has-children] {
 		margin-block-start: rem(4px);
 	}
-	
 	
 	.docs-tree-label {
 		@include type-style('body-2') {
@@ -76,6 +71,26 @@ igc-tree[data-variant='sidebar'] {
 		}
 	}
 	
+	igc-tree-item[aria-expanded] {
+		&::part(wrapper) {
+			border-radius: rem(4px);
+			
+			&:hover {
+				background-color: var(--ig-gray-50);
+			}
+		}
+		
+		.docs-tree-group {
+			padding-block: rem(8px);
+		}
+		
+	}
+	
+	igc-tree-item[aria-expanded][active] {
+		&::part(wrapper) {
+			background-color: var(--ig-gray-50);
+		}
+	}
 }
 
 igc-tree[data-variant='toc'] {
@@ -280,7 +295,7 @@ igc-tree-item:not([data-has-children]):hover .docs-tree-label {
 	&:hover,
 	&:focus {
 		+ .igd-label-and-badge {
-			background-color: var(--ig-gray-100);
+			background-color: var(--ig-gray-50);
 		}
 	}
 }
@@ -357,7 +372,6 @@ igc-tree[data-variant='sidebar'] {
 		--foreground-selected: light-dark(var(--ig-gray-900), var(--ig-gray-600));
 		--foreground-active-selected: light-dark(var(--ig-gray-900), var(--ig-gray-600));
 		--foreground-active: light-dark(var(--ig-gray-900), var(--ig-gray-50));
-		--foreground-hover: light-dark(var(--ig-gray-900), var(--ig-gray-50));
 	}
 }
 
