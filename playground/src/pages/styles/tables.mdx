@@ -1,0 +1,195 @@
+---
+layout: ../../layouts/PlaygroundMdxLayout.astro
+title: Tables
+slug: styles/tables
+---
+
+# Tables
+
+**Markdown** tables are automatically wrapped in an accessible scroll container
+(`.igd-table-wrapper`) by the `rehypeTableWrapper` plugin. The wrapper gives the
+table a border, a sticky header row, and a sticky first column, and it scrolls
+independently once the content grows past `--igd-table-max-height`.
+
+Raw **HTML** `<table>` elements are **not** auto-wrapped — add the
+`.igd-table-wrapper` yourself, as the expandable example below does.
+
+---
+
+## Standard table
+
+Write a plain Markdown table. The header row pins to the top while scrolling vertically, and the first column pins to the left while scrolling horizontally.
+
+```md
+| Property | Type | Default | Description |
+|---|---|---|---|
+| `value` | `string` | `""` | Current value of the input field. |
+| `disabled` | `boolean` | `false` | Disables the control. |
+```
+
+| Property | Type | Default | Reflects | Description |
+|---|---|---|---|---|
+| `value` | `string` | `""` | no | Current value of the input field. |
+| `name` | `string` | `""` | yes | Name of the control, submitted with the form. |
+| `label` | `string` | `""` | no | Text label rendered above the input. |
+| `placeholder` | `string` | `""` | no | Placeholder shown while the field is empty. |
+| `disabled` | `boolean` | `false` | yes | Disables the control and skips it on submit. |
+| `required` | `boolean` | `false` | yes | Marks the field as required for validation. |
+| `readonly` | `boolean` | `false` | yes | Makes the field non-editable but still focusable. |
+| `outlined` | `boolean` | `false` | yes | Renders the outlined visual variant. |
+| `size` | `"small" \| "medium" \| "large"` | `"medium"` | yes | Controls the density of the component. |
+| `invalid` | `boolean` | `false` | yes | Reflects the current validation state. |
+
+---
+
+## Expandable rows
+
+Add `class="igd-table-expandable"` to a table to turn it into a disclosure table. Each record is a pair of rows — a **summary** row with a chevron toggle, immediately followed by a hidden **detail** row.
+
+The toggle is CSS-only (a `:has()` selector — no JavaScript required) and works with <kbd>Space</kbd> when focused.
+
+<div class="igd-table-wrapper" role="region" aria-label="Expandable rows table" tabindex="0">
+  <table class="igd-table-expandable">
+    <thead>
+      <tr>
+        <th scope="col" aria-label="Expand row"></th>
+        <th scope="col">Property</th>
+        <th scope="col">Type</th>
+        <th scope="col">Default</th>
+        <th scope="col">Reflects</th>
+        <th scope="col">Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="igd-row-summary">
+        <td>
+          <label class="igd-row-toggle">
+            <input type="checkbox" aria-label="Toggle details for value" />
+            <igc-icon name="chevron" collection="docs" class="igd-row-chevron"></igc-icon>
+          </label>
+        </td>
+        <td><code>value</code></td>
+        <td><code>string</code></td>
+        <td><code>""</code></td>
+        <td><code>no</code></td>
+        <td style="white-space: nowrap;">Current value of the input field, two-way bindable.</td>
+      </tr>
+      <tr class="igd-row-detail">
+        <td colspan="6">
+          <div class="igd-row-detail-inner">
+            The current value of the input. Supports two-way binding and emits
+            <code>igcInput</code> on every keystroke and <code>igcChange</code> when the
+            value is committed.
+          </div>
+        </td>
+      </tr>
+      <tr class="igd-row-summary">
+        <td>
+          <label class="igd-row-toggle">
+            <input type="checkbox" aria-label="Toggle details for size" />
+            <igc-icon name="chevron" collection="docs" class="igd-row-chevron"></igc-icon>
+          </label>
+        </td>
+        <td><code>size</code></td>
+        <td><code>"small" | "medium" | "large"</code></td>
+        <td><code>"medium"</code></td>
+        <td><code>yes</code></td>
+        <td style="white-space: nowrap;">Controls the density of the component.</td>
+      </tr>
+      <tr class="igd-row-detail">
+        <td colspan="6">
+          <div class="igd-row-detail-inner">
+            Determines the component's density. The accepted values map to the
+            following vertical padding (a nested table inside the detail panel):
+            <table>
+              <thead>
+                <tr>
+                  <th scope="col">Value</th>
+                  <th scope="col">Block padding</th>
+                  <th scope="col">Recommended for</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>small</code></td>
+                  <td><code>4px</code></td>
+                  <td>Dense data layouts</td>
+                </tr>
+                <tr>
+                  <td><code>medium</code></td>
+                  <td><code>8px</code></td>
+                  <td>Default forms</td>
+                </tr>
+                <tr>
+                  <td><code>large</code></td>
+                  <td><code>12px</code></td>
+                  <td>Touch / mobile targets</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </td>
+      </tr>
+      <tr class="igd-row-summary">
+        <td>
+          <label class="igd-row-toggle">
+            <input type="checkbox" aria-label="Toggle details for disabled" />
+            <igc-icon name="chevron" collection="docs" class="igd-row-chevron"></igc-icon>
+          </label>
+        </td>
+        <td><code>disabled</code></td>
+        <td><code>boolean</code></td>
+        <td><code>false</code></td>
+        <td><code>yes</code></td>
+        <td style="white-space: nowrap;">Disables the control and skips it on submit.</td>
+      </tr>
+      <tr class="igd-row-detail">
+        <td colspan="6">
+          <div class="igd-row-detail-inner">
+            Disables the control. A disabled field is skipped during form submission and
+            is removed from the tab order.
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+Each record is two rows. Repeat the `igd-row-summary` / `igd-row-detail` pair for every expandable record:
+
+```html
+<div class="igd-table-wrapper" role="region" aria-label="Expandable rows table" tabindex="0">
+  <table class="igd-table-expandable">
+    <thead>
+      <tr>
+        <th scope="col" aria-label="Expand row"></th>
+        <th scope="col">Property</th>
+        <th scope="col">Type</th>
+        <th scope="col">Default</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Summary row: the toggle lives in the first cell -->
+      <tr class="igd-row-summary">
+        <td>
+          <label class="igd-row-toggle">
+            <input type="checkbox" aria-label="Toggle details for value" />
+            <igc-icon name="chevron" collection="docs" class="igd-row-chevron"></igc-icon>
+          </label>
+        </td>
+        <td><code>value</code></td>
+        <td><code>string</code></td>
+        <td><code>""</code></td>
+      </tr>
+      <!-- Detail row: hidden until the summary row's checkbox is checked -->
+      <tr class="igd-row-detail">
+        <td colspan="4">
+          <div class="igd-row-detail-inner">
+            The current value of the input.
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+```

@@ -9,7 +9,7 @@
  * in the <script> block below to use @infragistics/igniteui-webcomponents.
  */
 import { sidebar as sidebarData, trailingSlash as configuredTrailingSlash } from 'virtual:docs-template/site-meta';
-import logoRaw from '../../assets/ig-logo.svg?raw';
+import { platform as virtualPlatform } from 'virtual:docs-template/nav-html';
 import SidebarFilterInput from './SidebarFilterInput.astro';
 import './DocsSidebar.scss';
 import SidebarLabel from './SidebarLabel.astro';
@@ -33,21 +33,40 @@ interface Props {
    * (exposed via the virtual module). Falls back to `true` if not configured.
    */
   trailingSlash?: boolean;
+  /** Logo text shown in the slide-in sidebar on mobile/tablet. Defaults to 'Ignite UI'. */
+  logoText?: string;
+  /** Platform label shown below logoText (e.g. 'Angular'). Auto-detected from virtual module when omitted. */
+  platformLabel?: string | null;
 }
 
+const PLATFORM_LABELS: Record<string, string> = {
+  angular: 'Angular',
+  react: 'React',
+  blazor: 'Blazor',
+  'web-components': 'Web Components',
+};
+
 const useTrailingSlash = configuredTrailingSlash !== 'never';
-const { currentSlug = '', items: itemsProp, showFilter = true, trailingSlash = useTrailingSlash } = Astro.props;
+const {
+  currentSlug = '',
+  items: itemsProp,
+  showFilter = true,
+  trailingSlash = useTrailingSlash,
+  logoText = 'Ignite UI',
+  platformLabel = virtualPlatform ? (PLATFORM_LABELS[virtualPlatform] ?? null) : null,
+} = Astro.props;
 const items = (itemsProp ?? sidebarData) as SidebarEntry[];
 const nodes = toTreeNodes(items, currentSlug, { trailingSlash });
 const activeId = normalizeSlug(currentSlug);
----
+---w
 
 <sidebar-filter class="docs-sidebar" id="docs-sidebar" data-no-results="No topics match">
+    <div class="igd-sidebar-logo">
+        <h1>{logoText}</h1>
+        {platformLabel && <span class="igd-logo__platform">for {platformLabel}</span>}
+    </div>
     <div class="sidebar-gutter">
-        <div class="sidebar-logo" aria-hidden="true">
-            <Fragment set:html={logoRaw} />
-        </div>
-{ showFilter && <SidebarFilterInput/> }
+        { showFilter && <SidebarFilterInput/> }
     </div>
     <div class="sidebar-scroll" data-sidebar-scroll>
         <DocsTree

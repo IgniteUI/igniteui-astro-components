@@ -1,0 +1,56 @@
+---
+layout: ../../layouts/PlaygroundMdxLayout.astro
+title: Text Elements
+slug: styles/text-elements
+---
+
+# Text Elements
+
+Reference for horizontal rules, line breaks, and HTML character entities.
+
+---
+
+## Horizontal rule
+
+Use `---` on its own line to insert a `<hr>` separator.
+
+```md
+Content above.
+
+---
+
+Content below.
+```
+
+---
+
+## Line breaks & word breaks
+
+The `<br>` element inserts a line break within a block of text.
+
+The `<wbr>` element suggests a line-break opportunity inside a long word: `superlong`<wbr />`concatenated`<wbr />`identifier`<wbr />`name`.
+
+```html
+First line.<br />
+Second line after a line break.
+
+A long<wbr />concatenated<wbr />identifier with break opportunities.
+```
+
+---
+
+## HTML character entities
+
+Common HTML named character references and how they render.
+
+| Entity code | Renders as | Description |
+|---|---|---|
+| `&amp;` | & | Ampersand |
+| `&lt;` | &lt; | Less-than sign |
+| `&gt;` | &gt; | Greater-than sign |
+| `&nbsp;` | (space) | Non-breaking space |
+| `&mdash;` | — | Em dash |
+| `&ndash;` | – | En dash |
+| `&hellip;` | … | Ellipsis |
+| `&ldquo;` / `&rdquo;` | " / " | Left / right double quotation marks |
+| `&lsquo;` / `&rsquo;` | ' / ' | Left / right single quotation marks |

@@ -1,7 +1,5 @@
 ---
 import { ClientRouter } from 'astro:transitions';
-import '@fontsource-variable/inter/wght.css';
-import '@fontsource-variable/inter/wght-italic.css';
 import '@fontsource-variable/jetbrains-mono/wght.css';
 import '@fontsource-variable/jetbrains-mono/wght-italic.css';
 import GlobalNavBar from '../../components/GlobalNavBar/GlobalNavBar.astro';
@@ -9,6 +7,7 @@ import GlobalFooter from '../../components/GlobalFooter/GlobalFooter.astro';
 import DocsSubHeader from '../../components/DocsSubHeader/DocsSubHeader.astro';
 import DocsBreadcrumb from '../../components/DocsBreadcrumb/DocsBreadcrumb.astro';
 import LicenseIndicator from '../../components/LicenseIndicator/LicenseIndicator.astro';
+import igLogoRaw from '../../assets/ig-logo.svg?raw';
 import MobileSidebarToggle from '../../components/MobileSidebarToggle/MobileSidebarToggle.astro';
 import CopyCode from '../../components/CopyCode/CopyCode.astro';
 import { widgetScriptSrc, platform as virtualPlatform } from 'virtual:docs-template/nav-html';
@@ -73,6 +72,7 @@ type HeadEntry = { tag: string; attrs?: Record<string, string | boolean | undefi
   {description && <meta name="description" content={description} />}
   {keywords && <meta name="keywords" content={keywords} />}
   <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="https://use.typekit.net/bng2zgw.css" />
   {widgetScriptSrc && <script is:inline src={widgetScriptSrc} async></script>}
   {(headEntries as HeadEntry[]).map(({ tag: Tag, attrs = {}, content }) =>
     content ? <Tag {...attrs} set:html={content} /> : <Tag {...attrs} />
@@ -255,8 +255,10 @@ type HeadEntry = { tag: string; attrs?: Record<string, string | boolean | undefi
 
         <div class="igd-main-content">
             <div class="igd-main-content__inner">
+
                 <div class="igd-main-content__page">
                     <main class="igd-main-content__markdown">
+                        <Fragment set:html={igLogoRaw} />
                         <LicenseIndicator license={licenseType} />
                         <DocsBreadcrumb pageTitle={ title } currentSlug={ currentSlug } siteTitle={ siteTitleProp }/>
                         <slot/>
@@ -264,9 +266,7 @@ type HeadEntry = { tag: string; attrs?: Record<string, string | boolean | undefi
                 </div>
 
                 { hasToc && (
-                    <aside>
-                        <slot name="toc"/>
-                    </aside>
+                    <slot name="toc"/>
                 ) }
             </div>
         </div>

@@ -26,7 +26,7 @@ export const SIDEBAR: SidebarEntry[] = [
     ],
   },
   {
-    label: 'Components',
+    label: 'Layout Components',
     collapsed: false,
     items: [
       { label: 'Sidebar', slug: 'components/sidebar' },
@@ -35,25 +35,34 @@ export const SIDEBAR: SidebarEntry[] = [
       { label: 'DocsToc', slug: 'components/docs-toc' },
       { label: 'Search', slug: 'components/search' },
       { label: 'SearchAdvanced', slug: 'components/search-advanced' },
-      {
-        label: 'MDX Helpers',
-        collapsed: true,
-        items: [
-          { label: 'ApiLink',       slug: 'components/api-link' },
-          { label: 'ApiRef',        slug: 'components/api-ref' },
-          { label: 'Badge',         slug: 'components/badge' },
-          { label: 'DocsAside',     slug: 'components/docs-aside' },
-          { label: 'PlatformBlock', slug: 'components/platform-block' },
-          { label: 'Sample',        slug: 'components/sample' },
-        ],
-      },
+    ],
+  },
+  {
+    label: 'MDX Components',
+    collapsed: false,
+    items: [
+      { label: 'ApiLink',       slug: 'components/api-link' },
+      { label: 'ApiRef',        slug: 'components/api-ref' },
+      { label: 'Badge',         slug: 'components/badge' },
+      { label: 'DocsAside',     slug: 'components/docs-aside' },
+      { label: 'PlatformBlock', slug: 'components/platform-block' },
+      { label: 'Sample',        slug: 'components/sample' },
     ],
   },
   {
     label: 'Styles',
     collapsed: false,
     items: [
-      { label: 'Style Guide', slug: 'components/styleguide', badges: [{ text: 'Premium', variant: 'premium' }, { text: 'New', variant: 'new' }] },
+      { label: 'Colors',        slug: 'styles/colors' },
+      { label: 'Typography',    slug: 'styles/typography' },
+      { label: 'Icons',         slug: 'styles/icons' },
+      { label: 'Lists',         slug: 'styles/lists' },
+      { label: 'Tables',        slug: 'styles/tables' },
+      { label: 'Code',          slug: 'styles/code' },
+      { label: 'Images',        slug: 'styles/images' },
+      { label: 'Embedded Media', slug: 'styles/media' },
+      { label: 'Badges',        slug: 'styles/badges' },
+      { label: 'Text Elements', slug: 'styles/text-elements' },
     ],
   },
   {
@@ -72,10 +81,10 @@ export const SEARCH_TABS: SearchTab[] = [
 ];
 
 export const PACKAGES = [
-  '@igniteui/angular',
-  '@igniteui/react',
-  '@igniteui/web-components',
-  '@igniteui/blazor',
+  { label: 'Angular',         value: '@igniteui/angular' },
+  { label: 'React',           value: '@igniteui/react' },
+  { label: 'Web Components',  value: '@igniteui/web-components' },
+  { label: 'Blazor',          value: '@igniteui/blazor' },
 ] as const;
 
 export const VERSIONS = ['18.x', '17.x', '16.x', '15.x'] as const;
