@@ -28,6 +28,10 @@ Author MDX with the unprefixed API name:
 The resolver handles platform prefix/suffix candidates, package lookup, kind
 lookup, URL segment lookup, and member anchor lookup.
 
+Omitting `pkg` relies on `platformContext.apiLinkIndex` being available. When
+the index is unavailable, `ApiLink` falls back to legacy URL generation and
+cannot reliably infer the correct package for non-core symbols.
+
 ## TypeDoc Props
 
 | Prop | Type | Default | Description |

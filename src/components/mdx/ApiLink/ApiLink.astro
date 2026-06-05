@@ -30,19 +30,33 @@ type SassProps = {
 
 /** Props for TypeDoc API documentation links. */
 type TypeDocProps = {
-    /** Optional TypeDoc kind narrowing. Usually resolved by the generated index. */
+    /**
+     * TypeDoc symbol kind. Narrows registry lookup and determines the legacy
+     * fallback URL segment.
+     * @default "class"
+     */
     kind?: TypeDocKind;
-    /** Short API symbol name without platform prefix. */
+    /**
+     * Short type/symbol name without platform prefix, e.g. "Toast".
+     * Required for all TypeDoc kinds.
+     */
     type: string;
-    /** Optional member/property/method name on the symbol. */
+    /** Optional class/interface member, property, method, or enum value anchor. */
     member?: string;
-    /** Optional package filter for ambiguous symbols. */
+    /** Package key used only to filter ambiguous registry matches. */
     pkg?: string;
     /** Override the rendered label. */
     label?: string;
-    /** Legacy override for symbols that are not platform-prefixed. */
+    /**
+     * Whether to prepend the platform prefix before registry lookup or legacy
+     * fallback URL generation.
+     * @default true
+     */
     prefixed?: boolean;
-    /** Legacy override for symbols that do not use the platform class suffix. */
+    /**
+     * Whether to try the platform class suffix before the unsuffixed symbol.
+     * @default true
+     */
     suffix?: boolean;
 };
 
