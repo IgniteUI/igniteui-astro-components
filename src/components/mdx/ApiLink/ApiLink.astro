@@ -113,6 +113,7 @@ function getIndexedDisplayName(resolvedName: string, fallbackName: string, type:
 let url: string;
 let displayLabel: string;
 let renderCode: boolean;
+let renderLink = true;
 
 if (Astro.props.kind === 'sass') {
     const { type, module, code = true } = Astro.props;
@@ -177,10 +178,17 @@ if (Astro.props.kind === 'sass') {
         displayLabel = label ?? (indexed.memberName ? `${indexedDisplay}.${indexed.memberName}` : indexedDisplay);
     } else if (indexed.status === 'ambiguous') {
         const symbol = member ? `${type}.${member}` : type;
-        throw new Error(`[ApiLink] Ambiguous API symbol "${symbol}" matched registry candidate "${indexed.candidate}". Add pkg= to disambiguate.`);
+        throw new Error(`[ApiLink] Ambiguous API symbol "${symbol}" matched registry candidate "${indexed.candidate}". Add pkg= or kind= to disambiguate.`);
+    } else if (indexed.status === 'member-missing') {
+        renderLink = false;
+        if (import.meta.env.DEV) {
+            console.warn(`[ApiLink] Registry symbol "${indexed.candidate}" exists, but member "${member}" was not found. Rendering code text instead of a guessed legacy URL.`);
+        }
     } else if (indexed.status === 'missing' && import.meta.env.DEV) {
         console.warn(`[ApiLink] Registry miss for ${type}${member ? `.${member}` : ''}; using legacy URL fallback.`);
     }
 }
 ---
-<a href={url}>{renderCode ? <code>{displayLabel}</code> : displayLabel}</a>
+{renderLink
+    ? <a href={url}>{renderCode ? <code>{displayLabel}</code> : displayLabel}</a>
+    : renderCode ? <code>{displayLabel}</code> : displayLabel}

@@ -30,6 +30,7 @@ type ApiLinkIndexFile = {
 export type ApiLinkIndexResolution =
     | { status: 'resolved'; url: string; symbolName: string; memberName: string; memberAnchor: string }
     | { status: 'ambiguous'; candidate: string }
+    | { status: 'member-missing'; candidate: string }
     | { status: 'missing' }
     | { status: 'unavailable' };
 
@@ -87,9 +88,10 @@ function findIndexedSymbol(options: {
     packageId?: string;
     explicitKind?: TypeDocKind;
     member?: string;
-}): { name: string; symbol: ApiLinkIndexSymbol; memberName: string; memberAnchor: string } | { ambiguous: true; candidate: string } | null {
+}): { name: string; symbol: ApiLinkIndexSymbol; memberName: string; memberAnchor: string } | { ambiguous: true; candidate: string } | { memberMissing: true; candidate: string } | null {
     const symbols = options.index.symbols ?? {};
     let ambiguity: { ambiguous: true; candidate: string } | null = null;
+    let memberMissing: { memberMissing: true; candidate: string } | null = null;
 
     for (const name of options.candidates) {
         const value = symbols[name];
@@ -102,10 +104,12 @@ function findIndexedSymbol(options: {
             memberName: string;
             memberAnchor: string;
         }>();
+        let matchedSymbol = false;
 
         for (const symbol of symbolList) {
             if (options.packageId && symbol.p !== options.packageId) continue;
             if (options.explicitKind && symbol.k !== options.explicitKind) continue;
+            matchedSymbol = true;
             const memberMatch = resolveIndexedMember(symbol, options.member);
             if (memberMatch === null) continue;
 
@@ -124,9 +128,12 @@ function findIndexedSymbol(options: {
         if (matches.size > 1 && !ambiguity) {
             ambiguity = { ambiguous: true, candidate: name };
         }
+        if (matches.size === 0 && matchedSymbol && options.member && !memberMissing) {
+            memberMissing = { memberMissing: true, candidate: name };
+        }
     }
 
-    return ambiguity;
+    return ambiguity ?? memberMissing;
 }
 
 function absolutizeIndexUrl(indexedPath: string, docRoot: string): string {
@@ -197,6 +204,7 @@ export function resolveApiLinkFromIndex(options: {
 
     if (!indexed) return { status: 'missing' };
     if ('ambiguous' in indexed) return { status: 'ambiguous', candidate: indexed.candidate };
+    if ('memberMissing' in indexed) return { status: 'member-missing', candidate: indexed.candidate };
 
     // Use the resolved symbol's package docRoot when available, so cross-package
     // symbols resolve against the correct origin rather than always core.
