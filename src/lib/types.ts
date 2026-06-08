@@ -4,9 +4,8 @@ export interface ApiPackageConfig {
     /** TypeDoc documentation root URL (no trailing slash). */
     docRoot: string;
     /**
-     * Package identifier as it appears in the TypeDoc URL path.
-     * Core packages use hyphens ("igniteui-react"),
-     * sub-packages use underscores ("igniteui_react_charts").
+     * Package identifier as it appears in the API docs registry and route,
+     * e.g. "igniteui-react" or "igniteui-react-charts".
      */
     packageId: string;
     /**

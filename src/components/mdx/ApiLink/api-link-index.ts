@@ -19,8 +19,6 @@ type ApiLinkIndexSymbol = {
     u: string;
     /** Kind. */
     k?: TypeDocKind;
-    /** URL segment. */
-    s?: string;
     /** Member name to anchor map. */
     m?: Record<string, string>;
 };
@@ -31,6 +29,7 @@ type ApiLinkIndexFile = {
 
 export type ApiLinkIndexResolution =
     | { status: 'resolved'; url: string; symbolName: string; memberName: string; memberAnchor: string }
+    | { status: 'ambiguous'; candidate: string }
     | { status: 'missing' }
     | { status: 'unavailable' };
 
@@ -88,24 +87,46 @@ function findIndexedSymbol(options: {
     packageId?: string;
     explicitKind?: TypeDocKind;
     member?: string;
-}) {
+}): { name: string; symbol: ApiLinkIndexSymbol; memberName: string; memberAnchor: string } | { ambiguous: true; candidate: string } | null {
     const symbols = options.index.symbols ?? {};
+    let ambiguity: { ambiguous: true; candidate: string } | null = null;
 
     for (const name of options.candidates) {
         const value = symbols[name];
         if (!value) continue;
 
         const symbolList = Array.isArray(value) ? value : [value];
+        const matches = new Map<string, {
+            name: string;
+            symbol: ApiLinkIndexSymbol;
+            memberName: string;
+            memberAnchor: string;
+        }>();
+
         for (const symbol of symbolList) {
-            if (options.packageId && symbol.p && symbol.p !== options.packageId) continue;
-            if (options.explicitKind && symbol.k && symbol.k !== options.explicitKind) continue;
+            if (options.packageId && symbol.p !== options.packageId) continue;
+            if (options.explicitKind && symbol.k !== options.explicitKind) continue;
             const memberMatch = resolveIndexedMember(symbol, options.member);
             if (memberMatch === null) continue;
-            return { name, symbol, memberName: memberMatch.memberName, memberAnchor: memberMatch.memberAnchor };
+
+            const key = `${symbol.u}#${memberMatch.memberAnchor}`;
+            matches.set(key, {
+                name,
+                symbol,
+                memberName: memberMatch.memberName,
+                memberAnchor: memberMatch.memberAnchor,
+            });
+        }
+
+        if (matches.size === 1) {
+            return matches.values().next().value!;
+        }
+        if (matches.size > 1 && !ambiguity) {
+            ambiguity = { ambiguous: true, candidate: name };
         }
     }
 
-    return null;
+    return ambiguity;
 }
 
 function absolutizeIndexUrl(indexedPath: string, docRoot: string): string {
@@ -132,10 +153,11 @@ function getCandidateClassSuffixes(options: {
         suffixes.add(pkg.classSuffix);
     }
 
-    return [...suffixes];
+    // Put undefined (no suffix) last so suffixed names are tried first.
+    return [...suffixes].sort((a, b) => (a === undefined ? 1 : b === undefined ? -1 : 0));
 }
 
-export async function resolveApiLinkFromIndex(options: {
+export function resolveApiLinkFromIndex(options: {
     ctx: PlatformContext;
     pkgConfig: ApiPackageConfig;
     explicitPkg: boolean;
@@ -145,7 +167,7 @@ export async function resolveApiLinkFromIndex(options: {
     prefix: string;
     prefixed: boolean;
     suffix: boolean;
-}): Promise<ApiLinkIndexResolution> {
+}): ApiLinkIndexResolution {
     const index = options.ctx.apiLinkIndex as ApiLinkIndexFile | undefined;
     if (!index?.symbols) {
         return { status: 'unavailable' };
@@ -174,11 +196,18 @@ export async function resolveApiLinkFromIndex(options: {
     });
 
     if (!indexed) return { status: 'missing' };
+    if ('ambiguous' in indexed) return { status: 'ambiguous', candidate: indexed.candidate };
+
+    // Use the resolved symbol's package docRoot when available, so cross-package
+    // symbols resolve against the correct origin rather than always core.
+    const resolvedDocRoot = (indexed.symbol.p
+        ? Object.values(options.ctx.apiPackages).find(pkg => pkg.packageId === indexed.symbol.p)?.docRoot
+        : undefined) ?? options.pkgConfig.docRoot;
 
     const path = `${indexed.symbol.u}${indexed.memberAnchor ? `#${indexed.memberAnchor}` : ''}`;
     return {
         status: 'resolved',
-        url: absolutizeIndexUrl(path, options.pkgConfig.docRoot),
+        url: absolutizeIndexUrl(path, resolvedDocRoot),
         symbolName: indexed.name,
         memberName: indexed.memberName,
         memberAnchor: indexed.memberAnchor,

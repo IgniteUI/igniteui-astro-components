@@ -106,6 +106,7 @@ function buildLegacyUrl(options: {
 function getIndexedDisplayName(resolvedName: string, fallbackName: string, type: string, classSuffix?: string) {
     if (resolvedName === type) return type;
     if (classSuffix && resolvedName === `${type}${classSuffix}`) return type;
+    if (classSuffix && resolvedName === `${fallbackName}${classSuffix}`) return type;
     return fallbackName;
 }
 
@@ -142,7 +143,7 @@ if (Astro.props.kind === 'sass') {
 
     // pkg is an ambiguity override. Without an explicit pkg prop, search the
     // combined api-docs index so symbols can resolve from any package.
-    const explicitPkg = 'pkg' in Astro.props && typeof pkg === 'string' && pkg.length > 0;
+    const explicitPkg = typeof Astro.props.pkg === 'string' && Astro.props.pkg.length > 0;
     const pkgConfig = apiPackages[explicitPkg ? pkg : 'core'] ?? apiPackages.core;
     const baseType = effectivePrefixed ? `${prefix}${type}` : type;
 
@@ -158,7 +159,7 @@ if (Astro.props.kind === 'sass') {
     displayLabel = label ?? (member ? `${baseType}.${member}` : baseType);
     renderCode = true;
 
-    const indexed = await resolveApiLinkFromIndex({
+    const indexed = resolveApiLinkFromIndex({
         ctx,
         pkgConfig,
         explicitPkg,
@@ -174,6 +175,9 @@ if (Astro.props.kind === 'sass') {
         url = indexed.url;
         const indexedDisplay = getIndexedDisplayName(indexed.symbolName, baseType, type, pkgConfig.classSuffix);
         displayLabel = label ?? (indexed.memberName ? `${indexedDisplay}.${indexed.memberName}` : indexedDisplay);
+    } else if (indexed.status === 'ambiguous') {
+        const symbol = member ? `${type}.${member}` : type;
+        throw new Error(`[ApiLink] Ambiguous API symbol "${symbol}" matched registry candidate "${indexed.candidate}". Add pkg= to disambiguate.`);
     } else if (indexed.status === 'missing' && import.meta.env.DEV) {
         console.warn(`[ApiLink] Registry miss for ${type}${member ? `.${member}` : ''}; using legacy URL fallback.`);
     }

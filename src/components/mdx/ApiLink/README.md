@@ -78,13 +78,14 @@ Registry symbol fields are intentionally short because the files are large:
 | Field | Meaning |
 |-------|---------|
 | `p` | Package id that owns the symbol. |
-| `u` | Root-relative API URL for the symbol. |
+| `u` | Root-relative API URL path for the symbol page. |
 | `k` | Symbol kind, e.g. `class`, `interface`, `enum`, `type`. |
-| `s` | API docs URL segment, e.g. `classes` or `interfaces`. |
 | `m` | Member name to anchor map. |
 
 When `pkg` is present, `ApiLink` uses it only as a package filter for ambiguous
 symbol names; package URLs and kinds still come from the registry.
+If a symbol is ambiguous and `pkg` is omitted, `ApiLink` throws during
+rendering instead of guessing a legacy URL.
 
 ## Sass Props
 Use `kind="sass"` for Sass API reference links. Sass links do not use the
