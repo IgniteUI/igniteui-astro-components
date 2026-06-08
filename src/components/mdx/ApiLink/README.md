@@ -84,8 +84,8 @@ Registry symbol fields are intentionally short because the files are large:
 
 When `pkg` is present, `ApiLink` uses it only as a package filter for ambiguous
 symbol names; package URLs and kinds still come from the registry.
-If a symbol is ambiguous and `pkg` is omitted, `ApiLink` throws during
-rendering instead of guessing a legacy URL.
+When the index is available and a symbol is ambiguous, omitting `pkg` causes
+`ApiLink` to throw during rendering instead of guessing a legacy URL.
 
 ## Sass Props
 Use `kind="sass"` for Sass API reference links. Sass links do not use the

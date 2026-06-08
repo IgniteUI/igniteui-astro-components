@@ -31,11 +31,23 @@ export interface ApiPackageConfig {
     pascalCaseMembers?: boolean;
 }
 
+/** Compact ApiLink symbol entry as stored in the generated registry JSON. */
+type ApiLinkIndexEntry = {
+    /** Package id that owns this symbol. */
+    p?: string;
+    /** Root-relative URL to the symbol page, e.g. "/api/react/igniteui-react/19.5/classes/IgrGrid". */
+    u: string;
+    /** Symbol kind, e.g. "class", "interface", "enum". */
+    k?: string;
+    /** Member name to anchor map, e.g. { rowSelection: "rowSelection" }. */
+    m?: Record<string, string>;
+};
+
 export interface PlatformContext {
     name: PlatformName;
     /** Optional compact ApiLink symbol index loaded by the docs host at build time. */
     apiLinkIndex?: {
-        symbols?: Record<string, unknown>;
+        symbols?: Record<string, ApiLinkIndexEntry | ApiLinkIndexEntry[]>;
     };
     /** Lower-case slug used in URLs, e.g. "angular" */
     lower: string;
