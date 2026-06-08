@@ -4,8 +4,9 @@ Renders an inline API documentation link with platform-aware resolution.
 
 For TypeDoc symbols, `ApiLink` first queries the generated api-docs link index.
 That index contains the real symbol names, packages, URL segments, and member
-anchors produced by api-docs. If the index is unavailable, `ApiLink` falls back
-to legacy URL generation so migrated MDX continues to build.
+anchors produced by api-docs. If the index is unavailable, or if a symbol is
+missing from it, `ApiLink` renders plain code text instead of generating a
+guessed URL.
 
 Sass links are separate and still use `kind="sass"`.
 
@@ -29,8 +30,7 @@ The resolver handles platform prefix/suffix candidates, package lookup, kind
 lookup, URL segment lookup, and member anchor lookup.
 
 Omitting `pkg` relies on `platformContext.apiLinkIndex` being available. When
-the index is unavailable, `ApiLink` falls back to legacy URL generation and
-cannot reliably infer the correct package for non-core symbols.
+the index is unavailable, `ApiLink` renders code text and does not guess a URL.
 
 ## TypeDoc Props
 
@@ -40,9 +40,9 @@ cannot reliably infer the correct package for non-core symbols.
 | `member` | `string` | — | Optional member name. Resolved through the generated member map when available. |
 | `label` | `string` | auto | Override the display text. |
 | `pkg` | `string` | — | Ambiguity override only. Use when the same symbol exists in multiple packages and the combined index cannot choose safely. |
-| `kind` | `'class' \| 'interface' \| 'enum' \| 'type' \| 'variable' \| 'function'` | auto / legacy `'class'` | Optional narrowing. Usually unnecessary when the index is available. |
-| `prefixed` | `boolean` | `true` | Legacy override for symbols that are never platform-prefixed. Avoid for new docs when the index can resolve the symbol. |
-| `suffix` | `boolean` | `true` | Legacy override for symbols that never use the platform class suffix. Avoid for new docs when the index can resolve the symbol. |
+| `kind` | `'class' \| 'interface' \| 'enum' \| 'type' \| 'variable' \| 'function'` | auto | Optional narrowing. Usually unnecessary when the index is available. |
+| `prefixed` | `boolean` | `true` | Candidate-name override for symbols that are never platform-prefixed. Avoid for new docs when the index can resolve the symbol. |
+| `suffix` | `boolean` | `true` | Candidate-name override for symbols that never use the platform class suffix. Avoid for new docs when the index can resolve the symbol. |
 
 Platform names use `PlatformContext.name`: `Angular`, `React`,
 `WebComponents`, or `Blazor`.
@@ -84,10 +84,12 @@ Registry symbol fields are intentionally short because the files are large:
 
 When `pkg` is present, `ApiLink` uses it only as a package filter for ambiguous
 symbol names; package URLs and kinds still come from the registry.
-When the index is available and a symbol is ambiguous, omitting `pkg` causes
-`ApiLink` to throw during rendering instead of guessing a legacy URL.
+When a symbol is ambiguous, omitting `pkg` or `kind` causes `ApiLink` to throw
+during rendering instead of guessing a URL.
+When a symbol is not found, `ApiLink` renders code text instead of generating a
+guessed URL.
 When a registry symbol exists but the requested member does not, `ApiLink`
-renders code text instead of generating a guessed legacy member URL.
+renders code text instead of generating a guessed member URL.
 
 ## Sass Props
 Use `kind="sass"` for Sass API reference links. Sass links do not use the

@@ -2,13 +2,12 @@
 /**
  * Inline API documentation link.
  *
- * TypeDoc links first resolve against the compact api-docs ApiLink index. If
- * the index is unavailable, the component falls back to legacy URL generation
- * so existing docs can migrate gradually.
+ * TypeDoc links resolve against the compact api-docs ApiLink index. If the
+ * index does not contain the requested symbol/member, it renders code text
+ * instead of guessing a URL.
  */
-import type { ApiPackageConfig, PlatformContext } from '../../../lib/types.ts';
+import type { PlatformContext } from '../../../lib/types.ts';
 import {
-    KIND_SEGMENT,
     resolveApiLinkFromIndex,
     type TypeDocKind,
 } from './api-link-index';
@@ -31,9 +30,8 @@ type SassProps = {
 /** Props for TypeDoc API documentation links. */
 type TypeDocProps = {
     /**
-     * TypeDoc symbol kind. Narrows registry lookup and determines the legacy
-     * fallback URL segment.
-     * @default "class"
+     * TypeDoc symbol kind. Narrows registry lookup when the same symbol exists
+     * as multiple TypeDoc kinds.
      */
     kind?: TypeDocKind;
     /**
@@ -48,8 +46,7 @@ type TypeDocProps = {
     /** Override the rendered label. */
     label?: string;
     /**
-     * Whether to prepend the platform prefix before registry lookup or legacy
-     * fallback URL generation.
+     * Whether to prepend the platform prefix before registry lookup.
      * @default true
      */
     prefixed?: boolean;
@@ -66,54 +63,17 @@ const ctx = Astro.locals.platformContext as PlatformContext;
 const { prefix, apiPackages } = ctx;
 const label = Astro.props.label;
 
-const upperFirst = (value: string) => value ? value.charAt(0).toUpperCase() + value.slice(1) : value;
-
-function buildLegacyUrl(options: {
-    type: string;
-    kind: TypeDocKind;
-    member?: string;
-    prefix: string;
-    prefixed: boolean;
-    suffix: boolean;
-    pkgConfig: ApiPackageConfig;
-}) {
-    const { type, kind, member, prefix, prefixed, suffix, pkgConfig } = options;
-    const baseType = prefixed ? `${prefix}${type}` : type;
-    const segment = KIND_SEGMENT[kind];
-
-    if (kind === 'class') {
-        const fullType = (suffix && pkgConfig.classSuffix) ? `${baseType}${pkgConfig.classSuffix}` : baseType;
-        const cased = pkgConfig.preserveCase ? fullType : fullType.toLowerCase();
-        const classSlug = pkgConfig.noPackagePrefix
-            ? cased
-            : `${pkgConfig.packageId}.${cased}`;
-        const memberAnchor = member
-            ? `#${pkgConfig.pascalCaseMembers ? upperFirst(member) : member}`
-            : '';
-        return `${pkgConfig.docRoot}/classes/${classSlug}${memberAnchor}`;
-    }
-
-    const slug = pkgConfig.noPackagePrefix
-        ? baseType
-        : `${pkgConfig.packageId}.${baseType}`;
-    const memberAnchor = member
-        ? `#${kind === 'enum' ? member : pkgConfig.pascalCaseMembers ? upperFirst(member) : member.toLowerCase()}`
-        : '';
-
-    return `${pkgConfig.docRoot}/${segment}/${slug}${memberAnchor}`;
-}
-
-function getIndexedDisplayName(resolvedName: string, fallbackName: string, type: string, classSuffix?: string) {
+function getIndexedDisplayName(resolvedName: string, displayBaseName: string, type: string, classSuffix?: string) {
     if (resolvedName === type) return type;
     if (classSuffix && resolvedName === `${type}${classSuffix}`) return type;
-    if (classSuffix && resolvedName === `${fallbackName}${classSuffix}`) return type;
-    return fallbackName;
+    if (classSuffix && resolvedName === `${displayBaseName}${classSuffix}`) return type;
+    return displayBaseName;
 }
 
 let url: string;
 let displayLabel: string;
 let renderCode: boolean;
-let renderLink = true;
+let renderLink = false;
 
 if (Astro.props.kind === 'sass') {
     const { type, module, code = true } = Astro.props;
@@ -128,6 +88,7 @@ if (Astro.props.kind === 'sass') {
     }
     displayLabel = label ?? type ?? module ?? '';
     renderCode = code;
+    renderLink = true;
 } else {
     const {
         type,
@@ -137,7 +98,6 @@ if (Astro.props.kind === 'sass') {
         suffix = true,
     } = Astro.props;
     const explicitKind = 'kind' in Astro.props ? Astro.props.kind : undefined;
-    const kind: TypeDocKind = explicitKind ?? 'class';
 
     const effectivePrefixed = prefixed;
     const effectiveSuffix = suffix;
@@ -148,15 +108,7 @@ if (Astro.props.kind === 'sass') {
     const pkgConfig = apiPackages[explicitPkg ? pkg : 'core'] ?? apiPackages.core;
     const baseType = effectivePrefixed ? `${prefix}${type}` : type;
 
-    url = buildLegacyUrl({
-        type,
-        kind,
-        member,
-        prefix,
-        prefixed: effectivePrefixed,
-        suffix: effectiveSuffix,
-        pkgConfig,
-    });
+    url = '';
     displayLabel = label ?? (member ? `${baseType}.${member}` : baseType);
     renderCode = true;
 
@@ -174,6 +126,7 @@ if (Astro.props.kind === 'sass') {
 
     if (indexed.status === 'resolved') {
         url = indexed.url;
+        renderLink = true;
         const indexedDisplay = getIndexedDisplayName(indexed.symbolName, baseType, type, pkgConfig.classSuffix);
         displayLabel = label ?? (indexed.memberName ? `${indexedDisplay}.${indexed.memberName}` : indexedDisplay);
     } else if (indexed.status === 'ambiguous') {
@@ -182,10 +135,18 @@ if (Astro.props.kind === 'sass') {
     } else if (indexed.status === 'member-missing') {
         renderLink = false;
         if (import.meta.env.DEV) {
-            console.warn(`[ApiLink] Registry symbol "${indexed.candidate}" exists, but member "${member}" was not found. Rendering code text instead of a guessed legacy URL.`);
+            console.warn(`[ApiLink] Registry symbol "${indexed.candidate}" exists, but member "${member}" was not found. Rendering code text instead of a guessed URL.`);
         }
-    } else if (indexed.status === 'missing' && import.meta.env.DEV) {
-        console.warn(`[ApiLink] Registry miss for ${type}${member ? `.${member}` : ''}; using legacy URL fallback.`);
+    } else if (indexed.status === 'missing') {
+        renderLink = false;
+        if (import.meta.env.DEV) {
+            console.warn(`[ApiLink] Registry miss for ${type}${member ? `.${member}` : ''}. Rendering code text instead of a guessed URL.`);
+        }
+    } else if (indexed.status === 'unavailable') {
+        renderLink = false;
+        if (import.meta.env.DEV) {
+            console.warn(`[ApiLink] ApiLink registry is unavailable for ${type}${member ? `.${member}` : ''}. Rendering code text.`);
+        }
     }
 }
 ---
