@@ -4,9 +4,8 @@ export interface ApiPackageConfig {
     /** TypeDoc documentation root URL (no trailing slash). */
     docRoot: string;
     /**
-     * Package identifier as it appears in the TypeDoc URL path.
-     * Core packages use hyphens ("igniteui-react"),
-     * sub-packages use underscores ("igniteui_react_charts").
+     * Package identifier as it appears in the API docs registry and route,
+     * e.g. "igniteui-react" or "igniteui-react-charts".
      */
     packageId: string;
     /**
@@ -20,10 +19,9 @@ export interface ApiPackageConfig {
      */
     preserveCase?: boolean;
     /**
-     * Optional suffix appended to the class name before lowercasing, e.g.
-     * Angular DV packages append "Component" so `CategoryChart` resolves to
-     * `igniteui_angular_charts.igxcategorychartcomponent.html`.
-     * Only applied when `prefixed={true}`.
+     * Preferred class-name suffix used by ApiLink. The generated registry tries
+     * both the suffixed and unsuffixed names, so this does not mean every API
+     * symbol is expected to have the suffix.
      */
     classSuffix?: string;
     /**
@@ -33,8 +31,24 @@ export interface ApiPackageConfig {
     pascalCaseMembers?: boolean;
 }
 
+/** Compact ApiLink symbol entry as stored in the generated registry JSON. */
+type ApiLinkIndexEntry = {
+    /** Package id that owns this symbol. */
+    p?: string;
+    /** Root-relative URL to the symbol page, e.g. "/api/react/igniteui-react/19.5/classes/IgrGrid". */
+    u: string;
+    /** Symbol kind, e.g. "class", "interface", "enum". */
+    k?: string;
+    /** Member name to anchor map, e.g. { rowSelection: "rowSelection" }. */
+    m?: Record<string, string>;
+};
+
 export interface PlatformContext {
     name: PlatformName;
+    /** Optional compact ApiLink symbol index loaded by the docs host at build time. */
+    apiLinkIndex?: {
+        symbols?: Record<string, ApiLinkIndexEntry | ApiLinkIndexEntry[]>;
+    };
     /** Lower-case slug used in URLs, e.g. "angular" */
     lower: string;
     /** Component class prefix, e.g. "Igx" / "Igr" / "Igc" / "Igb" */
