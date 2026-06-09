@@ -43,7 +43,7 @@
 		justify-content: center;
 		padding: rem(16px) rem(20px) rem(8px);
 
-		h1 {
+		.igd-logo-text {
 			@include type-style('h3') {
 				margin-block-end: rem(4px);
 				line-height: 1;

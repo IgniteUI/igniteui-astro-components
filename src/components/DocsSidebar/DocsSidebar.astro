@@ -62,7 +62,8 @@ const activeId = normalizeSlug(currentSlug);
 
 <sidebar-filter class="docs-sidebar" id="docs-sidebar" data-no-results="No topics match">
     <div class="igd-sidebar-logo">
-        <h1>{logoText}</h1>
+        {/* Keep as <span>, not <h1> — avoids competing with the page <h1> in search. */}
+        <span class="igd-logo-text">{logoText}</span>
         {platformLabel && <span class="igd-logo__platform">for {platformLabel}</span>}
     </div>
     <div class="sidebar-gutter">

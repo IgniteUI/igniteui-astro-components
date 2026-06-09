@@ -143,7 +143,8 @@ const platformLabel = currentPlatform ? (PLATFORM_LABELS[currentPlatform] ?? nul
                 <igc-icon name="hamburger-menu" collection="docs" aria-hidden="true"></igc-icon>
             </igc-icon-button>
             <div class="igd-logo__text">
-                <h1>{logoText}</h1>
+                {/* Keep as <span>, not <h1> — avoids competing with the page <h1> in search. */}
+                <span class="igd-logo-text">{logoText}</span>
                 {platformLabel && <span class="igd-logo__platform">for {platformLabel}</span>}
             </div>
         </div>
