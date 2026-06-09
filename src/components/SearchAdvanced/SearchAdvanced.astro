@@ -910,7 +910,7 @@ const resolvedIndexUrl = indexUrl ?? `${basePath}api-search-index/manifest.json`
       const totalCount = Array.from(this.currentMatches.values()).reduce((s, l) => s + l.length, 0);
       if (totalCount === 0) {
         this.statusEl.innerHTML = this.currentQuery
-          ? `<span>No results for "<strong class="igd-search-query">${escapeHtml(this.currentQuery)}</strong>".</span>`
+          ? `<span class="igd-no-results">No results for<strong class="igd-search-query">${escapeHtml(this.currentQuery)}.</strong></span>`
           : 'No results.';
       } else {
         this.statusEl.textContent = '';
