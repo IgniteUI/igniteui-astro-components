@@ -21,16 +21,23 @@
 		flex: 1 1 auto;
 	}
 	
+	.igd-search-content {
+		display: grid;
+		grid-template-rows: auto 1fr;
+		overflow: auto;
+	}
+	
 	// Status
 	.igd-search-status {
-		@include type-style('body-1') {
+		@include type-style('body-2') {
 			margin: 0;
 		}
 		
 		display: grid;
 		place-items: center;
 		height: 100%;
-		padding: rem(26px);
+		padding: 0 rem(16px) rem(16px) rem(16px) ;
+		border-bottom: rem(1px) solid var(--ig-gray-200);
 		text-align: center;
 		color: light-dark(var(--ig-gray-500), var(--ig-gray-300));
 		
@@ -39,7 +46,12 @@
 		}
 	}
 	
+	.igd-showing-results {
+		align-self: end;
+	}
+	
 	.igd-search-query {
+		display: block;
 		color: var(--igd-accent);
 	}
 	
@@ -102,7 +114,7 @@
 	}
 	
 	.igd-search-result-title {
-		@include type-style('body-2') {
+		@include type-style('body-1') {
 			margin: 0;
 		}
 		

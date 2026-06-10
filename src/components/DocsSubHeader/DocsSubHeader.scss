@@ -31,7 +31,7 @@
 			flex-direction: column;
 			justify-content: center;
 
-			> h1 {
+			> .igd-logo-text {
 				@include type-style('h3') {
 					margin-block-end: rem(6px);
 					line-height: 1;

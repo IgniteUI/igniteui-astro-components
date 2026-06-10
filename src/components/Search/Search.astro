@@ -158,7 +158,7 @@ import './Search.scss';
     );
 
     if (results.length === 0) {
-      statusEl.innerHTML = `<span>No results for “<strong class="igd-search-query">${escapeHtml(query)}</strong>”.</span>`;
+      statusEl.innerHTML = `<span class="igd-no-results">No results for <strong class="igd-search-query">${escapeHtml(query)}.</strong></span>`;
       listEl.innerHTML   = '';
       listEl.hidden      = true;
       return;

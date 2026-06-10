@@ -3,7 +3,7 @@
 
 @layer components {
 	.igd-search-result-excerpt {
-		@include type-style('caption') {
+		@include type-style('body-2') {
 			margin: 0;
 		}
 		
