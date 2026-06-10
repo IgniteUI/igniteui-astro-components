@@ -50,6 +50,7 @@ const nodes = headingsToTreeNodes(headings, tocConfig);
 
         private pageController: AbortController | undefined;
         private rafId: number | undefined;
+        private initId = 0;
         private headings: HTMLElement[] = [];
         private links: HTMLAnchorElement[] = [];
         private currentLink: HTMLAnchorElement | undefined;
@@ -83,10 +84,18 @@ const nodes = headingsToTreeNodes(headings, tocConfig);
         init() {
             this.teardown();
 
+            // Invalidate any pending deferred _init from a previous call.
+            const id = ++this.initId;
+
             // Wait for igc-tree to be defined before querying slotted links,
             // since the links live inside igc-tree-item light DOM and igc-tree
             // may not have upgraded yet when init() runs.
-            customElements.whenDefined('igc-tree').then(() => requestAnimationFrame(() => this._init()));
+            customElements.whenDefined('igc-tree').then(() => requestAnimationFrame(() => {
+                // Bail if init() was called again since we scheduled, or the
+                // element was disconnected (e.g. a view transition swapped the DOM).
+                if (this.initId !== id || !this.isConnected) return;
+                this._init();
+            }));
         }
 
         private _init() {
@@ -139,6 +148,11 @@ const nodes = headingsToTreeNodes(headings, tocConfig);
             }, { signal: this.pageController.signal });
 
             this.bindOffsetTarget();
+
+            // Immediately highlight the first node so there is always a
+            // visible active state, even before layout is fully settled.
+            this.setActive(0);
+
             this.update();
             // Safari: getBoundingClientRect() may not reflect final layout
             // during the first rAF (before first paint). Schedule one extra
