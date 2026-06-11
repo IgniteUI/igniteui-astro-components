@@ -10,7 +10,7 @@ import LicenseIndicator from '../../components/LicenseIndicator/LicenseIndicator
 import igLogoRaw from '../../assets/ig-logo.svg?raw';
 import MobileSidebarToggle from '../../components/MobileSidebarToggle/MobileSidebarToggle.astro';
 import CopyCode from '../../components/CopyCode/CopyCode.astro';
-import { widgetScriptSrc, platform as virtualPlatform } from 'virtual:docs-template/nav-html';
+import { platform as virtualPlatform } from 'virtual:docs-template/nav-html';
 import { title as siteTitle, headEntries, navLang } from 'virtual:docs-template/site-meta';
 import '../../styles/theme.scss';
 import './DocsLayout.scss';
@@ -73,7 +73,6 @@ type HeadEntry = { tag: string; attrs?: Record<string, string | boolean | undefi
   {keywords && <meta name="keywords" content={keywords} />}
   <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
   <link rel="stylesheet" href="https://use.typekit.net/bng2zgw.css" />
-  {widgetScriptSrc && <script is:inline src={widgetScriptSrc} async></script>}
   {(headEntries as HeadEntry[]).map(({ tag: Tag, attrs = {}, content }) =>
     content ? <Tag {...attrs} set:html={content} /> : <Tag {...attrs} />
   )}
