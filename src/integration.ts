@@ -227,9 +227,7 @@ export const navLang = ${JSON.stringify(navLang)};
                                 if (id === resolvedId) return siteMetaCode;
                                 if (id !== navResolvedId) return;
 
-                                return [
-                                    `export const platform = ${JSON.stringify(platform ?? null)};`
-                                ].join('\n');
+                                return `export const platform = ${JSON.stringify(platform ?? null)};`;
                             },
                         }],
                     },
