@@ -129,8 +129,6 @@ export const trailingSlash = 'ignore';
         return `
 export const platform = 'angular';
 export const navLang = 'en';
-export const themeApiUrl = '';
-export const widgetScriptSrc = '';
 export const prefetched = false;
 export const headerHtml = '';
 export const uiFooterHtml = '';
