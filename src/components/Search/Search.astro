@@ -168,12 +168,17 @@ import './Search.scss';
     statusEl.textContent = total > MAX_RESULTS
       ? `Showing ${MAX_RESULTS} of ${total} results`
       : `${total} result${total === 1 ? '' : 's'}`;
-    listEl.innerHTML = results.map((r: any) => `<igc-list-item>
+    listEl.innerHTML = results.map((r: any) => {
+      const title = escapeHtml(r.meta?.title ?? r.url);
+      const path  = r.meta?.breadcrumb ? escapeHtml(r.meta.breadcrumb) : '';
+      return `<igc-list-item>
       <a href="${escapeHtml(r.url)}" class="igd-search-link">
-        <span class="igd-search-result-title">${escapeHtml(r.meta?.title ?? r.url)}</span>
+        <span class="igd-search-result-title">${title}</span>
+        ${path ? `<span class="igd-search-result-path">${path}</span>` : ''}
         <span class="igd-search-result-excerpt">${r.excerpt ?? ''}</span>
       </a>
-    </igc-list-item>`).join('');
+    </igc-list-item>`;
+    }).join('');
     listEl.hidden = false;
   }
 
