@@ -74,6 +74,7 @@
     "./plugins/remark-html-transforms": "./src/plugins/remark-html-transforms.ts",
     "./plugins/rehype-table-wrapper": "./src/plugins/rehype-table-wrapper.ts",
     "./plugins/rehype-heading-anchors": "./src/plugins/rehype-heading-anchors.ts",
+    "./plugins/rehype-pagefind-ignore": "./src/plugins/rehype-pagefind-ignore.ts",
     "./styles/theme.scss": "./src/styles/theme.scss",
     "./package.json": "./package.json"
   },

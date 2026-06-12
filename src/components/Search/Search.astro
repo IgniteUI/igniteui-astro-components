@@ -66,6 +66,9 @@ import './Search.scss';
         <div class="igd-search-content">
             <div class="igd-search-status" aria-live="polite"></div>
             <igc-list class="igd-search-results" hidden></igc-list>
+            <igc-button class="igd-search-more-btn" variant="flat" type="button" hidden>
+                Show more results
+            </igc-button>
         </div>
         <footer class="igd-search-footer">
             <igc-button class="search-close" variant="outlined">
@@ -103,19 +106,43 @@ import './Search.scss';
   const base = import.meta.env.BASE_URL.replace(/\/$/, '');
   const _w   = window as any;
 
-  const INPUT_DEBOUNCE_MS = 150;
-  const MAX_RESULTS       = 10;
+  const SEARCH_DEBOUNCE_MS = 200;
+  const PAGE_SIZE          = 10;
 
-  async function loadPagefind() {
-    if (_w.__pagefind) return _w.__pagefind;
-    try {
-      const pf = await import(/* @vite-ignore */ `${base}/pagefind/pagefind.js`);
-      await pf.init();
-      _w.__pagefind = pf;
-      return pf;
-    } catch {
-      return null;
-    }
+  // Bumped per query; runSearch/renderNextPage bail after each await if it changed,
+  // so a slow query can't overwrite a newer one.
+  let searchSeq = 0;
+
+  // Pagination state for the active query. pfResults = Pagefind's lazy handles.
+  let activeSeq   = 0;
+  let activeTerm  = '';
+  let pfResults: any[] = [];
+  let consumed    = 0;
+  let displayed   = 0;
+  let loadingMore = false;
+
+  // Cache the promise so concurrent first callers share one import/options/init.
+  function loadPagefind(): Promise<any> {
+    if (_w.__pagefindPromise) return _w.__pagefindPromise;
+    _w.__pagefindPromise = (async () => {
+      try {
+        const pf = await import(/* @vite-ignore */ `${base}/pagefind/pagefind.js`);
+        // Must run before init(). Tuned so keyword-dense API pages don't bury prose.
+        await pf.options?.({
+          ranking: {
+            termSaturation: 1.0,   // default 1.4
+            pageLength:     0.6,   // default 0.75
+            termFrequency:  1.0,
+            termSimilarity: 1.0,
+          },
+        });
+        await pf.init();
+        return pf;
+      } catch {
+        return null;
+      }
+    })();
+    return _w.__pagefindPromise;
   }
 
   function escapeHtml(s: string): string {
@@ -126,10 +153,77 @@ import './Search.scss';
       .replace(/"/g, '&quot;');
   }
 
+  // Longest alphanumeric <mark> in an excerpt; -1 if none (match was in title/meta).
+  // Used to drop junk results where Pagefind matched only a stray single char.
+  function strongestMatchLen(excerpt: string): number {
+    const marks = [...excerpt.matchAll(/<mark[^>]*>([\s\S]*?)<\/mark>/gi)];
+    if (marks.length === 0) return -1;
+    return Math.max(
+      ...marks.map((m) => m[1].replace(/<[^>]+>/g, '').replace(/[^a-z0-9]/gi, '').length),
+    );
+  }
+
+  /** HTML for a single result row from its resolved Pagefind data. */
+  function renderResultItem(r: any): string {
+    const title = escapeHtml(r.meta?.title ?? r.url);
+    const path  = r.meta?.breadcrumb ? escapeHtml(r.meta.breadcrumb) : '';
+    return `<igc-list-item>
+      <a href="${escapeHtml(r.url)}" class="igd-search-link">
+        <span class="igd-search-result-title">${title}</span>
+        ${path ? `<span class="igd-search-result-path">${path}</span>` : ''}
+        <span class="igd-search-result-excerpt">${r.excerpt ?? ''}</span>
+      </a>
+    </igc-list-item>`;
+  }
+
+  // Fetch & append the next PAGE_SIZE results. seq ties the work to its query.
+  async function renderNextPage(seq: number, isFirst = false) {
+    const statusEl = document.querySelector<HTMLElement>('.igd-search-status');
+    const listEl   = document.querySelector<any>('igc-list.igd-search-results');
+    const moreBtn  = document.querySelector<any>('.igd-search-more-btn');
+    if (!statusEl || !listEl) return;
+
+    if (seq !== searchSeq || loadingMore || consumed >= pfResults.length) return;
+    loadingMore = true;
+
+    const slice = pfResults.slice(consumed, consumed + PAGE_SIZE);
+    const data  = await Promise.all(slice.map((r: any) => r.data()));
+    loadingMore = false;
+    if (seq !== searchSeq) return;            // user typed more while data() resolved
+    consumed += slice.length;
+
+    // Drop single-stray-char matches (kept for 1-char queries).
+    const view = activeTerm.length >= 2
+      ? data.filter((r: any) => {
+          const len = strongestMatchLen(r.excerpt ?? '');
+          return len === -1 || len >= 2;
+        })
+      : data;
+
+    if (isFirst && view.length === 0) {
+      statusEl.innerHTML = `<span class="igd-no-results">No results for <strong class="igd-search-query">${escapeHtml(activeTerm)}.</strong></span>`;
+      listEl.innerHTML   = '';
+      listEl.hidden      = true;
+      if (moreBtn) moreBtn.hidden = true;
+      return;
+    }
+
+    displayed += view.length;
+    listEl.insertAdjacentHTML('beforeend', view.map(renderResultItem).join(''));
+    listEl.hidden = displayed === 0;
+
+    const total = pfResults.length;
+    statusEl.textContent = consumed < total
+      ? `Showing ${displayed} of ${total} results`
+      : `${displayed} result${displayed === 1 ? '' : 's'}`;
+    if (moreBtn) moreBtn.hidden = consumed >= total;
+  }
+
   async function runSearch(query: string) {
     const statusEl = document.querySelector<HTMLElement>('.igd-search-status');
     const listEl   = document.querySelector<any>('igc-list.igd-search-results');
     const clearBtn = document.querySelector<any>('.igd-search-clear');
+    const moreBtn  = document.querySelector<any>('.igd-search-more-btn');
     const input    = document.querySelector<any>('igc-input.igd-search-input');
 
     if (!statusEl || !listEl) return;
@@ -137,49 +231,62 @@ import './Search.scss';
     if (clearBtn) clearBtn.hidden = !query;
     input?.requestUpdate?.();
 
-    if (!query.trim()) {
+    const term = query.trim();
+    if (!term) {
+      searchSeq++;   // invalidate any in-flight search so a late result can't repopulate
       statusEl.textContent = '';
       listEl.innerHTML     = '';
       listEl.hidden        = true;
+      if (moreBtn) moreBtn.hidden = true;
       return;
     }
 
+    const seq = ++searchSeq;
     statusEl.textContent = 'Searching…';
 
     const pf = await loadPagefind();
+    if (seq !== searchSeq) return;            // superseded while loading the index
     if (!pf) {
       statusEl.textContent = 'Search index not available — run a production build first.';
       return;
     }
 
-    const search  = await pf.search(query.trim());
-    const results = await Promise.all(
-      search.results.slice(0, MAX_RESULTS).map((r: any) => r.data()),
-    );
+    pf.preload?.(term);   // warm the index chunks during the debounce window
 
-    if (results.length === 0) {
-      statusEl.innerHTML = `<span class="igd-no-results">No results for <strong class="igd-search-query">${escapeHtml(query)}.</strong></span>`;
-      listEl.innerHTML   = '';
-      listEl.hidden      = true;
-      return;
-    }
+    // debouncedSearch returns null when superseded; search() is a fallback for old bundles.
+    const search = typeof pf.debouncedSearch === 'function'
+      ? await pf.debouncedSearch(term, undefined, SEARCH_DEBOUNCE_MS)
+      : await pf.search(term);
+    if (search === null) return;
+    if (seq !== searchSeq) return;
 
-    const total = search.results.length;
-    statusEl.textContent = total > MAX_RESULTS
-      ? `Showing ${MAX_RESULTS} of ${total} results`
-      : `${total} result${total === 1 ? '' : 's'}`;
-    listEl.innerHTML = results.map((r: any) => {
-      const title = escapeHtml(r.meta?.title ?? r.url);
-      const path  = r.meta?.breadcrumb ? escapeHtml(r.meta.breadcrumb) : '';
-      return `<igc-list-item>
-      <a href="${escapeHtml(r.url)}" class="igd-search-link">
-        <span class="igd-search-result-title">${title}</span>
-        ${path ? `<span class="igd-search-result-path">${path}</span>` : ''}
-        <span class="igd-search-result-excerpt">${r.excerpt ?? ''}</span>
-      </a>
-    </igc-list-item>`;
-    }).join('');
-    listEl.hidden = false;
+    // New result set — reset pagination and render the first page.
+    activeSeq  = seq;
+    activeTerm = term;
+    pfResults  = search.results;
+    consumed   = 0;
+    displayed  = 0;
+    listEl.innerHTML = '';
+
+    await renderNextPage(seq, true);
+  }
+
+  // Infinite scroll. Bound to both candidates since either may be the real
+  // scroll container; the one that doesn't scroll never fires. Bind-once flag.
+  function attachInfiniteScroll() {
+    const NEAR_BOTTOM_PX = 200;
+    const onScroll = (e: Event) => {
+      const el = e.currentTarget as HTMLElement;
+      if (el.scrollTop + el.clientHeight >= el.scrollHeight - NEAR_BOTTOM_PX) {
+        renderNextPage(activeSeq);
+      }
+    };
+    ['.igd-search-content', 'igc-list.igd-search-results'].forEach((sel) => {
+      const el = document.querySelector<any>(sel);
+      if (!el || el.__infiniteBound) return;
+      el.__infiniteBound = true;
+      el.addEventListener('scroll', onScroll, { passive: true });
+    });
   }
 
   async function openSearch() {
@@ -190,6 +297,7 @@ import './Search.scss';
     document.body.toggleAttribute('data-search-modal-open', true);
     await dialog.show();
     loadPagefind();
+    attachInfiniteScroll();
     requestAnimationFrame(() => {
       document.querySelector<any>('igc-input.igd-search-input')?.focus();
     });
@@ -242,12 +350,11 @@ import './Search.scss';
       updateSearchHint();
     });
 
-    let debounceTimer: ReturnType<typeof setTimeout> | null = null;
     document.addEventListener('igcInput', (e: Event) => {
       if (!(e.target as Element).closest('igc-input.igd-search-input')) return;
-      if (debounceTimer !== null) clearTimeout(debounceTimer);
       const val = (document.querySelector<any>('igc-input.igd-search-input')?.value as string) ?? '';
-      debounceTimer = setTimeout(() => runSearch(val), INPUT_DEBOUNCE_MS);
+      // Debouncing + supersession are handled inside runSearch via debouncedSearch.
+      runSearch(val);
     });
 
     document.addEventListener('click', (e: Event) => {
@@ -260,6 +367,8 @@ import './Search.scss';
         runSearch('');
       } else if (target.closest('.search-close')) {
         document.querySelector<any>('igc-dialog.igd-search-dialog')?.hide();
+      } else if (target.closest('.igd-search-more-btn')) {
+        renderNextPage(activeSeq);
       } else if (target.closest('.igd-search-shell') && target.closest('a[href]')) {
         document.querySelector<any>('igc-dialog.igd-search-dialog')?.hide();
       }

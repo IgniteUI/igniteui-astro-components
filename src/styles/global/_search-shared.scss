@@ -128,8 +128,7 @@
 		}
 	}
 	
-	// Descriptive location line shown under the result title (breadcrumb trail).
-	// Disambiguates pages that share an H1 (e.g. each component's "Overview").
+	// Breadcrumb location line under the result title.
 	.igd-search-result-path {
 		@include type-style('caption') {
 			margin: 0;

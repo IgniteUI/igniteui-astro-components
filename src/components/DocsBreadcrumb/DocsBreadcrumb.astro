@@ -34,11 +34,8 @@ const resolvedSidebar   = (sidebarItems ?? sidebarData) as SidebarEntry[];
 const sidebarCrumbs     = currentSlug ? getBreadcrumb(resolvedSidebar, currentSlug) : [];
 const crumbs            = sidebarCrumbs.length > 0 ? sidebarCrumbs : (pageTitle ? [pageTitle] : []);
 
-// Pagefind indexes this nav (it lives inside <main>). Expose the full crumb trail
-// as a `breadcrumb` metadata key so search results can show a descriptive location
-// line beneath the H1 title — this disambiguates pages that share the same heading
-// (e.g. every component's "Overview"). Inline `key:value` meta sets an explicit value
-// and is split on commas, so strip any commas from labels to keep the value intact.
+// Expose the crumb trail as Pagefind `breadcrumb` meta (this nav is inside <main>)
+// for the location line under each search result. Commas split inline meta — strip them.
 const breadcrumbPath = crumbs.join(' › ');
 const breadcrumbMeta = breadcrumbPath.replace(/,/g, '');
 ---
