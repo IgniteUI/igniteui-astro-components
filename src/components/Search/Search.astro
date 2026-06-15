@@ -107,19 +107,26 @@ import './Search.scss';
   const _w   = window as any;
 
   const SEARCH_DEBOUNCE_MS = 200;
-  const PAGE_SIZE          = 10;
+  const MIN_QUERY_LEN      = 2;    // 1 char matches (and whole-word-highlights) everything
+  const PAGE_SIZE          = 10;   // results shown per display page
+  const SCAN_BATCH         = 20;   // raw results fetched per phrase-filter pass
 
   // Bumped per query; runSearch/renderNextPage bail after each await if it changed,
   // so a slow query can't overwrite a newer one.
   let searchSeq = 0;
 
-  // Pagination state for the active query. pfResults = Pagefind's lazy handles.
-  let activeSeq   = 0;
-  let activeTerm  = '';
+  // Pagination state for the active query. The phrase filter runs client-side, so
+  // we scan Pagefind's lazy handles (pfResults) in batches, keep the phrase matches
+  // (matches), and page the display over those. rawConsumed counts handles scanned,
+  // displayed counts matches rendered.
+  let activeSeq      = 0;
+  let activeTerm     = '';
+  let activeTokens: string[] = [];
   let pfResults: any[] = [];
-  let consumed    = 0;
-  let displayed   = 0;
-  let loadingMore = false;
+  let rawConsumed    = 0;
+  let matches: any[] = [];
+  let displayed      = 0;
+  let loadingMore    = false;
 
   // Cache the promise so concurrent first callers share one import/options/init.
   function loadPagefind(): Promise<any> {
@@ -153,14 +160,34 @@ import './Search.scss';
       .replace(/"/g, '&quot;');
   }
 
-  // Longest alphanumeric <mark> in an excerpt; -1 if none (match was in title/meta).
-  // Used to drop junk results where Pagefind matched only a stray single char.
-  function strongestMatchLen(excerpt: string): number {
-    const marks = [...excerpt.matchAll(/<mark[^>]*>([\s\S]*?)<\/mark>/gi)];
-    if (marks.length === 0) return -1;
-    return Math.max(
-      ...marks.map((m) => m[1].replace(/<[^>]+>/g, '').replace(/[^a-z0-9]/gi, '').length),
-    );
+  // Keep a result only if it actually contains what was typed: some highlighted
+  // word must start with one of the query tokens. This rejects Pagefind's prefix
+  // fallback — a gibberish query like "asdaasd…" matching the bare "as" on nearly
+  // every page — while still allowing as-you-type matches ("grid" finds "gridlines").
+  // No body highlights means the match was in the title/meta, which we keep.
+  function looksRelevant(excerpt: string, queryTokens: string[]): boolean {
+    if (queryTokens.length === 0) return true;
+    const marks = [...excerpt.matchAll(/<mark[^>]*>([\s\S]*?)<\/mark>/gi)]
+      .map((m) => m[1].replace(/<[^>]+>/g, '').replace(/[^a-z0-9]/gi, '').toLowerCase())
+      .filter(Boolean);
+    if (marks.length === 0) return true;
+    return marks.some((h) => queryTokens.some((t) => h.startsWith(t)));
+  }
+
+  // Pagefind highlights the whole matched word; trim each <mark> down to just the
+  // typed portion so only what the user typed is highlighted ("config" stays a
+  // prefix of <mark>config</mark>uration). Marks whose word isn't one of the typed
+  // tokens (e.g. a stem match) are left whole.
+  function trimHighlights(excerpt: string): string {
+    if (!activeTokens.length) return excerpt;
+    return excerpt.replace(/<mark[^>]*>([\s\S]*?)<\/mark>/gi, (full: string, word: string) => {
+      const lower = word.toLowerCase();
+      let keep = 0;
+      for (const t of activeTokens) if (t.length > keep && lower.startsWith(t)) keep = t.length;
+      return keep === 0 || keep >= word.length
+        ? full
+        : `<mark>${word.slice(0, keep)}</mark>${word.slice(keep)}`;
+    });
   }
 
   /** HTML for a single result row from its resolved Pagefind data. */
@@ -171,52 +198,75 @@ import './Search.scss';
       <a href="${escapeHtml(r.url)}" class="igd-search-link">
         <span class="igd-search-result-title">${title}</span>
         ${path ? `<span class="igd-search-result-path">${path}</span>` : ''}
-        <span class="igd-search-result-excerpt">${r.excerpt ?? ''}</span>
+        <span class="igd-search-result-excerpt">${trimHighlights(r.excerpt ?? '')}</span>
       </a>
     </igc-list-item>`;
   }
 
-  // Fetch & append the next PAGE_SIZE results. seq ties the work to its query.
+  // Render the empty state for the active query.
+  function showNoResults() {
+    const statusEl = document.querySelector<HTMLElement>('.igd-search-status');
+    const listEl   = document.querySelector<any>('igc-list.igd-search-results');
+    const moreBtn  = document.querySelector<any>('.igd-search-more-btn');
+    if (statusEl) statusEl.innerHTML = `<span class="igd-no-results">No results for <strong class="igd-search-query">${escapeHtml(activeTerm)}.</strong></span>`;
+    if (listEl) { listEl.innerHTML = ''; listEl.hidden = true; }
+    if (moreBtn) moreBtn.hidden = true;
+  }
+
+  // Scan raw Pagefind handles in batches, keeping the relevant matches, until there
+  // is at least one unshown display page or all raw results are scanned. Throws if
+  // a data() fetch rejects.
+  async function ensureMatches(seq: number) {
+    while (matches.length - displayed < PAGE_SIZE && rawConsumed < pfResults.length) {
+      const slice = pfResults.slice(rawConsumed, rawConsumed + SCAN_BATCH);
+      const data  = await Promise.all(slice.map((r: any) => r.data()));
+      if (seq !== searchSeq) return;
+      rawConsumed += slice.length;
+      matches.push(...data.filter((r: any) => looksRelevant(r.excerpt ?? '', activeTokens)));
+    }
+  }
+
+  // Append the next page of phrase-matching results, fetching more raw batches as
+  // needed. seq ties the work to its query so a stale page can't render.
   async function renderNextPage(seq: number, isFirst = false) {
     const statusEl = document.querySelector<HTMLElement>('.igd-search-status');
     const listEl   = document.querySelector<any>('igc-list.igd-search-results');
     const moreBtn  = document.querySelector<any>('.igd-search-more-btn');
     if (!statusEl || !listEl) return;
 
-    if (seq !== searchSeq || loadingMore || consumed >= pfResults.length) return;
-    loadingMore = true;
-
-    const slice = pfResults.slice(consumed, consumed + PAGE_SIZE);
-    const data  = await Promise.all(slice.map((r: any) => r.data()));
-    loadingMore = false;
-    if (seq !== searchSeq) return;            // user typed more while data() resolved
-    consumed += slice.length;
-
-    // Drop single-stray-char matches (kept for 1-char queries).
-    const view = activeTerm.length >= 2
-      ? data.filter((r: any) => {
-          const len = strongestMatchLen(r.excerpt ?? '');
-          return len === -1 || len >= 2;
-        })
-      : data;
-
-    if (isFirst && view.length === 0) {
-      statusEl.innerHTML = `<span class="igd-no-results">No results for <strong class="igd-search-query">${escapeHtml(activeTerm)}.</strong></span>`;
-      listEl.innerHTML   = '';
-      listEl.hidden      = true;
-      if (moreBtn) moreBtn.hidden = true;
+    if (seq !== searchSeq || loadingMore) return;
+    if (displayed >= matches.length && rawConsumed >= pfResults.length) {   // nothing more to show
+      if (isFirst) showNoResults();
       return;
     }
 
-    displayed += view.length;
-    listEl.insertAdjacentHTML('beforeend', view.map(renderResultItem).join(''));
-    listEl.hidden = displayed === 0;
+    loadingMore = true;
+    try {
+      await ensureMatches(seq);
+    } catch {
+      if (seq === searchSeq) statusEl.textContent = 'Failed to load search results.';
+      return;                                 // finally still clears loadingMore
+    } finally {
+      loadingMore = false;
+    }
+    if (seq !== searchSeq) return;            // user typed more while data() resolved
+
+    const slice = matches.slice(displayed, displayed + PAGE_SIZE);
+    if (slice.length === 0) {                 // scanned all raw, nothing matched
+      if (isFirst) showNoResults();
+      if (moreBtn) moreBtn.hidden = true;
+      return;
+    }
+    displayed += slice.length;
+    listEl.insertAdjacentHTML('beforeend', slice.map(renderResultItem).join(''));
+    listEl.hidden = false;
 
     const total = pfResults.length;
-    statusEl.textContent = consumed < total
+    const more = displayed < matches.length || rawConsumed < pfResults.length;
+    statusEl.textContent = more
       ? `Showing ${displayed} of ${total} results`
       : `${displayed} result${displayed === 1 ? '' : 's'}`;
-    if (moreBtn) moreBtn.hidden = consumed >= total;
+    if (moreBtn) moreBtn.hidden = !more;
   }
 
   async function runSearch(query: string) {
@@ -235,6 +285,15 @@ import './Search.scss';
     if (!term) {
       searchSeq++;   // invalidate any in-flight search so a late result can't repopulate
       statusEl.textContent = '';
+      listEl.innerHTML     = '';
+      listEl.hidden        = true;
+      if (moreBtn) moreBtn.hidden = true;
+      return;
+    }
+
+    if (term.length < MIN_QUERY_LEN) {
+      searchSeq++;   // cancel any in-flight search
+      statusEl.textContent = `Type at least ${MIN_QUERY_LEN} characters to search.`;
       listEl.innerHTML     = '';
       listEl.hidden        = true;
       if (moreBtn) moreBtn.hidden = true;
@@ -261,11 +320,13 @@ import './Search.scss';
     if (seq !== searchSeq) return;
 
     // New result set — reset pagination and render the first page.
-    activeSeq  = seq;
-    activeTerm = term;
-    pfResults  = search.results;
-    consumed   = 0;
-    displayed  = 0;
+    activeSeq     = seq;
+    activeTerm    = term;
+    pfResults     = search.results;
+    activeTokens  = term.toLowerCase().match(/[a-z0-9]+/g) ?? [];
+    rawConsumed   = 0;
+    matches       = [];
+    displayed     = 0;
     listEl.innerHTML = '';
 
     await renderNextPage(seq, true);

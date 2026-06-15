@@ -12,6 +12,10 @@
 		mark {
 			background: transparent;
 			color: var(--igd-accent);
+			// No padding/margin: a global `mark` rule adds horizontal padding that
+			// shows as a gap once we split a word into <mark>prefix</mark>rest.
+			padding: 0;
+			margin: 0;
 		}
 	}
 	
