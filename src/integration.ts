@@ -66,6 +66,8 @@ export { rehypeTableWrapper } from './plugins/rehype-table-wrapper';
 import { rehypeTableWrapper } from './plugins/rehype-table-wrapper';
 import { rehypeHeadingAnchors } from './plugins/rehype-heading-anchors';
 export { rehypeHeadingAnchors } from './plugins/rehype-heading-anchors';
+import { rehypePagefindIgnore } from './plugins/rehype-pagefind-ignore';
+export { rehypePagefindIgnore } from './plugins/rehype-pagefind-ignore';
 import { remarkMdLinks } from './plugins/remark-md-links';
 import { remarkHtmlTransforms } from './plugins/remark-html-transforms';
 
@@ -669,6 +671,7 @@ export function createDocsSite(options: CreateDocsSiteOptions = {} as CreateDocs
                 rehypeCodeView,
                 rehypeTableWrapper,
                 rehypeHeadingAnchors,
+                rehypePagefindIgnore,
                 ...((astroExtra as any).markdown?.rehypePlugins ?? []),
             ],
         },
