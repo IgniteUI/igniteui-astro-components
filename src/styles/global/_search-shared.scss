@@ -26,8 +26,8 @@
 		grid-template-rows: auto 1fr;
 		overflow: auto;
 		
-		// min width 0 i necessary to allow the content to shrink below its min-content width
-		// otherwise igc-tabs wont show the scroll buttons
+		// min-width: 0 is necessary to allow the content to shrink below its min-content width
+		// otherwise igc-tabs won't show the scroll buttons
 		min-width: 0;
 	}
 	
