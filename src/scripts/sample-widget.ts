@@ -404,6 +404,14 @@ class XplatCodeService {
         };
         (sampleData.sampleFiles || []).forEach(addFile);
 
+        // React samples reference @infragistics/ scoped packages (private registry).
+        // Replace with the public unscoped equivalents so StackBlitz can install them.
+        if (this.platform === 'react') {
+            for (const key of Object.keys(files)) {
+                files[key] = files[key].replace(/@infragistics\/igniteui-react-/g, 'igniteui-react-');
+            }
+        }
+
         // webpack-dev-server binds to localhost by default; StackBlitz WebContainers need 0.0.0.0.
         if (this.platform === 'wc' && files['package.json']) {
             try {
