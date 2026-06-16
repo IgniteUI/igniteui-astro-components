@@ -94,6 +94,10 @@ igc-tab::part(tab-header) {
 	width: 100%;
 	border: rem(1px) solid var(--ig-gray-300);
 	margin-block-end: rem(26px);
+	
+	.igd-sample-container {
+		margin-block-end: 0;
+	}
 }
 
 .igd-code-view__inner {
