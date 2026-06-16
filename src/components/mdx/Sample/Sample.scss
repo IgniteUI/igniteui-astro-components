@@ -109,9 +109,12 @@ igc-tab::part(tab-header) {
 	min-height: rem(320px);
 	max-height: rem(800px);
 	overflow: hidden auto;
+	margin-block-end: rem(26px);
 
 	iframe {
 		display: block;
+		border: none;
+		margin: 0;
 	}
 
 	.sample-loading-indicator {
