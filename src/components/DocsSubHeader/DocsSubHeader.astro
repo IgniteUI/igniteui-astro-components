@@ -196,7 +196,12 @@ const platformLabel = currentPlatform ? (PLATFORM_LABELS[currentPlatform] ?? nul
 <script>
     if (!customElements.get('docs-subheader-menu')) {
         class DocsSubHeaderMenu extends HTMLElement {
+            private _ac: AbortController | null = null;
+
             connectedCallback() {
+                this._ac?.abort();
+                this._ac = new AbortController();
+                const { signal } = this._ac;
                 // Package selector navigation
                 const packageSelect = this.querySelector('#package-select');
                 const packageTooltip = this.querySelector<any>('#package-tooltip');
@@ -256,6 +261,56 @@ const platformLabel = currentPlatform ? (PLATFORM_LABELS[currentPlatform] ?? nul
                     });
                 }
 
+                // Close open selects on scroll, and prevent the browser's
+                // focus-triggered scrollIntoView from jumping the page when a
+                // select is clicked while the user is scrolled down.
+                const selectsForScroll = Array.from(
+                    this.querySelectorAll<HTMLElement>('#package-select, #version-select')
+                );
+                selectsForScroll.forEach(select => {
+                    // Patch igc-input.focus to always use preventScroll:true.
+                    // igc-select calls this._input.focus() programmatically on
+                    // close/selection — this prevents those from scrolling the page.
+                    // Click-to-open focus is browser-assigned and bypasses JS focus(),
+                    // so it is handled separately by the savedY scroll guard below.
+                    const igcInput = (select as any).shadowRoot?.querySelector('igc-input');
+                    if (igcInput && !('_preventScrollPatched' in igcInput)) {
+                        const orig = igcInput.focus.bind(igcInput);
+                        igcInput.focus = (o?: FocusOptions) => orig({ ...o, preventScroll: true });
+                        (igcInput as any)._preventScrollPatched = true;
+                    }
+
+                    let savedY: number | null = null;
+                    let guardTimer: ReturnType<typeof setTimeout> | null = null;
+
+                    select.addEventListener('pointerdown', () => {
+                        savedY = window.scrollY;
+                        if (guardTimer) clearTimeout(guardTimer);
+                        guardTimer = setTimeout(() => { savedY = null; guardTimer = null; }, 300);
+
+                        // DocsLayout sets scroll-behavior:smooth on <html>. The browser's
+                        // focus-triggered scrollIntoView respects this and animates over
+                        // multiple frames — our scroll correction fires mid-animation,
+                        // leaving one rendered frame at the wrong position (the flicker).
+                        // Temporarily forcing 'auto' makes the focus scroll instant so
+                        // our correction applies in the same frame with no visible jump.
+                        const html = document.documentElement;
+                        html.style.scrollBehavior = 'auto';
+                        select.addEventListener('focusin', () => {
+                            requestAnimationFrame(() => { html.style.scrollBehavior = ''; });
+                        }, { once: true, signal });
+                        setTimeout(() => { html.style.scrollBehavior = ''; }, 500);
+                    }, { signal });
+
+                    window.addEventListener('scroll', () => {
+                        if (savedY !== null) {
+                            window.scrollTo({ top: savedY, left: 0, behavior: 'instant' as ScrollBehavior });
+                            return;
+                        }
+                        if ((select as any).open) (select as any).hide();
+                    }, { signal });
+                });
+
                 // Sidebar toggle
                 const sidebarBtn = this.querySelector<HTMLButtonElement>('[data-sidebar-toggle]');
                 if (sidebarBtn) {
@@ -263,7 +318,7 @@ const platformLabel = currentPlatform ? (PLATFORM_LABELS[currentPlatform] ?? nul
                         const expanded = document.body.hasAttribute('data-sidebar-open');
                         document.body.toggleAttribute('data-sidebar-open', !expanded);
                         sidebarBtn.setAttribute('aria-expanded', String(!expanded));
-                    });
+                    }, { signal });
                 }
 
                 // Close sidebar on Escape
@@ -273,13 +328,17 @@ const platformLabel = currentPlatform ? (PLATFORM_LABELS[currentPlatform] ?? nul
                         sidebarBtn?.setAttribute('aria-expanded', 'false');
                         sidebarBtn?.focus();
                     }
-                });
+                }, { signal });
 
                 // Close sidebar on page navigation
                 document.addEventListener('astro:page-load', () => {
                     document.body.removeAttribute('data-sidebar-open');
                     sidebarBtn?.setAttribute('aria-expanded', 'false');
-                });
+                }, { signal });
+            }
+
+            disconnectedCallback() {
+                this._ac?.abort();
             }
         }
 
