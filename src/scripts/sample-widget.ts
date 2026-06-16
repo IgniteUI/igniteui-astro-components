@@ -405,10 +405,10 @@ class XplatCodeService {
         (sampleData.sampleFiles || []).forEach(addFile);
 
         // React samples reference @infragistics/ scoped packages (private registry).
-        // Replace with the public unscoped equivalents so StackBlitz can install them.
+        // Replace with public unscoped equivalents so StackBlitz WebContainers can install them.
         if (this.platform === 'react') {
             for (const key of Object.keys(files)) {
-                files[key] = files[key].replace(/@infragistics\/igniteui-react-/g, 'igniteui-react-');
+                files[key] = files[key].replace(/@infragistics\//g, '');
             }
         }
 
