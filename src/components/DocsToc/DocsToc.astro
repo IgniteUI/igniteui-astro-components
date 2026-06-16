@@ -138,6 +138,24 @@ const nodes = headingsToTreeNodes(headings, tocConfig);
             window.addEventListener('touchstart', releasePin, opts);
             window.addEventListener('keydown', releasePin, opts);
 
+            // Browser back/forward navigation: release the pin and re-run the
+            // spy so the active item reflects the restored scroll position.
+            window.addEventListener('hashchange', () => {
+                this.pinnedIndex = undefined;
+                requestAnimationFrame(() => this.update());
+            }, opts);
+
+            // popstate covers back/forward cases that hashchange misses:
+            // navigating to a URL with no hash, or the same hash as before.
+            // Note: do NOT call scrollToHashIfNeeded() here — Chrome fires
+            // popstate on anchor clicks too, which would override smooth scroll
+            // with an instant jump. The browser handles scroll restoration on
+            // back/forward automatically.
+            window.addEventListener('popstate', () => {
+                this.pinnedIndex = undefined;
+                requestAnimationFrame(() => this.update());
+            }, opts);
+
             this.addEventListener('click', (e) => {
                 const target = (e.target as HTMLElement | null)?.closest('a[href^="#"]');
                 if (!(target instanceof HTMLAnchorElement)) return;
@@ -157,7 +175,17 @@ const nodes = headingsToTreeNodes(headings, tocConfig);
             // Safari: getBoundingClientRect() may not reflect final layout
             // during the first rAF (before first paint). Schedule one extra
             // update so the initial active item is always correct.
-            requestAnimationFrame(() => this.update());
+            // Also re-scroll to the hash now that syncScrollPadding has run
+            // and scroll-padding-top reflects the true sticky header height.
+            // Without this, a refresh with a #hash in the URL would scroll
+            // before the CSS variable is set, landing the heading behind the header.
+            requestAnimationFrame(() => {
+                this.update();
+                // Nest in a second rAF so igc-tree's internal scrollIntoView
+                // (triggered by setActive → selected = true) settles first,
+                // and our correction scroll wins.
+                requestAnimationFrame(() => this.scrollToHashIfNeeded());
+            });
         }
 
         private bindOffsetTarget() {
@@ -184,6 +212,16 @@ const nodes = headingsToTreeNodes(headings, tocConfig);
             const px = Math.round(this.offsetEl.getBoundingClientRect().bottom);
             // Write only the measured subheader height; the CSS adds --igd-toc-scroll-offset on top.
             document.documentElement.style.setProperty('--igd-toc-subheader-bottom', `${px}px`);
+        }
+
+        // Re-scroll to the current URL hash so the heading lands below the sticky
+        // header once scroll-padding-top has been set correctly by syncScrollPadding.
+        private scrollToHashIfNeeded() {
+            const hash = window.location.hash;
+            if (!hash) return;
+            const id = decodeURIComponent(hash.slice(1));
+            const el = document.getElementById(id);
+            if (el) el.scrollIntoView({ behavior: 'instant', block: 'start' });
         }
 
         private update() {
