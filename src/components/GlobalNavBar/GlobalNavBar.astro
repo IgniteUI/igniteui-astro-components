@@ -9,6 +9,7 @@
  */
 import { fetchIgNav } from '../../lib/nav-helpers.ts';
 import styles from './GlobalNavBar.module.scss';
+import './_bootstrap-scoped.css';
 import type { NavLang } from '../../platform.ts';
 
 interface Props {
@@ -27,7 +28,7 @@ const igNav = await fetchIgNav(resolvedLang);
     IG-family global nav (angular, react, blazor, web-components,
     slingshot, igniteui)
     ============================================================ */}
-<div class={styles.navBar} transition:persist="global-nav-bar">
+<div class={`${styles.navBar} igd-nav-bootstrap`} transition:persist="global-nav-bar">
   {/* IG nav — fetched directly via fetchIgNav(); falls back to static markup */}
   {igNav?.prefetched && <Fragment set:html={igNav.headerHtml} />}
 </div>
