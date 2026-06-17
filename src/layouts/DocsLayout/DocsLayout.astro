@@ -196,7 +196,7 @@ type HeadEntry = { tag: string; attrs?: Record<string, string | boolean | undefi
       window.addEventListener('resize', schedule, { passive: true });
       var ro = new ResizeObserver(schedule);
       ro.observe(footer);
-      schedule();
+      update();
       _cleanupSidebarHeights = function() {
         window.removeEventListener('scroll', schedule);
         window.removeEventListener('resize', schedule);
