@@ -43,7 +43,6 @@
 		
 		display: grid;
 		place-items: center;
-		height: 100%;
 		padding: 0 rem(16px) rem(16px) rem(16px) ;
 		border-bottom: rem(1px) solid var(--ig-gray-200);
 		text-align: center;
@@ -205,7 +204,8 @@
 		
 		display: flex;
 		justify-self: start;
-		margin-block-start: rem(16px);
+		padding: rem(16px);
+		border-top: rem(1px) solid var(--ig-gray-100);
 	}
 	
 	.igd-search-meta {
