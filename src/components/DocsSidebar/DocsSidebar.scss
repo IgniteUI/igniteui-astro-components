@@ -62,6 +62,7 @@
 	
 	.sidebar-scroll {
 		overflow-y: auto;
+		min-height: 0;
 		padding-block: rem(12px);
 		scroll-behavior: smooth;
 		overscroll-behavior: contain;

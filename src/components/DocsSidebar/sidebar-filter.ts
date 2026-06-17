@@ -268,16 +268,41 @@ class SidebarFilter extends HTMLElement {
       requestAnimationFrame(() => {
         sc.scrollTo({ top: parseInt(safeGet(SCROLL_KEY) || '0', 10) || 0, behavior: 'instant' });
         sc.style.visibility = '';
+        // After restoring, ensure the active item is visible — it may
+        // have shifted due to expand/collapse changes on the new page.
+        requestAnimationFrame(() => {
+          const active = this.querySelector<HTMLAnchorElement>('a[aria-current="page"]');
+          if (active && !this.isElementVisible(active, sc)) {
+            this.scrollToCenter(active, sc);
+          }
+        });
       });
     } else {
       customElements.whenDefined('igc-tree-item').then(() =>
         requestAnimationFrame(() => {
           sc.style.visibility = '';
           const active = this.querySelector<HTMLAnchorElement>('a[aria-current="page"]');
-          active?.scrollIntoView({ block: 'nearest' });
+          if (active) {
+            this.scrollToCenter(active, sc);
+          }
         })
       );
     }
+  }
+
+  /** Scroll the container so that `el` is vertically centered within it. */
+  private scrollToCenter(el: HTMLElement, container: HTMLElement): void {
+    const elRect = el.getBoundingClientRect();
+    const cRect = container.getBoundingClientRect();
+    const elCenter = elRect.top + elRect.height / 2;
+    const cCenter = cRect.top + cRect.height / 2;
+    container.scrollTop += elCenter - cCenter;
+  }
+
+  private isElementVisible(el: HTMLElement, container: HTMLElement): boolean {
+    const elRect = el.getBoundingClientRect();
+    const cRect = container.getBoundingClientRect();
+    return elRect.top >= cRect.top && elRect.bottom <= cRect.bottom;
   }
 
   // ── Filter ───────────────────────────────────────────────────────────────

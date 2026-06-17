@@ -175,14 +175,14 @@ type HeadEntry = { tag: string; attrs?: Record<string, string | boolean | undefi
       if (!sidebar) return;
       var rafId = 0;
       function update() {
-        var footerTop = footer.getBoundingClientRect().top;
-        // Footer is off-screen below — sidebar needs no clamping.
-        if (footerTop >= window.innerHeight) {
-          if (sidebar.style.maxHeight) sidebar.style.maxHeight = '';
-          return;
-        }
         var sidebarTop = sidebar.getBoundingClientRect().top;
-        var maxH = Math.max(0, Math.min(window.innerHeight - sidebarTop, footerTop - sidebarTop));
+        var footerTop = footer.getBoundingClientRect().top;
+        // Always clamp to viewport bottom; additionally clamp to footer
+        // top when the footer is on screen.
+        var maxH = Math.max(0, window.innerHeight - sidebarTop);
+        if (footerTop < window.innerHeight) {
+          maxH = Math.max(0, Math.min(maxH, footerTop - sidebarTop));
+        }
         var next = maxH + 'px';
         if (sidebar.style.maxHeight !== next) sidebar.style.maxHeight = next;
       }
