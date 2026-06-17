@@ -297,14 +297,20 @@ class SidebarFilter extends ReactiveElement {
         });
       });
     } else {
-      customElements.whenDefined('igc-tree-item').then(() =>
+      // On hard refresh, wait for astro:page-load (which scrolls the page
+      // back to top and runs initSidebarHeights) before centering.
+      document.addEventListener('astro:page-load', () => {
         requestAnimationFrame(() => {
           if (!this.isConnected) return;
+          const sidebar = this.closest<HTMLElement>('.docs-sidebar');
+          if (sidebar) {
+            sidebar.style.maxHeight = Math.max(0, window.innerHeight - sidebar.getBoundingClientRect().top) + 'px';
+          }
           sc.style.visibility = '';
           const active = this.querySelector<HTMLAnchorElement>(ACTIVE_LINK_SELECTOR);
           if (active) this.scrollToCenter(active, sc);
-        })
-      );
+        });
+      }, { once: true });
     }
   }
 
