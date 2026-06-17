@@ -323,12 +323,46 @@
 	}
 	
 	.search-decoration {
+		--search-decoration-background: conic-gradient(from var(--rot) at 50% 50%, var(--igd-accent) -56.25deg, var(--igd-accent) 43.12deg, var(--ig-secondary-500) 180deg, var(--igd-accent) 303.75deg, var(--igd-accent) 403.12deg);
+		
+		position: relative;
+		isolation: isolate;
 		padding: 1px;
 		border-radius: rem(11px);
-		animation: rotation 6s linear infinite;
-		animation-delay: 1s , 300ms;
-		background:  conic-gradient(from var(--rot) at 50% 50%, var(--igd-accent) -56.25deg, var(--igd-accent) 43.12deg, var(--ig-secondary-500) 180deg, var(--igd-accent) 303.75deg, var(--igd-accent) 403.12deg);
+		background: transparent;
 		box-sizing: border-box;
+		
+		&::before {
+			content: '';
+			position: absolute;
+			inset: 0;
+			z-index: 0;
+			border-radius: inherit;
+			background: var(--search-decoration-background);
+			opacity: 0;
+			transition: opacity 150ms ease;
+		}
+		
+		@media (min-width: 768px) {
+			&:has(.search-trigger:defined)::before {
+				animation: rotation 6s linear infinite;
+				opacity: 1;
+				transition-delay: 500ms;
+			}
+		}
+		
+		@media (max-width: 767px) {
+			&:has(.search-trigger-mobile:defined)::before {
+				animation: rotation 6s linear infinite;
+				opacity: 1;
+				transition-delay: 500ms;
+			}
+		}
+		
+		> * {
+			position: relative;
+			z-index: 1;
+		}
 		
 		igc-input {
 			--border-color: transparent;
@@ -388,4 +422,3 @@
 		--rot: 360deg;
 	}
 }
-

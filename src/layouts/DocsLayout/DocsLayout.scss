@@ -195,6 +195,10 @@
 
 // ── Mobile only (< 768px) ──────────────────────────────────────────────────
 @media (max-width: #{$bp-mobile-max}) {
+	.igd-search-content {
+		max-height: 100%;
+	}
+	
 	.search-decoration {
 		width: 40px;
 		aspect-ratio: 1;
