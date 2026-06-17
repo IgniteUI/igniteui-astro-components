@@ -256,7 +256,7 @@ type HeadEntry = { tag: string; attrs?: Record<string, string | boolean | undefi
             <div class="igd-main-content__inner">
 
                 <div class="igd-main-content__page">
-                    <main class="igd-main-content__markdown">
+                    <main class="igd-main-content__markdown" data-pagefind-body>
                         <Fragment set:html={igLogoRaw} />
                         <LicenseIndicator license={licenseType} />
                         <DocsBreadcrumb pageTitle={ title } currentSlug={ currentSlug } siteTitle={ siteTitleProp }/>
