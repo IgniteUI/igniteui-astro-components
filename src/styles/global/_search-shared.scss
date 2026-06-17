@@ -22,9 +22,13 @@
 	}
 	
 	.igd-search-content {
-		display: grid;
-		grid-template-rows: auto 1fr;
-		overflow: auto;
+		display: flex;
+		flex-direction: column;
+		overflow: hidden;
+		
+		// Constrain the content area so only the list scrolls, not the whole dialog.
+		// --_mh is set on .igd-search-dialog; --search-header-footer-height on .igd-search-shell.
+		max-height: calc(var(--_mh) - var(--search-header-footer-height));
 		
 		// min-width: 0 is necessary to allow the content to shrink below its min-content width
 		// otherwise igc-tabs won't show the scroll buttons
@@ -39,7 +43,6 @@
 		
 		display: grid;
 		place-items: center;
-		height: 100%;
 		padding: 0 rem(16px) rem(16px) rem(16px) ;
 		border-bottom: rem(1px) solid var(--ig-gray-200);
 		text-align: center;
@@ -201,7 +204,8 @@
 		
 		display: flex;
 		justify-self: start;
-		margin-block-start: rem(16px);
+		padding: rem(16px);
+		border-top: rem(1px) solid var(--ig-gray-100);
 	}
 	
 	.igd-search-meta {
@@ -212,13 +216,14 @@
 	.igd-search-dialog {
 		--background: var(--igd-layout-sections-bg);
 		--backdrop: #{color($color: gray, $variant: 800, $opacity: .6)};
+		--_mh: min(calc(100vh - #{rem(192px)} - #{rem(64px)}), #{rem(768px)});
 		
 		&::part(base) {
-			margin: rem(192px) auto auto;
+			margin: rem(100px) auto rem(64px);
 			padding: 0;
 			width: 90%;
 			max-width: rem(672px);
-			max-height: min(calc(100vh - #{rem(128px)}), #{rem(768px)});
+			max-height: var(--_mh);
 			border-radius: rem(8px);
 			
 			overflow: hidden;
