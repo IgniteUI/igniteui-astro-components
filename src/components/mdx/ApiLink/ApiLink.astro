@@ -13,8 +13,10 @@ import type { PlatformContext } from '../../../lib/types.ts';
 import { resolveApiLink, type ApiLinkProps } from './api-link-index';
 import './ApiLink.scss';
 
+export type Props = ApiLinkProps;
+
 const ctx = Astro.locals.platformContext as PlatformContext;
-const result = resolveApiLink(Astro.props as ApiLinkProps, ctx);
+const result = resolveApiLink(Astro.props as Props, ctx);
 ---
 {result.renderLink
     ? <a href={result.url}>{result.code ? <code>{result.label}</code> : result.label}</a>
