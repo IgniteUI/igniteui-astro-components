@@ -221,3 +221,121 @@ export function resolveApiLinkFromIndex(options: {
         memberAnchor: indexed.memberAnchor,
     };
 }
+
+// ---------------------------------------------------------------------------
+// High-level resolution — owned here so ApiLink.astro and non-Astro callers
+// (e.g. the LLM markdown generator) share identical resolution + label logic.
+// ---------------------------------------------------------------------------
+
+/** Props for Sass API documentation links. */
+export type SassLinkProps = {
+    kind: 'sass';
+    /** Anchor fragment without `#`, e.g. `mixin-slide-in-left`. */
+    type?: string;
+    /** Sass module path segment, e.g. `animations` or `themes`. */
+    module?: string;
+    /** Wrap the rendered label in `<code>`. Defaults to `true`. */
+    code?: boolean;
+    /** Override the rendered label. */
+    label?: string;
+};
+
+/** Props for TypeDoc API documentation links. */
+export type TypeDocLinkProps = {
+    kind?: TypeDocKind;
+    /** Short type/symbol name without platform prefix, e.g. `"Toast"`. */
+    type: string;
+    /** Optional class/interface member, property, method, or enum value anchor. */
+    member?: string;
+    /** Package key used only to filter ambiguous registry matches. */
+    pkg?: string;
+    /** Override the rendered label. */
+    label?: string;
+    /** Whether to prepend the platform prefix before registry lookup. @default true */
+    prefixed?: boolean;
+    /** Whether to try the platform class suffix before the unsuffixed symbol. @default true */
+    suffix?: boolean;
+};
+
+export type ApiLinkProps = SassLinkProps | TypeDocLinkProps;
+
+/** Resolved rendering instructions returned by {@link resolveApiLink}. */
+export type ApiLinkResult =
+    | { renderLink: true;  url: string; label: string; code: boolean }
+    | { renderLink: false;              label: string; code: boolean };
+
+function getDisplayName(resolvedName: string, baseType: string, type: string, classSuffix?: string): string {
+    if (resolvedName === type) return type;
+    if (classSuffix && resolvedName === `${type}${classSuffix}`) return type;
+    if (classSuffix && resolvedName === `${baseType}${classSuffix}`) return type;
+    return baseType;
+}
+
+/**
+ * Resolve ApiLink props + platform context into rendering instructions.
+ *
+ * Contains all resolution logic (URL construction, index lookup, label
+ * computation) so that every renderer — Astro component, Markdown generator,
+ * etc. — gets identical output without duplicating this logic.
+ */
+export function resolveApiLink(props: ApiLinkProps, ctx: PlatformContext): ApiLinkResult {
+    const { prefix, apiPackages } = ctx;
+
+    if (props.kind === 'sass') {
+        const { type, module, code = true, label } = props;
+        if (!module) console.warn('[ApiLink] kind="sass" requires a `module` prop - link may be malformed.');
+        const base = ctx.sassApiUrl?.trim().replace(/\/+$/, '');
+        const anchor = type ? `#${type}` : '';
+        let url: string;
+        if (!base) {
+            console.warn('[ApiLink] kind="sass" requires `platformContext.sassApiUrl` to be configured - falling back to "#".');
+            url = '#';
+        } else {
+            url = `${base}/${module ?? ''}${anchor}`;
+        }
+        return { renderLink: true, url, label: label ?? type ?? module ?? '', code };
+    }
+
+    const {
+        type,
+        member,
+        pkg = 'core',
+        prefixed = true,
+        suffix = true,
+        label,
+    } = props;
+    const explicitKind = 'kind' in props ? props.kind : undefined;
+    const explicitPkg = typeof props.pkg === 'string' && props.pkg.length > 0;
+    const pkgConfig = apiPackages[explicitPkg ? pkg : 'core'] ?? apiPackages.core;
+    const baseType = prefixed ? `${prefix}${type}` : type;
+    const fallbackLabel = label ?? (member ? `${baseType}.${member}` : baseType);
+
+    const indexed = resolveApiLinkFromIndex({
+        ctx, pkgConfig, explicitPkg, type, member, explicitKind, prefix, prefixed, suffix,
+    });
+
+    if (indexed.status === 'resolved') {
+        const displayBase = getDisplayName(indexed.symbolName, baseType, type, pkgConfig.classSuffix);
+        const resolvedLabel = label ?? (indexed.memberName ? `${displayBase}.${indexed.memberName}` : displayBase);
+        return { renderLink: true, url: indexed.url, label: resolvedLabel, code: true };
+    }
+
+    if (indexed.status === 'ambiguous') {
+        const symbol = member ? `${type}.${member}` : type;
+        throw new Error(`[ApiLink] Ambiguous API symbol "${symbol}" matched registry candidate "${indexed.candidate}". Add pkg= or kind= to disambiguate.`);
+    }
+
+    // Non-critical misses: warn only in dev to keep production builds quiet.
+    const isDev = (import.meta as { env?: { DEV?: boolean } }).env?.DEV ?? false;
+    if (isDev) {
+        if (indexed.status === 'member-missing') {
+            console.warn(`[ApiLink] Registry symbol "${indexed.candidate}" exists, but member "${member}" was not found. Rendering code text instead of a guessed URL.`);
+        } else if (indexed.status === 'missing') {
+            console.warn(`[ApiLink] Registry miss for ${type}${member ? `.${member}` : ''}. Rendering code text instead of a guessed URL.`);
+        } else if (indexed.status === 'unavailable') {
+            console.warn(`[ApiLink] ApiLink registry is unavailable for ${type}${member ? `.${member}` : ''}. Rendering code text.`);
+        }
+    }
+
+    return { renderLink: false, label: fallbackLabel, code: true };
+}

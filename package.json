@@ -62,6 +62,7 @@
     "./components/DocsTree/docs-tree.css": "./src/components/DocsTree/docs-tree.css",
     "./components/mdx/ApiRef.astro": "./src/components/mdx/ApiRef/ApiRef.astro",
     "./components/mdx/ApiLink.astro": "./src/components/mdx/ApiLink/ApiLink.astro",
+    "./components/mdx/ApiLink/api-link-index": "./src/components/mdx/ApiLink/api-link-index.ts",
     "./components/mdx/DocsAside.astro": "./src/components/mdx/DocsAside/DocsAside.astro",
     "./components/mdx/Badge.astro": "./src/components/mdx/Badge/Badge.astro",
     "./components/mdx/PlatformBlock.astro": "./src/components/mdx/PlatformBlock/PlatformBlock.astro",
