@@ -284,7 +284,10 @@ export function resolveApiLink(props: ApiLinkProps, ctx: PlatformContext): ApiLi
     if (props.kind === 'sass') {
         const { type, module, code = true, label } = props;
         if (!module) console.warn('[ApiLink] kind="sass" requires a `module` prop - link may be malformed.');
-        const base = ctx.sassApiUrl?.trim().replace(/\/+$/, '');
+        const rawBase = ctx.sassApiUrl?.trim() ?? '';
+        let baseEnd = rawBase.length;
+        while (baseEnd > 0 && rawBase[baseEnd - 1] === '/') baseEnd--;
+        const base = rawBase.slice(0, baseEnd);
         const anchor = type ? `#${type}` : '';
         let url: string;
         if (!base) {
