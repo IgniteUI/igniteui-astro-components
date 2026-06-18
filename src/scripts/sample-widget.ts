@@ -38,6 +38,9 @@ const XPLAT_CODE_BASE: Record<string, string> = {
 
 const DV_PATHS  = ['gauges/', 'maps/', 'excel/', 'charts/'];
 const ASSETS_RE = /([.]{0,2}\/)*assets\//g;
+const DEFAULT_CODE_THEME = 'dark-plus';
+
+declare const __IGD_SAMPLE_CODE_THEME__: string | undefined;
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -111,13 +114,54 @@ function replaceRelativeAssetUrls(files: SampleFile[], demosBaseUrl: string): vo
     });
 }
 
+// ─── Code Highlighting ────────────────────────────────────────────────────────
+
+const LANG_MAP: Record<string, string> = { js: 'javascript', cs: 'csharp' };
+
+const SHIKI_LANGS = ['text', 'typescript', 'tsx', 'javascript', 'html', 'css', 'scss', 'csharp', 'razor'] as const;
+
+let _highlighterPromise: Promise<any> | null = null;
+
+function getCodeTheme(): string {
+    return typeof __IGD_SAMPLE_CODE_THEME__ === 'string' && __IGD_SAMPLE_CODE_THEME__.trim()
+        ? __IGD_SAMPLE_CODE_THEME__
+        : DEFAULT_CODE_THEME;
+}
+
+function getHighlighter(): Promise<any> {
+    if (!_highlighterPromise) {
+        _highlighterPromise = import('shiki').then(({ createHighlighter }) =>
+            createHighlighter({ themes: [getCodeTheme()], langs: [...SHIKI_LANGS] as any[] })
+        );
+    }
+    return _highlighterPromise!;
+}
+
+function highlightCode(codeEl: HTMLElement, lang: string): void {
+    const safeLang = (SHIKI_LANGS as readonly string[]).includes(lang) ? lang : 'text';
+    getHighlighter().then(h => {
+        const tmp = document.createElement('div');
+        tmp.innerHTML = h.codeToHtml(codeEl.textContent ?? '', { lang: safeLang, theme: getCodeTheme() });
+        const shikiPre  = tmp.firstElementChild as HTMLElement | null;
+        const shikiCode = shikiPre?.querySelector('code');
+        if (!shikiPre || !shikiCode) return;
+        const parentPre = codeEl.parentElement;
+        if (parentPre) parentPre.style.cssText = shikiPre.style.cssText;
+        codeEl.innerHTML = shikiCode.innerHTML;
+    }).catch(console.warn);
+}
+
+function normalizeCodeLang(lang: string | undefined): string {
+    return LANG_MAP[lang ?? ''] ?? lang ?? 'text';
+}
+
 // ─── Code Tab Rendering ───────────────────────────────────────────────────────
 
 function addCodeTab(
     igcTabs: HTMLElement,
     file:    SampleFile,
 ): void {
-    const lang = file.fileExtension === 'js' ? 'javascript' : (file.fileExtension || 'text');
+    const lang = normalizeCodeLang(file.fileExtension);
 
     const tab = document.createElement('igc-tab');
     tab.setAttribute('label', file.fileHeader.toUpperCase());
@@ -157,9 +201,7 @@ function addCodeTab(
     tab.appendChild(wrapper);
     igcTabs.appendChild(tab);
 
-    if (typeof (window as any).hljs !== 'undefined') {
-        (window as any).hljs.highlightElement(code);
-    }
+    highlightCode(code, lang);
 }
 
 // ─── Footer / Live Edit Buttons ───────────────────────────────────────────────
@@ -480,6 +522,11 @@ class XplatCodeService {
  * `.ig-code-view` elements managed by code-view.js.
  */
 export function initSampleWidgets(): void {
+    // Kick off the Shiki download immediately so it is ready before the user
+    // opens a code tab (tabs appear only after an IntersectionObserver fires
+    // + a JSON fetch completes, giving Shiki time to load in parallel).
+    getHighlighter().catch(() => {});
+
     // Serial iframe-load queue. Loading all iframes simultaneously causes the
     // browser to parse and execute many JS bundles at once, freezing the main
     // thread. Instead we load one iframe at a time: next starts only after the
@@ -538,6 +585,8 @@ export function initSampleWidgets(): void {
             const icon = btn?.querySelector<HTMLElement>('igc-icon');
             const code = pre.querySelector<HTMLElement>('code');
             if (!btn || !code) return;
+            const codeLang = (code.className.match(/language-(\S+)/) ?? [])[1] ?? 'text';
+            highlightCode(code, normalizeCodeLang(codeLang));
             btn.addEventListener('click', () => {
                 navigator.clipboard.writeText(code.textContent ?? '').then(() => {
                     icon?.setAttribute('name', 'check');
@@ -562,7 +611,7 @@ export function initSampleWidgets(): void {
             }
         }
 
-        if (!demosBaseUrl) return;
+        if (!demosBaseUrl && !isXplatPlatform(platform)) return;
 
         const service = isXplatPlatform(platform)
             ? new XplatCodeService(platform)
