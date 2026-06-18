@@ -161,17 +161,19 @@ import './Search.scss';
   }
 
   // Keep a result only if it actually contains what was typed: some highlighted
-  // word must start with one of the query tokens. This rejects Pagefind's prefix
+  // word must contain one of the query tokens. This rejects Pagefind's prefix
   // fallback — a gibberish query like "asdaasd…" matching the bare "as" on nearly
-  // every page — while still allowing as-you-type matches ("grid" finds "gridlines").
-  // No body highlights means the match was in the title/meta, which we keep.
+  // every page (the short highlight can't contain the long query) — while keeping
+  // both as-you-type matches ("grid" finds "gridlines") and compound identifiers
+  // ("combo" finds "igxCombo"). No body highlights means the match was in the
+  // title/meta, which we keep.
   function looksRelevant(excerpt: string, queryTokens: string[]): boolean {
     if (queryTokens.length === 0) return true;
     const marks = [...excerpt.matchAll(/<mark[^>]*>([\s\S]*?)<\/mark>/gi)]
       .map((m) => m[1].replace(/<[^>]+>/g, '').replace(/[^a-z0-9]/gi, '').toLowerCase())
       .filter(Boolean);
     if (marks.length === 0) return true;
-    return marks.some((h) => queryTokens.some((t) => h.startsWith(t)));
+    return marks.some((h) => queryTokens.some((t) => h.includes(t)));
   }
 
   // Pagefind highlights the whole matched word; trim each <mark> down to just the
