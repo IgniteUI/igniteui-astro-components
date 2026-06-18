@@ -206,6 +206,12 @@
 		.search-trigger {
 			display: none;
 		}
+		
+		&:has(.search-trigger:defined)::before {
+			animation: rotation 6s linear infinite;
+			opacity: 1;
+			transition-delay: 500ms;
+		}
 	}
 	
 	.search-trigger-mobile {
@@ -294,6 +300,14 @@
 
 // ── Tablet + Desktop (≥ 768px) ─────────────────────────────────────────────
 @media (min-width: #{$bp-tablet-min}) {
+	.search-decoration {
+		&:has(.search-trigger-mobile:defined)::before {
+			animation: rotation 6s linear infinite;
+			opacity: 1;
+			transition-delay: 500ms;
+		}
+	}
+	
 	.sidebar-gutter {
 		&:has(.igd-sidebar-logo:only-child) {
 			display: none;

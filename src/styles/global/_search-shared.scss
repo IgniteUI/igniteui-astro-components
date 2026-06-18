@@ -343,22 +343,6 @@
 			transition: opacity 150ms ease;
 		}
 		
-		@media (min-width: 768px) {
-			&:has(.search-trigger:defined)::before {
-				animation: rotation 6s linear infinite;
-				opacity: 1;
-				transition-delay: 500ms;
-			}
-		}
-		
-		@media (max-width: 767px) {
-			&:has(.search-trigger-mobile:defined)::before {
-				animation: rotation 6s linear infinite;
-				opacity: 1;
-				transition-delay: 500ms;
-			}
-		}
-		
 		> * {
 			position: relative;
 			z-index: 1;
