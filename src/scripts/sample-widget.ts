@@ -117,7 +117,7 @@ function replaceRelativeAssetUrls(files: SampleFile[], demosBaseUrl: string): vo
 
 // ─── Code Highlighting ────────────────────────────────────────────────────────
 
-const LANG_MAP: Record<string, string> = { js: 'javascript', cs: 'csharp' };
+const LANG_MAP: Record<string, string> = { js: 'javascript', ts: 'typescript', cs: 'csharp' };
 
 const SHIKI_LANGS = ['text', 'typescript', 'tsx', 'javascript', 'html', 'css', 'scss', 'csharp', 'razor'] as const;
 
@@ -131,11 +131,14 @@ function getCodeTheme(): string {
 
 function getHighlighter(): Promise<Highlighter> {
     if (!_highlighterPromise) {
-        _highlighterPromise = import('shiki').then(({ createHighlighter }) =>
-            createHighlighter({ themes: [getCodeTheme()], langs: [...SHIKI_LANGS] })
-        );
+        _highlighterPromise = import('shiki')
+            .then(({ createHighlighter }) => createHighlighter({ themes: [getCodeTheme()], langs: [...SHIKI_LANGS] }))
+            .catch((err) => {
+                _highlighterPromise = null;
+                throw err;
+            });
     }
-    return _highlighterPromise!;
+    return _highlighterPromise;
 }
 
 function highlightCode(codeEl: HTMLElement, lang: string): void {

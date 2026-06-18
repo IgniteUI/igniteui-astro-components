@@ -53,7 +53,7 @@ The base URLs are resolved from `environment.json` at build time via `siteMetaIn
 
 ## Code highlighting
 
-Code tabs are syntax-highlighted client-side using [Shiki](https://shiki.style/) (lazy-loaded on first tab open). Supported languages: `typescript`, `tsx`, `javascript`, `html`, `css`, `scss`, `csharp`, `razor`.
+Code tabs are syntax-highlighted client-side using [Shiki](https://shiki.style/) (lazy-loaded via dynamic import and pre-warmed at widget init). Supported languages: `typescript`, `tsx`, `javascript`, `html`, `css`, `scss`, `csharp`, `razor`.
 
 The theme defaults to `dark-plus` and can be overridden per project via a Vite define in `astro.config.mjs`:
 
