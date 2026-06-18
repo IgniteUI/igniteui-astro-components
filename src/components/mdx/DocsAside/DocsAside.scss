@@ -48,7 +48,7 @@ blockquote {
 	grid-column: 2;
 	grid-row: 2;
 	
-	// Make sure if there is a super long link inside it wont break the layout
+	// Make sure that if there is a super long link inside, it won’t break the layout.
 	overflow: auto;
 	
 	> p:only-child,
