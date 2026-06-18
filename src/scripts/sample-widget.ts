@@ -17,6 +17,7 @@ import { defineComponents, IgcTabsComponent, IgcTabComponent, IgcButtonComponent
 defineComponents(IgcTabsComponent, IgcTabComponent, IgcButtonComponent, IgcIconButtonComponent, IgcIconComponent, IgcCircularProgressComponent);
 
 import './icon-registry';
+import type { Highlighter } from 'shiki';
 import stackblitzSvg from '../assets/logos/stackblitz.svg?raw';
 import codeSandboxSvg from '../assets/logos/code-sandbox.svg?raw';
 
@@ -120,7 +121,7 @@ const LANG_MAP: Record<string, string> = { js: 'javascript', cs: 'csharp' };
 
 const SHIKI_LANGS = ['text', 'typescript', 'tsx', 'javascript', 'html', 'css', 'scss', 'csharp', 'razor'] as const;
 
-let _highlighterPromise: Promise<any> | null = null;
+let _highlighterPromise: Promise<Highlighter> | null = null;
 
 function getCodeTheme(): string {
     return typeof __IGD_SAMPLE_CODE_THEME__ === 'string' && __IGD_SAMPLE_CODE_THEME__.trim()
@@ -128,10 +129,10 @@ function getCodeTheme(): string {
         : DEFAULT_CODE_THEME;
 }
 
-function getHighlighter(): Promise<any> {
+function getHighlighter(): Promise<Highlighter> {
     if (!_highlighterPromise) {
         _highlighterPromise = import('shiki').then(({ createHighlighter }) =>
-            createHighlighter({ themes: [getCodeTheme()], langs: [...SHIKI_LANGS] as any[] })
+            createHighlighter({ themes: [getCodeTheme()], langs: [...SHIKI_LANGS] })
         );
     }
     return _highlighterPromise!;
