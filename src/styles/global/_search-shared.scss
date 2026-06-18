@@ -216,7 +216,7 @@
 	.igd-search-dialog {
 		--background: var(--igd-layout-sections-bg);
 		--backdrop: #{color($color: gray, $variant: 800, $opacity: .6)};
-		--_mh: min(calc(100vh - #{rem(192px)} - #{rem(64px)}), #{rem(768px)});
+		--_mh: min(calc(100vh - #{rem(100px)} - #{rem(64px)}), #{rem(768px)});
 		
 		&::part(base) {
 			margin: rem(100px) auto rem(64px);
