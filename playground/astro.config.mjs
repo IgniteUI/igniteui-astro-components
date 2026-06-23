@@ -147,7 +147,10 @@ export const abContactSalesHtml = '';
 }
 
 const repoRoot = path.dirname(fileURLToPath(import.meta.url));
-
+const markdownShikiConfig = {
+  theme: 'dark-plus',
+  wrap: true,
+};
 export default defineConfig({
   root: repoRoot,
   srcDir: './src',
@@ -157,13 +160,13 @@ export default defineConfig({
   image: { service: { entrypoint: 'astro/assets/services/noop' } },
   integrations: [mdx()],
   markdown: {
-    shikiConfig: {
-      theme: 'dark-plus',
-      wrap: true,
-    },
+    shikiConfig: markdownShikiConfig,
     rehypePlugins: [rehypeHeadingAnchors, rehypeTableWrapper],
   },
   vite: {
+    define: {
+      __IGD_SAMPLE_CODE_THEME__: JSON.stringify(markdownShikiConfig.theme),
+    },
     plugins: [iconUploadPlugin(), virtualDocsModules()],
     css: {
       preprocessorOptions: {

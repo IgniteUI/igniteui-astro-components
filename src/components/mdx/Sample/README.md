@@ -51,6 +51,27 @@ The base URLs are resolved from `environment.json` at build time via `siteMetaIn
 | `lobDemosBaseUrl` | LOB / grids |
 | `crmDemoBaseUrl` | CRM demos |
 
+## Code highlighting
+
+Code tabs are syntax-highlighted client-side using [Shiki](https://shiki.style/) (lazy-loaded via dynamic import and pre-warmed at widget init). Supported languages: `typescript`, `tsx`, `javascript`, `html`, `css`, `scss`, `csharp`, `razor`.
+
+The theme defaults to `dark-plus` and can be overridden per project via a Vite define in `astro.config.mjs`:
+
+```js
+// astro.config.mjs
+export default defineConfig({
+  vite: {
+    define: {
+      __IGD_SAMPLE_CODE_THEME__: JSON.stringify('github-dark'),
+    },
+  },
+});
+```
+
+Any [Shiki bundled theme](https://shiki.style/themes) name is accepted. If the define is absent the default `dark-plus` is used.
+
+> **Note:** highlight.js is no longer required. Remove any hljs `<script>` / `<link>` head entries from your integration config if they were added solely for code tabs.
+
 ## MDX global registration
 
 ```ts
