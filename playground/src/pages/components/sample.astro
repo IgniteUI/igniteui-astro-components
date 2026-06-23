@@ -11,8 +11,51 @@ const slug = 'components/sample';
 const headings = [
   { depth: 2, slug: 'full-widget',    text: 'Full widget (TSX + CSS)' },
   { depth: 2, slug: 'angular-tabs',   text: 'Angular-style tabs (TS + HTML + SCSS)' },
+  { depth: 2, slug: 'blazor-tabs',    text: 'Blazor-style tabs (RAZOR + CS + CSS)' },
   { depth: 2, slug: 'iframe-only',    text: 'iframe only' },
   { depth: 2, slug: 'fullscreen-btn', text: 'iframe + fullscreen button' },
+];
+
+const blazorTabs = [
+  {
+    label: 'RAZOR',
+    lang:  'razor',
+    content: `@page "/grid-sample"
+@using IgniteUI.Blazor.Controls
+
+<IgbGrid Data="Data" Height="340px" Width="100%" PrimaryKey="ID">
+    <IgbColumn Field="ID"   Header="ID"   DataType="GridColumnDataType.Number" Width="80px"></IgbColumn>
+    <IgbColumn Field="Name" Header="Name" Sortable="true" Width="180px"></IgbColumn>
+    <IgbColumn Field="Age"  Header="Age"  DataType="GridColumnDataType.Number" Width="100px"></IgbColumn>
+    <IgbColumn Field="City" Header="City" Sortable="true" Width="140px"></IgbColumn>
+    <IgbColumn Field="Role" Header="Role" Sortable="true"></IgbColumn>
+</IgbGrid>
+
+@code {
+    private static readonly Employee[] Data = new[]
+    {
+        new Employee(1, "Alice Johnson", 32, "London",  "Engineer"),
+        new Employee(2, "Bob Martinez",  28, "Berlin",  "Designer"),
+        new Employee(3, "Carol Zhang",   35, "Tokyo",   "Manager"),
+        new Employee(4, "David Kim",     41, "Seoul",   "Architect"),
+        new Employee(5, "Eve Mueller",   29, "Vienna",  "Engineer"),
+    };
+}`,
+  },
+  {
+    label: 'CS',
+    lang:  'csharp',
+    content: `namespace BlazorSample.Models;
+
+public record Employee(int ID, string Name, int Age, string City, string Role);`,
+  },
+  {
+    label: 'CSS',
+    lang:  'css',
+    content: `.grid-wrapper {
+    padding: 16px;
+}`,
+  },
 ];
 
 const angularTabs = [
@@ -211,6 +254,10 @@ describe('GridSampleComponent', () => {
     <h2 id="angular-tabs">Angular-style tabs (TS + HTML + SCSS)</h2>
     <p>Pass a custom <code>tabs</code> array to render any combination of code tabs.</p>
     <MockSample id="mock-sample-angular" src="/mock-demo" height={360} alt="Angular Grid Example" tabs={angularTabs} />
+
+    <h2 id="blazor-tabs">Blazor-style tabs (RAZOR + CS + CSS)</h2>
+    <p>Razor is highlighted natively via Shiki.</p>
+    <MockSample id="mock-sample-blazor" src="/mock-demo" height={360} alt="Blazor Grid Example" tabs={blazorTabs} />
 
     <h2 id="iframe-only">iframe only</h2>
     <p>
