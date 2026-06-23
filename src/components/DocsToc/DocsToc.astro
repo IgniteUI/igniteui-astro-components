@@ -32,7 +32,7 @@ const nodes = headingsToTreeNodes(headings, tocConfig);
 ---
 
 {nodes.length > 0 && (
-    <aside class="toc-wrapper">
+    <aside class="toc-wrapper" data-pagefind-ignore="all">
         <docs-toc class="toc-sidebar" data-offset-target={offsetTarget}>
             <h2 class="toc-sidebar__heading" id="toc-heading">{label}</h2>
             <nav aria-labelledby="toc-heading">

@@ -149,7 +149,7 @@ const resolvedIndexUrl = indexUrl ?? `${basePath}api-search-index/manifest.json`
             </header>
             <div class="igd-search-content">
                 <div class="igd-search-status" aria-live="polite"></div>
-                <igc-tabs class="igd-search-tabs"></igc-tabs>
+                <igc-tabs class="igd-search-tabs" hidden></igc-tabs>
                 <igc-list class="igd-search-results--flat" hidden></igc-list>
             </div>
             <footer class="igd-search-footer">
@@ -892,8 +892,14 @@ const resolvedIndexUrl = indexUrl ?? `${basePath}api-search-index/manifest.json`
         );
       }
 
+      if (totalCount === 0) {
+        this.tabsEl.hidden = true;
+        this.tabsEl.innerHTML = '';
+        return;
+      }
+
       this.tabsEl.innerHTML = tabsHtml.join('');
-      this.tabsEl.hidden = totalCount === 0;
+      this.tabsEl.hidden = false;
 
       // Wire "Show more" buttons — select the target tab (its content is already rendered)
       this.tabsEl.querySelectorAll<HTMLButtonElement>('.igd-search-more-btn').forEach((btn) => {
