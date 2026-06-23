@@ -46,9 +46,7 @@ const baseUrl     = lob ? (env.lobDemosBaseUrl ?? env.demosBaseUrl ?? '').replac
     : isDv        ? (env.dvDemosBaseUrl  ?? env.demosBaseUrl ?? '').replace(/\/$/, '')
     :               (env.demosBaseUrl    ?? '').replace(/\/$/, '');
 
-// In prod/staging, append trailing slash to prevent http→https redirects that cause mixed-content errors.
-// In dev, the demos server doesn't perform that redirect, so the replacement is not needed.
-const iframeSrc   = import.meta.env.DEV ? `${baseUrl}${src}/` : `${baseUrl}${src}`.replace(/([^/])(\?|$)/, '$1/$2');
+const iframeSrc   = `${baseUrl}${src}`;
 const githubSrc   = srcNoSlash;
 
 // Stable, unique element ID derived from the sample path.
