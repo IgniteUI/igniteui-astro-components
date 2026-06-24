@@ -116,6 +116,7 @@ const packages = (rawPackages as PackageEntry[] | undefined)?.map((p: PackageEnt
 );
 const selectedPackage = selectedPackageProp ?? (virtualSelectedPackage || undefined) ?? packages?.[0]?.value;
 const platformIcon = PLATFORM_ICONS[selectedPackage ?? ''] ?? PLATFORM_ICONS[currentPlatform ?? ''] ?? null;
+const selectedPackageLabel = packages?.find(p => p.value === selectedPackage)?.label ?? selectedPackage ?? '';
 
 const resolvedSidebar = (sidebarItems ?? sidebarData) as SidebarEntry[];
 const sidebarCrumbs = currentSlug ? getBreadcrumb(resolvedSidebar, currentSlug) : [];
@@ -167,6 +168,7 @@ const platformLabel = currentPlatform ? (PLATFORM_LABELS[currentPlatform] ?? nul
                         );
                     })}
                 </igc-select>
+                <igc-tooltip id="package-tooltip" class="igd-package-select-tooltip" anchor="package-select" placement="bottom" with-arrow>{selectedPackageLabel}</igc-tooltip>
             )}
 
             <!-- Version selector -->
@@ -243,7 +245,15 @@ const platformLabel = currentPlatform ? (PLATFORM_LABELS[currentPlatform] ?? nul
                 }
                 // Only show the package tooltip when the label is visually truncated
                 if (packageTooltip && packageSelect) {
+                    // Hide tooltip when the dropdown opens
+                    packageSelect.addEventListener('igcOpening', () => packageTooltip.hide?.());
+
                     packageTooltip.addEventListener('igcOpening', (e: Event) => {
+                        // Never show tooltip while the dropdown is open
+                        if ((packageSelect as any).open) {
+                            e.preventDefault();
+                            return;
+                        }
                         const igcInput = (packageSelect as any).shadowRoot?.querySelector('igc-input');
                         const nativeInput = igcInput?.shadowRoot?.querySelector('input');
                         // Show when we applied manual truncation (ends with '\u2026') or
@@ -288,9 +298,9 @@ const platformLabel = currentPlatform ? (PLATFORM_LABELS[currentPlatform] ?? nul
 </script>
 
 <script>
-    import { defineComponents, IgcIconComponent, IgcIconButtonComponent, IgcSelectComponent, IgcSelectItemComponent } from 'igniteui-webcomponents';
+    import { defineComponents, IgcIconComponent, IgcIconButtonComponent, IgcSelectComponent, IgcSelectItemComponent, IgcTooltipComponent } from 'igniteui-webcomponents';
     import { registerIcons } from '../../scripts/icon-registry';
-    defineComponents(IgcIconComponent, IgcIconButtonComponent, IgcSelectComponent, IgcSelectItemComponent);
+    defineComponents(IgcIconComponent, IgcIconButtonComponent, IgcSelectComponent, IgcSelectItemComponent, IgcTooltipComponent);
     registerIcons();
 
     function getPlatformIcon(text: string): string | null {
