@@ -99,25 +99,32 @@ type HeadEntry = { tag: string; attrs?: Record<string, string | boolean | undefi
       document.documentElement.style.removeProperty('scroll-behavior');
     });
 
-    // Root cause: Sample.astro SSR-renders an <igc-tab selected>. During Astro's
-    // client-side swap, <igc-tabs> connects and Lit runs firstUpdated() after
-    // Astro's moveToLocation() has already called scrollTo(0,0), but before
-    // astro:page-load. IgcTabsComponent then applies the selected tab and calls
-    // scrollIntoView() for its tab header, which can move the page down to the
-    // sample widget.
-    //
-    // Re-apply scroll-to-top on astro:page-load inside rAF, after Lit microtasks
-    // and selected-tab scrollIntoView() have settled. Do not override hash
-    // navigation, because hash fragments should keep their anchor behavior.
-    document.addEventListener('astro:page-load', function () {
-      if (!location.hash) {
-        requestAnimationFrame(function () {
-          if (!location.hash && window.scrollY > 0) {
+    // Workaround for https://github.com/IgniteUI/igniteui-webcomponents/issues/2267:
+    // initial igc-tabs selected-tab setup can scroll the page after Astro has
+    // reset a client-side navigation to the top. Remove when fixed upstream.
+    (function () {
+      if (window.__igdTopScrollGuard) return;
+      window.__igdTopScrollGuard = true;
+      var shouldRestoreTop = false;
+
+      document.addEventListener('astro:before-preparation', function (e) {
+        var nav = e;
+        shouldRestoreTop = nav.navigationType !== 'traverse' && !nav.to.hash;
+      });
+
+      document.addEventListener('astro:page-load', function () {
+        if (!shouldRestoreTop || location.hash) {
+          shouldRestoreTop = false;
+          return;
+        }
+        shouldRestoreTop = false;
+        setTimeout(function () {
+          if (!location.hash && window.scrollY !== 0) {
             window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
           }
-        });
-      }
-    });
+        }, 0);
+      });
+    })();
 
     // Preserve dynamically-injected <style> tags across View Transitions.
     // Only styles added by JS at runtime (e.g. the IG nav widget) need
