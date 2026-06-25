@@ -181,9 +181,6 @@ const nodes = headingsToTreeNodes(headings, tocConfig);
             // before the CSS variable is set, landing the heading behind the header.
             requestAnimationFrame(() => {
                 this.update();
-                // Nest in a second rAF so igc-tree's internal scrollIntoView
-                // (triggered by setActive → selected = true) settles first,
-                // and our correction scroll wins.
                 requestAnimationFrame(() => this.scrollToHashIfNeeded());
             });
         }
