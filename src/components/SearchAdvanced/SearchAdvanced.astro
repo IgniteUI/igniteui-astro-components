@@ -651,7 +651,7 @@ const resolvedIndexUrl = indexUrl ?? `${basePath}api-search-index/manifest.json`
         // text appears centered over the igc-tabs area rather than in the status
         // element above the tabs.  renderTabs(true) will maintain this once phase
         // 1 results are ready.
-        this.statusEl.textContent = '';
+        this.statusEl.textContent = 'Searching\u2026';
         this.tabsEl.toggleAttribute('data-search-pending', true);
         const contentElEarly = this.tabsEl.closest<HTMLElement>('.igd-search-content');
         if (contentElEarly) contentElEarly.toggleAttribute('data-search-pending', true);
@@ -693,6 +693,7 @@ const resolvedIndexUrl = indexUrl ?? `${basePath}api-search-index/manifest.json`
           this.renderResults();
           if (this.allIndexLoadingComplete) this.clearUpdateInterval();
         }, 1000);
+        this.dialog.addEventListener('igcClosed', () => this.clearUpdateInterval(), { once: true });
       }
 
       let pages: IndexedPage[];
@@ -700,6 +701,9 @@ const resolvedIndexUrl = indexUrl ?? `${basePath}api-search-index/manifest.json`
         pages = await this.loadIndex();
       } catch (err) {
         this.clearUpdateInterval();
+        this.tabsEl.toggleAttribute('data-search-pending', false);
+        const contentEl = this.tabsEl.closest<HTMLElement>('.igd-search-content');
+        if (contentEl) contentEl.removeAttribute('data-search-pending');
         this.statusEl.textContent = `Search unavailable: ${(err as Error).message}`;
         return;
       }
@@ -731,6 +735,7 @@ const resolvedIndexUrl = indexUrl ?? `${basePath}api-search-index/manifest.json`
       this.flatListEl.hidden = true;
       this.flatListEl.innerHTML = '';
       this.currentMatches = new Map();
+      this.tabsEl.removeAttribute('data-search-pending');
       const contentEl = this.tabsEl.closest<HTMLElement>('.igd-search-content');
       if (contentEl) contentEl.removeAttribute('data-search-pending');
     }
@@ -1027,9 +1032,9 @@ const resolvedIndexUrl = indexUrl ?? `${basePath}api-search-index/manifest.json`
       this.tabsEl.toggleAttribute('data-search-pending', pending);
       const contentEl = this.tabsEl.closest<HTMLElement>('.igd-search-content');
       if (contentEl) contentEl.toggleAttribute('data-search-pending', pending);
-      // Hide the status bar while pending — the CSS overlay on the content
-      // wrapper shows "Searching…" over the greyed results instead.
-      if (pending) this.statusEl.textContent = '';
+      // Keep the aria-live status text during pending so screen readers still
+      // get a "Searching…" announcement; visually hide it via CSS if desired.
+      if (pending) this.statusEl.textContent = 'Searching\u2026';
 
       // Wire "Show more" buttons — select the target tab (its content is already rendered)
       this.tabsEl.querySelectorAll<HTMLButtonElement>('.igd-search-more-btn').forEach((btn) => {

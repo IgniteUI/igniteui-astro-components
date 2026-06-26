@@ -173,6 +173,20 @@
 			pointer-events: none;
 			z-index: 1;
 		}
+
+		// Keep the aria-live status element in the accessibility tree while pending,
+		// but visually hide it so the overlay is the only visible "Searching…".
+		&[data-search-pending] .igd-search-status {
+			position: absolute;
+			width: 1px;
+			height: 1px;
+			padding: 0;
+			margin: -1px;
+			overflow: hidden;
+			clip: rect(0, 0, 0, 0);
+			white-space: nowrap;
+			border: 0;
+		}
 	}
 
 	.igd-search-tabs[data-search-pending] {
