@@ -1024,6 +1024,9 @@ const resolvedIndexUrl = indexUrl ?? `${basePath}api-search-index/manifest.json`
       if (totalCount === 0) {
         this.tabsEl.hidden = true;
         this.tabsEl.innerHTML = '';
+        this.tabsEl.removeAttribute('data-search-pending');
+        const contentEl = this.tabsEl.closest<HTMLElement>('.igd-search-content');
+        if (contentEl) contentEl.removeAttribute('data-search-pending');
         return;
       }
 
