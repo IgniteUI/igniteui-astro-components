@@ -26,6 +26,15 @@ html {
 	scroll-padding-top: calc(var(--igd-toc-subheader-bottom) + var(--igd-toc-scroll-offset));
 }
 
+// Chromium scrolls a newly-focused element into view honoring scroll-padding-top.
+// When an igc-select in the sticky subheader refocuses its trigger input after an
+// item is selected, that padding offset nudges the page upward. Zero it out only
+// while one of the subheader selects is focused so item selection never scrolls.
+html:has(#package-select:focus),
+html:has(#version-select:focus) {
+	scroll-padding-top: 0;
+}
+
 body {
 	scrollbar-gutter: stable;
 }
