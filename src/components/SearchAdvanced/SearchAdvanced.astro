@@ -550,9 +550,10 @@ const resolvedIndexUrl = indexUrl ?? `${basePath}api-search-index/manifest.json`
       let data: unknown;
       try {
         const r = await fetch(this.indexUrl);
-        if (!r.ok) { latestResolve([]); return []; }
+        if (!r.ok) { this.allIndexLoadingComplete = true; latestResolve([]); return []; }
         data = await r.json();
       } catch {
+        this.allIndexLoadingComplete = true;
         latestResolve([]);
         return [];
       }
@@ -603,6 +604,7 @@ const resolvedIndexUrl = indexUrl ?? `${basePath}api-search-index/manifest.json`
         return this.allPagesAccumulator;
       }
 
+      this.allIndexLoadingComplete = true;
       latestResolve([]);
       return [];
     }
@@ -680,18 +682,23 @@ const resolvedIndexUrl = indexUrl ?? `${basePath}api-search-index/manifest.json`
 
         // Update results every 1000ms while phase 2 files are still arriving.
         this.clearUpdateInterval();
+        let lastLen = 0;
         this.updateInterval = setInterval(() => {
           if (q !== this.currentQuery) { this.clearUpdateInterval(); return; }
-          if (this.allPagesAccumulator.length === 0) return;
+          const len = this.allPagesAccumulator.length;
+          const complete = this.allIndexLoadingComplete;
+          if (len === 0) { if (complete) this.clearUpdateInterval(); return; }
+          if (len === lastLen && !complete) return;
+          lastLen = len;
           const buckets = this.classify(this.allPagesAccumulator, q);
           this.currentMatches = buckets;
           if (this.currentTab !== 'all' && (buckets.get(this.currentTab)?.length ?? 0) === 0) {
             this.currentTab = 'all';
           }
           // Keep pending=true while still loading; the final render below clears it.
-          this.renderTabs(!this.allIndexLoadingComplete);
+          this.renderTabs(!complete);
           this.renderResults();
-          if (this.allIndexLoadingComplete) this.clearUpdateInterval();
+          if (complete) this.clearUpdateInterval();
         }, 1000);
         this.dialog.addEventListener('igcClosed', () => this.clearUpdateInterval(), { once: true });
       }
@@ -1033,6 +1040,7 @@ const resolvedIndexUrl = indexUrl ?? `${basePath}api-search-index/manifest.json`
       this.tabsEl.innerHTML = tabsHtml.join('');
       this.tabsEl.hidden = false;
       this.tabsEl.toggleAttribute('data-search-pending', pending);
+      this.tabsEl.toggleAttribute('inert', pending);
       const contentEl = this.tabsEl.closest<HTMLElement>('.igd-search-content');
       if (contentEl) contentEl.toggleAttribute('data-search-pending', pending);
       // Keep the aria-live status text during pending so screen readers still
