@@ -149,7 +149,7 @@ const resolvedIndexUrl = indexUrl ?? `${basePath}api-search-index/manifest.json`
             </header>
             <div class="igd-search-content">
                 <div class="igd-search-status" aria-live="polite"></div>
-                <igc-tabs class="igd-search-tabs"></igc-tabs>
+                <igc-tabs class="igd-search-tabs" hidden></igc-tabs>
                 <igc-list class="igd-search-results--flat" hidden></igc-list>
             </div>
             <footer class="igd-search-footer">
@@ -431,14 +431,29 @@ const resolvedIndexUrl = indexUrl ?? `${basePath}api-search-index/manifest.json`
 
       // Only show the scope tooltip when the label is visually truncated
       if (this.scopeTooltip && this.scopeSelect) {
+        // Hide tooltip when the dropdown opens
+        this.scopeSelect.addEventListener('igcOpening', () => (this.scopeTooltip as any)?.hide?.());
+
         this.scopeTooltip.addEventListener('igcOpening', (e: Event) => {
+          // Never show tooltip while the dropdown is open
+          if ((this.scopeSelect as any)?.open) {
+            e.preventDefault();
+            return;
+          }
           const igcInput = (this.scopeSelect as any).shadowRoot?.querySelector('igc-input');
           const nativeInput = igcInput?.shadowRoot?.querySelector('input');
           const truncated = nativeInput?.value?.endsWith('\u2026');
           const overflows = nativeInput && nativeInput.scrollWidth > nativeInput.clientWidth;
           if (!truncated && !overflows) {
             e.preventDefault();
+            return;
           }
+          // Refresh tooltip content here because igc-select.value may not be
+          // ready during connectedCallback (before the component's first LitElement
+          // render cycle), so the initial syncScopeTooltip() call may have set
+          // an empty string. By the time a hover triggers igcOpening the
+          // component is fully initialized and the value is reliable.
+          this.syncScopeTooltip();
         });
       }
     }
@@ -892,8 +907,14 @@ const resolvedIndexUrl = indexUrl ?? `${basePath}api-search-index/manifest.json`
         );
       }
 
+      if (totalCount === 0) {
+        this.tabsEl.hidden = true;
+        this.tabsEl.innerHTML = '';
+        return;
+      }
+
       this.tabsEl.innerHTML = tabsHtml.join('');
-      this.tabsEl.hidden = totalCount === 0;
+      this.tabsEl.hidden = false;
 
       // Wire "Show more" buttons — select the target tab (its content is already rendered)
       this.tabsEl.querySelectorAll<HTMLButtonElement>('.igd-search-more-btn').forEach((btn) => {

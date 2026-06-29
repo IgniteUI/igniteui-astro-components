@@ -46,8 +46,7 @@ const baseUrl     = lob ? (env.lobDemosBaseUrl ?? env.demosBaseUrl ?? '').replac
     : isDv        ? (env.dvDemosBaseUrl  ?? env.demosBaseUrl ?? '').replace(/\/$/, '')
     :               (env.demosBaseUrl    ?? '').replace(/\/$/, '');
 
-// Append trailing slash to avoid server-side redirects that can downgrade https→http.
-const iframeSrc   = `${baseUrl}${src}`.replace(/([^/])(\?|$)/, '$1/$2');
+const iframeSrc   = `${baseUrl}${src}`;
 const githubSrc   = srcNoSlash;
 
 // Stable, unique element ID derived from the sample path.

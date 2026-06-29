@@ -76,7 +76,7 @@
 		--ig-flat-button-icon-color-focus: var(--igd-accent);
 		--border-border-radius: var(--igd-border-radius-xl);
 		--border-background: light-dark(var(--ig-gray-50), var(--ig-gray-50));
-		--border-color: var(--ig-gray-400);
+		--border-color: transparent;
 		--hover-border-color: var(--ig-gray-400);
 		--focused-border-color: var(--igd-accent);
 	}
@@ -130,10 +130,18 @@
 	}
 }
 
-.igd-version-select,
-.igd-package-select {
+.igd-version-select {
 	&::part(native-input) {
 		field-sizing: content;
+	}
+}
+
+.igd-package-select {
+	&::part(native-input) {
+		min-width: 0;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
 	}
 }
 
@@ -155,7 +163,8 @@
 	--active-background: transparent;
 }
 
-#package-tooltip {
+#package-tooltip,
+.igd-package-select-tooltip {
 	--ig-tooltip-background: #D2DBE8;
 	--ig-tooltip-text-color: #112031;
 	--ig-tooltip-border-radius: #{rem(4px)};

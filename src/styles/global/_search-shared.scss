@@ -22,9 +22,13 @@
 	}
 	
 	.igd-search-content {
-		display: grid;
-		grid-template-rows: auto 1fr;
-		overflow: auto;
+		display: flex;
+		flex-direction: column;
+		overflow: hidden;
+		
+		// Constrain the content area so only the list scrolls, not the whole dialog.
+		// --_mh is set on .igd-search-dialog; --search-header-footer-height on .igd-search-shell.
+		max-height: calc(var(--_mh) - var(--search-header-footer-height));
 		
 		// min-width: 0 is necessary to allow the content to shrink below its min-content width
 		// otherwise igc-tabs won't show the scroll buttons
@@ -39,7 +43,6 @@
 		
 		display: grid;
 		place-items: center;
-		height: 100%;
 		padding: 0 rem(16px) rem(16px) rem(16px) ;
 		border-bottom: rem(1px) solid var(--ig-gray-200);
 		text-align: center;
@@ -201,7 +204,8 @@
 		
 		display: flex;
 		justify-self: start;
-		margin-block-start: rem(16px);
+		padding: rem(16px);
+		border-top: rem(1px) solid var(--ig-gray-100);
 	}
 	
 	.igd-search-meta {
@@ -212,13 +216,14 @@
 	.igd-search-dialog {
 		--background: var(--igd-layout-sections-bg);
 		--backdrop: #{color($color: gray, $variant: 800, $opacity: .6)};
+		--_mh: min(calc(100vh - #{rem(100px)} - #{rem(64px)}), #{rem(768px)});
 		
 		&::part(base) {
-			margin: rem(192px) auto auto;
+			margin: rem(100px) auto rem(64px);
 			padding: 0;
 			width: 90%;
 			max-width: rem(672px);
-			max-height: min(calc(100vh - #{rem(128px)}), #{rem(768px)});
+			max-height: var(--_mh);
 			border-radius: rem(8px);
 			
 			overflow: hidden;
@@ -318,12 +323,30 @@
 	}
 	
 	.search-decoration {
+		--search-decoration-background: conic-gradient(from var(--rot) at 50% 50%, var(--igd-accent) -56.25deg, var(--igd-accent) 43.12deg, var(--ig-secondary-500) 180deg, var(--igd-accent) 303.75deg, var(--igd-accent) 403.12deg);
+		
+		position: relative;
+		isolation: isolate;
 		padding: 1px;
 		border-radius: rem(11px);
-		animation: rotation 6s linear infinite;
-		animation-delay: 1s , 300ms;
-		background:  conic-gradient(from var(--rot) at 50% 50%, var(--igd-accent) -56.25deg, var(--igd-accent) 43.12deg, var(--ig-secondary-500) 180deg, var(--igd-accent) 303.75deg, var(--igd-accent) 403.12deg);
+		background: transparent;
 		box-sizing: border-box;
+		
+		&::before {
+			content: '';
+			position: absolute;
+			inset: 0;
+			z-index: 0;
+			border-radius: inherit;
+			background: var(--search-decoration-background);
+			opacity: 0;
+			transition: opacity 150ms ease;
+		}
+		
+		> * {
+			position: relative;
+			z-index: 1;
+		}
 		
 		igc-input {
 			--border-color: transparent;
@@ -383,4 +406,3 @@
 		--rot: 360deg;
 	}
 }
-
