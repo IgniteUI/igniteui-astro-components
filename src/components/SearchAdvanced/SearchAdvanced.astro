@@ -632,6 +632,10 @@ const resolvedIndexUrl = indexUrl ?? `${basePath}api-search-index/manifest.json`
       // Avoid searching on very short queries — a single or two-character query matches
       // virtually everything and causes the classify + render path to freeze the main thread.
       if (q.length < 3) {
+        this.clearUpdateInterval();
+        this.tabsEl.removeAttribute('data-search-pending');
+        const contentElShort = this.tabsEl.closest<HTMLElement>('.igd-search-content');
+        if (contentElShort) contentElShort.removeAttribute('data-search-pending');
         this.statusEl.textContent = 'Type at least 3 characters to search\u2026';
         this.tabsEl.hidden = true;
         this.tabsEl.innerHTML = '';
