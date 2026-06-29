@@ -154,5 +154,59 @@
 			letter-spacing: 0;
 		}
 	}
-}
 
+	// Pending state: results from latest-version-only first phase are shown
+	// greyed out and non-interactive while remaining version files load.
+	.igd-search-content {
+		position: relative;
+
+		&[data-search-pending]::after {
+			content: 'Searching\2026';
+			position: absolute;
+			inset: 0;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			color: light-dark(var(--ig-gray-600), var(--ig-gray-300));
+			font-size: #{rem(14px)};
+			font-weight: 500;
+			pointer-events: none;
+			z-index: 1;
+		}
+
+		// Keep the aria-live status element in the accessibility tree while pending,
+		// but visually hide it so the overlay is the only visible "Searching…".
+		&[data-search-pending] .igd-search-status {
+			position: absolute;
+			width: 1px;
+			height: 1px;
+			padding: 0;
+			margin: -1px;
+			overflow: hidden;
+			clip: rect(0, 0, 0, 0);
+			white-space: nowrap;
+			border: 0;
+		}
+	}
+
+	.igd-search-tabs[data-search-pending] {
+		pointer-events: none;
+
+		&::part(selected-indicator),
+		&::part(start-scroll-button),
+		&::part(end-scroll-button) {
+			opacity: 0.25;
+		}
+
+		igc-tab::part(content),
+		igc-tab::part(panel) {
+			opacity: 0.25;
+		}
+
+		.igd-search-results,
+		.igd-search-category-header,
+		.igd-search-tab-count {
+			opacity: 0.25;
+		}
+	}
+}

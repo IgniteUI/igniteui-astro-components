@@ -13,6 +13,7 @@ const headings = [
   { depth: 2, slug: 'index-format',     text: 'Index format' },
   { depth: 2, slug: 'tabs',             text: 'Tabs' },
   { depth: 2, slug: 'scope-selector',   text: 'Scope selector' },
+  { depth: 2, slug: 'two-phase-loading', text: 'Two-phase loading' },
   { depth: 2, slug: 'keyboard',         text: 'Keyboard shortcut' },
   { depth: 2, slug: 'usage',            text: 'Usage' },
 ];
@@ -80,6 +81,40 @@ const headings = [
       restrict results to the current package/version (derived from the URL) or search all
       packages at once. When the current page is not inside a versioned package path the
       "Current package" option is hidden automatically.
+    </p>
+
+    <h2 id="two-phase-loading">Two-phase loading</h2>
+    <p>
+      When the scope selector is set to <strong>All packages</strong> and the index is a
+      manifest listing many per-package/version files, the component fetches them in two
+      sequential phases to keep the search feel responsive:
+    </p>
+    <ol>
+      <li>
+        <strong>Phase 1</strong> — only the highest-version file for each package is fetched
+        in parallel. As soon as all phase-1 files arrive the first results are rendered and
+        the query is ready to use.
+      </li>
+      <li>
+        <strong>Phase 2</strong> — the remaining (older-version) files are fetched in parallel
+        in the background. The UI stays in a <em>pending</em> state: results are visually
+        greyed out, tab interactions are disabled, and a centered <em>Searching…</em> overlay
+        is displayed over the tabs. A 1 000 ms interval re-renders results as files accumulate,
+        so the counts update progressively rather than jumping at the end.
+      </li>
+    </ol>
+    <p>
+      Once every file has loaded the pending state is cleared, interactions are restored, and
+      the final result set (powered by <code>pickHighestVersionWinners()</code>) is shown.
+      Subsequent searches against the same scope reuse the already-fetched index — no
+      additional network requests are made.
+    </p>
+    <p>
+      The two-phase path is triggered automatically whenever
+      <code>latestPagesPromise</code> is non-null and
+      <code>allIndexLoadingComplete</code> is <code>false</code> at the time a search
+      runs. For single-file indexes or the current-package scope the standard single-phase
+      path is used instead.
     </p>
 
     <h2 id="keyboard">Keyboard shortcut</h2>

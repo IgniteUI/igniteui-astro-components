@@ -277,6 +277,13 @@ const resolvedIndexUrl = indexUrl ?? `${basePath}api-search-index/manifest.json`
     private allTabLimit: number = 10;
     private showScope: boolean = false;
     private kindCodeToCategory: Map<string, string> = new Map();
+    // Two-phase all-index loading: latestPagesPromise resolves with only the
+    // highest-version file per package (fast first result), allIndexPromise
+    // resolves when every version file is loaded (complete result).
+    private latestPagesPromise: Promise<IndexedPage[]> | null = null;
+    private allIndexLoadingComplete = false;
+    private allPagesAccumulator: IndexedPage[] = [];
+    private updateInterval: ReturnType<typeof setInterval> | null = null;
 
     connectedCallback() {
       this.basePath = this.dataset.base || '/';
@@ -506,6 +513,7 @@ const resolvedIndexUrl = indexUrl ?? `${basePath}api-search-index/manifest.json`
     }
 
     private closeModal() {
+      this.clearUpdateInterval();
       this.dialog.hide();
     }
 
@@ -531,24 +539,43 @@ const resolvedIndexUrl = indexUrl ?? `${basePath}api-search-index/manifest.json`
     }
 
     private async fetchIndex(): Promise<IndexedPage[]> {
+      // Create latestPagesPromise SYNCHRONOUSLY before the first await so that
+      // runSearch() can detect two-phase loading is in progress the moment
+      // fetchIndex() is called (e.g. immediately after scope changes to 'all').
+      let latestResolve!: (pages: IndexedPage[]) => void;
+      if (!this.latestPagesPromise) {
+        this.latestPagesPromise = new Promise(res => { latestResolve = res; });
+      }
+
       let data: unknown;
       try {
         const r = await fetch(this.indexUrl);
-        if (!r.ok) return [];
+        if (!r.ok) { this.allIndexLoadingComplete = true; latestResolve([]); return []; }
         data = await r.json();
       } catch {
+        this.allIndexLoadingComplete = true;
+        latestResolve([]);
         return [];
       }
 
       // Single-file format: { pages: [...] }
       if (Array.isArray((data as any)?.pages)) {
-        return (data as any).pages as IndexedPage[];
+        this.allIndexLoadingComplete = true;
+        const pages = (data as any).pages as IndexedPage[];
+        latestResolve(pages);
+        return pages;
       }
 
       // Manifest format: { files: ["pkg/version.json", ...] }
       if (Array.isArray((data as any)?.files)) {
         const baseUrl = this.indexUrl.replace(/[^/]*$/, '');
-        const fetches: Promise<IndexedPage[]>[] = ((data as any).files as string[]).map(async (file: string) => {
+        const files: string[] = (data as any).files as string[];
+        this.allPagesAccumulator = [];
+
+        const latestFileSet = new Set(pickLatestFiles(files));
+        const otherFiles = files.filter(f => !latestFileSet.has(f));
+
+        const fetchFile = async (file: string): Promise<IndexedPage[]> => {
           try {
             const res = await fetch(`${baseUrl}${file}`);
             if (!res.ok) return [];
@@ -557,11 +584,28 @@ const resolvedIndexUrl = indexUrl ?? `${basePath}api-search-index/manifest.json`
           } catch {
             return [];
           }
-        });
-        const results = await Promise.all(fetches);
-        return results.flat();
+        };
+
+        // Phase 1: fetch latest-version files in parallel, await all before
+        // starting phase 2. latestPagesPromise resolves when this completes.
+        const phase1 = await Promise.all(Array.from(latestFileSet).map(fetchFile));
+        const latestPages = phase1.flat();
+        this.allPagesAccumulator.push(...latestPages);
+        latestResolve(latestPages);
+
+        // Phase 2: fetch remaining files in parallel; accumulate pages as each
+        // arrives so the 1000ms interval in runSearch can re-render partial results.
+        await Promise.all(otherFiles.map(async (file) => {
+          const pages = await fetchFile(file);
+          this.allPagesAccumulator.push(...pages);
+        }));
+
+        this.allIndexLoadingComplete = true;
+        return this.allPagesAccumulator;
       }
 
+      this.allIndexLoadingComplete = true;
+      latestResolve([]);
       return [];
     }
 
@@ -588,6 +632,10 @@ const resolvedIndexUrl = indexUrl ?? `${basePath}api-search-index/manifest.json`
       // Avoid searching on very short queries — a single or two-character query matches
       // virtually everything and causes the classify + render path to freeze the main thread.
       if (q.length < 3) {
+        this.clearUpdateInterval();
+        this.tabsEl.removeAttribute('data-search-pending');
+        const contentElShort = this.tabsEl.closest<HTMLElement>('.igd-search-content');
+        if (contentElShort) contentElShort.removeAttribute('data-search-pending');
         this.statusEl.textContent = 'Type at least 3 characters to search\u2026';
         this.tabsEl.hidden = true;
         this.tabsEl.innerHTML = '';
@@ -596,16 +644,82 @@ const resolvedIndexUrl = indexUrl ?? `${basePath}api-search-index/manifest.json`
         return;
       }
 
-      this.statusEl.textContent = 'Searching\u2026';
+      // Two-phase search for "all packages" scope when the full index is not
+      // yet loaded: show latest-version results immediately (greyed out /
+      // non-interactive), then update every 1000ms as phase 2 files arrive.
+      const useLatestFirst =
+        this.scope === 'all' &&
+        this.latestPagesPromise !== null &&
+        !this.allIndexLoadingComplete;
+
+      if (useLatestFirst) {
+        // Immediately activate the pending overlay so the CSS ::after "Searching…"
+        // text appears centered over the igc-tabs area rather than in the status
+        // element above the tabs.  renderTabs(true) will maintain this once phase
+        // 1 results are ready.
+        this.statusEl.textContent = 'Searching\u2026';
+        this.tabsEl.toggleAttribute('data-search-pending', true);
+        const contentElEarly = this.tabsEl.closest<HTMLElement>('.igd-search-content');
+        if (contentElEarly) contentElEarly.toggleAttribute('data-search-pending', true);
+      } else {
+        this.statusEl.textContent = 'Searching\u2026';
+      }
+
+      if (useLatestFirst) {
+        let latestPages: IndexedPage[];
+        try {
+          latestPages = await this.latestPagesPromise!;
+        } catch {
+          latestPages = [];
+        }
+        if (q !== this.currentQuery) return;
+
+        if (latestPages.length > 0) {
+          const buckets = this.classify(latestPages, q);
+          this.currentMatches = buckets;
+          if (this.currentTab !== 'all' && (buckets.get(this.currentTab)?.length ?? 0) === 0) {
+            this.currentTab = 'all';
+          }
+          this.renderTabs(true);
+          this.renderResults();
+        }
+
+        // Update results every 1000ms while phase 2 files are still arriving.
+        this.clearUpdateInterval();
+        let lastLen = 0;
+        this.updateInterval = setInterval(() => {
+          if (q !== this.currentQuery) { this.clearUpdateInterval(); return; }
+          const len = this.allPagesAccumulator.length;
+          const complete = this.allIndexLoadingComplete;
+          if (len === 0) { if (complete) this.clearUpdateInterval(); return; }
+          if (len === lastLen && !complete) return;
+          lastLen = len;
+          const buckets = this.classify(this.allPagesAccumulator, q);
+          this.currentMatches = buckets;
+          if (this.currentTab !== 'all' && (buckets.get(this.currentTab)?.length ?? 0) === 0) {
+            this.currentTab = 'all';
+          }
+          // Keep pending=true while still loading; the final render below clears it.
+          this.renderTabs(!complete);
+          this.renderResults();
+          if (complete) this.clearUpdateInterval();
+        }, 1000);
+        this.dialog.addEventListener('igcClosed', () => this.clearUpdateInterval(), { once: true });
+      }
 
       let pages: IndexedPage[];
       try {
         pages = await this.loadIndex();
       } catch (err) {
+        this.clearUpdateInterval();
+        this.tabsEl.toggleAttribute('data-search-pending', false);
+        const contentEl = this.tabsEl.closest<HTMLElement>('.igd-search-content');
+        if (contentEl) contentEl.removeAttribute('data-search-pending');
         this.statusEl.textContent = `Search unavailable: ${(err as Error).message}`;
         return;
       }
 
+      this.clearUpdateInterval();
       if (q !== this.currentQuery) return;
 
       const buckets = this.classify(pages, q);
@@ -613,17 +727,28 @@ const resolvedIndexUrl = indexUrl ?? `${basePath}api-search-index/manifest.json`
       if (this.currentTab !== 'all' && (buckets.get(this.currentTab)?.length ?? 0) === 0) {
         this.currentTab = 'all';
       }
-      this.renderTabs();
+      this.renderTabs(false);
       this.renderResults();
     }
 
+    private clearUpdateInterval() {
+      if (this.updateInterval !== null) {
+        clearInterval(this.updateInterval);
+        this.updateInterval = null;
+      }
+    }
+
     private clearResults() {
+      this.clearUpdateInterval();
       this.statusEl.textContent = '';
       this.tabsEl.hidden = true;
       this.tabsEl.innerHTML = '';
       this.flatListEl.hidden = true;
       this.flatListEl.innerHTML = '';
       this.currentMatches = new Map();
+      this.tabsEl.removeAttribute('data-search-pending');
+      const contentEl = this.tabsEl.closest<HTMLElement>('.igd-search-content');
+      if (contentEl) contentEl.removeAttribute('data-search-pending');
     }
 
     private async runBrowse() {
@@ -845,7 +970,7 @@ const resolvedIndexUrl = indexUrl ?? `${basePath}api-search-index/manifest.json`
       return buckets;
     }
 
-    private renderTabs() {
+    private renderTabs(pending = false) {
       const totalCount = Array.from(this.currentMatches.values()).reduce((s, l) => s + l.length, 0);
 
       // No-categories fallback: hide tabs, render a plain list
@@ -910,11 +1035,21 @@ const resolvedIndexUrl = indexUrl ?? `${basePath}api-search-index/manifest.json`
       if (totalCount === 0) {
         this.tabsEl.hidden = true;
         this.tabsEl.innerHTML = '';
+        this.tabsEl.removeAttribute('data-search-pending');
+        const contentEl = this.tabsEl.closest<HTMLElement>('.igd-search-content');
+        if (contentEl) contentEl.removeAttribute('data-search-pending');
         return;
       }
 
       this.tabsEl.innerHTML = tabsHtml.join('');
       this.tabsEl.hidden = false;
+      this.tabsEl.toggleAttribute('data-search-pending', pending);
+      this.tabsEl.toggleAttribute('inert', pending);
+      const contentEl = this.tabsEl.closest<HTMLElement>('.igd-search-content');
+      if (contentEl) contentEl.toggleAttribute('data-search-pending', pending);
+      // Keep the aria-live status text during pending so screen readers still
+      // get a "Searching…" announcement; visually hide it via CSS if desired.
+      if (pending) this.statusEl.textContent = 'Searching\u2026';
 
       // Wire "Show more" buttons — select the target tab (its content is already rendered)
       this.tabsEl.querySelectorAll<HTMLButtonElement>('.igd-search-more-btn').forEach((btn) => {
@@ -989,6 +1124,26 @@ const resolvedIndexUrl = indexUrl ?? `${basePath}api-search-index/manifest.json`
       }
     }
     return Array.from(winners.values());
+  }
+
+  /**
+   * From a manifest file list ("pkg/version.json" entries), return only the
+   * highest-version file per package. These are the files fetched in the fast
+   * first phase of the two-phase all-packages search.
+   */
+  function pickLatestFiles(files: string[]): string[] {
+    const best = new Map<string, { version: string; file: string }>();
+    for (const file of files) {
+      const slash = file.indexOf('/');
+      if (slash < 0) continue;
+      const pkg = file.slice(0, slash);
+      const version = file.slice(slash + 1).replace(/\.json$/, '');
+      const existing = best.get(pkg);
+      if (!existing || compareVersions(version, existing.version) > 0) {
+        best.set(pkg, { version, file });
+      }
+    }
+    return Array.from(best.values()).map(e => e.file);
   }
 
   function highlight(text: string, q: string): string {
