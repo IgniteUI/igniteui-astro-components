@@ -6,6 +6,11 @@
     "moduleResolution": "Bundler",
     "target": "ES2022",
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    // Lit decorators (@query/@queryAll). Mirrors igniteui-webcomponents' setup:
+    // experimental (legacy) decorators require define-for-class-fields off so the
+    // decorator's prototype accessor isn't shadowed by an instance field.
+    "experimentalDecorators": true,
+    "useDefineForClassFields": false,
     "allowImportingTsExtensions": false,
     "resolveJsonModule": true,
     "isolatedModules": true,

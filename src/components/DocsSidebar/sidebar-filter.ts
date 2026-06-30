@@ -4,10 +4,12 @@
  * Behavior-only custom element (`<sidebar-filter>`) that adds live filtering,
  * expand/collapse state persistence, and scroll restoration to the docs sidebar.
  *
- * Extends Lit's `ReactiveElement` for the lifecycle callbacks without a render
- * cycle — the markup is fully server-rendered by Astro and must not be touched.
+ * Extends `LitElement` but renders into the light DOM (`createRenderRoot` returns
+ * `this`) and never overrides `render()`, so the default `noChange` render leaves
+ * Astro's fully server-rendered markup untouched.
  */
-import { ReactiveElement } from 'lit';
+import { LitElement } from 'lit';
+import { query, queryAll } from 'lit/decorators.js';
 import type {
   IgcInputComponent,
   IgcIconButtonComponent,
@@ -117,16 +119,28 @@ function registerPageHooks(): void {
  *  - Sync the tree expand state with the active filter (auto-expand groups with matches,
  *    restore pre-filter state when the filter is cleared).
  *
- * Uses `ReactiveElement` (not `LitElement`) so Lit's lifecycle callbacks are available
- * without a render cycle — Astro's SSR-rendered children remain in the light DOM untouched.
+ * Built on `LitElement` for its lifecycle callbacks, but renders into the light DOM
+ * (see `createRenderRoot`) and never overrides `render()`, so the default `noChange`
+ * render leaves Astro's SSR-rendered children in the light DOM untouched.
  */
-class SidebarFilter extends ReactiveElement {
-  private input: IgcInputComponent | null = null;
-  private clearBtn: IgcIconButtonComponent | null = null;
-  private status: HTMLElement | null = null;
-  private scrollEl: HTMLElement | null = null;
-  private items: HTMLElement[] = [];
-  private groups: HTMLElement[] = [];
+class SidebarFilter extends LitElement {
+  @query(FILTER_INPUT_SELECTOR, true)
+  private readonly input?: IgcInputComponent;
+
+  @query(FILTER_CLEAR_SELECTOR, true)
+  private readonly clearBtn?: IgcIconButtonComponent;
+
+  @query(FILTER_STATUS_SELECTOR, true)
+  private readonly status?: HTMLElement;
+
+  @query(SCROLL_SELECTOR, true)
+  private readonly scrollEl?: HTMLElement;
+
+  @queryAll(ITEM_SELECTOR)
+  private readonly items!: NodeListOf<HTMLElement>;
+
+  @queryAll(GROUP_SELECTOR)
+  private readonly groups!: NodeListOf<HTMLElement>;
 
   /** User-intent expand state during active filter. */
   private openSnapshot: Set<string> | null = null;
@@ -140,7 +154,7 @@ class SidebarFilter extends ReactiveElement {
   private pinFrames = 0;
   private prevScrollBehavior: string | null = null;
 
-  // Prevent ReactiveElement from attaching a shadow root — this element wraps
+  // Render into the light DOM instead of a shadow root — this element wraps
   // Astro-server-rendered light DOM children and must not hide them.
   protected override createRenderRoot(): HTMLElement | ShadowRoot {
     return this;
@@ -149,13 +163,6 @@ class SidebarFilter extends ReactiveElement {
   override connectedCallback(): void {
     super.connectedCallback();
     registerPageHooks();
-
-    this.input = this.querySelector<IgcInputComponent>(FILTER_INPUT_SELECTOR);
-    this.clearBtn = this.querySelector<IgcIconButtonComponent>(FILTER_CLEAR_SELECTOR);
-    this.status = this.querySelector<HTMLElement>(FILTER_STATUS_SELECTOR);
-    this.scrollEl = this.querySelector<HTMLElement>(SCROLL_SELECTOR);
-    this.items = [...this.querySelectorAll<HTMLElement>(ITEM_SELECTOR)];
-    this.groups = [...this.querySelectorAll<HTMLElement>(GROUP_SELECTOR)];
 
     // On a hard load (non-client-nav) DETAILS_KEY may be stale or empty.
     // Prime it now from the SSR DOM attributes so onItemToggle can safely
@@ -310,7 +317,7 @@ class SidebarFilter extends ReactiveElement {
           const active = this.querySelector<HTMLAnchorElement>(ACTIVE_LINK_SELECTOR);
           if (active) this.scrollToCenter(active, sc);
         });
-      }, { once: true });
+      }, { once: true, signal: this.controller?.signal });
     }
   }
 
