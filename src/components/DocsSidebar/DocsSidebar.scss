@@ -4,8 +4,8 @@
 	// Desktop base. On tablet/mobile DocsLayout.scss turns this into a slide-in overlay.
 	.docs-sidebar {
 		--igd-sidebar-z-index: 0;
-		display: flex;
-		flex-direction: column;
+		
+		display: grid;
 		z-index: var(--igd-sidebar-z-index);
 		border-inline-end: var(--igd-app-outline);
 		padding: 0;
@@ -15,15 +15,14 @@
 		height: calc(100dvh - var(--igd-header-height));
 		max-height: 100dvh;
 		align-self: start;
-		view-transition-name: docs-sidebar;
-	
+		
 		.sidebar-gutter {
 			display: grid;
 			gap: rem(16px);
 			overflow-y: hidden;
 			padding: rem(16px);
 			border-bottom: var(--igd-app-outline);
-			min-height: rem(73px);
+			height: rem(73px);
 	
 			&:empty {
 				display: none;
