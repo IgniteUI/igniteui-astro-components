@@ -43,7 +43,7 @@
     "./components/GlobalNavBar.astro": "./src/components/GlobalNavBar/GlobalNavBar.astro",
     "./components/GlobalFooter.astro": "./src/components/GlobalFooter/GlobalFooter.astro",
     "./components/DocsSubHeader.astro": "./src/components/DocsSubHeader/DocsSubHeader.astro",
-    "./components/CopyCode.astro":  "./src/components/CopyCode/CopyCode.astro",
+    "./components/CopyCode.astro": "./src/components/CopyCode/CopyCode.astro",
     "./components/Search.astro": "./src/components/Search/Search.astro",
     "./components/SearchAdvanced.astro": "./src/components/SearchAdvanced/SearchAdvanced.astro",
     "./components/ThemingWidget.astro": "./src/components/ThemingWidget/ThemingWidget.astro",
@@ -87,6 +87,7 @@
     "@fontsource-variable/inter": "^5.2.8",
     "@fontsource-variable/jetbrains-mono": "^5.2.8",
     "jsdom": "^29.0.1",
+    "lit": "^3.3.3",
     "shiki": "^3.23.0"
   },
   "devDependencies": {
