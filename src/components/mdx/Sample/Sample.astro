@@ -18,96 +18,119 @@ import type { PlatformContext } from '../../../lib/types.ts';
 import './Sample.scss';
 
 interface Props {
-    src: string;
-    height?: number;
-    alt?: string;
-    /** Use lobDemosBaseUrl instead of demosBaseUrl (for LOB/grid-dynamic demos). */
-    lob?: boolean;
-    /** Use dvDemosBaseUrl (for DV samples whose path doesn't start with a DV prefix). */
-    dv?: boolean;
-    /** Use crmDemoBaseUrl (for CRM demo samples). */
-    crm?: boolean;
-    /** Render only the iframe — no navbar, no code tabs, no live-edit footer. */
-    iframeOnly?: boolean;
-    /** When used with iframeOnly, also render a "View in full screen" button below. */
-    fullscreenBtn?: boolean;
+  src: string;
+  height?: number;
+  alt?: string;
+  /** Use lobDemosBaseUrl instead of demosBaseUrl (for LOB/grid-dynamic demos). */
+  lob?: boolean;
+  /** Use dvDemosBaseUrl (for DV samples whose path doesn't start with a DV prefix). */
+  dv?: boolean;
+  /** Use crmDemoBaseUrl (for CRM demo samples). */
+  crm?: boolean;
+  /** Render only the iframe — no navbar, no code tabs, no live-edit footer. */
+  iframeOnly?: boolean;
+  /** When used with iframeOnly, also render a "View in full screen" button below. */
+  fullscreenBtn?: boolean;
 }
 
-const { src, height = 400, alt = '', lob = false, dv = false, crm = false, iframeOnly = false, fullscreenBtn = false } = Astro.props;
+const {
+  src,
+  height = 400,
+  alt = '',
+  lob = false,
+  dv = false,
+  crm = false,
+  iframeOnly = false,
+  fullscreenBtn = false,
+} = Astro.props;
 const { name, lower } = Astro.locals.platformContext as PlatformContext;
 const env = Astro.locals.envVars ?? {};
 
 // DV samples (charts, gauges, maps, excel) use dvDemosBaseUrl when available.
 const DV_PREFIXES = ['gauges/', 'maps/', 'excel/', 'charts/'];
-const srcNoSlash  = src.replace(/^\//, '');
-const isDv        = dv || DV_PREFIXES.some(p => srcNoSlash.startsWith(p));
-const baseUrl     = lob ? (env.lobDemosBaseUrl ?? env.demosBaseUrl ?? '').replace(/\/$/, '')
-    : crm         ? (env.crmDemoBaseUrl  ?? env.demosBaseUrl ?? '').replace(/\/$/, '')
-    : isDv        ? (env.dvDemosBaseUrl  ?? env.demosBaseUrl ?? '').replace(/\/$/, '')
-    :               (env.demosBaseUrl    ?? '').replace(/\/$/, '');
+const srcNoSlash = src.replace(/^\//, '');
+const isDv = dv || DV_PREFIXES.some((p) => srcNoSlash.startsWith(p));
+const baseUrl = lob
+  ? (env.lobDemosBaseUrl ?? env.demosBaseUrl ?? '').replace(/\/$/, '')
+  : crm
+    ? (env.crmDemoBaseUrl ?? env.demosBaseUrl ?? '').replace(/\/$/, '')
+    : isDv
+      ? (env.dvDemosBaseUrl ?? env.demosBaseUrl ?? '').replace(/\/$/, '')
+      : (env.demosBaseUrl ?? '').replace(/\/$/, '');
 
-const iframeSrc   = `${baseUrl}${src}`;
-const githubSrc   = srcNoSlash;
+const iframeSrc = `${baseUrl}${src}`;
+const githubSrc = srcNoSlash;
 
 // Stable, unique element ID derived from the sample path.
-const widgetId     = 'cw' + src.replace(/[^a-z0-9]/gi, '-');
+const widgetId = 'cw' + src.replace(/[^a-z0-9]/gi, '-');
 const exampleTabId = `${widgetId}-example`;
 ---
 
-{iframeOnly ? (
-  <>
-    <div class="igd-sample-container" style={ `height: ${ height }px` }>
+{
+  iframeOnly ? (
+    <>
+      <div class="igd-sample-container" style={`height: ${height}px`}>
         <iframe
-            src={ iframeSrc }
-            title={ alt || `${ name } Example` }
-            style="width: 100%; height: 100%;"
-            frameborder="0"
-            seamless
-        ></iframe>
-        { fullscreenBtn && (
-            <div class="igd-code-view__header-actions">
-                <igc-icon-button
-                        name="open-link-blank"
-                        collection="docs"
-                        variant="outlined"
-                        class="igd-full-screen-btn igd-edit-in-btn"
-                        href={ iframeSrc }
-                        target="_blank"
-                        aria-label="Open in full screen"
-                ></igc-icon-button>
-            </div>
-        ) }
-    </div>
-  </>
-) : (
-  <>
-      <div class="igd-code-view"
-           id={ widgetId }
-           data-iframe-src={ iframeSrc }
-           data-demos-base-url={ baseUrl }
-           data-github-src={ githubSrc }
-           data-platform={ lower }>
-          <div class="igd-code-view__inner">
-              <igc-tabs id={ `${ widgetId }-tabs` } alignment="start">
-                  <igc-tab id={ exampleTabId } label="EXAMPLE" selected>
-                      <div class="igd-sample-container loading" aria-busy="true" style={ `height: ${ height }px` }>
-                          <igc-circular-progress indeterminate class="sample-loading-indicator" aria-label="Loading sample"></igc-circular-progress>
-                          <iframe
-                                  data-src={ iframeSrc }
-                                  title={ alt || `${ name } Example` }
-                                  style="width: 100%; height: 100%;"
-                                  frameborder="0"
-                                  seamless
-                                  aria-hidden="true"
-                          ></iframe>
-                      </div>
-                  </igc-tab>
-              </igc-tabs>
-
+          src={iframeSrc}
+          title={alt || `${name} Example`}
+          style="width: 100%; height: 100%;"
+          frameborder="0"
+          seamless
+        />
+        {fullscreenBtn && (
+          <div class="igd-code-view__header-actions">
+            <igc-icon-button
+              name="open-link-blank"
+              collection="docs"
+              variant="outlined"
+              class="igd-full-screen-btn igd-edit-in-btn"
+              href={iframeSrc}
+              target="_blank"
+              aria-label="Open in full screen"
+            />
           </div>
+        )}
       </div>
-  </>
-)}
+    </>
+  ) : (
+    <>
+      <div
+        class="igd-code-view"
+        id={widgetId}
+        data-iframe-src={iframeSrc}
+        data-demos-base-url={baseUrl}
+        data-github-src={githubSrc}
+        data-platform={lower}
+      >
+        <div class="igd-code-view__inner">
+          <igc-tabs id={`${widgetId}-tabs`} alignment="start">
+            <igc-tab id={exampleTabId} label="EXAMPLE" selected>
+              <div
+                class="igd-sample-container loading"
+                aria-busy="true"
+                style={`height: ${height}px`}
+              >
+                <igc-circular-progress
+                  indeterminate
+                  class="sample-loading-indicator"
+                  aria-label="Loading sample"
+                />
+                <iframe
+                  data-src={iframeSrc}
+                  title={alt || `${name} Example`}
+                  style="width: 100%; height: 100%;"
+                  frameborder="0"
+                  seamless
+                  aria-hidden="true"
+                />
+              </div>
+            </igc-tab>
+          </igc-tabs>
+        </div>
+      </div>
+    </>
+  )
+}
 
 <script>
   // Astro deduplicates module scripts — this runs exactly once per full page load.

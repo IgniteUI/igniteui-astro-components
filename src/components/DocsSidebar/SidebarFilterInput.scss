@@ -1,96 +1,97 @@
 @use 'igniteui-theming/sass/typography' as *;
 
 .docs-sidebar {
-	igc-input {
-		--ig-input-group-input-suffix-color: light-dark(var(--ig-gray-900), var(--ig-gray-800));
-		--ig-input-group-input-suffix-color--filled: light-dark(var(--ig-gray-900), var(--ig-gray-800));
-		--ig-input-group-input-suffix-color--focused: light-dark(var(--ig-gray-900), var(--ig-gray-800));
-		--ig-input-group-idle-text-color: light-dark(var(--ig-gray-900), var(--ig-gray-800));
-		--ig-input-group-filled-text-color: light-dark(var(--ig-gray-900), var(--ig-gray-900));
-		--ig-input-group-placeholder-color: var(--ig-gray-500);
-		--ig-input-group-hover-placeholder-color: var(--ig-gray-500);
-		
-		--ig-flat-button-hover-background: transparent;
-		--ig-flat-button-focus-background: transparent;
-		--ig-flat-button-icon-color-hover: var(--igd-accent);
-		--ig-flat-button-icon-color-focus: var(--igd-accent);
-		--border-border-radius: var(--igd-border-radius-xl);
-		--border-background: light-dark(var(--ig-gray-50), var(--ig-gray-50));
-		--border-color: light-dark(var(--ig-gray-300), var(--ig-gray-100));
-		--hover-border-color: light-dark(var(--ig-gray-400), var(--ig-gray-100));
-		
-		
-		igc-icon-button[variant='flat'] {
-			--background: transparent;
-			--hover-background: transparent;
-			--focus-background: transparent;
-			--active-background: transparent;
-			--foreground: var(--ig-gray-800);
-			--foreground-hover: var(--ig-primary-800);
-			--foreground-focus: var(--ig-primary-800);
-			--foreground-active: var(--ig-primary-800);
-			
-			padding: 0;
-			
-			&::part(base) {
-				&::after {
-					display: none;
-				}
-			}
-		}
-		
-		igc-icon {
-			--size: #{rem(24px)};
-			padding: 0;
-		}
-		
-		> igc-icon {
-			--size: #{rem(24px)};
-			
-			aspect-ratio: 1;
-			margin-inline-end: rem(4px);
-		}
-	}
-	
-	igc-input::part(prefix) {
-		padding-inline: 0;
-	}
-	
-	igc-input::part(input) {
-		@include type-style('body-2') {
-			margin: 0;
-		}
-		
-		padding-inline: rem(16px);
-	}
-	
-	igc-button {
-		padding: 0;
-		
-		&::part(base) {
-			padding-inline: rem(6px);
-			min-width: fit-content;
-		}
-		
-		// TODO I am unable to styles the input, can't reach the part, log an issue in to the library.
-		//&::part(input) {
-		//	padding-inline-start: 0;
-		//	padding-inline-end: rem(32px);
-		//}
-	}
+  igc-input {
+    --ig-input-group-input-suffix-color: light-dark(var(--ig-gray-900), var(--ig-gray-800));
+    --ig-input-group-input-suffix-color--filled: light-dark(var(--ig-gray-900), var(--ig-gray-800));
+    --ig-input-group-input-suffix-color--focused: light-dark(
+      var(--ig-gray-900),
+      var(--ig-gray-800)
+    );
+    --ig-input-group-idle-text-color: light-dark(var(--ig-gray-900), var(--ig-gray-800));
+    --ig-input-group-filled-text-color: light-dark(var(--ig-gray-900), var(--ig-gray-900));
+    --ig-input-group-placeholder-color: var(--ig-gray-500);
+    --ig-input-group-hover-placeholder-color: var(--ig-gray-500);
+
+    --ig-flat-button-hover-background: transparent;
+    --ig-flat-button-focus-background: transparent;
+    --ig-flat-button-icon-color-hover: var(--igd-accent);
+    --ig-flat-button-icon-color-focus: var(--igd-accent);
+    --border-border-radius: var(--igd-border-radius-xl);
+    --border-background: light-dark(var(--ig-gray-50), var(--ig-gray-50));
+    --border-color: light-dark(var(--ig-gray-300), var(--ig-gray-100));
+    --hover-border-color: light-dark(var(--ig-gray-400), var(--ig-gray-100));
+
+    igc-icon-button[variant='flat'] {
+      --background: transparent;
+      --hover-background: transparent;
+      --focus-background: transparent;
+      --active-background: transparent;
+      --foreground: var(--ig-gray-800);
+      --foreground-hover: var(--ig-primary-800);
+      --foreground-focus: var(--ig-primary-800);
+      --foreground-active: var(--ig-primary-800);
+
+      padding: 0;
+
+      &::part(base) {
+        &::after {
+          display: none;
+        }
+      }
+    }
+
+    igc-icon {
+      --size: #{rem(24px)};
+      padding: 0;
+    }
+
+    > igc-icon {
+      --size: #{rem(24px)};
+
+      aspect-ratio: 1;
+      margin-inline-end: rem(4px);
+    }
+  }
+
+  igc-input::part(prefix) {
+    padding-inline: 0;
+  }
+
+  igc-input::part(input) {
+    @include type-style('body-2') {
+      margin: 0;
+    }
+
+    padding-inline: rem(16px);
+  }
+
+  igc-button {
+    padding: 0;
+
+    &::part(base) {
+      padding-inline: rem(6px);
+      min-width: fit-content;
+    }
+
+    // TODO I am unable to styles the input, can't reach the part, log an issue in to the library.
+    //&::part(input) {
+    //	padding-inline-start: 0;
+    //	padding-inline-end: rem(32px);
+    //}
+  }
 }
 
 .sidebar-filter-status {
-	@include type-style('body-2') {
-		margin: 0 !important;
-		line-height: 1;
-	}
-	
+  @include type-style('body-2') {
+    margin: 0 !important;
+    line-height: 1;
+  }
 
-	color: light-dark(var(--ig-gray-500), var(--ig-gray-700));
-	padding-inline: rem(16px) 0;
-	
-	&:empty {
-		display: none;
-	}
+  color: light-dark(var(--ig-gray-500), var(--ig-gray-700));
+  padding-inline: rem(16px) 0;
+
+  &:empty {
+    display: none;
+  }
 }

@@ -10,8 +10,8 @@ import GlobalFooter from 'igniteui-astro-components/components/GlobalFooter.astr
 
 ## Props
 
-| Prop | Type | Description |
-|------|------|-------------|
+| Prop   | Type      | Description                                        |
+| ------ | --------- | -------------------------------------------------- |
 | `lang` | `NavLang` | **Required.** Locale — `'en'` \| `'jp'` \| `'kr'`. |
 
 ## Behaviour
@@ -24,6 +24,7 @@ import GlobalFooter from 'igniteui-astro-components/components/GlobalFooter.astr
 ---
 import GlobalFooter from 'igniteui-astro-components/components/GlobalFooter.astro';
 ---
+
 <GlobalFooter lang="en" />
 ```
 

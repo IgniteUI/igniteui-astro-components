@@ -7,54 +7,51 @@
  * instead of guessing a URL.
  */
 import type { PlatformContext } from '../../../lib/types.ts';
-import {
-    resolveApiLinkFromIndex,
-    type TypeDocKind,
-} from './api-link-index';
+import { resolveApiLinkFromIndex, type TypeDocKind } from './api-link-index';
 import './ApiLink.scss';
 
 /** Props for Sass API documentation links (`kind="sass"`). */
 type SassProps = {
-    /** Selects Sass API link mode. */
-    kind: 'sass';
-    /** Anchor fragment without `#`, e.g. `mixin-slide-in-left`. */
-    type?: string;
-    /** Sass module path segment, e.g. `animations` or `themes`. */
-    module?: string;
-    /** Wrap the rendered label in `<code>`. Defaults to `true`. */
-    code?: boolean;
-    /** Override the rendered label. */
-    label?: string;
+  /** Selects Sass API link mode. */
+  kind: 'sass';
+  /** Anchor fragment without `#`, e.g. `mixin-slide-in-left`. */
+  type?: string;
+  /** Sass module path segment, e.g. `animations` or `themes`. */
+  module?: string;
+  /** Wrap the rendered label in `<code>`. Defaults to `true`. */
+  code?: boolean;
+  /** Override the rendered label. */
+  label?: string;
 };
 
 /** Props for TypeDoc API documentation links. */
 type TypeDocProps = {
-    /**
-     * TypeDoc symbol kind. Narrows registry lookup when the same symbol exists
-     * as multiple TypeDoc kinds.
-     */
-    kind?: TypeDocKind;
-    /**
-     * Short type/symbol name without platform prefix, e.g. "Toast".
-     * Required for all TypeDoc kinds.
-     */
-    type: string;
-    /** Optional class/interface member, property, method, or enum value anchor. */
-    member?: string;
-    /** Package key used only to filter ambiguous registry matches. */
-    pkg?: string;
-    /** Override the rendered label. */
-    label?: string;
-    /**
-     * Whether to prepend the platform prefix before registry lookup.
-     * @default true
-     */
-    prefixed?: boolean;
-    /**
-     * Whether to try the platform class suffix before the unsuffixed symbol.
-     * @default true
-     */
-    suffix?: boolean;
+  /**
+   * TypeDoc symbol kind. Narrows registry lookup when the same symbol exists
+   * as multiple TypeDoc kinds.
+   */
+  kind?: TypeDocKind;
+  /**
+   * Short type/symbol name without platform prefix, e.g. "Toast".
+   * Required for all TypeDoc kinds.
+   */
+  type: string;
+  /** Optional class/interface member, property, method, or enum value anchor. */
+  member?: string;
+  /** Package key used only to filter ambiguous registry matches. */
+  pkg?: string;
+  /** Override the rendered label. */
+  label?: string;
+  /**
+   * Whether to prepend the platform prefix before registry lookup.
+   * @default true
+   */
+  prefixed?: boolean;
+  /**
+   * Whether to try the platform class suffix before the unsuffixed symbol.
+   * @default true
+   */
+  suffix?: boolean;
 };
 
 type Props = SassProps | TypeDocProps;
@@ -63,11 +60,16 @@ const ctx = Astro.locals.platformContext as PlatformContext;
 const { prefix, apiPackages } = ctx;
 const label = Astro.props.label;
 
-function getIndexedDisplayName(resolvedName: string, displayBaseName: string, type: string, classSuffix?: string) {
-    if (resolvedName === type) return type;
-    if (classSuffix && resolvedName === `${type}${classSuffix}`) return type;
-    if (classSuffix && resolvedName === `${displayBaseName}${classSuffix}`) return type;
-    return displayBaseName;
+function getIndexedDisplayName(
+  resolvedName: string,
+  displayBaseName: string,
+  type: string,
+  classSuffix?: string,
+) {
+  if (resolvedName === type) return type;
+  if (classSuffix && resolvedName === `${type}${classSuffix}`) return type;
+  if (classSuffix && resolvedName === `${displayBaseName}${classSuffix}`) return type;
+  return displayBaseName;
 }
 
 let url: string;
@@ -76,80 +78,98 @@ let renderCode: boolean;
 let renderLink = false;
 
 if (Astro.props.kind === 'sass') {
-    const { type, module, code = true } = Astro.props;
-    if (!module) console.warn('[ApiLink] kind="sass" requires a `module` prop - link may be malformed.');
-    const base = ctx.sassApiUrl?.trim().replace(/\/+$/, '');
-    const anchor = type ? `#${type}` : '';
-    if (!base) {
-        console.warn('[ApiLink] kind="sass" requires `platformContext.sassApiUrl` to be configured - falling back to "#".');
-        url = '#';
-    } else {
-        url = `${base}/${module ?? ''}${anchor}`;
-    }
-    displayLabel = label ?? type ?? module ?? '';
-    renderCode = code;
-    renderLink = true;
+  const { type, module, code = true } = Astro.props;
+  if (!module)
+    console.warn('[ApiLink] kind="sass" requires a `module` prop - link may be malformed.');
+  const base = ctx.sassApiUrl?.trim().replace(/\/+$/, '');
+  const anchor = type ? `#${type}` : '';
+  if (!base) {
+    console.warn(
+      '[ApiLink] kind="sass" requires `platformContext.sassApiUrl` to be configured - falling back to "#".',
+    );
+    url = '#';
+  } else {
+    url = `${base}/${module ?? ''}${anchor}`;
+  }
+  displayLabel = label ?? type ?? module ?? '';
+  renderCode = code;
+  renderLink = true;
 } else {
-    const {
-        type,
-        member,
-        pkg = 'core',
-        prefixed = true,
-        suffix = true,
-    } = Astro.props;
-    const explicitKind = 'kind' in Astro.props ? Astro.props.kind : undefined;
+  const { type, member, pkg = 'core', prefixed = true, suffix = true } = Astro.props;
+  const explicitKind = 'kind' in Astro.props ? Astro.props.kind : undefined;
 
-    const effectivePrefixed = prefixed;
-    const effectiveSuffix = suffix;
+  const effectivePrefixed = prefixed;
+  const effectiveSuffix = suffix;
 
-    // pkg is an ambiguity override. Without an explicit pkg prop, search the
-    // combined api-docs index so symbols can resolve from any package.
-    const explicitPkg = typeof Astro.props.pkg === 'string' && Astro.props.pkg.length > 0;
-    const pkgConfig = apiPackages[explicitPkg ? pkg : 'core'] ?? apiPackages.core;
-    const baseType = effectivePrefixed ? `${prefix}${type}` : type;
+  // pkg is an ambiguity override. Without an explicit pkg prop, search the
+  // combined api-docs index so symbols can resolve from any package.
+  const explicitPkg = typeof Astro.props.pkg === 'string' && Astro.props.pkg.length > 0;
+  const pkgConfig = apiPackages[explicitPkg ? pkg : 'core'] ?? apiPackages.core;
+  const baseType = effectivePrefixed ? `${prefix}${type}` : type;
 
-    url = '';
-    displayLabel = label ?? (member ? `${baseType}.${member}` : baseType);
-    renderCode = true;
+  url = '';
+  displayLabel = label ?? (member ? `${baseType}.${member}` : baseType);
+  renderCode = true;
 
-    const indexed = resolveApiLinkFromIndex({
-        ctx,
-        pkgConfig,
-        explicitPkg,
-        type,
-        member,
-        explicitKind,
-        prefix,
-        prefixed: effectivePrefixed,
-        suffix: effectiveSuffix,
-    });
+  const indexed = resolveApiLinkFromIndex({
+    ctx,
+    pkgConfig,
+    explicitPkg,
+    type,
+    member,
+    explicitKind,
+    prefix,
+    prefixed: effectivePrefixed,
+    suffix: effectiveSuffix,
+  });
 
-    if (indexed.status === 'resolved') {
-        url = indexed.url;
-        renderLink = true;
-        const indexedDisplay = getIndexedDisplayName(indexed.symbolName, baseType, type, pkgConfig.classSuffix);
-        displayLabel = label ?? (indexed.memberName ? `${indexedDisplay}.${indexed.memberName}` : indexedDisplay);
-    } else if (indexed.status === 'ambiguous') {
-        const symbol = member ? `${type}.${member}` : type;
-        throw new Error(`[ApiLink] Ambiguous API symbol "${symbol}" matched registry candidate "${indexed.candidate}". Add pkg= or kind= to disambiguate.`);
-    } else if (indexed.status === 'member-missing') {
-        renderLink = false;
-        if (import.meta.env.DEV) {
-            console.warn(`[ApiLink] Registry symbol "${indexed.candidate}" exists, but member "${member}" was not found. Rendering code text instead of a guessed URL.`);
-        }
-    } else if (indexed.status === 'missing') {
-        renderLink = false;
-        if (import.meta.env.DEV) {
-            console.warn(`[ApiLink] Registry miss for ${type}${member ? `.${member}` : ''}. Rendering code text instead of a guessed URL.`);
-        }
-    } else if (indexed.status === 'unavailable') {
-        renderLink = false;
-        if (import.meta.env.DEV) {
-            console.warn(`[ApiLink] ApiLink registry is unavailable for ${type}${member ? `.${member}` : ''}. Rendering code text.`);
-        }
+  if (indexed.status === 'resolved') {
+    url = indexed.url;
+    renderLink = true;
+    const indexedDisplay = getIndexedDisplayName(
+      indexed.symbolName,
+      baseType,
+      type,
+      pkgConfig.classSuffix,
+    );
+    displayLabel =
+      label ?? (indexed.memberName ? `${indexedDisplay}.${indexed.memberName}` : indexedDisplay);
+  } else if (indexed.status === 'ambiguous') {
+    const symbol = member ? `${type}.${member}` : type;
+    throw new Error(
+      `[ApiLink] Ambiguous API symbol "${symbol}" matched registry candidate "${indexed.candidate}". Add pkg= or kind= to disambiguate.`,
+    );
+  } else if (indexed.status === 'member-missing') {
+    renderLink = false;
+    if (import.meta.env.DEV) {
+      console.warn(
+        `[ApiLink] Registry symbol "${indexed.candidate}" exists, but member "${member}" was not found. Rendering code text instead of a guessed URL.`,
+      );
     }
+  } else if (indexed.status === 'missing') {
+    renderLink = false;
+    if (import.meta.env.DEV) {
+      console.warn(
+        `[ApiLink] Registry miss for ${type}${member ? `.${member}` : ''}. Rendering code text instead of a guessed URL.`,
+      );
+    }
+  } else if (indexed.status === 'unavailable') {
+    renderLink = false;
+    if (import.meta.env.DEV) {
+      console.warn(
+        `[ApiLink] ApiLink registry is unavailable for ${type}${member ? `.${member}` : ''}. Rendering code text.`,
+      );
+    }
+  }
 }
 ---
-{renderLink
-    ? <a href={url}>{renderCode ? <code>{displayLabel}</code> : displayLabel}</a>
-    : renderCode ? <code>{displayLabel}</code> : displayLabel}
+
+{
+  renderLink ? (
+    <a href={url}>{renderCode ? <code>{displayLabel}</code> : displayLabel}</a>
+  ) : renderCode ? (
+    <code>{displayLabel}</code>
+  ) : (
+    displayLabel
+  )
+}

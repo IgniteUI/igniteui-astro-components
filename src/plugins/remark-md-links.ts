@@ -18,9 +18,13 @@ import path from 'node:path';
 function rewriteMdLink(url: string, filePath: string, docsDir: string): string {
   if (!url) return url;
   if (
-    url.startsWith('http://') || url.startsWith('https://') ||
-    url.startsWith('/') || url.startsWith('#') || url.startsWith('mailto:')
-  ) return url;
+    url.startsWith('http://') ||
+    url.startsWith('https://') ||
+    url.startsWith('/') ||
+    url.startsWith('#') ||
+    url.startsWith('mailto:')
+  )
+    return url;
 
   const hashIdx = url.indexOf('#');
   const qIdx = url.indexOf('?');
@@ -46,7 +50,9 @@ export function remarkMdLinks() {
     const filePath = (file.path as string) ?? '';
     const docsDir = process.env.DOCS_SOURCE_PATH
       ? path.resolve(process.env.DOCS_SOURCE_PATH)
-      : (filePath ? path.dirname(filePath) : '');
+      : filePath
+        ? path.dirname(filePath)
+        : '';
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     visit(tree, (node: any) => {

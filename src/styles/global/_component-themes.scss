@@ -1,157 +1,155 @@
 @use 'igniteui-theming' as *;
 
-
 @layer components {
-	/* Custom drop-down theme for igc-select (Web Components) */
-	igc-select {
-		// TODO as а user i want to be able to add border on the entier dropdown
-		// TODO the distance attr on the igc-select is highly unreliable caning it as a css variable will be far more flexible
-		
-		// TODO --ig-drop-down-border-width  not working
-		//--ig-drop-down-elevation: var(--ig-elevation-0);
-		
-		--ig-drop-down-background-color: var(--igd-app-bg);
-		--ig-drop-down-item-text-color: var(--ig-gray-600);
-		--ig-drop-down-hover-item-background: var(--ig-gray-50);
-		--ig-drop-down-hover-item-text-color: var(--ig-gray-900);
-		
-		--ig-drop-down-focused-item-text-color: var(--ig-gray-600);
-		--ig-drop-down-focused-item-background: var(--ig-gray-50);
-		--ig-drop-down-focused-item-border-color: transparent;
-		
-		// TODO this affects items not the dropdown itself, log an issue in the library
-		--ig-drop-down-border-color: transparent;
-		
-		// TODO --ig-drop-down-border-width  not working
-		//--ig-drop-down-border-width: 10px;
-		
-		--ig-drop-down-border-radius: #{rem(16px)};
-		--ig-drop-down-item-border-radius: 0;
-		
-		--ig-drop-down-selected-item-text-color: var(--igd-accent);
-		--ig-drop-down-selected-hover-item-text-color: var(--igd-accent);
-		--ig-drop-down-selected-focus-item-text-color: var(--igd-accent);
-		
-		--ig-drop-down-selected-item-background: transparent;
-		--ig-drop-down-selected-hover-item-background: var(--ig-gray-50);
-		--ig-drop-down-selected-focus-item-background: transparent;
-		
-		// TODO this controls the item size which is very confusing
-		--ig-drop-down-size: #{rem(40px)};
-		
-		--ig-input-group-input-prefix-background: transparent;
-		--ig-input-group-input-prefix-background--filled: transparent;
-		--ig-input-group-input-prefix-color--filled: var(--ig-gray-900);
-		--ig-input-group-input-prefix-background--focused: transparent;
-		--ig-input-group-input-prefix-color--focused: var(--ig-gray-900);
-		--ig-input-group-input-suffix-background: transparent;
-		--ig-input-group-input-suffix-background--filled: transparent;
-		--ig-input-group-input-suffix-color--filled: var(--ig-gray-900);
-		--ig-input-group-input-suffix-background--focused: transparent;
-		--ig-input-group-input-suffix-color--focused: var(--ig-gray-900);
-		--ig-input-group-idle-text-color: var(--ig-gray-900);
-		--ig-input-group-disabled-border-color: transparent;
-		--ig-input-group-border-color: var(--ig-gray-300);
-		//--ig-input-group-focused-border-color: var(--ig-gray-400);
-		--ig-input-group-hover-border-color: var(--ig-gray-400);
-		--ig-input-group-border-disabled-background: transparent;
-		--ig-select-toggle-button-background: transparent;
-		--ig-select-toggle-button-background-focus: transparent;
-		--ig-select-toggle-button-foreground: var(--ig-gray-900);
-		--ig-select-toggle-button-foreground-focus: var(--igd-accent);
-		--ig-select-toggle-button-foreground-filled: var(--ig-gray-900);
-		--ig-select-toggle-button-background-disabled: transparent;
-		--ig-select-toggle-button-foreground-disabled: var(--ig-gray-400);
-		--ig-input-group-border-border-radius: var(--igd-border-radius-xl);
-		
-		&::part(base) {
-			padding-block: rem(12px);
-		}
-		
-		igc-icon {
-			padding-inline-end: 0;
-		}
-	}
-	
-	igc-select-item {
-		margin-block: 0;
-	}
-	
-	igc-select::part(container) {
-		@include type-style('body-2') {
-			margin: 0;
-		}
-	;
-	}
-	
-	// THIS IS BASICALLY THE DROPDOWN
-	igc-select::part(base) {
-		border: var(--igd-app-outline);
-		box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1),
-		0 4px 6px -4px rgb(0 0 0 / 0.1);
-	}
-	
-	igc-icon-button[variant='outlined'] {
-		--foreground: light-dark(var(--ig-gray-900), var(--ig-gray-700));
-		--hover-foreground: var(--igd-accent);
-		--focus-foreground: var(--igd-accent);
-		--active-foreground: var(--igd-accent);
-		--focus-hover-foreground: var(--igd-accent);
-		
-		--hover-background: transparent;
-		--focus-background: transparent;
-		--active-background: transparent;
-		--focus-hover-background: transparent;
-		--focus-visible-background: transparent;
-		
-		--border-color: light-dark(var(--ig-gray-400), var(--ig-gray-200));
-		--focus-border-color: light-dark(var(--ig-gray-400), var(--ig-gray-200));
-		--hover-border-color: light-dark(var(--ig-gray-400), var(--ig-gray-200));
-		--border-radius: var(--igd-border-radius-xl);
-		
-		&::part(base) {
-			&::after {
-				display: none;
-			}
-			
-			// TODO the icon color is not changing on hover, focus, active states, log an issue in the library
-			&:hover,
-			&:focus {
-				--foreground: var(--igd-accent);
-			}
-		}
-	}
-	
-	igc-button[variant='outlined'] {
-		&::part(base) {
-			--border-color: light-dark(var(--ig-gray-400), var(--ig-gray-200));
-			--hover-border-color: light-dark(var(--ig-gray-400), var(--ig-gray-200));
-			--focus-border-color: light-dark(var(--ig-gray-400), var(--ig-gray-200));
-			--focus-visible-border-color: light-dark(var(--ig-gray-400), var(--ig-gray-700));
-			--active-border-color: light-dark(var(--ig-gray-400), var(--ig-gray-700));
-			
-			--foreground: light-dark(var(--ig-gray-900), var(--ig-gray-700));
-			--hover-foreground: var(--igd-accent);
-			--focus-foreground: var(--igd-accent);
-			--active-foreground: var(--igd-accent);
-			--focus-hover-foreground: var(--igd-accent);
-			--focus-visible-foreground: var(--igd-accent);
-			
-			--icon-color: light-dark(var(--ig-gray-900), var(--ig-gray-200));
-			--icon-color-hover: var(--igd-accent);
-			
-			--hover-background: transparent;
-			--focus-background: transparent;
-			--active-background: transparent;
-			--focus-hover-background: transparent;
-			--focus-visible-background: transparent;
-			
-			--border-radius: var(--igd-border-radius-xl);
-			
-			&::after {
-				display: none;
-			}
-		}
-	}
-}
+  /* Custom drop-down theme for igc-select (Web Components) */
+  igc-select {
+    // TODO as а user i want to be able to add border on the entier dropdown
+    // TODO the distance attr on the igc-select is highly unreliable caning it as a css variable will be far more flexible
 
+    // TODO --ig-drop-down-border-width  not working
+    //--ig-drop-down-elevation: var(--ig-elevation-0);
+
+    --ig-drop-down-background-color: var(--igd-app-bg);
+    --ig-drop-down-item-text-color: var(--ig-gray-600);
+    --ig-drop-down-hover-item-background: var(--ig-gray-50);
+    --ig-drop-down-hover-item-text-color: var(--ig-gray-900);
+
+    --ig-drop-down-focused-item-text-color: var(--ig-gray-600);
+    --ig-drop-down-focused-item-background: var(--ig-gray-50);
+    --ig-drop-down-focused-item-border-color: transparent;
+
+    // TODO this affects items not the dropdown itself, log an issue in the library
+    --ig-drop-down-border-color: transparent;
+
+    // TODO --ig-drop-down-border-width  not working
+    //--ig-drop-down-border-width: 10px;
+
+    --ig-drop-down-border-radius: #{rem(16px)};
+    --ig-drop-down-item-border-radius: 0;
+
+    --ig-drop-down-selected-item-text-color: var(--igd-accent);
+    --ig-drop-down-selected-hover-item-text-color: var(--igd-accent);
+    --ig-drop-down-selected-focus-item-text-color: var(--igd-accent);
+
+    --ig-drop-down-selected-item-background: transparent;
+    --ig-drop-down-selected-hover-item-background: var(--ig-gray-50);
+    --ig-drop-down-selected-focus-item-background: transparent;
+
+    // TODO this controls the item size which is very confusing
+    --ig-drop-down-size: #{rem(40px)};
+
+    --ig-input-group-input-prefix-background: transparent;
+    --ig-input-group-input-prefix-background--filled: transparent;
+    --ig-input-group-input-prefix-color--filled: var(--ig-gray-900);
+    --ig-input-group-input-prefix-background--focused: transparent;
+    --ig-input-group-input-prefix-color--focused: var(--ig-gray-900);
+    --ig-input-group-input-suffix-background: transparent;
+    --ig-input-group-input-suffix-background--filled: transparent;
+    --ig-input-group-input-suffix-color--filled: var(--ig-gray-900);
+    --ig-input-group-input-suffix-background--focused: transparent;
+    --ig-input-group-input-suffix-color--focused: var(--ig-gray-900);
+    --ig-input-group-idle-text-color: var(--ig-gray-900);
+    --ig-input-group-disabled-border-color: transparent;
+    --ig-input-group-border-color: var(--ig-gray-300);
+    //--ig-input-group-focused-border-color: var(--ig-gray-400);
+    --ig-input-group-hover-border-color: var(--ig-gray-400);
+    --ig-input-group-border-disabled-background: transparent;
+    --ig-select-toggle-button-background: transparent;
+    --ig-select-toggle-button-background-focus: transparent;
+    --ig-select-toggle-button-foreground: var(--ig-gray-900);
+    --ig-select-toggle-button-foreground-focus: var(--igd-accent);
+    --ig-select-toggle-button-foreground-filled: var(--ig-gray-900);
+    --ig-select-toggle-button-background-disabled: transparent;
+    --ig-select-toggle-button-foreground-disabled: var(--ig-gray-400);
+    --ig-input-group-border-border-radius: var(--igd-border-radius-xl);
+
+    &::part(base) {
+      padding-block: rem(12px);
+    }
+
+    igc-icon {
+      padding-inline-end: 0;
+    }
+  }
+
+  igc-select-item {
+    margin-block: 0;
+  }
+
+  igc-select::part(container) {
+    @include type-style('body-2') {
+      margin: 0;
+    }
+  }
+
+  // THIS IS BASICALLY THE DROPDOWN
+  igc-select::part(base) {
+    border: var(--igd-app-outline);
+    box-shadow:
+      0 10px 15px -3px rgb(0 0 0 / 0.1),
+      0 4px 6px -4px rgb(0 0 0 / 0.1);
+  }
+
+  igc-icon-button[variant='outlined'] {
+    --foreground: light-dark(var(--ig-gray-900), var(--ig-gray-700));
+    --hover-foreground: var(--igd-accent);
+    --focus-foreground: var(--igd-accent);
+    --active-foreground: var(--igd-accent);
+    --focus-hover-foreground: var(--igd-accent);
+
+    --hover-background: transparent;
+    --focus-background: transparent;
+    --active-background: transparent;
+    --focus-hover-background: transparent;
+    --focus-visible-background: transparent;
+
+    --border-color: light-dark(var(--ig-gray-400), var(--ig-gray-200));
+    --focus-border-color: light-dark(var(--ig-gray-400), var(--ig-gray-200));
+    --hover-border-color: light-dark(var(--ig-gray-400), var(--ig-gray-200));
+    --border-radius: var(--igd-border-radius-xl);
+
+    &::part(base) {
+      &::after {
+        display: none;
+      }
+
+      // TODO the icon color is not changing on hover, focus, active states, log an issue in the library
+      &:hover,
+      &:focus {
+        --foreground: var(--igd-accent);
+      }
+    }
+  }
+
+  igc-button[variant='outlined'] {
+    &::part(base) {
+      --border-color: light-dark(var(--ig-gray-400), var(--ig-gray-200));
+      --hover-border-color: light-dark(var(--ig-gray-400), var(--ig-gray-200));
+      --focus-border-color: light-dark(var(--ig-gray-400), var(--ig-gray-200));
+      --focus-visible-border-color: light-dark(var(--ig-gray-400), var(--ig-gray-700));
+      --active-border-color: light-dark(var(--ig-gray-400), var(--ig-gray-700));
+
+      --foreground: light-dark(var(--ig-gray-900), var(--ig-gray-700));
+      --hover-foreground: var(--igd-accent);
+      --focus-foreground: var(--igd-accent);
+      --active-foreground: var(--igd-accent);
+      --focus-hover-foreground: var(--igd-accent);
+      --focus-visible-foreground: var(--igd-accent);
+
+      --icon-color: light-dark(var(--ig-gray-900), var(--ig-gray-200));
+      --icon-color-hover: var(--igd-accent);
+
+      --hover-background: transparent;
+      --focus-background: transparent;
+      --active-background: transparent;
+      --focus-hover-background: transparent;
+      --focus-visible-background: transparent;
+
+      --border-radius: var(--igd-border-radius-xl);
+
+      &::after {
+        display: none;
+      }
+    }
+  }
+}

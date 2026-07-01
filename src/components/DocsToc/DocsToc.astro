@@ -15,312 +15,333 @@ import { headingsToTreeNodes, type TocConfig } from './toTreeNodes';
 import './DocsToc.scss';
 
 interface Props {
-    headings?: MarkdownHeading[];
-    tocConfig?: TocConfig;
-    label?: string;
-    offsetTarget?: string;
+  headings?: MarkdownHeading[];
+  tocConfig?: TocConfig;
+  label?: string;
+  offsetTarget?: string;
 }
 
-const {
-    headings = [],
-    tocConfig,
-    label = 'On this page',
-    offsetTarget,
-} = Astro.props;
+const { headings = [], tocConfig, label = 'On this page', offsetTarget } = Astro.props;
 
 const nodes = headingsToTreeNodes(headings, tocConfig);
 ---
 
-{nodes.length > 0 && (
+{
+  nodes.length > 0 && (
     <aside class="toc-wrapper" data-pagefind-ignore="all">
-        <docs-toc class="toc-sidebar" data-offset-target={offsetTarget}>
-            <h2 class="toc-sidebar__heading" id="toc-heading">{label}</h2>
-            <nav aria-labelledby="toc-heading">
-                <DocsTree nodes={nodes} variant="toc" />
-            </nav>
-        </docs-toc>
+      <docs-toc class="toc-sidebar" data-offset-target={offsetTarget}>
+        <h2 class="toc-sidebar__heading" id="toc-heading">
+          {label}
+        </h2>
+        <nav aria-labelledby="toc-heading">
+          <DocsTree nodes={nodes} variant="toc" />
+        </nav>
+      </docs-toc>
     </aside>
-)}
+  )
+}
 
 <script>
-    type ExpandableEl = HTMLElement & { expanded: boolean };
+  type ExpandableEl = HTMLElement & { expanded: boolean };
 
-    class DocsToc extends HTMLElement {
-        private static readonly DEFAULT_THRESHOLD = 160;
+  class DocsToc extends HTMLElement {
+    private static readonly DEFAULT_THRESHOLD = 160;
 
-        private pageController: AbortController | undefined;
-        private rafId: number | undefined;
-        private initId = 0;
-        private headings: HTMLElement[] = [];
-        private links: HTMLAnchorElement[] = [];
-        private currentLink: HTMLAnchorElement | undefined;
-        private offsetEl: Element | null = null;
-        private resizeObserver: ResizeObserver | undefined;
-        private pinnedIndex: number | undefined;
+    private pageController: AbortController | undefined;
+    private rafId: number | undefined;
+    private initId = 0;
+    private headings: HTMLElement[] = [];
+    private links: HTMLAnchorElement[] = [];
+    private currentLink: HTMLAnchorElement | undefined;
+    private offsetEl: Element | null = null;
+    private resizeObserver: ResizeObserver | undefined;
+    private pinnedIndex: number | undefined;
 
-        connectedCallback() {
-            this.init();
-        }
-
-        disconnectedCallback() {
-            this.teardown();
-        }
-
-        private teardown() {
-            this.pageController?.abort();
-            this.pageController = undefined;
-            this.resizeObserver?.disconnect();
-            this.resizeObserver = undefined;
-            this.offsetEl = null;
-            document.documentElement.style.removeProperty('--igd-toc-subheader-bottom');
-            if (this.rafId !== undefined) {
-                cancelAnimationFrame(this.rafId);
-                this.rafId = undefined;
-            }
-            this.currentLink = undefined;
-            this.pinnedIndex = undefined;
-        }
-
-        init() {
-            this.teardown();
-
-            // Invalidate any pending deferred _init from a previous call.
-            const id = ++this.initId;
-
-            // Wait for igc-tree to be defined before querying slotted links,
-            // since the links live inside igc-tree-item light DOM and igc-tree
-            // may not have upgraded yet when init() runs.
-            customElements.whenDefined('igc-tree').then(() => requestAnimationFrame(() => {
-                // Bail if init() was called again since we scheduled, or the
-                // element was disconnected (e.g. a view transition swapped the DOM).
-                if (this.initId !== id || !this.isConnected) return;
-                this._init();
-            }));
-        }
-
-        private _init() {
-            // Clear any stale aria-current left over from a previous page.
-            this.querySelectorAll('a[aria-current]').forEach(
-                (a) => a.removeAttribute('aria-current'),
-            );
-            // Clear any stale selected / active state on tree items.
-            this.querySelectorAll('igc-tree-item').forEach((item) => {
-                const treeItem = item as HTMLElement & { selected: boolean; active: boolean };
-                treeItem.selected = false;
-                treeItem.active = false;
-            });
-
-            this.links = Array.from(this.querySelectorAll<HTMLAnchorElement>('a[href^="#"]'));
-            this.headings = this.links
-                .map((link) => document.getElementById(decodeURIComponent(link.hash.slice(1))))
-                .filter((el): el is HTMLElement => el !== null);
-
-            if (this.headings.length === 0) return;
-
-            const schedule = () => {
-                if (this.rafId !== undefined) return;
-                this.rafId = requestAnimationFrame(() => {
-                    this.rafId = undefined;
-                    this.update();
-                });
-            };
-
-            this.pageController = new AbortController();
-            const opts = { passive: true, signal: this.pageController.signal };
-
-            window.addEventListener('scroll', schedule, opts);
-            window.addEventListener('resize', () => { this.syncScrollPadding(); schedule(); }, opts);
-
-            // Any user-initiated scroll input releases the click pin so the
-            // spy can take over again immediately.
-            const releasePin = () => { this.pinnedIndex = undefined; };
-            window.addEventListener('wheel', releasePin, opts);
-            window.addEventListener('touchstart', releasePin, opts);
-            window.addEventListener('keydown', releasePin, opts);
-
-            // Browser back/forward navigation: release the pin and re-run the
-            // spy so the active item reflects the restored scroll position.
-            window.addEventListener('hashchange', () => {
-                this.pinnedIndex = undefined;
-                requestAnimationFrame(() => this.update());
-            }, opts);
-
-            // popstate covers back/forward cases that hashchange misses:
-            // navigating to a URL with no hash, or the same hash as before.
-            // Note: do NOT call scrollToHashIfNeeded() here — Chrome fires
-            // popstate on anchor clicks too, which would override smooth scroll
-            // with an instant jump. The browser handles scroll restoration on
-            // back/forward automatically.
-            window.addEventListener('popstate', () => {
-                this.pinnedIndex = undefined;
-                requestAnimationFrame(() => this.update());
-            }, opts);
-
-            this.addEventListener('click', (e) => {
-                const target = (e.target as HTMLElement | null)?.closest('a[href^="#"]');
-                if (!(target instanceof HTMLAnchorElement)) return;
-                const idx = this.links.indexOf(target);
-                if (idx === -1) return;
-                this.pinnedIndex = idx;
-                this.setActive(idx);
-            }, { signal: this.pageController.signal });
-
-            this.bindOffsetTarget();
-
-            // Immediately highlight the first node so there is always a
-            // visible active state, even before layout is fully settled.
-            // this.setActive(0);
-
-            this.update();
-            // Safari: getBoundingClientRect() may not reflect final layout
-            // during the first rAF (before first paint). Schedule one extra
-            // update so the initial active item is always correct.
-            // Also re-scroll to the hash now that syncScrollPadding has run
-            // and scroll-padding-top reflects the true sticky header height.
-            // Without this, a refresh with a #hash in the URL would scroll
-            // before the CSS variable is set, landing the heading behind the header.
-            requestAnimationFrame(() => {
-                this.update();
-                // Nest in a second rAF so igc-tree's internal scrollIntoView
-                // (triggered by setActive → selected = true) settles first,
-                // and our correction scroll wins.
-                requestAnimationFrame(() => this.scrollToHashIfNeeded());
-            });
-        }
-
-        private bindOffsetTarget() {
-            const selector = this.dataset.offsetTarget ?? null;
-            // If an explicit selector is given, use it; otherwise fall back to
-            // the docs subheader which is always present in the layout.
-            this.offsetEl = (selector ? document.querySelector(selector) : null)
-                ?? document.querySelector('docs-subheader-menu')
-                ?? null;
-            if (!this.offsetEl) return;
-
-            this.syncScrollPadding();
-            // Re-sync after layout settles (fonts, reflow) on initial load / navigation.
-            requestAnimationFrame(() => this.syncScrollPadding());
-
-            // Re-measure when the header itself resizes (responsive collapse,
-            // font-load reflow, etc.).
-            this.resizeObserver = new ResizeObserver(() => this.syncScrollPadding());
-            this.resizeObserver.observe(this.offsetEl);
-        }
-
-        private syncScrollPadding() {
-            if (!this.offsetEl) return;
-            const px = Math.round(this.offsetEl.getBoundingClientRect().bottom);
-            // Write only the measured subheader height; the CSS adds --igd-toc-scroll-offset on top.
-            document.documentElement.style.setProperty('--igd-toc-subheader-bottom', `${px}px`);
-        }
-
-        // Re-scroll to the current URL hash so the heading lands below the sticky
-        // header once scroll-padding-top has been set correctly by syncScrollPadding.
-        private scrollToHashIfNeeded() {
-            const hash = window.location.hash;
-            if (!hash) return;
-            const id = decodeURIComponent(hash.slice(1));
-            const el = document.getElementById(id);
-            if (el) el.scrollIntoView({ behavior: 'instant', block: 'start' });
-        }
-
-        private update() {
-            if (this.pinnedIndex !== undefined) {
-                this.setActive(this.pinnedIndex);
-                return;
-            }
-
-            const threshold = this.computeThreshold();
-            let activeIndex = -1;
-            for (let i = 0; i < this.headings.length; i++) {
-                if (this.headings[i].getBoundingClientRect().top <= threshold) {
-                    activeIndex = i;
-                } else {
-                    break;
-                }
-            }
-
-            // Favor the closer heading: if the next heading is nearer to
-            // the threshold than the current one, jump forward.
-            if (activeIndex >= 0 && activeIndex + 1 < this.headings.length) {
-                const currentDist = threshold - this.headings[activeIndex].getBoundingClientRect().top;
-                const nextDist = this.headings[activeIndex + 1].getBoundingClientRect().top - threshold;
-                if (nextDist < currentDist) {
-                    activeIndex = activeIndex + 1;
-                }
-            }
-
-            // Above the first heading: default to the first item so there
-            // is always an active entry when at the top of the page.
-            if (activeIndex === -1) {
-                activeIndex = 0;
-            }
-
-            this.setActive(activeIndex);
-        }
-
-        private computeThreshold(): number {
-            // The bottom edge of the sticky header is the line below which
-            // a heading is considered "passed". Add a small fudge so a
-            // heading flush against the header still activates.
-            if (this.offsetEl) return this.offsetEl.getBoundingClientRect().bottom + 8;
-            return DocsToc.DEFAULT_THRESHOLD;
-        }
-
-        private setActive(index: number) {
-            const next = this.links[index];
-            if (!next || next === this.currentLink) return;
-
-            const prevItem = this.currentLink?.closest<HTMLElement & { selected: boolean; active: boolean }>('igc-tree-item');
-            if (prevItem) {
-                prevItem.selected = false;
-                prevItem.active = false;
-            }
-            this.currentLink?.removeAttribute('aria-current');
-
-            next.setAttribute('aria-current', 'true');
-            const nextItem = next.closest<HTMLElement & { selected: boolean; active: boolean }>('igc-tree-item');
-            if (nextItem) nextItem.selected = true;
-
-            this.currentLink = next;
-            this.syncExpansion(next);
-        }
-
-        /**
-         * Additive expansion: walk up from the active anchor through
-         * every ancestor <igc-tree-item> (including the active item
-         * itself when it has children) and ensure each is `expanded`.
-         * Items outside the active path are left untouched, so
-         * previously visited sections stay open as the user scrolls
-         * past or back. Sections the user has never reached stay
-         * collapsed.
-         */
-        private syncExpansion(activeLink: HTMLAnchorElement) {
-            let item: Element | null = activeLink.closest('igc-tree-item');
-            while (
-                item &&
-                item.tagName === 'IGC-TREE-ITEM' &&
-                this.contains(item)
-            ) {
-                if (!(item as ExpandableEl).expanded) {
-                    (item as ExpandableEl).expanded = true;
-                }
-                item = item.parentElement?.closest('igc-tree-item') ?? null;
-            }
-        }
+    connectedCallback() {
+      this.init();
     }
 
-    if (!customElements.get('docs-toc')) {
-        customElements.define('docs-toc', DocsToc);
+    disconnectedCallback() {
+      this.teardown();
     }
 
-    // Astro View Transitions: bundled module scripts run only once, so
-    // connectedCallback alone won't re-fire after a page swap if the
-    // element is morphed rather than replaced. This top-level listener
-    // fires on both initial load and after every navigation.
-    document.addEventListener('astro:page-load', () => {
-        document.querySelectorAll('docs-toc').forEach((el) => {
-            if (el instanceof DocsToc) el.init();
+    private teardown() {
+      this.pageController?.abort();
+      this.pageController = undefined;
+      this.resizeObserver?.disconnect();
+      this.resizeObserver = undefined;
+      this.offsetEl = null;
+      document.documentElement.style.removeProperty('--igd-toc-subheader-bottom');
+      if (this.rafId !== undefined) {
+        cancelAnimationFrame(this.rafId);
+        this.rafId = undefined;
+      }
+      this.currentLink = undefined;
+      this.pinnedIndex = undefined;
+    }
+
+    init() {
+      this.teardown();
+
+      // Invalidate any pending deferred _init from a previous call.
+      const id = ++this.initId;
+
+      // Wait for igc-tree to be defined before querying slotted links,
+      // since the links live inside igc-tree-item light DOM and igc-tree
+      // may not have upgraded yet when init() runs.
+      customElements.whenDefined('igc-tree').then(() =>
+        requestAnimationFrame(() => {
+          // Bail if init() was called again since we scheduled, or the
+          // element was disconnected (e.g. a view transition swapped the DOM).
+          if (this.initId !== id || !this.isConnected) return;
+          this._init();
+        }),
+      );
+    }
+
+    private _init() {
+      // Clear any stale aria-current left over from a previous page.
+      this.querySelectorAll('a[aria-current]').forEach((a) => a.removeAttribute('aria-current'));
+      // Clear any stale selected / active state on tree items.
+      this.querySelectorAll('igc-tree-item').forEach((item) => {
+        const treeItem = item as HTMLElement & { selected: boolean; active: boolean };
+        treeItem.selected = false;
+        treeItem.active = false;
+      });
+
+      this.links = Array.from(this.querySelectorAll<HTMLAnchorElement>('a[href^="#"]'));
+      this.headings = this.links
+        .map((link) => document.getElementById(decodeURIComponent(link.hash.slice(1))))
+        .filter((el): el is HTMLElement => el !== null);
+
+      if (this.headings.length === 0) return;
+
+      const schedule = () => {
+        if (this.rafId !== undefined) return;
+        this.rafId = requestAnimationFrame(() => {
+          this.rafId = undefined;
+          this.update();
         });
+      };
+
+      this.pageController = new AbortController();
+      const opts = { passive: true, signal: this.pageController.signal };
+
+      window.addEventListener('scroll', schedule, opts);
+      window.addEventListener(
+        'resize',
+        () => {
+          this.syncScrollPadding();
+          schedule();
+        },
+        opts,
+      );
+
+      // Any user-initiated scroll input releases the click pin so the
+      // spy can take over again immediately.
+      const releasePin = () => {
+        this.pinnedIndex = undefined;
+      };
+      window.addEventListener('wheel', releasePin, opts);
+      window.addEventListener('touchstart', releasePin, opts);
+      window.addEventListener('keydown', releasePin, opts);
+
+      // Browser back/forward navigation: release the pin and re-run the
+      // spy so the active item reflects the restored scroll position.
+      window.addEventListener(
+        'hashchange',
+        () => {
+          this.pinnedIndex = undefined;
+          requestAnimationFrame(() => this.update());
+        },
+        opts,
+      );
+
+      // popstate covers back/forward cases that hashchange misses:
+      // navigating to a URL with no hash, or the same hash as before.
+      // Note: do NOT call scrollToHashIfNeeded() here — Chrome fires
+      // popstate on anchor clicks too, which would override smooth scroll
+      // with an instant jump. The browser handles scroll restoration on
+      // back/forward automatically.
+      window.addEventListener(
+        'popstate',
+        () => {
+          this.pinnedIndex = undefined;
+          requestAnimationFrame(() => this.update());
+        },
+        opts,
+      );
+
+      this.addEventListener(
+        'click',
+        (e) => {
+          const target = (e.target as HTMLElement | null)?.closest('a[href^="#"]');
+          if (!(target instanceof HTMLAnchorElement)) return;
+          const idx = this.links.indexOf(target);
+          if (idx === -1) return;
+          this.pinnedIndex = idx;
+          this.setActive(idx);
+        },
+        { signal: this.pageController.signal },
+      );
+
+      this.bindOffsetTarget();
+
+      // Immediately highlight the first node so there is always a
+      // visible active state, even before layout is fully settled.
+      // this.setActive(0);
+
+      this.update();
+      // Safari: getBoundingClientRect() may not reflect final layout
+      // during the first rAF (before first paint). Schedule one extra
+      // update so the initial active item is always correct.
+      // Also re-scroll to the hash now that syncScrollPadding has run
+      // and scroll-padding-top reflects the true sticky header height.
+      // Without this, a refresh with a #hash in the URL would scroll
+      // before the CSS variable is set, landing the heading behind the header.
+      requestAnimationFrame(() => {
+        this.update();
+        // Nest in a second rAF so igc-tree's internal scrollIntoView
+        // (triggered by setActive → selected = true) settles first,
+        // and our correction scroll wins.
+        requestAnimationFrame(() => this.scrollToHashIfNeeded());
+      });
+    }
+
+    private bindOffsetTarget() {
+      const selector = this.dataset.offsetTarget ?? null;
+      // If an explicit selector is given, use it; otherwise fall back to
+      // the docs subheader which is always present in the layout.
+      this.offsetEl =
+        (selector ? document.querySelector(selector) : null) ??
+        document.querySelector('docs-subheader-menu') ??
+        null;
+      if (!this.offsetEl) return;
+
+      this.syncScrollPadding();
+      // Re-sync after layout settles (fonts, reflow) on initial load / navigation.
+      requestAnimationFrame(() => this.syncScrollPadding());
+
+      // Re-measure when the header itself resizes (responsive collapse,
+      // font-load reflow, etc.).
+      this.resizeObserver = new ResizeObserver(() => this.syncScrollPadding());
+      this.resizeObserver.observe(this.offsetEl);
+    }
+
+    private syncScrollPadding() {
+      if (!this.offsetEl) return;
+      const px = Math.round(this.offsetEl.getBoundingClientRect().bottom);
+      // Write only the measured subheader height; the CSS adds --igd-toc-scroll-offset on top.
+      document.documentElement.style.setProperty('--igd-toc-subheader-bottom', `${px}px`);
+    }
+
+    // Re-scroll to the current URL hash so the heading lands below the sticky
+    // header once scroll-padding-top has been set correctly by syncScrollPadding.
+    private scrollToHashIfNeeded() {
+      const hash = window.location.hash;
+      if (!hash) return;
+      const id = decodeURIComponent(hash.slice(1));
+      const el = document.getElementById(id);
+      if (el) el.scrollIntoView({ behavior: 'instant', block: 'start' });
+    }
+
+    private update() {
+      if (this.pinnedIndex !== undefined) {
+        this.setActive(this.pinnedIndex);
+        return;
+      }
+
+      const threshold = this.computeThreshold();
+      let activeIndex = -1;
+      for (let i = 0; i < this.headings.length; i++) {
+        if (this.headings[i].getBoundingClientRect().top <= threshold) {
+          activeIndex = i;
+        } else {
+          break;
+        }
+      }
+
+      // Favor the closer heading: if the next heading is nearer to
+      // the threshold than the current one, jump forward.
+      if (activeIndex >= 0 && activeIndex + 1 < this.headings.length) {
+        const currentDist = threshold - this.headings[activeIndex].getBoundingClientRect().top;
+        const nextDist = this.headings[activeIndex + 1].getBoundingClientRect().top - threshold;
+        if (nextDist < currentDist) {
+          activeIndex = activeIndex + 1;
+        }
+      }
+
+      // Above the first heading: default to the first item so there
+      // is always an active entry when at the top of the page.
+      if (activeIndex === -1) {
+        activeIndex = 0;
+      }
+
+      this.setActive(activeIndex);
+    }
+
+    private computeThreshold(): number {
+      // The bottom edge of the sticky header is the line below which
+      // a heading is considered "passed". Add a small fudge so a
+      // heading flush against the header still activates.
+      if (this.offsetEl) return this.offsetEl.getBoundingClientRect().bottom + 8;
+      return DocsToc.DEFAULT_THRESHOLD;
+    }
+
+    private setActive(index: number) {
+      const next = this.links[index];
+      if (!next || next === this.currentLink) return;
+
+      const prevItem = this.currentLink?.closest<
+        HTMLElement & { selected: boolean; active: boolean }
+      >('igc-tree-item');
+      if (prevItem) {
+        prevItem.selected = false;
+        prevItem.active = false;
+      }
+      this.currentLink?.removeAttribute('aria-current');
+
+      next.setAttribute('aria-current', 'true');
+      const nextItem = next.closest<HTMLElement & { selected: boolean; active: boolean }>(
+        'igc-tree-item',
+      );
+      if (nextItem) nextItem.selected = true;
+
+      this.currentLink = next;
+      this.syncExpansion(next);
+    }
+
+    /**
+     * Additive expansion: walk up from the active anchor through
+     * every ancestor <igc-tree-item> (including the active item
+     * itself when it has children) and ensure each is `expanded`.
+     * Items outside the active path are left untouched, so
+     * previously visited sections stay open as the user scrolls
+     * past or back. Sections the user has never reached stay
+     * collapsed.
+     */
+    private syncExpansion(activeLink: HTMLAnchorElement) {
+      let item: Element | null = activeLink.closest('igc-tree-item');
+      while (item && item.tagName === 'IGC-TREE-ITEM' && this.contains(item)) {
+        if (!(item as ExpandableEl).expanded) {
+          (item as ExpandableEl).expanded = true;
+        }
+        item = item.parentElement?.closest('igc-tree-item') ?? null;
+      }
+    }
+  }
+
+  if (!customElements.get('docs-toc')) {
+    customElements.define('docs-toc', DocsToc);
+  }
+
+  // Astro View Transitions: bundled module scripts run only once, so
+  // connectedCallback alone won't re-fire after a page swap if the
+  // element is morphed rather than replaced. This top-level listener
+  // fires on both initial load and after every navigation.
+  document.addEventListener('astro:page-load', () => {
+    document.querySelectorAll('docs-toc').forEach((el) => {
+      if (el instanceof DocsToc) el.init();
     });
+  });
 </script>

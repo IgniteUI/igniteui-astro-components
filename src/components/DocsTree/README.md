@@ -19,6 +19,7 @@ import MyLabel from './MyLabel.astro';
 
 const nodes: TreeNode[] = [/* your tree */];
 ---
+
 <DocsTree
   nodes={nodes}
   variant="sidebar"
@@ -30,26 +31,26 @@ const nodes: TreeNode[] = [/* your tree */];
 
 ## Props
 
-| Prop                | Type                          | Notes |
-| ---                 | ---                           | --- |
-| `nodes`             | `TreeNode[]`                  | Required. Root of the tree. |
-| `variant`           | `'sidebar' \| 'toc'`          | Required. Drives variant CSS rules. |
-| `activeId`          | `string`                      | Optional. SSR-time match against `TreeNode.id`. **See active-state contract below.** |
-| `toggleNodeOnClick` | `boolean`                     | Optional. Forwarded to `<igc-tree>`. |
-| `renderLabel`       | Astro component               | Optional. Receives `{ node, depth, isLeaf, isActive }`. Falls back to a plain `<span>{node.label}</span>` when omitted. |
+| Prop                | Type                 | Notes                                                                                                                   |
+| ------------------- | -------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `nodes`             | `TreeNode[]`         | Required. Root of the tree.                                                                                             |
+| `variant`           | `'sidebar' \| 'toc'` | Required. Drives variant CSS rules.                                                                                     |
+| `activeId`          | `string`             | Optional. SSR-time match against `TreeNode.id`. **See active-state contract below.**                                    |
+| `toggleNodeOnClick` | `boolean`            | Optional. Forwarded to `<igc-tree>`.                                                                                    |
+| `renderLabel`       | Astro component      | Optional. Receives `{ node, depth, isLeaf, isActive }`. Falls back to a plain `<span>{node.label}</span>` when omitted. |
 
 ## TreeNode shape
 
 ```ts
 interface TreeNode {
-  id: string;                    // → data-tree-id
-  label: string;                 // plain-text fallback
-  href?: string;                 // when set, label is wrapped in <a href>
-  expanded?: boolean;            // SSR expand hint
+  id: string; // → data-tree-id
+  label: string; // plain-text fallback
+  href?: string; // when set, label is wrapped in <a href>
+  expanded?: boolean; // SSR expand hint
   children?: TreeNode[];
-  itemData?: Record<string, string>;   // → kebab-case data-* attrs on <igc-tree-item>
-  linkAttrs?: Record<string, string | number | boolean | undefined>;  // spread on leaf <a>
-  meta?: Record<string, unknown>;      // free-form, read by renderLabel
+  itemData?: Record<string, string>; // → kebab-case data-* attrs on <igc-tree-item>
+  linkAttrs?: Record<string, string | number | boolean | undefined>; // spread on leaf <a>
+  meta?: Record<string, unknown>; // free-form, read by renderLabel
 }
 ```
 
@@ -70,7 +71,7 @@ DocsTree supports two non-overlapping ways to mark the active node:
    selects via scroll-spy.
 
 **Do not pass `activeId` AND mutate `aria-current` at runtime in the
-same tree.** The two paths use different attribute *values* and would
+same tree.** The two paths use different attribute _values_ and would
 flicker.
 
 ## Styling

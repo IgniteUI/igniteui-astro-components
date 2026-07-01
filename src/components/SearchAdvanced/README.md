@@ -10,14 +10,14 @@ import SearchAdvanced from 'igniteui-astro-components/components/SearchAdvanced.
 
 ## Props
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `class` | `string` | — | CSS class for the outer element |
-| `indexUrl` | `string` | `${BASE_URL}api-search-index.json` | URL to the JSON search index |
-| `placeholder` | `string` | `"Search"` | Search input placeholder text |
-| `showScope` | `boolean` | `false` | Show scope selector (current package / all packages) |
-| `tabs` | `SearchTab[]` | `[]` | Tab categories (besides the always-present "All" tab) |
-| `allTabLimit` | `number` | `10` | Max results per category in the "All" tab |
+| Prop          | Type          | Default                            | Description                                           |
+| ------------- | ------------- | ---------------------------------- | ----------------------------------------------------- |
+| `class`       | `string`      | —                                  | CSS class for the outer element                       |
+| `indexUrl`    | `string`      | `${BASE_URL}api-search-index.json` | URL to the JSON search index                          |
+| `placeholder` | `string`      | `"Search"`                         | Search input placeholder text                         |
+| `showScope`   | `boolean`     | `false`                            | Show scope selector (current package / all packages)  |
+| `tabs`        | `SearchTab[]` | `[]`                               | Tab categories (besides the always-present "All" tab) |
+| `allTabLimit` | `number`      | `10`                               | Max results per category in the "All" tab             |
 
 ### `SearchTab`
 
@@ -44,6 +44,7 @@ interface SearchTab {
 ---
 import SearchAdvanced from 'igniteui-astro-components/components/SearchAdvanced.astro';
 ---
+
 <SearchAdvanced indexUrl="/api-search-index.json" />
 ```
 
@@ -54,14 +55,15 @@ import SearchAdvanced from 'igniteui-astro-components/components/SearchAdvanced.
 import SearchAdvanced from 'igniteui-astro-components/components/SearchAdvanced.astro';
 
 const tabs = [
-  { id: 'names',        label: 'Names',        kindCodes: ['__name__'] },
-  { id: 'properties',   label: 'Properties',   kindCodes: ['p'] },
-  { id: 'accessors',    label: 'Accessors',    kindCodes: ['a'] },
-  { id: 'methods',      label: 'Methods',      kindCodes: ['m'] },
-  { id: 'events',       label: 'Events',       kindCodes: ['e'] },
+  { id: 'names', label: 'Names', kindCodes: ['__name__'] },
+  { id: 'properties', label: 'Properties', kindCodes: ['p'] },
+  { id: 'accessors', label: 'Accessors', kindCodes: ['a'] },
+  { id: 'methods', label: 'Methods', kindCodes: ['m'] },
+  { id: 'events', label: 'Events', kindCodes: ['e'] },
   { id: 'constructors', label: 'Constructors', kindCodes: ['c'] },
 ];
 ---
+
 <SearchAdvanced showScope tabs={tabs} />
 ```
 
@@ -72,10 +74,11 @@ const tabs = [
 import SearchAdvanced from 'igniteui-astro-components/components/SearchAdvanced.astro';
 
 const tabs = [
-  { id: 'names',   label: 'Types',   kindCodes: ['__name__'] },
+  { id: 'names', label: 'Types', kindCodes: ['__name__'] },
   { id: 'members', label: 'Members', kindCodes: ['p', 'a', 'm', 'e', 'c'] },
 ];
 ---
+
 <SearchAdvanced tabs={tabs} indexUrl="/my-index.json" />
 ```
 
@@ -93,7 +96,10 @@ The component expects a JSON file with the following structure:
       "v": "1.0.0",
       "p": "angular",
       "g": "package-name",
-      "m": [["memberName", "p"], ["onClick", "e"]]
+      "m": [
+        ["memberName", "p"],
+        ["onClick", "e"]
+      ]
     }
   ]
 }

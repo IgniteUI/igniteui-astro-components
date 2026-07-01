@@ -4,27 +4,27 @@ import './Badge.scss';
 export type BadgeVariant = 'preview' | 'new' | 'updated' | 'premium' | 'opensource';
 
 export interface Props {
-    /**
-     * Visual variant controlling colour.
-     * @default 'preview'
-     */
-    variant?: BadgeVariant;
-    /** Extra CSS classes forwarded to the igc-badge element. */
-    class?: string;
-    'aria-hidden'?: boolean | string | undefined;
-    'aria-label'?: string;
+  /**
+   * Visual variant controlling colour.
+   * @default 'preview'
+   */
+  variant?: BadgeVariant;
+  /** Extra CSS classes forwarded to the igc-badge element. */
+  class?: string;
+  'aria-hidden'?: boolean | string | undefined;
+  'aria-label'?: string;
 }
 
 const { variant = 'preview', class: className, ...rest } = Astro.props;
-const defaultText = variant === 'opensource' ? 'Open Source'
-    : variant.charAt(0).toUpperCase() + variant.slice(1);
+const defaultText =
+  variant === 'opensource' ? 'Open Source' : variant.charAt(0).toUpperCase() + variant.slice(1);
 ---
 
 <igc-badge class:list={['igd-badge', variant, className]} {...rest}>
-    <slot><span>{defaultText}</span></slot>
+  <slot><span>{defaultText}</span></slot>
 </igc-badge>
 
 <script>
-    import { defineComponents, IgcBadgeComponent } from 'igniteui-webcomponents';
-    defineComponents(IgcBadgeComponent);
+  import { defineComponents, IgcBadgeComponent } from 'igniteui-webcomponents';
+  defineComponents(IgcBadgeComponent);
 </script>

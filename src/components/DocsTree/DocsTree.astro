@@ -44,15 +44,17 @@ const { nodes, variant, activeId, toggleNodeOnClick, ariaLabel, renderLabel } = 
   aria-label={ariaLabel}
   toggle-node-on-click={toggleNodeOnClick ? '' : undefined}
 >
-  {nodes.map((node) => (
-    <DocsTreeItem
-      node={node}
-      depth={0}
-      variant={variant}
-      activeId={activeId}
-      renderLabel={renderLabel}
-    />
-  ))}
+  {
+    nodes.map((node) => (
+      <DocsTreeItem
+        node={node}
+        depth={0}
+        variant={variant}
+        activeId={activeId}
+        renderLabel={renderLabel}
+      />
+    ))
+  }
 </igc-tree>
 
 <script>
@@ -92,7 +94,7 @@ const { nodes, variant, activeId, toggleNodeOnClick, ariaLabel, renderLabel } = 
     focusWasInTree = false;
     customElements.whenDefined('igc-tree-item').then(() => {
       const activeItem = document.querySelector<HTMLElement>(
-        'igc-tree[data-variant="sidebar"] igc-tree-item:has(a[aria-current="page"])'
+        'igc-tree[data-variant="sidebar"] igc-tree-item:has(a[aria-current="page"])',
       );
       activeItem?.focus();
     });
@@ -102,18 +104,28 @@ const { nodes, variant, activeId, toggleNodeOnClick, ariaLabel, renderLabel } = 
   // up/down arrow key navigation works immediately after the click.
   // The <a> overlay is position:absolute and captures clicks, but igc-tree's
   // keyboard handler only fires when igc-tree-item itself has focus.
-  document.addEventListener('click', (e) => {
-    const link = (e.target as Element).closest('igc-tree[data-variant="sidebar"] a.docs-tree-link');
-    if (!link) return;
-    link.closest<HTMLElement>('igc-tree-item')?.focus();
-  }, { capture: true });
+  document.addEventListener(
+    'click',
+    (e) => {
+      const link = (e.target as Element).closest(
+        'igc-tree[data-variant="sidebar"] a.docs-tree-link',
+      );
+      if (!link) return;
+      link.closest<HTMLElement>('igc-tree-item')?.focus();
+    },
+    { capture: true },
+  );
 
   // Suppress the active-indicator transition during window resize so the
   // anchor-positioned ::before bar doesn't slowly slide to its new position.
   let resizeTimer: ReturnType<typeof setTimeout>;
-  window.addEventListener('resize', () => {
-    document.body.classList.add('is-resizing');
-    clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(() => document.body.classList.remove('is-resizing'), 150);
-  }, { passive: true });
+  window.addEventListener(
+    'resize',
+    () => {
+      document.body.classList.add('is-resizing');
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => document.body.classList.remove('is-resizing'), 150);
+    },
+    { passive: true },
+  );
 </script>

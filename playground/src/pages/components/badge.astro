@@ -5,23 +5,37 @@ import Badge from '../../../../src/components/mdx/Badge/Badge.astro';
 import DocsToc from '../../../../src/components/DocsToc/DocsToc.astro';
 import DocsSubHeader from '../../../../src/components/DocsSubHeader/DocsSubHeader.astro';
 import SearchAdvanced from '../../../../src/components/SearchAdvanced/SearchAdvanced.astro';
-import { SITE_TITLE, SIDEBAR, PRODUCT_LINKS, SEARCH_TABS, PACKAGES, VERSIONS } from '../../site-config';
+import {
+  SITE_TITLE,
+  SIDEBAR,
+  PRODUCT_LINKS,
+  SEARCH_TABS,
+  PACKAGES,
+  VERSIONS,
+} from '../../site-config';
 
 const slug = 'components/badge';
 
 const headings = [
-  { depth: 2, slug: 'variants',       text: 'Variants' },
-  { depth: 2, slug: 'with-headings',  text: 'With headings' },
-  { depth: 2, slug: 'inline-text',    text: 'Inline in text' },
+  { depth: 2, slug: 'variants', text: 'Variants' },
+  { depth: 2, slug: 'with-headings', text: 'With headings' },
+  { depth: 2, slug: 'inline-text', text: 'Inline in text' },
   { depth: 2, slug: 'custom-content', text: 'Custom content' },
 ];
 ---
 
 <DocsLayout title="Badge" siteTitle={SITE_TITLE} hasSidebar currentSlug={slug}>
-  <DocsSubHeader slot="subheader" pageTitle="Badge" currentSlug={slug} siteTitle={SITE_TITLE}
-    productLinks={PRODUCT_LINKS} showThemeToggle={true}
-    packages={[...PACKAGES]} selectedPackage={PACKAGES[0].value}
-    versions={[...VERSIONS]} selectedVersion={VERSIONS[0]}
+  <DocsSubHeader
+    slot="subheader"
+    pageTitle="Badge"
+    currentSlug={slug}
+    siteTitle={SITE_TITLE}
+    productLinks={PRODUCT_LINKS}
+    showThemeToggle={true}
+    packages={[...PACKAGES]}
+    selectedPackage={PACKAGES[0].value}
+    versions={[...VERSIONS]}
+    selectedVersion={VERSIONS[0]}
   >
     <SearchAdvanced slot="search" tabs={SEARCH_TABS} showScope={true} />
   </DocsSubHeader>
@@ -30,8 +44,8 @@ const headings = [
 
   <h1>Badge</h1>
   <p>
-    Small inline status chips rendered via <code>igc-badge</code>.
-    Five semantic variants, each with its own color scheme.
+    Small inline status chips rendered via <code>igc-badge</code>. Five semantic variants, each with
+    its own color scheme.
   </p>
 
   <h2 id="variants">Variants</h2>
@@ -46,10 +60,10 @@ const headings = [
 
   <h2 id="with-headings">With headings</h2>
   <p>
-    Badges placed inside heading tags align to the text.
-    In the markdown area, <code>h2</code> through <code>h6</code> use
-    <code>display: flex; align-items: center</code> so the badge is vertically
-    centered without extra offsets.
+    Badges placed inside heading tags align to the text. In the markdown area, <code>h2</code> through
+    <code>h6</code> use
+    <code>display: flex; align-items: center</code> so the badge is vertically centered without extra
+    offsets.
   </p>
 
   <h1>H1 heading <Badge variant="new" /></h1>
@@ -60,11 +74,10 @@ const headings = [
 
   <h2 id="inline-text">Inline in text</h2>
   <p>
-    Badges sit inline and align to the text baseline.
-    This feature is <Badge variant="new" /> and still experimental.
-    The API is <Badge variant="preview" /> and subject to change.
-    Available in the <Badge variant="premium" /> plan only.
-    The library is fully <Badge variant="opensource" />.
+    Badges sit inline and align to the text baseline. This feature is <Badge variant="new" /> and still
+    experimental. The API is <Badge variant="preview" /> and subject to change. Available in the <Badge
+      variant="premium"
+    /> plan only. The library is fully <Badge variant="opensource" />.
   </p>
 
   <h2 id="custom-content">Custom content</h2>
