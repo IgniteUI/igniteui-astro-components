@@ -43,7 +43,7 @@
     "./components/GlobalNavBar.astro": "./src/components/GlobalNavBar/GlobalNavBar.astro",
     "./components/GlobalFooter.astro": "./src/components/GlobalFooter/GlobalFooter.astro",
     "./components/DocsSubHeader.astro": "./src/components/DocsSubHeader/DocsSubHeader.astro",
-    "./components/CopyCode.astro":  "./src/components/CopyCode/CopyCode.astro",
+    "./components/CopyCode.astro": "./src/components/CopyCode/CopyCode.astro",
     "./components/Search.astro": "./src/components/Search/Search.astro",
     "./components/SearchAdvanced.astro": "./src/components/SearchAdvanced/SearchAdvanced.astro",
     "./components/ThemingWidget.astro": "./src/components/ThemingWidget/ThemingWidget.astro",
@@ -92,7 +92,12 @@
   "devDependencies": {
     "@types/jsdom": "^21.1.7",
     "astro": "^6.1.6",
+    "husky": "^9.1.7",
     "igniteui-theming": "^26.0.1",
+    "lint-staged": "^17.0.8",
+    "oxlint": "^1.72.0",
+    "prettier": "^3.9.4",
+    "prettier-plugin-astro": "^0.14.1",
     "sass": "^1.83.0",
     "typescript": "^5.6.0"
   },
@@ -108,6 +113,11 @@
     "playground:build": "npm --prefix playground run build",
     "playground:preview": "npm --prefix playground run preview",
     "playground:clean": "npm --prefix playground run clean",
-    "playground:check": "npm --prefix playground run check"
+    "playground:check": "npm --prefix playground run check",
+    "lint": "oxlint .",
+    "lint:fix": "oxlint . --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "prepare": "husky"
   }
 }

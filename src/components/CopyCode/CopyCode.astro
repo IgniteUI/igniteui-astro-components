@@ -1,6 +1,10 @@
 <script>
   import '../../scripts/icon-registry';
-  import { defineComponents, IgcIconButtonComponent, IgcIconComponent } from 'igniteui-webcomponents';
+  import {
+    defineComponents,
+    IgcIconButtonComponent,
+    IgcIconComponent,
+  } from 'igniteui-webcomponents';
 
   defineComponents(IgcIconButtonComponent, IgcIconComponent);
 
@@ -51,16 +55,26 @@
           document.body.appendChild(ta);
           ta.select();
           ta.setSelectionRange(0, value.length);
-          try { return document.execCommand('copy'); } catch { return false; }
-          finally { document.body.removeChild(ta); }
+          try {
+            return document.execCommand('copy');
+          } catch {
+            return false;
+          } finally {
+            document.body.removeChild(ta);
+          }
         };
 
         if (navigator.clipboard?.writeText) {
-          navigator.clipboard.writeText(text).then(showCopied).catch(() => {
-            fallback(text) ? showCopied() : showFailed();
-          });
+          navigator.clipboard
+            .writeText(text)
+            .then(showCopied)
+            .catch(() => {
+              if (fallback(text)) showCopied();
+              else showFailed();
+            });
         } else {
-          fallback(text) ? showCopied() : showFailed();
+          if (fallback(text)) showCopied();
+          else showFailed();
         }
       });
 

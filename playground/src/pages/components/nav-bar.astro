@@ -2,44 +2,54 @@
 import DocsLayout from '../../../../src/layouts/DocsLayout/DocsLayout.astro';
 import DocsSidebar from '../../../../src/components/DocsSidebar/DocsSidebar.astro';
 import DocsToc from '../../../../src/components/DocsToc/DocsToc.astro';
-import GlobalNavBar from '../../../../src/components/GlobalNavBar/GlobalNavBar.astro';
 import GlobalFooter from '../../../../src/components/GlobalFooter/GlobalFooter.astro';
 import DocsSubHeader from '../../../../src/components/DocsSubHeader/DocsSubHeader.astro';
 import SearchAdvanced from '../../../../src/components/SearchAdvanced/SearchAdvanced.astro';
-import { SITE_TITLE, SIDEBAR, PRODUCT_LINKS, SEARCH_TABS, PACKAGES, VERSIONS } from '../../site-config';
+import {
+  SITE_TITLE,
+  SIDEBAR,
+  PRODUCT_LINKS,
+  SEARCH_TABS,
+  PACKAGES,
+  VERSIONS,
+} from '../../site-config';
 
 const slug = 'components/nav-bar';
 
 const headings = [
   { depth: 2, slug: 'per-platform-overrides', text: 'Per-platform overrides' },
-  { depth: 3, slug: 'theme-angular',          text: 'theme="angular"' },
-  { depth: 3, slug: 'theme-appbuilder',       text: 'theme="appbuilder"' },
-  { depth: 3, slug: 'theme-igniteui-footer',  text: 'Inline footer (theme="igniteui")' },
+  { depth: 3, slug: 'theme-angular', text: 'theme="angular"' },
+  { depth: 3, slug: 'theme-appbuilder', text: 'theme="appbuilder"' },
+  { depth: 3, slug: 'theme-igniteui-footer', text: 'Inline footer (theme="igniteui")' },
 ];
 ---
 
 <DocsLayout title="Global Nav & Footer" siteTitle={SITE_TITLE} hasSidebar currentSlug={slug}>
-  <DocsSubHeader slot="subheader" pageTitle="Global Nav & Footer" currentSlug={slug} siteTitle={SITE_TITLE}
-    productLinks={PRODUCT_LINKS} showThemeToggle={true}
-    packages={[...PACKAGES]} selectedPackage={PACKAGES[0].value}
-    versions={[...VERSIONS]} selectedVersion={VERSIONS[0]}
+  <DocsSubHeader
+    slot="subheader"
+    pageTitle="Global Nav & Footer"
+    currentSlug={slug}
+    siteTitle={SITE_TITLE}
+    productLinks={PRODUCT_LINKS}
+    showThemeToggle={true}
+    packages={[...PACKAGES]}
+    selectedPackage={PACKAGES[0].value}
+    versions={[...VERSIONS]}
+    selectedVersion={VERSIONS[0]}
   >
     <SearchAdvanced slot="search" tabs={SEARCH_TABS} showScope={true} />
   </DocsSubHeader>
   <DocsSidebar slot="sidebar" items={SIDEBAR} currentSlug={slug} />
   <DocsToc slot="toc" headings={headings} offsetTarget=".docs-subheader" />
-    <h1>Global nav &amp; footer</h1>
-    <p>
-      <code>DocsLayout</code> already mounts <code>GlobalNavBar</code>
-      and <code>GlobalFooter</code> at the top/bottom of the page — the
-      bar above is rendered from there.
-    </p>
+  <h1>Global nav &amp; footer</h1>
+  <p>
+    <code>DocsLayout</code> already mounts <code>GlobalNavBar</code>
+    and <code>GlobalFooter</code> at the top/bottom of the page — the bar above is rendered from there.
+  </p>
 
-    <h2 id="per-platform-overrides">Per-platform overrides</h2>
-    <p>Each component accepts a <code>theme</code> prop overriding the virtual-module value:</p>
+  <h2 id="per-platform-overrides">Per-platform overrides</h2>
+  <p>Each component accepts a <code>theme</code> prop overriding the virtual-module value:</p>
 
-
-
-    <h3 id="theme-igniteui-footer">Inline footer (theme="igniteui")</h3>
-    <GlobalFooter theme="igniteui" />
+  <h3 id="theme-igniteui-footer">Inline footer (theme="igniteui")</h3>
+  <GlobalFooter lang="en" />
 </DocsLayout>

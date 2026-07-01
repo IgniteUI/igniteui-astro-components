@@ -4,132 +4,153 @@ import DocsSidebar from '../../../../src/components/DocsSidebar/DocsSidebar.astr
 import DocsToc from '../../../../src/components/DocsToc/DocsToc.astro';
 import DocsSubHeader from '../../../../src/components/DocsSubHeader/DocsSubHeader.astro';
 import SearchAdvanced from '../../../../src/components/SearchAdvanced/SearchAdvanced.astro';
-import { SITE_TITLE, SIDEBAR, PRODUCT_LINKS, SEARCH_TABS, PACKAGES, VERSIONS } from '../../site-config';
+import {
+  SITE_TITLE,
+  SIDEBAR,
+  PRODUCT_LINKS,
+  SEARCH_TABS,
+  PACKAGES,
+  VERSIONS,
+} from '../../site-config';
 
 const slug = 'components/docs-toc';
 
 const headings = [
-    { depth: 2, slug: 'introduction', text: 'Introduction' },
-    { depth: 2, slug: 'props', text: 'Props' },
-    { depth: 3, slug: 'headings-prop', text: 'headings prop' },
-    { depth: 3, slug: 'toc-config-prop', text: 'tocConfig prop' },
-    { depth: 3, slug: 'label-prop', text: 'label prop' },
-    { depth: 2, slug: 'behaviour', text: 'Behaviour' },
-    { depth: 3, slug: 'scroll-spy', text: 'Scroll-spy' },
-    { depth: 3, slug: 'active-threshold', text: 'Active threshold' },
-    { depth: 2, slug: 'styling', text: 'Styling' },
-    { depth: 3, slug: 'css-custom-properties', text: 'CSS custom properties' },
-    { depth: 3, slug: 'active-state-styles', text: 'Active-state styles' },
-    { depth: 2, slug: 'integration', text: 'Integration' },
-    { depth: 3, slug: 'mdx-pages', text: 'MDX pages' },
-    { depth: 3, slug: 'docs-layout', text: 'DocsLayout' },
-    { depth: 2, slug: 'known-limitations', text: 'Known limitations' },
-    { depth: 3, slug: 'short-pages', text: 'Short pages' },
-    { depth: 3, slug: 'dynamic-headings', text: 'Dynamic headings' },
-    { depth: 2, slug: 'changelog', text: 'Changelog' },
+  { depth: 2, slug: 'introduction', text: 'Introduction' },
+  { depth: 2, slug: 'props', text: 'Props' },
+  { depth: 3, slug: 'headings-prop', text: 'headings prop' },
+  { depth: 3, slug: 'toc-config-prop', text: 'tocConfig prop' },
+  { depth: 3, slug: 'label-prop', text: 'label prop' },
+  { depth: 2, slug: 'behaviour', text: 'Behaviour' },
+  { depth: 3, slug: 'scroll-spy', text: 'Scroll-spy' },
+  { depth: 3, slug: 'active-threshold', text: 'Active threshold' },
+  { depth: 2, slug: 'styling', text: 'Styling' },
+  { depth: 3, slug: 'css-custom-properties', text: 'CSS custom properties' },
+  { depth: 3, slug: 'active-state-styles', text: 'Active-state styles' },
+  { depth: 2, slug: 'integration', text: 'Integration' },
+  { depth: 3, slug: 'mdx-pages', text: 'MDX pages' },
+  { depth: 3, slug: 'docs-layout', text: 'DocsLayout' },
+  { depth: 2, slug: 'known-limitations', text: 'Known limitations' },
+  { depth: 3, slug: 'short-pages', text: 'Short pages' },
+  { depth: 3, slug: 'dynamic-headings', text: 'Dynamic headings' },
+  { depth: 2, slug: 'changelog', text: 'Changelog' },
 ];
 ---
 
 <DocsLayout title="DocsToc" siteTitle={SITE_TITLE} hasSidebar currentSlug={slug}>
-  <DocsSubHeader slot="subheader" pageTitle="DocsToc" currentSlug={slug} siteTitle={SITE_TITLE}
-    productLinks={PRODUCT_LINKS} showThemeToggle={true}
-    packages={[...PACKAGES]} selectedPackage={PACKAGES[0].value}
-    versions={[...VERSIONS]} selectedVersion={VERSIONS[0]}
+  <DocsSubHeader
+    slot="subheader"
+    pageTitle="DocsToc"
+    currentSlug={slug}
+    siteTitle={SITE_TITLE}
+    productLinks={PRODUCT_LINKS}
+    showThemeToggle={true}
+    packages={[...PACKAGES]}
+    selectedPackage={PACKAGES[0].value}
+    versions={[...VERSIONS]}
+    selectedVersion={VERSIONS[0]}
   >
     <SearchAdvanced slot="search" tabs={SEARCH_TABS} showScope={true} />
   </DocsSubHeader>
   <DocsSidebar slot="sidebar" items={SIDEBAR} currentSlug={slug} />
-  <DocsToc slot="toc" headings={headings} offsetTarget=".docs-subheader"
-    packages={[...PACKAGES]} selectedPackage={PACKAGES[0].value}
-    versions={[...VERSIONS]} selectedVersion={VERSIONS[0]}
-  />
+  <DocsToc slot="toc" headings={headings} offsetTarget=".docs-subheader" />
 
+  <h1>DocsToc</h1>
 
-    <h1>DocsToc</h1>
+  <h2 id="introduction">Introduction</h2>
+  <p>
+    <code>DocsToc</code> renders an "On this page" sidebar from an array of
+    <code>MarkdownHeading</code> objects, with built-in scroll-spy implemented as a self-contained <code
+      >&lt;docs-toc&gt;</code
+    > custom element.
+  </p>
 
-    <h2 id="introduction">Introduction</h2>
-    <p>
-      <code>DocsToc</code> renders an "On this page" sidebar from an array of
-      <code>MarkdownHeading</code> objects, with built-in scroll-spy implemented as a
-      self-contained <code>&lt;docs-toc&gt;</code> custom element.
-    </p>
+  <h2 id="props">Props</h2>
 
-    <h2 id="props">Props</h2>
+  <h3 id="headings-prop">headings prop</h3>
+  <p>
+    Array of <code>MarkdownHeading</code> objects. Pass the value from
+    <code>getHeadings()</code> directly; entries outside the configured depth range are filtered automatically.
+  </p>
 
-    <h3 id="headings-prop">headings prop</h3>
-    <p>
-      Array of <code>MarkdownHeading</code> objects. Pass the value from
-      <code>getHeadings()</code> directly; entries outside the configured depth range are filtered automatically.
-    </p>
+  <h3 id="toc-config-prop">tocConfig prop</h3>
+  <p>
+    Accepts <code>false</code> (render nothing), <code>undefined</code> (default: h2–h3), or
+    <code>&#123; minHeadingLevel, maxHeadingLevel &#125;</code>.
+  </p>
 
-    <h3 id="toc-config-prop">tocConfig prop</h3>
-    <p>
-      Accepts <code>false</code> (render nothing), <code>undefined</code> (default: h2–h3), or
-      <code>&#123; minHeadingLevel, maxHeadingLevel &#125;</code>.
-    </p>
+  <h3 id="label-prop">label prop</h3>
+  <p>
+    Heading text rendered above the list. Defaults to <em>"On this page"</em>.
+  </p>
 
-    <h3 id="label-prop">label prop</h3>
-    <p>
-      Heading text rendered above the list. Defaults to <em>"On this page"</em>.
-    </p>
+  <h2 id="behaviour">Behaviour</h2>
 
-    <h2 id="behaviour">Behaviour</h2>
+  <h3 id="scroll-spy">Scroll-spy</h3>
+  <p>
+    A passive <code>scroll</code> listener throttled via <code>requestAnimationFrame</code>
+    sets <code>aria-current="true"</code> on the link whose heading last crossed the 160 px threshold.
+  </p>
 
-    <h3 id="scroll-spy">Scroll-spy</h3>
-    <p>
-      A passive <code>scroll</code> listener throttled via <code>requestAnimationFrame</code>
-      sets <code>aria-current="true"</code> on the link whose heading last crossed the 160 px threshold.
-    </p>
+  <h3 id="active-threshold">Active threshold</h3>
+  <p>
+    160 px accounts for the sticky nav bar. Headings that cannot be scrolled past it (too close to
+    the bottom) will not become active — this matches Starlight's behaviour.
+  </p>
 
-    <h3 id="active-threshold">Active threshold</h3>
-    <p>
-      160 px accounts for the sticky nav bar. Headings that cannot be scrolled past it
-      (too close to the bottom) will not become active — this matches Starlight's behaviour.
-    </p>
+  <h2 id="styling">Styling</h2>
 
-    <h2 id="styling">Styling</h2>
+  <h3 id="css-custom-properties">CSS custom properties</h3>
+  <p>
+    Override <code>--ig-toc-width</code> (default <code>24rem</code>) to change the sidebar column
+    width. Hidden below <code>84rem</code> viewport width; above it the sidebar is <code
+      >position: fixed</code
+    > on the right edge.
+  </p>
 
-    <h3 id="css-custom-properties">CSS custom properties</h3>
-    <p>Override <code>--ig-toc-width</code> (default <code>24rem</code>) to change the sidebar column width. Hidden below <code>84rem</code> viewport width; above it the sidebar is <code>position: fixed</code> on the right edge.</p>
+  <h3 id="active-state-styles">Active-state styles</h3>
+  <p>
+    Active link: <code>color: var(--sl-color-accent-high)</code>, <code>font-weight: 600</code>,
+    <code>background: var(--sl-color-accent-low)</code>.
+  </p>
 
-    <h3 id="active-state-styles">Active-state styles</h3>
-    <p>
-      Active link: <code>color: var(--sl-color-accent-high)</code>, <code>font-weight: 600</code>,
-      <code>background: var(--sl-color-accent-low)</code>.
-    </p>
+  <h2 id="integration">Integration</h2>
 
-    <h2 id="integration">Integration</h2>
+  <h3 id="mdx-pages">MDX pages</h3>
+  <p>
+    Pass <code>getHeadings()</code> from your MDX layout and render <code
+      >&lt;DocsToc slot="toc" headings={headings} /&gt;</code
+    > inside <code>DocsLayout</code>.
+  </p>
 
-    <h3 id="mdx-pages">MDX pages</h3>
-    <p>Pass <code>getHeadings()</code> from your MDX layout and render <code>&lt;DocsToc slot="toc" headings={headings} /&gt;</code> inside <code>DocsLayout</code>.</p>
+  <h3 id="docs-layout">DocsLayout</h3>
+  <p>
+    Renders a <code>toc</code> named slot on the right side. Pass a <code
+      >&lt;DocsToc slot="toc" /&gt;</code
+    >
+    to fill it; omit the slot to hide the TOC column entirely.
+  </p>
 
-    <h3 id="docs-layout">DocsLayout</h3>
-    <p>
-      Renders a <code>toc</code> named slot on the right side. Pass a <code>&lt;DocsToc slot="toc" /&gt;</code>
-      to fill it; omit the slot to hide the TOC column entirely.
-    </p>
+  <h2 id="known-limitations">Known limitations</h2>
 
-    <h2 id="known-limitations">Known limitations</h2>
+  <h3 id="short-pages">Short pages</h3>
+  <p>
+    Headings too close to the bottom to cross the scroll threshold will not highlight when clicked.
+    This is intentional and matches Starlight's behaviour.
+  </p>
 
-    <h3 id="short-pages">Short pages</h3>
-    <p>
-      Headings too close to the bottom to cross the scroll threshold will not highlight
-      when clicked. This is intentional and matches Starlight's behaviour.
-    </p>
+  <h3 id="dynamic-headings">Dynamic headings</h3>
+  <p>
+    The heading list is collected once in <code>connectedCallback</code>; headings added after mount
+    are not tracked until the next page navigation.
+  </p>
 
-    <h3 id="dynamic-headings">Dynamic headings</h3>
-    <p>
-      The heading list is collected once in <code>connectedCallback</code>; headings
-      added after mount are not tracked until the next page navigation.
-    </p>
-
-    <h2 id="changelog">Changelog</h2>
-    <ul>
-      <li><strong>0.2.0</strong> — Switched to <code>is:global</code> styles.</li>
-      <li><strong>0.1.3</strong> — Added <code>label</code> prop.</li>
-      <li><strong>0.1.2</strong> — Added <code>tocConfig</code> prop.</li>
-      <li><strong>0.1.1</strong> — Fixed RAF not cancelled in <code>disconnectedCallback</code>.</li>
-      <li><strong>0.1.0</strong> — Initial release.</li>
-    </ul>
-
+  <h2 id="changelog">Changelog</h2>
+  <ul>
+    <li><strong>0.2.0</strong> — Switched to <code>is:global</code> styles.</li>
+    <li><strong>0.1.3</strong> — Added <code>label</code> prop.</li>
+    <li><strong>0.1.2</strong> — Added <code>tocConfig</code> prop.</li>
+    <li><strong>0.1.1</strong> — Fixed RAF not cancelled in <code>disconnectedCallback</code>.</li>
+    <li><strong>0.1.0</strong> — Initial release.</li>
+  </ul>
 </DocsLayout>
