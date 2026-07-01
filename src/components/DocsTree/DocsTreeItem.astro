@@ -30,8 +30,8 @@ interface Props {
 const { node, depth, variant, activeId, renderLabel: RenderLabel } = Astro.props;
 
 const hasChildren = !!(node.children && node.children.length > 0);
-const isLeaf      = !hasChildren;
-const isActive    = activeId !== undefined && node.id === activeId;
+const isLeaf = !hasChildren;
+const isActive = activeId !== undefined && node.id === activeId;
 
 // Fold itemData entries into a plain object of `data-*` props so Astro spreads
 // them onto <igc-tree-item>. Keys are camelCase → Astro converts to kebab.
@@ -50,40 +50,45 @@ if (node.itemData) {
   expanded={node.expanded ? '' : undefined}
   {...dataAttrs}
 >
-  {node.href ? (
+  {
+    node.href ? (
       <div slot="label">
-        <!--  The anchor is used only for navigation purpose it behave as an overlay on the ::part(wrapper) -->
+        {/* The anchor is used only for navigation purpose it behave as an overlay on the ::part(wrapper) */}
         <a
           href={node.href}
           aria-current={isActive ? 'page' : undefined}
           class="docs-tree-link"
           {...node.linkAttrs}
-        ></a>
-          {RenderLabel ? (
-            <RenderLabel node={node} depth={depth} isLeaf={isLeaf} isActive={isActive} />
-          ) : (
-            <span class="docs-tree-label">{node.label}</span>
-          )}
-          {hasChildren && <igc-icon name="chevron" collection="docs" class="tree-expand-icon"></igc-icon>}
+        />
+        {RenderLabel ? (
+          <RenderLabel node={node} depth={depth} isLeaf={isLeaf} isActive={isActive} />
+        ) : (
+          <span class="docs-tree-label">{node.label}</span>
+        )}
+        {hasChildren && <igc-icon name="chevron" collection="docs" class="tree-expand-icon" />}
       </div>
-  ) : (
-    <div slot="label" class="docs-tree-group">
-      {RenderLabel ? (
-        <RenderLabel node={node} depth={depth} isLeaf={isLeaf} isActive={isActive} />
-      ) : (
-        <span class="docs-tree-label">{node.label}</span>
-      )}
-      <igc-icon name="chevron" collection="docs" class="tree-expand-icon"></igc-icon>
-    </div>
-  )}
+    ) : (
+      <div slot="label" class="docs-tree-group">
+        {RenderLabel ? (
+          <RenderLabel node={node} depth={depth} isLeaf={isLeaf} isActive={isActive} />
+        ) : (
+          <span class="docs-tree-label">{node.label}</span>
+        )}
+        <igc-icon name="chevron" collection="docs" class="tree-expand-icon" />
+      </div>
+    )
+  }
 
-  {hasChildren && node.children!.map((child) => (
-    <Astro.self
-      node={child}
-      depth={depth + 1}
-      variant={variant}
-      activeId={activeId}
-      renderLabel={RenderLabel}
-    />
-  ))}
+  {
+    hasChildren &&
+      node.children!.map((child) => (
+        <Astro.self
+          node={child}
+          depth={depth + 1}
+          variant={variant}
+          activeId={activeId}
+          renderLabel={RenderLabel}
+        />
+      ))
+  }
 </igc-tree-item>

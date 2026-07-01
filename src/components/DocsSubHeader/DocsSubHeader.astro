@@ -13,7 +13,13 @@
  * moved to the `DocsBreadcrumb` component, rendered inside the main frame.
  */
 import { platform as virtualPlatform } from 'virtual:docs-template/nav-html';
-import { productLinks, sidebar as sidebarData, title as siteTitle, packages as virtualPackages, selectedPackage as virtualSelectedPackage } from 'virtual:docs-template/site-meta';
+import {
+  productLinks,
+  sidebar as sidebarData,
+  title as siteTitle,
+  packages as virtualPackages,
+  selectedPackage as virtualSelectedPackage,
+} from 'virtual:docs-template/site-meta';
 import Search from '../Search/Search.astro';
 import type { SidebarEntry } from '../../lib/sidebar/types';
 import { getBreadcrumb } from '../../lib/sidebar/helpers';
@@ -28,10 +34,11 @@ const PLATFORM_ICONS: Record<string, string> = {
 
 function getPlatformIcon(text: string): string | null {
   const t = text.toLowerCase();
-  if (t.includes('angular'))                                                         return 'angular-logo';
-  if (t.includes('react'))                                                           return 'react-logo';
-  if (t.includes('blazor'))                                                          return 'blazor-logo';
-  if (t.includes('web-component') || t.includes('webcomponent') || t.includes('wc')) return 'wc-logo';
+  if (t.includes('angular')) return 'angular-logo';
+  if (t.includes('react')) return 'react-logo';
+  if (t.includes('blazor')) return 'blazor-logo';
+  if (t.includes('web-component') || t.includes('webcomponent') || t.includes('wc'))
+    return 'wc-logo';
   return null;
 }
 
@@ -112,15 +119,20 @@ const filteredLinks = resolvedLinks.filter((l: ProductLink) => l.platform !== cu
 type PackageEntry = string | { label: string; value?: string; href?: string };
 const rawPackages = packagesProp ?? (virtualPackages?.length > 0 ? virtualPackages : undefined);
 const packages = (rawPackages as PackageEntry[] | undefined)?.map((p: PackageEntry) =>
-    typeof p === 'string' ? { label: p, value: p, href: undefined } : { label: p.label, value: p.value ?? p.label, href: p.href }
+  typeof p === 'string'
+    ? { label: p, value: p, href: undefined }
+    : { label: p.label, value: p.value ?? p.label, href: p.href },
 );
-const selectedPackage = selectedPackageProp ?? (virtualSelectedPackage || undefined) ?? packages?.[0]?.value;
-const platformIcon = PLATFORM_ICONS[selectedPackage ?? ''] ?? PLATFORM_ICONS[currentPlatform ?? ''] ?? null;
-const selectedPackageLabel = packages?.find(p => p.value === selectedPackage)?.label ?? selectedPackage ?? '';
+const selectedPackage =
+  selectedPackageProp ?? (virtualSelectedPackage || undefined) ?? packages?.[0]?.value;
+const platformIcon =
+  PLATFORM_ICONS[selectedPackage ?? ''] ?? PLATFORM_ICONS[currentPlatform ?? ''] ?? null;
+const selectedPackageLabel =
+  packages?.find((p) => p.value === selectedPackage)?.label ?? selectedPackage ?? '';
 
 const resolvedSidebar = (sidebarItems ?? sidebarData) as SidebarEntry[];
 const sidebarCrumbs = currentSlug ? getBreadcrumb(resolvedSidebar, currentSlug) : [];
-const crumbs = sidebarCrumbs.length > 0 ? sidebarCrumbs : (pageTitle ? [pageTitle] : []);
+const crumbs = sidebarCrumbs.length > 0 ? sidebarCrumbs : pageTitle ? [pageTitle] : [];
 
 const PLATFORM_LABELS: Record<string, string> = {
   angular: 'Angular',
@@ -132,217 +144,266 @@ const platformLabel = currentPlatform ? (PLATFORM_LABELS[currentPlatform] ?? nul
 ---
 
 <docs-subheader-menu class="igd-docs-subheader" data-platform={currentPlatform ?? ''}>
-        <div class="igd-logo">
-            <!-- Sidebar toggle — visible only when the sidebar is hidden (tablet + mobile) -->
-            <igc-icon-button
-                    class="subheader-sidebar-toggle"
-                    variant="flat"
-                    data-sidebar-toggle
-                    aria-label="Toggle sidebar navigation"
-                    aria-expanded="false"
-                    title="Toggle sidebar">
-                <igc-icon name="hamburger-menu" collection="docs" aria-hidden="true"></igc-icon>
-            </igc-icon-button>
-            <div class="igd-logo__text">
-                {/* Keep as <span>, not <h1> — avoids competing with the page <h1> in search. */}
-                <span class="igd-logo-text">{logoText}</span>
-                {platformLabel && <span class="igd-logo__platform">for {platformLabel}</span>}
-            </div>
-        </div>
+  <div class="igd-logo">
+    <!-- Sidebar toggle — visible only when the sidebar is hidden (tablet + mobile) -->
+    <igc-icon-button
+      class="subheader-sidebar-toggle"
+      variant="flat"
+      data-sidebar-toggle
+      aria-label="Toggle sidebar navigation"
+      aria-expanded="false"
+      title="Toggle sidebar"
+    >
+      <igc-icon name="hamburger-menu" collection="docs" aria-hidden="true"></igc-icon>
+    </igc-icon-button>
+    <div class="igd-logo__text">
+      {/* Keep as <span>, not <h1> — avoids competing with the page <h1> in search. */}
+      <span class="igd-logo-text">{logoText}</span>
+      {platformLabel && <span class="igd-logo__platform">for {platformLabel}</span>}
+    </div>
+  </div>
 
-        <div class="igd-docs-subheader__content">
-            <!-- Search (overridable via named slot) -->
-            <slot name="search"><Search /></slot>
+  <div class="igd-docs-subheader__content">
+    <!-- Search (overridable via named slot) -->
+    <slot name="search"><Search /></slot>
 
-            <!-- Package selector -->
-            {packages && packages.length > 0 && (
-                <igc-select distance="4" id="package-select" class="igd-package-select" outlined value={selectedPackage} aria-label={packageLabel}>
-                    {platformIcon && <igc-icon name={platformIcon} collection="docs" slot="prefix" aria-hidden="true"></igc-icon>}
-                    {packages.map((p) => {
-                        const icon = getPlatformIcon(p.value ?? '') ?? getPlatformIcon(p.label ?? '');
-                        return (
-                            <igc-select-item value={p.value} data-href={p.href}>
-                                {icon && <igc-icon slot="prefix" name={icon} collection="docs" aria-hidden="true"></igc-icon>}
-                                {p.label}
-                            </igc-select-item>
-                        );
-                    })}
-                </igc-select>
-                <igc-tooltip id="package-tooltip" class="igd-package-select-tooltip" anchor="package-select" placement="bottom" with-arrow>{selectedPackageLabel}</igc-tooltip>
+    {/* Package selector */}
+    {
+      packages && packages.length > 0 && (
+        <>
+          <igc-select
+            distance="4"
+            id="package-select"
+            class="igd-package-select"
+            outlined
+            value={selectedPackage}
+            aria-label={packageLabel}
+          >
+            {platformIcon && (
+              <igc-icon name={platformIcon} collection="docs" slot="prefix" aria-hidden="true" />
             )}
+            {packages.map((p) => {
+              const icon = getPlatformIcon(p.value ?? '') ?? getPlatformIcon(p.label ?? '');
+              return (
+                <igc-select-item value={p.value} data-href={p.href}>
+                  {icon && (
+                    <igc-icon slot="prefix" name={icon} collection="docs" aria-hidden="true" />
+                  )}
+                  {p.label}
+                </igc-select-item>
+              );
+            })}
+          </igc-select>
+          <igc-tooltip
+            id="package-tooltip"
+            class="igd-package-select-tooltip"
+            anchor="package-select"
+            placement="bottom"
+            with-arrow
+          >
+            {selectedPackageLabel}
+          </igc-tooltip>
+        </>
+      )
+    }
 
-            <!-- Version selector -->
-            {versions && versions.length > 0 && (
-                <igc-select distance="4" id="version-select" class="igd-version-select" outlined value={selectedVersion} aria-label={versionLabel}>
-                    {versions.map((v) => (
-                        <igc-select-item value={v}>{v}</igc-select-item>
-                    ))}
-                </igc-select>
-            )}
+    <!-- Version selector -->
+    {
+      versions && versions.length > 0 && (
+        <igc-select
+          distance="4"
+          id="version-select"
+          class="igd-version-select"
+          outlined
+          value={selectedVersion}
+          aria-label={versionLabel}
+        >
+          {versions.map((v) => (
+            <igc-select-item value={v}>{v}</igc-select-item>
+          ))}
+        </igc-select>
+      )
+    }
 
-
-            <!-- TODO WHY WE NEED THIS? -->
-            <!--{filteredLinks.length > 0 && (-->
-            <!--    <div class="subheader-links">-->
-            <!--        {filteredLinks.map((link, i) => (-->
-            <!--                <>-->
-            <!--                    {i > 0 && <span class="product-sep" aria-hidden="true">|</span>}-->
-            <!--                    <a href={link.href} class="product-link">{link.label}</a>-->
-            <!--                </>-->
-            <!--        ))}-->
-            <!--    </div>-->
-            <!--)}-->
-        </div>
+    <!-- TODO WHY WE NEED THIS? -->
+    <!--{filteredLinks.length > 0 && (-->
+    <!--    <div class="subheader-links">-->
+    <!--        {filteredLinks.map((link, i) => (-->
+    <!--                <>-->
+    <!--                    {i > 0 && <span class="product-sep" aria-hidden="true">|</span>}-->
+    <!--                    <a href={link.href} class="product-link">{link.label}</a>-->
+    <!--                </>-->
+    <!--        ))}-->
+    <!--    </div>-->
+    <!--)}-->
+  </div>
 </docs-subheader-menu>
 
 <script>
-    if (!customElements.get('docs-subheader-menu')) {
-        class DocsSubHeaderMenu extends HTMLElement {
-            connectedCallback() {
-                // Package selector navigation
-                const packageSelect = this.querySelector('#package-select');
-                const packageTooltip = this.querySelector<any>('#package-tooltip');
-                if (packageSelect) {
-                    // Truncates the native input value directly so the '\u2026' is baked in,
-                    // Keep the full package label in the native input and apply truncation
-                    // only as a visual style so assistive technologies still get the full text.
-                    function applyTriggerTruncation() {
-                        const igcInput = (packageSelect as any).shadowRoot?.querySelector('igc-input');
-                        const nativeInput = igcInput?.shadowRoot?.querySelector('input') as HTMLInputElement | null;
-                        if (!nativeInput || !nativeInput.value) return;
+  if (!customElements.get('docs-subheader-menu')) {
+    class DocsSubHeaderMenu extends HTMLElement {
+      connectedCallback() {
+        // Package selector navigation
+        const packageSelect = this.querySelector('#package-select');
+        const packageTooltip = this.querySelector<any>('#package-tooltip');
+        if (packageSelect) {
+          // Truncates the native input value directly so the '\u2026' is baked in,
+          // Keep the full package label in the native input and apply truncation
+          // only as a visual style so assistive technologies still get the full text.
+          function applyTriggerTruncation() {
+            const igcInput = (packageSelect as any).shadowRoot?.querySelector('igc-input');
+            const nativeInput = igcInput?.shadowRoot?.querySelector(
+              'input',
+            ) as HTMLInputElement | null;
+            if (!nativeInput || !nativeInput.value) return;
 
-                        const text = nativeInput.value;
+            const text = nativeInput.value;
 
-                        // Preserve the full label for accessibility and hover disclosure.
-                        nativeInput.setAttribute('aria-label', text);
-                        nativeInput.title = text;
+            // Preserve the full label for accessibility and hover disclosure.
+            nativeInput.setAttribute('aria-label', text);
+            nativeInput.title = text;
 
-                        // Apply truncation only to the rendered text.
-                        nativeInput.style.overflow = 'hidden';
-                        nativeInput.style.textOverflow = 'ellipsis';
-                        nativeInput.style.whiteSpace = 'nowrap';
-                    }
+            // Apply truncation only to the rendered text.
+            nativeInput.style.overflow = 'hidden';
+            nativeInput.style.textOverflow = 'ellipsis';
+            nativeInput.style.whiteSpace = 'nowrap';
+          }
 
-                    // Run after igcInput's Lit render cycle settles (two rAFs = after microtasks + first paint)
-                    requestAnimationFrame(() => requestAnimationFrame(() => applyTriggerTruncation()));
+          // Run after igcInput's Lit render cycle settles (two rAFs = after microtasks + first paint)
+          requestAnimationFrame(() => requestAnimationFrame(() => applyTriggerTruncation()));
 
-                    // igcInput re-renders with the full text each time the dropdown closes;
-                    // re-apply truncation afterwards.
-                    packageSelect.addEventListener('igcClosed', () =>
-                        requestAnimationFrame(() => applyTriggerTruncation())
-                    );
+          // igcInput re-renders with the full text each time the dropdown closes;
+          // re-apply truncation afterwards.
+          packageSelect.addEventListener('igcClosed', () =>
+            requestAnimationFrame(() => applyTriggerTruncation()),
+          );
 
-                    packageSelect.addEventListener('igcChange', (e: Event) => {
-                        const val = (e as CustomEvent).detail?.value ?? (packageSelect as any).value;
-                        const item = packageSelect.querySelector<HTMLElement>(`igc-select-item[value="${val}"]`);
-                        const href = item?.dataset?.href;
-                        if (href) window.location.href = href;
-                        // Sync tooltip content with the new selection label
-                        if (packageTooltip) {
-                            packageTooltip.textContent = item?.textContent?.trim() ?? val;
-                        }
-                    });
-                }
-                // Only show the package tooltip when the label is visually truncated
-                if (packageTooltip && packageSelect) {
-                    // Hide tooltip when the dropdown opens
-                    packageSelect.addEventListener('igcOpening', () => packageTooltip.hide?.());
-
-                    packageTooltip.addEventListener('igcOpening', (e: Event) => {
-                        // Never show tooltip while the dropdown is open
-                        if ((packageSelect as any).open) {
-                            e.preventDefault();
-                            return;
-                        }
-                        const igcInput = (packageSelect as any).shadowRoot?.querySelector('igc-input');
-                        const nativeInput = igcInput?.shadowRoot?.querySelector('input');
-                        // Show when we applied manual truncation (ends with '\u2026') or
-                        // when there is natural CSS overflow.
-                        const truncated = nativeInput?.value?.endsWith('\u2026');
-                        const overflows = nativeInput && nativeInput.scrollWidth > nativeInput.clientWidth;
-                        if (!truncated && !overflows) {
-                            e.preventDefault();
-                        }
-                    });
-                }
-
-                // Sidebar toggle
-                const sidebarBtn = this.querySelector<HTMLButtonElement>('[data-sidebar-toggle]');
-                if (sidebarBtn) {
-                    sidebarBtn.addEventListener('click', () => {
-                        const expanded = document.body.hasAttribute('data-sidebar-open');
-                        document.body.toggleAttribute('data-sidebar-open', !expanded);
-                        sidebarBtn.setAttribute('aria-expanded', String(!expanded));
-                    });
-                }
-
-                // Close sidebar on Escape
-                document.addEventListener('keyup', (e: KeyboardEvent) => {
-                    if (e.key === 'Escape' && document.body.hasAttribute('data-sidebar-open')) {
-                        document.body.removeAttribute('data-sidebar-open');
-                        sidebarBtn?.setAttribute('aria-expanded', 'false');
-                        sidebarBtn?.focus();
-                    }
-                });
-
-                // Close sidebar on page navigation
-                document.addEventListener('astro:page-load', () => {
-                    document.body.removeAttribute('data-sidebar-open');
-                    sidebarBtn?.setAttribute('aria-expanded', 'false');
-                });
+          packageSelect.addEventListener('igcChange', (e: Event) => {
+            const val = (e as CustomEvent).detail?.value ?? (packageSelect as any).value;
+            const item = packageSelect.querySelector<HTMLElement>(
+              `igc-select-item[value="${val}"]`,
+            );
+            const href = item?.dataset?.href;
+            if (href) window.location.href = href;
+            // Sync tooltip content with the new selection label
+            if (packageTooltip) {
+              packageTooltip.textContent = item?.textContent?.trim() ?? val;
             }
+          });
+        }
+        // Only show the package tooltip when the label is visually truncated
+        if (packageTooltip && packageSelect) {
+          // Hide tooltip when the dropdown opens
+          packageSelect.addEventListener('igcOpening', () => packageTooltip.hide?.());
+
+          packageTooltip.addEventListener('igcOpening', (e: Event) => {
+            // Never show tooltip while the dropdown is open
+            if ((packageSelect as any).open) {
+              e.preventDefault();
+              return;
+            }
+            const igcInput = (packageSelect as any).shadowRoot?.querySelector('igc-input');
+            const nativeInput = igcInput?.shadowRoot?.querySelector('input');
+            // Show when we applied manual truncation (ends with '\u2026') or
+            // when there is natural CSS overflow.
+            const truncated = nativeInput?.value?.endsWith('\u2026');
+            const overflows = nativeInput && nativeInput.scrollWidth > nativeInput.clientWidth;
+            if (!truncated && !overflows) {
+              e.preventDefault();
+            }
+          });
         }
 
-        customElements.define('docs-subheader-menu', DocsSubHeaderMenu);
+        // Sidebar toggle
+        const sidebarBtn = this.querySelector<HTMLButtonElement>('[data-sidebar-toggle]');
+        if (sidebarBtn) {
+          sidebarBtn.addEventListener('click', () => {
+            const expanded = document.body.hasAttribute('data-sidebar-open');
+            document.body.toggleAttribute('data-sidebar-open', !expanded);
+            sidebarBtn.setAttribute('aria-expanded', String(!expanded));
+          });
+        }
+
+        // Close sidebar on Escape
+        document.addEventListener('keyup', (e: KeyboardEvent) => {
+          if (e.key === 'Escape' && document.body.hasAttribute('data-sidebar-open')) {
+            document.body.removeAttribute('data-sidebar-open');
+            sidebarBtn?.setAttribute('aria-expanded', 'false');
+            sidebarBtn?.focus();
+          }
+        });
+
+        // Close sidebar on page navigation
+        document.addEventListener('astro:page-load', () => {
+          document.body.removeAttribute('data-sidebar-open');
+          sidebarBtn?.setAttribute('aria-expanded', 'false');
+        });
+      }
     }
+
+    customElements.define('docs-subheader-menu', DocsSubHeaderMenu);
+  }
 </script>
 
 <script>
-    import { defineComponents, IgcIconComponent, IgcIconButtonComponent, IgcSelectComponent, IgcSelectItemComponent, IgcTooltipComponent } from 'igniteui-webcomponents';
-    import { registerIcons } from '../../scripts/icon-registry';
-    defineComponents(IgcIconComponent, IgcIconButtonComponent, IgcSelectComponent, IgcSelectItemComponent, IgcTooltipComponent);
-    registerIcons();
+  import {
+    defineComponents,
+    IgcIconComponent,
+    IgcIconButtonComponent,
+    IgcSelectComponent,
+    IgcSelectItemComponent,
+    IgcTooltipComponent,
+  } from 'igniteui-webcomponents';
+  import { registerIcons } from '../../scripts/icon-registry';
+  defineComponents(
+    IgcIconComponent,
+    IgcIconButtonComponent,
+    IgcSelectComponent,
+    IgcSelectItemComponent,
+    IgcTooltipComponent,
+  );
+  registerIcons();
 
-    function getPlatformIcon(text: string): string | null {
-        const t = text.toLowerCase();
-        if (t.includes('angular'))                                                         return 'angular-logo';
-        if (t.includes('react'))                                                           return 'react-logo';
-        if (t.includes('blazor'))                                                          return 'blazor-logo';
-        if (t.includes('web-component') || t.includes('webcomponent') || t.includes('wc')) return 'wc-logo';
-        return null;
+  function getPlatformIcon(text: string): string | null {
+    const t = text.toLowerCase();
+    if (t.includes('angular')) return 'angular-logo';
+    if (t.includes('react')) return 'react-logo';
+    if (t.includes('blazor')) return 'blazor-logo';
+    if (t.includes('web-component') || t.includes('webcomponent') || t.includes('wc'))
+      return 'wc-logo';
+    return null;
+  }
+
+  function syncTriggerIcon(select: Element, val: string) {
+    const icon = getPlatformIcon(val);
+    let prefixIcon = select.querySelector<any>(':scope > igc-icon[slot="prefix"]');
+    if (icon) {
+      if (!prefixIcon) {
+        prefixIcon = document.createElement('igc-icon') as any;
+        prefixIcon.setAttribute('slot', 'prefix');
+        prefixIcon.setAttribute('aria-hidden', 'true');
+        prefixIcon.setAttribute('collection', 'docs');
+        select.prepend(prefixIcon);
+      }
+      prefixIcon.setAttribute('name', icon);
+    } else if (prefixIcon) {
+      prefixIcon.remove();
     }
+  }
 
-    function syncTriggerIcon(select: Element, val: string) {
-        const icon = getPlatformIcon(val);
-        let prefixIcon = select.querySelector<any>(':scope > igc-icon[slot="prefix"]');
-        if (icon) {
-            if (!prefixIcon) {
-                prefixIcon = document.createElement('igc-icon') as any;
-                prefixIcon.setAttribute('slot', 'prefix');
-                prefixIcon.setAttribute('aria-hidden', 'true');
-                prefixIcon.setAttribute('collection', 'docs');
-                select.prepend(prefixIcon);
-            }
-            prefixIcon.setAttribute('name', icon);
-        } else if (prefixIcon) {
-            prefixIcon.remove();
-        }
+  function initSelectors() {
+    const packageSelect = document.querySelector('#package-select');
+    if (packageSelect) {
+      packageSelect.addEventListener('igcChange', (e: Event) => {
+        const val = (e as CustomEvent).detail?.value ?? (packageSelect as any).value;
+        const item = packageSelect.querySelector<HTMLElement>(`igc-select-item[value="${val}"]`);
+        syncTriggerIcon(packageSelect, val);
+        const href = item?.dataset?.href;
+        if (href) window.location.href = href;
+      });
     }
+  }
 
-    function initSelectors() {
-        const packageSelect = document.querySelector('#package-select');
-        if (packageSelect) {
-            packageSelect.addEventListener('igcChange', (e: Event) => {
-                const val = (e as CustomEvent).detail?.value ?? (packageSelect as any).value;
-                const item = packageSelect.querySelector<HTMLElement>(`igc-select-item[value="${val}"]`);
-                syncTriggerIcon(packageSelect, val);
-                const href = item?.dataset?.href;
-                if (href) window.location.href = href;
-            });
-        }
-    }
-
-    document.addEventListener('astro:page-load', initSelectors);
-    initSelectors();
+  document.addEventListener('astro:page-load', initSelectors);
+  initSelectors();
 </script>
-
