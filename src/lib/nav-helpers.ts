@@ -133,7 +133,7 @@ export async function fetchIgNav(lang: NavLang = 'en'): Promise<IgNavHtml> {
             credentials: 'omit',
             signal: AbortSignal.timeout(15_000),
             cache: 'no-store',
-            headers: { 'Cache-Control': 'no-cache', Pragma: 'no-cache' },
+            headers: { 'Cache-Control': 'no-store, no-cache, max-age=0', Pragma: 'no-cache' },
         });
         if (res.ok) {
             const html = await res.text();
