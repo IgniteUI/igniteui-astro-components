@@ -122,7 +122,7 @@ export async function fetchIgNav(lang: NavLang = 'en'): Promise<IgNavHtml> {
     if (_cache.has(lang)) return _cache.get(lang)!;
 
     const igBase = lang === 'jp' ? 'https://jp.infragistics.com' : 'https://www.infragistics.com';
-    const navUrl = `${igBase}/navigation`;
+    const navUrl = `${igBase}/navigation?_=${Date.now()}`;
 
     let headerHtml = '';
     let uiFooterHtml = '';
@@ -132,6 +132,8 @@ export async function fetchIgNav(lang: NavLang = 'en'): Promise<IgNavHtml> {
         const res = await fetch(navUrl, {
             credentials: 'omit',
             signal: AbortSignal.timeout(15_000),
+            cache: 'no-store',
+            headers: { 'Cache-Control': 'no-store, no-cache, max-age=0', Pragma: 'no-cache' },
         });
         if (res.ok) {
             const html = await res.text();
