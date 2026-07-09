@@ -1,0 +1,39 @@
+---
+// Small single-item placeholder used to demo <Sample fitContent noBorder>.
+// The page carries NO positioning/sizing of its own — the avatar alone defines
+// the content size (fitContent shrinks the iframe to it) and any centering is
+// the host's job via the `position` prop. Served at /mock-demo-avatar.
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mock Demo (avatar)</title>
+  <style>
+    /* No positioning styles on html/body — the demo must not position itself.
+       The body padding is NOT layout/spacing: it reserves room for the avatar's
+       box-shadow (ink overflow). An iframe clips at its edge, so paint effects
+       must fit inside the page's own layout to survive fitContent sizing. */
+    html, body { margin: 0; }
+    body { padding: 16px; }
+    .avatar {
+      width: 64px;
+      height: 64px;
+      font-family: system-ui, sans-serif;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      font-weight: 600;
+      color: #fff;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+    }
+  </style>
+</head>
+<body>
+  <div class="avatar" role="img" aria-label="User avatar">JD</div>
+</body>
+</html>

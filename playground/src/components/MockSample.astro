@@ -17,14 +17,33 @@ interface Props {
     height?: number;
     alt?: string;
     tabs?: CodeTab[];
+    /** Same semantics as Sample.astro: content dictates the iframe size, `height` ignored. */
+    fitContent?: boolean;
+    /** Same semantics as Sample.astro: remove the container border. */
+    noBorder?: boolean;
+    /** Same semantics as Sample.astro: align the iframe, e.g. "center", "end top". */
+    position?: string;
 }
 
 import stackblitzSvgRaw from '../../../src/assets/logos/stackblitz.svg?raw';
 import codeSandboxSvgRaw from '../../../src/assets/logos/code-sandbox.svg?raw';
 
-const { id, src = '/mock-demo', height = 400, alt = 'React Example', tabs } = Astro.props;
+const {
+    // height mirrors Sample.astro's default (150) so a snippet that omits it
+    // renders here exactly as the real component would.
+    id, src = '/mock-demo', height = 150, alt = 'React Example', tabs,
+    fitContent = false, noBorder = false, position,
+} = Astro.props;
 
 const exampleTabId = `${id}-example`;
+
+// Mirror Sample.astro's container computation so the pre-baked shell renders
+// the exact same markup the real component would.
+const posTokens = (position ?? '').toLowerCase().split(/\s+/).filter(Boolean);
+const hToken = posTokens.find(t => t === 'start' || t === 'end')   ?? (posTokens.includes('center') ? 'center' : undefined);
+const vToken = posTokens.find(t => t === 'top'   || t === 'bottom') ?? (posTokens.includes('center') ? 'center' : undefined);
+const useFlex = Boolean(hToken || vToken);
+const containerStyle = fitContent ? undefined : `height: ${height}px`;
 
 const defaultTabs: CodeTab[] = [
     {
@@ -84,7 +103,7 @@ function tabId(index: number) { return `${id}-code-${index}`; }
     <div class="igd-code-view__inner">
         <igc-tabs id={`${id}-tabs`} alignment="start">
             <igc-tab id={exampleTabId} label="EXAMPLE" selected>
-                <div class="igd-sample-container loading" aria-busy="true" style={`height: ${height}px`}>
+                <div class="igd-sample-container loading" data-spacing="md" aria-busy="true" style={containerStyle}>
                     <igc-circular-progress indeterminate class="sample-loading-indicator" aria-label="Loading sample"></igc-circular-progress>
                     <iframe
                             data-src={src}
@@ -100,7 +119,7 @@ function tabId(index: number) { return `${id}-code-${index}`; }
                 <igc-tab id={tabId(i)} label={tab.label}>
                     <div class="code-wrapper">
                         <pre><code class={`language-${tab.lang}`}>{tab.content}</code></pre>
-                        <igc-icon-button variant="outlined" aria-label="Copy code" class="cv-hljs-code-copy"><igc-icon name="copy" collection="docs"></igc-icon></igc-icon-button>
+                        <igc-icon-button variant="flat" aria-label="Copy code" class="cv-hljs-code-copy"><igc-icon name="copy" collection="docs"></igc-icon></igc-icon-button>
                     </div>
                 </igc-tab>
             ))}
