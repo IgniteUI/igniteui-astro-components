@@ -254,12 +254,12 @@
 		--ig-size: var(--ig-size-large);
 		padding: rem(16px);
 		gap: rem(8px);
-		height: var(--search-header-footer-height);
 	}
 	
 	// Visible only on mobile devices
 	.igd-search-footer {
 		display: none;
+		height: var(--search-header-footer-height);
 	}
 	
 	.igd-search-header {

@@ -1,4 +1,5 @@
 @use 'igniteui-theming' as *;
+@use 'copy-button' as *;
 
 /* ============================================================
    Code Blocks (Shiki dual-theme)
@@ -45,29 +46,7 @@ pre.shiki {
 	opacity: 0;
 	z-index: 1;
 	
-	--foreground: var(--ig-primary-600-contrast);
-	--hover-foreground: var(--ig-primary-600-contrast);
-	--focus-foreground: var(--ig-primary-600-contrast);
-	--active-foreground: var(--ig-primary-600-contrast);
-	--background: var(--ig-primary-500);
-	--hover-background: var(--ig-primary-500);
-	--focus-background: var(--ig-primary-500);
-	--active-background: var(--ig-primary-500);
-	--border-color: transparent;
-	--border-color-hover: transparent;
-	--border-color-focus: transparent;
-	
-	&:has([name="check"]) {
-		--foreground: var(--ig-success-300-contrast);
-		--hover-foreground: var(--ig-success-300-contrast);
-		--focus-foreground: var(--ig-success-300-contrast);
-		--active-foreground: var(--ig-success-300-contrast);
-		
-		--background: var(--ig-success-300);
-		--hover-background: var(--ig-success-300);
-		--focus-background: var(--ig-success-300);
-		--active-background: var(--ig-success-300);
-	}
+	@include copy-button-colors;
 }
 
 .copy-code-wrapper:hover > .copy-btn,
