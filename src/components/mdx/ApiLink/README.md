@@ -38,7 +38,7 @@ the index is unavailable, `ApiLink` renders code text and does not guess a URL.
 |------|------|---------|-------------|
 | `type` | `string` | *(required)* | Short symbol name without platform prefix, e.g. `"Grid"` instead of `"IgrGrid"`. |
 | `member` | `string` | — | Optional member name. Resolved through the generated member map when available. |
-| `label` | `string` | auto | Override the display text. |
+| `label` | `string` | auto | Override the display text. When omitted and `member` is set, the label defaults to just the member name (not `Type.member`), cased per platform: camelCase for WebComponents/React/Angular, PascalCase for Blazor. When omitted with no `member`, it defaults to the resolved symbol name. |
 | `pkg` | `string` | — | Ambiguity override only. Use when the same symbol exists in multiple packages and the combined index cannot choose safely. |
 | `kind` | `'class' \| 'interface' \| 'enum' \| 'type' \| 'variable' \| 'function'` | auto | Optional narrowing. Usually unnecessary when the index is available. |
 | `prefixed` | `boolean` | `true` | Candidate-name override for symbols that are never platform-prefixed. Avoid for new docs when the index can resolve the symbol. |
@@ -53,7 +53,9 @@ Platform names use `PlatformContext.name`: `Angular`, `React`,
 {/* Let the generated index find package, kind, and exact symbol name. */}
 <ApiLink type="Grid" />
 
-{/* Member anchors are resolved from the generated member map. */}
+{/* Member anchors are resolved from the generated member map. With no
+    `label`, the display text defaults to the member name, cased per platform:
+    `rowSelection` for WebComponents/React/Angular, `RowSelection` for Blazor. */}
 <ApiLink type="Grid" member="rowSelection" />
 
 {/* Use pkg only when the symbol name is ambiguous across packages. */}
