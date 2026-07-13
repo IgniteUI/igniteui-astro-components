@@ -63,6 +63,16 @@ const ctx = Astro.locals.platformContext as PlatformContext;
 const { prefix, apiPackages } = ctx;
 const label = Astro.props.label;
 
+const upperFirst = (value: string) => value ? value.charAt(0).toUpperCase() + value.slice(1) : value;
+const lowerFirst = (value: string) => value ? value.charAt(0).toLowerCase() + value.slice(1) : value;
+
+/**
+ * Auto-label for a member when no explicit `label` is provided. Blazor member
+ * names are PascalCase; WebComponents, React, and Angular use camelCase.
+ */
+const formatMemberName = (member: string) =>
+    ctx.name === 'Blazor' ? upperFirst(member) : lowerFirst(member);
+
 function getIndexedDisplayName(resolvedName: string, displayBaseName: string, type: string, classSuffix?: string) {
     if (resolvedName === type) return type;
     if (classSuffix && resolvedName === `${type}${classSuffix}`) return type;
@@ -109,7 +119,7 @@ if (Astro.props.kind === 'sass') {
     const baseType = effectivePrefixed ? `${prefix}${type}` : type;
 
     url = '';
-    displayLabel = label ?? (member ? `${baseType}.${member}` : baseType);
+    displayLabel = label ?? (member ? formatMemberName(member) : baseType);
     renderCode = true;
 
     const indexed = resolveApiLinkFromIndex({
@@ -128,7 +138,7 @@ if (Astro.props.kind === 'sass') {
         url = indexed.url;
         renderLink = true;
         const indexedDisplay = getIndexedDisplayName(indexed.symbolName, baseType, type, pkgConfig.classSuffix);
-        displayLabel = label ?? (indexed.memberName ? `${indexedDisplay}.${indexed.memberName}` : indexedDisplay);
+        displayLabel = label ?? (indexed.memberName ? formatMemberName(indexed.memberName) : indexedDisplay);
     } else if (indexed.status === 'ambiguous') {
         const symbol = member ? `${type}.${member}` : type;
         throw new Error(`[ApiLink] Ambiguous API symbol "${symbol}" matched registry candidate "${indexed.candidate}". Add pkg= or kind= to disambiguate.`);
