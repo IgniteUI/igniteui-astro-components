@@ -174,7 +174,7 @@ export default defineConfig({
   outDir: './dist',
   // Disable image optimization — playground pages just use plain <img>.
   image: { service: { entrypoint: 'astro/assets/services/noop' } },
-  integrations: [mdx()],
+  integrations: [mdx({ gfm: true })],
   markdown: {
     shikiConfig: markdownShikiConfig,
     rehypePlugins: [rehypeHeadingAnchors, rehypeTableWrapper],
