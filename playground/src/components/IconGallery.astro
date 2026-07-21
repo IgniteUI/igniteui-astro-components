@@ -1,46 +1,51 @@
 ---
 /**
-    * IconGallery — tabbed gallery of all docs icons and illustrations.
-    *
-    * Tabs:
-    *  • UI      — functional interface icons, used with <igc-icon>
-    *  • Brand   — framework / tool logos, used with <igc-icon>
-    *  • Illustrations — API member-type diagrams, rendered as inline SVG (no igc-icon)
-    *
-    * Each card: preview · name · Copy · Download SVG
-    */
+ * IconGallery — tabbed gallery of all docs icons and illustrations.
+ *
+ * Tabs:
+ *  • UI      — functional interface icons, used with <igc-icon>
+ *  • Brand   — framework / tool logos, used with <igc-icon>
+ *  • Illustrations — API member-type diagrams, rendered as inline SVG (no igc-icon)
+ *
+ * Each card: preview · name · Copy · Download SVG
+ */
 import { ICON_LIST, BRAND_ICONS } from '../../../src/scripts/icon-manifest';
 
 // ── Split icons into categories ───────────────────────────────────────────────
-const uiIcons = ICON_LIST.filter(i => !BRAND_ICONS.has(i.name));
-const brandIcons = ICON_LIST.filter(i => BRAND_ICONS.has(i.name));
+const uiIcons = ICON_LIST.filter((i) => !BRAND_ICONS.has(i.name));
+const brandIcons = ICON_LIST.filter((i) => BRAND_ICONS.has(i.name));
 
 // ── Load illustration SVGs ───────────────────────────────────────────────────
 const illModules = import.meta.glob('../../../src/assets/illustrations/*.svg', {
-    query: '?raw',
-    import: 'default',
-    eager: true,
+  query: '?raw',
+  import: 'default',
+  eager: true,
 }) as Record<string, string>;
 
 interface IllEntry {
-    name: string;
-    filename: string;
-    svg: string;
+  name: string;
+  filename: string;
+  svg: string;
 }
 
-const ILLUSTRATION_LIST: IllEntry[] = Object.entries(illModules).map(([p, svg]) => ({
-    name: p.split('/').pop()!.replace(/\.svg$/, ''),
+const ILLUSTRATION_LIST: IllEntry[] = Object.entries(illModules)
+  .map(([p, svg]) => ({
+    name: p
+      .split('/')
+      .pop()!
+      .replace(/\.svg$/, ''),
     filename: p.split('/').pop()!,
     svg,
-})).sort((a, b) => a.name.localeCompare(b.name));
+  }))
+  .sort((a, b) => a.name.localeCompare(b.name));
 
 // ── JSON payloads for client-side copy / download ────────────────────────────
 function buildJsonPayload(entries: { name: string; filename: string; svg: string }[]) {
-    const map: Record<string, string> = {};
-    for (const { name, filename, svg } of entries) {
-        map[name] = JSON.stringify({ filename, svg });
-    }
-    return JSON.stringify(map).replace(/<\/script/gi, '<\\/script');
+  const map: Record<string, string> = {};
+  for (const { name, filename, svg } of entries) {
+    map[name] = JSON.stringify({ filename, svg });
+  }
+  return JSON.stringify(map).replace(/<\/script/gi, '<\\/script');
 }
 
 const safeIconJson = buildJsonPayload(ICON_LIST);
@@ -48,171 +53,201 @@ const safeIllJson = buildJsonPayload(ILLUSTRATION_LIST);
 ---
 
 <div class="icon-gallery">
-
-    {/* ── Tabbed view ─────────────────────────────────────────────────────── */ }
-    <igc-tabs id="icon-tabs" class="icon-gallery-tabs">
-
-        {/* ── UI Icons tab ────────────────────────────────────────────────── */ }
-        <igc-tab label={ `UI Icons (${ uiIcons.length })` }>
-            <div class="icon-gallery__grid" id="grid-ui" data-total={ uiIcons.length }>
-                { uiIcons.map(({ name }) => (
-                        <div class="icon-card" data-icon-name={ name } data-kind="icon">
-                            <div class="icon-card__preview">
-                                <igc-icon name={ name } collection="docs"></igc-icon>
-                            </div>
-                            <span class="icon-card__name" title={ name }>{ name }</span>
-                            <div class="icon-card__actions">
-                                <igc-button variant="outlined" data-action="copy" title="Copy HTML">Copy HTML</igc-button>
-                                <igc-button variant="outlined" data-action="download" title="Download SVG">Download SVG</igc-button>
-                            </div>
-                        </div>
-                )) }
-                <p class="icon-gallery__empty" hidden>No matching icons</p>
+  {/* ── Tabbed view ─────────────────────────────────────────────────────── */}
+  <igc-tabs id="icon-tabs" class="icon-gallery-tabs">
+    {/* ── UI Icons tab ────────────────────────────────────────────────── */}
+    <igc-tab label={`UI Icons (${uiIcons.length})`}>
+      <div class="icon-gallery__grid" id="grid-ui" data-total={uiIcons.length}>
+        {
+          uiIcons.map(({ name }) => (
+            <div class="icon-card" data-icon-name={name} data-kind="icon">
+              <div class="icon-card__preview">
+                <igc-icon name={name} collection="docs" />
+              </div>
+              <span class="icon-card__name" title={name}>
+                {name}
+              </span>
+              <div class="icon-card__actions">
+                <igc-button variant="outlined" data-action="copy" title="Copy HTML">
+                  Copy HTML
+                </igc-button>
+                <igc-button variant="outlined" data-action="download" title="Download SVG">
+                  Download SVG
+                </igc-button>
+              </div>
             </div>
-        </igc-tab>
+          ))
+        }
+        <p class="icon-gallery__empty" hidden>No matching icons</p>
+      </div>
+    </igc-tab>
 
-        {/* ── Brand Icons tab ─────────────────────────────────────────────── */ }
-        <igc-tab label={ `Brand (${ brandIcons.length })` }>
-            <div class="icon-gallery__grid" id="grid-brand" data-total={ brandIcons.length }>
-                { brandIcons.map(({ name }) => (
-                        <div class="icon-card" data-icon-name={ name } data-kind="icon">
-                            <div class="icon-card__preview">
-                                <igc-icon name={ name } collection="docs"></igc-icon>
-                            </div>
-                            <span class="icon-card__name" title={ name }>{ name }</span>
-                            <div class="icon-card__actions">
-                                <igc-button variant="outlined" data-action="copy" title="Copy HTML">Copy HTML</igc-button>
-                                <igc-button variant="outlined" data-action="download" title="Download SVG">Download SVG</igc-button>
-                            </div>
-                        </div>
-                )) }
-                <p class="icon-gallery__empty" hidden>No matching icons</p>
+    {/* ── Brand Icons tab ─────────────────────────────────────────────── */}
+    <igc-tab label={`Brand (${brandIcons.length})`}>
+      <div class="icon-gallery__grid" id="grid-brand" data-total={brandIcons.length}>
+        {
+          brandIcons.map(({ name }) => (
+            <div class="icon-card" data-icon-name={name} data-kind="icon">
+              <div class="icon-card__preview">
+                <igc-icon name={name} collection="docs" />
+              </div>
+              <span class="icon-card__name" title={name}>
+                {name}
+              </span>
+              <div class="icon-card__actions">
+                <igc-button variant="outlined" data-action="copy" title="Copy HTML">
+                  Copy HTML
+                </igc-button>
+                <igc-button variant="outlined" data-action="download" title="Download SVG">
+                  Download SVG
+                </igc-button>
+              </div>
             </div>
-        </igc-tab>
+          ))
+        }
+        <p class="icon-gallery__empty" hidden>No matching icons</p>
+      </div>
+    </igc-tab>
 
-        {/* ── Illustrations tab ───────────────────────────────────────────── */ }
-        <igc-tab label={ `Illustrations (${ ILLUSTRATION_LIST.length })` }>
-            <div class="icon-gallery__grid icon-gallery__grid--illustrations" id="grid-illustrations"
-                 data-total={ ILLUSTRATION_LIST.length }>
-                { ILLUSTRATION_LIST.map(({ name, svg }) => (
-                        <div class="icon-card icon-card--illustration" data-icon-name={ name } data-kind="illustration">
-                            <div class="icon-card__preview icon-card__preview--illustration" set:html={ svg }/>
-                            <span class="icon-card__name" title={ name }>{ name }</span>
-                            <div class="icon-card__actions">
-                                <igc-button variant="outlined" data-action="copy" title="Copy SVG markup">Copy SVG</igc-button>
-                                <igc-button variant="outlined" data-action="download" title="Download SVG">Download SVG</igc-button>
-                            </div>
-                        </div>
-                )) }
-                <p class="icon-gallery__empty" hidden>No matching illustrations</p>
+    {/* ── Illustrations tab ───────────────────────────────────────────── */}
+    <igc-tab label={`Illustrations (${ILLUSTRATION_LIST.length})`}>
+      <div
+        class="icon-gallery__grid icon-gallery__grid--illustrations"
+        id="grid-illustrations"
+        data-total={ILLUSTRATION_LIST.length}
+      >
+        {
+          ILLUSTRATION_LIST.map(({ name, svg }) => (
+            <div
+              class="icon-card icon-card--illustration"
+              data-icon-name={name}
+              data-kind="illustration"
+            >
+              <div class="icon-card__preview icon-card__preview--illustration" set:html={svg} />
+              <span class="icon-card__name" title={name}>
+                {name}
+              </span>
+              <div class="icon-card__actions">
+                <igc-button variant="outlined" data-action="copy" title="Copy SVG markup">
+                  Copy SVG
+                </igc-button>
+                <igc-button variant="outlined" data-action="download" title="Download SVG">
+                  Download SVG
+                </igc-button>
+              </div>
             </div>
-        </igc-tab>
-
-    </igc-tabs>
+          ))
+        }
+        <p class="icon-gallery__empty" hidden>No matching illustrations</p>
+      </div>
+    </igc-tab>
+  </igc-tabs>
 </div>
 
 {/* JSON payloads — safe for inline script context */}
-<script type="application/json" id="icon-svg-map" set:html={ safeIconJson }></script>
-<script type="application/json" id="ill-svg-map" set:html={ safeIllJson }></script>
+<script type="application/json" id="icon-svg-map" set:html={safeIconJson} />
+<script type="application/json" id="ill-svg-map" set:html={safeIllJson} />
 
 <script>
-    import {
-        defineComponents,
-        IgcTabsComponent,
-        IgcTabComponent,
-        IgcIconComponent,
-        IgcButtonComponent,
-    } from 'igniteui-webcomponents';
-    import '../../../src/scripts/icon-registry';
+  import {
+    defineComponents,
+    IgcTabsComponent,
+    IgcTabComponent,
+    IgcIconComponent,
+    IgcButtonComponent,
+  } from 'igniteui-webcomponents';
+  import '../../../src/scripts/icon-registry';
 
-    defineComponents(IgcTabsComponent, IgcTabComponent, IgcIconComponent, IgcButtonComponent);
+  defineComponents(IgcTabsComponent, IgcTabComponent, IgcIconComponent, IgcButtonComponent);
 
-    type SvgEntry = { filename: string; svg: string };
+  type SvgEntry = { filename: string; svg: string };
 
-    function parseSvgMap(id: string): Record<string, SvgEntry> {
-        const el = document.getElementById(id);
-        if (!el) return {};
-        try {
-            const raw = JSON.parse(el.textContent || '{}') as Record<string, string>;
-            const result: Record<string, SvgEntry> = {};
-            for (const [k, v] of Object.entries(raw)) {
-                result[k] = JSON.parse(v) as SvgEntry;
-            }
-            return result;
-        } catch {
-            return {};
-        }
+  function parseSvgMap(id: string): Record<string, SvgEntry> {
+    const el = document.getElementById(id);
+    if (!el) return {};
+    try {
+      const raw = JSON.parse(el.textContent || '{}') as Record<string, string>;
+      const result: Record<string, SvgEntry> = {};
+      for (const [k, v] of Object.entries(raw)) {
+        result[k] = JSON.parse(v) as SvgEntry;
+      }
+      return result;
+    } catch {
+      return {};
     }
+  }
 
-    function showFeedback(btn: HTMLElement, cls: string) {
-        const original = btn.textContent ?? '';
-        btn.textContent = 'Copied!';
-        btn.classList.add(cls);
-        setTimeout(() => {
-            btn.textContent = original;
-            btn.classList.remove(cls);
-        }, 1800);
-    }
+  function showFeedback(btn: HTMLElement, cls: string) {
+    const original = btn.textContent ?? '';
+    btn.textContent = 'Copied!';
+    btn.classList.add(cls);
+    setTimeout(() => {
+      btn.textContent = original;
+      btn.classList.remove(cls);
+    }, 1800);
+  }
 
-    function triggerDownload(entry: SvgEntry) {
-        const blob = new Blob([entry.svg], { type: 'image/svg+xml' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = entry.filename;
-        a.click();
-        URL.revokeObjectURL(url);
-    }
+  function triggerDownload(entry: SvgEntry) {
+    const blob = new Blob([entry.svg], { type: 'image/svg+xml' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = entry.filename;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
 
-    function init() {
-        const iconMap = parseSvgMap('icon-svg-map');
-        const illMap = parseSvgMap('ill-svg-map');
+  function init() {
+    const iconMap = parseSvgMap('icon-svg-map');
+    const illMap = parseSvgMap('ill-svg-map');
 
-        const gridIds = ['grid-ui', 'grid-brand', 'grid-illustrations'] as const;
+    const gridIds = ['grid-ui', 'grid-brand', 'grid-illustrations'] as const;
 
-        // ── Delegated click handler ───────────────────────────────────────────
-        for (const id of gridIds) {
-            const grid = document.getElementById(id);
-            if (!grid) continue;
+    // ── Delegated click handler ───────────────────────────────────────────
+    for (const id of gridIds) {
+      const grid = document.getElementById(id);
+      if (!grid) continue;
 
-            grid.addEventListener('click', async (e) => {
-                const btn = (e.target as Element).closest<HTMLElement>('[data-action]');
-                if (!btn) return;
+      grid.addEventListener('click', async (e) => {
+        const btn = (e.target as Element).closest<HTMLElement>('[data-action]');
+        if (!btn) return;
 
-                const card = btn.closest<HTMLElement>('.icon-card');
-                const name = card?.dataset.iconName;
-                if (!name) return;
+        const card = btn.closest<HTMLElement>('.icon-card');
+        const name = card?.dataset.iconName;
+        if (!name) return;
 
-                const kind = card?.dataset.kind ?? 'icon';
-                const action = btn.dataset.action;
+        const kind = card?.dataset.kind ?? 'icon';
+        const action = btn.dataset.action;
 
-                if (action==='copy') {
-                    const html = kind==='illustration'
-                        ? (illMap[name]?.svg ?? name)
-                        : `<igc-icon name="${ name }" collection="docs"></igc-icon>`;
-                    try {
-                        await navigator.clipboard.writeText(html);
-                    } catch {
-                        const ta = Object.assign(document.createElement('textarea'), {
-                            value: html, style: 'position:fixed;opacity:0',
-                        });
-                        document.body.appendChild(ta);
-                        ta.select();
-                        document.execCommand('copy');
-                        document.body.removeChild(ta);
-                    }
-                    showFeedback(btn, 'icon-card__btn--copied');
-                    return;
-                }
-
-                if (action==='download') {
-                    const entry = kind==='illustration' ? illMap[name]: iconMap[name];
-                    if (entry) triggerDownload(entry);
-                    return;
-                }
+        if (action === 'copy') {
+          const html =
+            kind === 'illustration'
+              ? (illMap[name]?.svg ?? name)
+              : `<igc-icon name="${name}" collection="docs"></igc-icon>`;
+          try {
+            await navigator.clipboard.writeText(html);
+          } catch {
+            const ta = Object.assign(document.createElement('textarea'), {
+              value: html,
+              style: 'position:fixed;opacity:0',
             });
+            document.body.appendChild(ta);
+            ta.select();
+            document.execCommand('copy');
+            document.body.removeChild(ta);
+          }
+          showFeedback(btn, 'icon-card__btn--copied');
+          return;
         }
-    }
 
-    document.addEventListener('astro:page-load', init);
+        if (action === 'download') {
+          const entry = kind === 'illustration' ? illMap[name] : iconMap[name];
+          if (entry) triggerDownload(entry);
+          return;
+        }
+      });
+    }
+  }
+
+  document.addEventListener('astro:page-load', init);
 </script>

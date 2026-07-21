@@ -81,7 +81,11 @@ const platformIcon = platform ? (PLATFORM_ICONS[platform] ?? null) : null;
 // causes the data attributes to embed an absolute origin that breaks previews.
 const rawBase = import.meta.env.BASE_URL ?? '/';
 const basePath = (() => {
-  try { return new URL(rawBase).pathname; } catch { return rawBase; }
+  try {
+    return new URL(rawBase).pathname;
+  } catch {
+    return rawBase;
+  }
 })().replace(/\/?$/, '/');
 const resolvedIndexUrl = indexUrl ?? `${basePath}api-search-index/manifest.json`;
 ---
@@ -95,70 +99,110 @@ const resolvedIndexUrl = indexUrl ?? `${basePath}api-search-index/manifest.json`
   data-show-scope={showScope ? 'true' : 'false'}
   data-platform-icon={platformIcon ?? ''}
 >
-    <div class="search-decoration">
-      <igc-icon-button
-        class="search-trigger-mobile"
-        variant="flat"
-        aria-label={placeholder}
-        aria-haspopup="dialog"
-        data-open-modal
-      >
-        <igc-icon name="search" collection="docs" aria-hidden="true"></igc-icon>
-      </igc-icon-button>
-      <igc-input
-        data-open-modal
-        readonly
-        placeholder={placeholder}
-        aria-label={placeholder}
-        aria-keyshortcuts="Control+K"
-        aria-haspopup="dialog"
-        role="button"
-        class="search-trigger"
-      >
-        <igc-icon name="search" collection="docs" slot="prefix" aria-hidden="true"></igc-icon>
-        <kbd class="search-trigger__hint" slot="suffix" style="display: none;">
-          <kbd>Ctrl</kbd><kbd>K</kbd>
-        </kbd>
-      </igc-input>
+  <div class="search-decoration">
+    <igc-icon-button
+      class="search-trigger-mobile"
+      variant="flat"
+      aria-label={placeholder}
+      aria-haspopup="dialog"
+      data-open-modal
+    >
+      <igc-icon name="search" collection="docs" aria-hidden="true"></igc-icon>
+    </igc-icon-button>
+    <igc-input
+      data-open-modal
+      readonly
+      placeholder={placeholder}
+      aria-label={placeholder}
+      aria-keyshortcuts="Control+K"
+      aria-haspopup="dialog"
+      role="button"
+      class="search-trigger"
+    >
+      <igc-icon name="search" collection="docs" slot="prefix" aria-hidden="true"></igc-icon>
+      <kbd class="search-trigger__hint" slot="suffix" style="display: none;">
+        <kbd>Ctrl</kbd><kbd>K</kbd>
+      </kbd>
+    </igc-input>
+  </div>
+
+  <igc-dialog
+    aria-label={placeholder}
+    class="igd-search-dialog"
+    hide-default-action
+    close-on-outside-click
+  >
+    <div class="igd-search-shell">
+      <header class="igd-search-header">
+        <igc-input
+          type="text"
+          class="igd-search-input"
+          placeholder={placeholder}
+          autocomplete="off"
+          outlined
+          aria-label={placeholder}
+        >
+          <igc-icon
+            class="igd-search-icon"
+            name="search"
+            collection="docs"
+            slot="prefix"
+            aria-hidden="true"></igc-icon>
+          <igc-icon-button
+            slot="suffix"
+            class="igd-search-clear"
+            variant="flat"
+            type="button"
+            aria-label="Clear search"
+            name="clear"
+            collection="docs"
+            hidden></igc-icon-button>
+        </igc-input>
+
+        <igc-select
+          placement="bottom-start"
+          distance="17"
+          id="search-scope-select"
+          slot="prefix"
+          class="igd-search-scope"
+          outlined
+          aria-label="Search scope"
+          value="current"
+        >
+          {
+            platformIcon && (
+              <igc-icon
+                id="search-scope-trigger-icon"
+                name={platformIcon}
+                collection="docs"
+                slot="prefix"
+                aria-hidden="true"
+              />
+            )
+          }
+          <igc-select-item value="current">
+            <span data-scope-label>Current package</span>
+          </igc-select-item>
+          <igc-select-item value="all">All packages</igc-select-item>
+        </igc-select>
+        <igc-tooltip
+          anchor="search-scope-select"
+          class="igd-search-scope-tooltip"
+          placement="bottom"
+          with-arrow></igc-tooltip>
+      </header>
+      <div class="igd-search-content">
+        <div class="igd-search-status" aria-live="polite"></div>
+        <igc-tabs class="igd-search-tabs" hidden></igc-tabs>
+        <igc-list class="igd-search-results--flat" hidden></igc-list>
+      </div>
+      <footer class="igd-search-footer">
+        <igc-button slot="footer" data-close-modal class="search-close" variant="outlined">
+          Close
+        </igc-button>
+      </footer>
     </div>
-
-    <igc-dialog aria-label={placeholder} class="igd-search-dialog" hide-default-action close-on-outside-click>
-        <div class="igd-search-shell">
-            <header class="igd-search-header">
-                <igc-input
-                    type="text"
-                    class="igd-search-input"
-                    placeholder={placeholder}
-                    autocomplete="off"
-                    outlined
-                    aria-label={placeholder}
-                >
-                    <igc-icon class="igd-search-icon" name="search" collection="docs" slot="prefix" aria-hidden="true"></igc-icon>
-                    <igc-icon-button slot="suffix" class="igd-search-clear" variant="flat" type="button" aria-label="Clear search" name="clear" collection="docs" hidden></igc-icon-button>
-                </igc-input>
-
-                <igc-select  placement="bottom-start" distance="17" id="search-scope-select" slot="prefix" class="igd-search-scope" outlined aria-label="Search scope" value="current">
-                    {platformIcon && <igc-icon id="search-scope-trigger-icon" name={platformIcon} collection="docs" slot="prefix" aria-hidden="true"></igc-icon>}
-                    <igc-select-item value="current">
-                        <span data-scope-label>Current package</span>
-                    </igc-select-item>
-                    <igc-select-item value="all">All packages</igc-select-item>
-                </igc-select>
-                <igc-tooltip anchor="search-scope-select" class="igd-search-scope-tooltip" placement="bottom" with-arrow></igc-tooltip>
-
-            </header>
-            <div class="igd-search-content">
-                <div class="igd-search-status" aria-live="polite"></div>
-                <igc-tabs class="igd-search-tabs" hidden></igc-tabs>
-                <igc-list class="igd-search-results--flat" hidden></igc-list>
-            </div>
-            <footer class="igd-search-footer">
-                <igc-button slot="footer" data-close-modal class="search-close" variant="outlined">
-                    Close
-                </igc-button>
-            </footer>
-        </div>
-    </igc-dialog>
+  </igc-dialog>
 </api-search-advanced>
 
 <script>
@@ -227,17 +271,23 @@ const resolvedIndexUrl = indexUrl ?? `${basePath}api-search-index/manifest.json`
   };
 
   const PAGE_KIND_LABEL: Record<string, string> = {
-    class:     'class',
+    class: 'class',
     interface: 'interface',
-    enum:      'enum',
-    type:      'type',
-    variable:  'variable',
-    function:  'function',
-    module:    'module',
+    enum: 'enum',
+    type: 'type',
+    variable: 'variable',
+    function: 'function',
+    module: 'module',
   };
 
   const PAGE_KIND_WEIGHT: Record<string, number> = {
-    class: 0, interface: 1, enum: 2, type: 3, function: 4, variable: 5, module: 6,
+    class: 0,
+    interface: 1,
+    enum: 2,
+    type: 3,
+    function: 4,
+    variable: 5,
+    module: 6,
   };
 
   const KIND_CODE_TO_LABEL: Record<string, string> = {
@@ -301,18 +351,18 @@ const resolvedIndexUrl = indexUrl ?? `${basePath}api-search-index/manifest.json`
         }
       }
 
-      const openBtn  = this.querySelector<HTMLElement>('igc-input[data-open-modal]')!;
+      const openBtn = this.querySelector<HTMLElement>('igc-input[data-open-modal]')!;
       const openBtns = this.querySelectorAll<HTMLElement>('[data-open-modal]');
       const closeBtn = this.querySelector<HTMLElement>('[data-close-modal]')!;
-      this.dialog    = this.querySelector<IgcDialogComponent>('igc-dialog')!;
-      this.input     = this.querySelector<IgcInputComponent>('igc-input.igd-search-input')!;
-      this.clearBtn  = this.querySelector<IgcIconButtonComponent>('.igd-search-clear')!;
+      this.dialog = this.querySelector<IgcDialogComponent>('igc-dialog')!;
+      this.input = this.querySelector<IgcInputComponent>('igc-input.igd-search-input')!;
+      this.clearBtn = this.querySelector<IgcIconButtonComponent>('.igd-search-clear')!;
       this.scopeSelect = this.querySelector<IgcSelectComponent>('igc-select.igd-search-scope');
       this.scopeTooltip = this.querySelector<HTMLElement>('.igd-search-scope-tooltip');
       this.scopeTriggerIcon = this.querySelector('#search-scope-trigger-icon');
       this.platformIconName = this.dataset.platformIcon || '';
-      this.tabsEl    = this.querySelector<IgcTabsComponent>('igc-tabs.igd-search-tabs')!;
-      this.statusEl  = this.querySelector<HTMLElement>('.igd-search-status')!;
+      this.tabsEl = this.querySelector<IgcTabsComponent>('igc-tabs.igd-search-tabs')!;
+      this.statusEl = this.querySelector<HTMLElement>('.igd-search-status')!;
       this.flatListEl = this.querySelector<HTMLElement>('.igd-search-results--flat')!;
 
       // Update the keyboard shortcut hint for the current OS.
@@ -332,8 +382,10 @@ const resolvedIndexUrl = indexUrl ?? `${basePath}api-search-index/manifest.json`
         const subheader = document.querySelector<HTMLElement>('docs-subheader-menu');
         const detectedPlatform = subheader?.dataset.platform || '';
         const ICONS: Record<string, string> = {
-          angular: 'angular-logo', react: 'react-logo',
-          blazor: 'blazor-logo', 'web-components': 'wc-logo',
+          angular: 'angular-logo',
+          react: 'react-logo',
+          blazor: 'blazor-logo',
+          'web-components': 'wc-logo',
         };
         this.platformIconName = ICONS[detectedPlatform] || '';
       }
@@ -365,13 +417,15 @@ const resolvedIndexUrl = indexUrl ?? `${basePath}api-search-index/manifest.json`
         this.input.focus();
       };
 
-      openBtns.forEach(btn => btn.addEventListener('click', open));
-      openBtns.forEach(btn => btn.addEventListener('keydown', (e: KeyboardEvent) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          open();
-        }
-      }));
+      openBtns.forEach((btn) => btn.addEventListener('click', open));
+      openBtns.forEach((btn) =>
+        btn.addEventListener('keydown', (e: KeyboardEvent) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            open();
+          }
+        }),
+      );
 
       closeBtn.addEventListener('click', () => this.closeModal());
 
@@ -389,7 +443,8 @@ const resolvedIndexUrl = indexUrl ?? `${basePath}api-search-index/manifest.json`
 
       window.addEventListener('keydown', (e) => {
         if ((e.metaKey === true || e.ctrlKey === true) && e.key === 'k') {
-          this.dialog.open ? this.closeModal() : open();
+          if (this.dialog.open) this.closeModal();
+          else open();
           e.preventDefault();
         }
       });
@@ -420,13 +475,13 @@ const resolvedIndexUrl = indexUrl ?? `${basePath}api-search-index/manifest.json`
 
         // igcInput re-renders with full text after the dropdown closes; re-apply truncation.
         this.scopeSelect.addEventListener('igcClosed', () =>
-          requestAnimationFrame(() => this.applyScopeTruncation())
+          requestAnimationFrame(() => this.applyScopeTruncation()),
         );
       }
 
       // Apply truncation once the dialog is fully open and the select has real dimensions.
       this.dialog.addEventListener('igcOpened', () =>
-        requestAnimationFrame(() => requestAnimationFrame(() => this.applyScopeTruncation()))
+        requestAnimationFrame(() => requestAnimationFrame(() => this.applyScopeTruncation())),
       );
 
       // Only show the scope tooltip when the label is visually truncated
@@ -460,7 +515,9 @@ const resolvedIndexUrl = indexUrl ?? `${basePath}api-search-index/manifest.json`
 
     private detectCurrentContext() {
       const path = window.location.pathname;
-      const stripped = path.startsWith(this.basePath) ? path.slice(this.basePath.length) : path.replace(/^\/+/, '');
+      const stripped = path.startsWith(this.basePath)
+        ? path.slice(this.basePath.length)
+        : path.replace(/^\/+/, '');
       const segs = stripped.split('/').filter(Boolean);
       const baseSegs = this.basePath.split('/').filter(Boolean);
       this.currentPlatform = baseSegs[baseSegs.length - 1] || '';
@@ -470,7 +527,9 @@ const resolvedIndexUrl = indexUrl ?? `${basePath}api-search-index/manifest.json`
 
     private updateScopeOption() {
       if (!this.scopeSelect) return;
-      const item = this.scopeSelect.querySelector<HTMLElement & { value: string; disabled: boolean }>('igc-select-item[value="current"]');
+      const item = this.scopeSelect.querySelector<
+        HTMLElement & { value: string; disabled: boolean }
+      >('igc-select-item[value="current"]');
       if (!item) return;
       if (this.currentPkg && this.currentVersion) {
         const labelEl = item.querySelector('[data-scope-label]');
@@ -524,7 +583,7 @@ const resolvedIndexUrl = indexUrl ?? `${basePath}api-search-index/manifest.json`
         const res = await fetch(`${baseUrl}${this.currentPkg}/${this.currentVersion}.json`);
         if (!res.ok) return [];
         const d = await res.json();
-        return Array.isArray(d?.pages) ? d.pages as IndexedPage[] : [];
+        return Array.isArray(d?.pages) ? (d.pages as IndexedPage[]) : [];
       } catch {
         return [];
       }
@@ -548,16 +607,18 @@ const resolvedIndexUrl = indexUrl ?? `${basePath}api-search-index/manifest.json`
       // Manifest format: { files: ["pkg/version.json", ...] }
       if (Array.isArray((data as any)?.files)) {
         const baseUrl = this.indexUrl.replace(/[^/]*$/, '');
-        const fetches: Promise<IndexedPage[]>[] = ((data as any).files as string[]).map(async (file: string) => {
-          try {
-            const res = await fetch(`${baseUrl}${file}`);
-            if (!res.ok) return [];
-            const d = await res.json();
-            return Array.isArray(d?.pages) ? d.pages as IndexedPage[] : [];
-          } catch {
-            return [];
-          }
-        });
+        const fetches: Promise<IndexedPage[]>[] = ((data as any).files as string[]).map(
+          async (file: string) => {
+            try {
+              const res = await fetch(`${baseUrl}${file}`);
+              if (!res.ok) return [];
+              const d = await res.json();
+              return Array.isArray(d?.pages) ? (d.pages as IndexedPage[]) : [];
+            } catch {
+              return [];
+            }
+          },
+        );
         const results = await Promise.all(fetches);
         return results.flat();
       }
@@ -637,14 +698,13 @@ const resolvedIndexUrl = indexUrl ?? `${basePath}api-search-index/manifest.json`
         return;
       }
 
-      const nameCategories = this.categories.filter(c => c.kindCodes.includes('__name__'));
+      const nameCategories = this.categories.filter((c) => c.kindCodes.includes('__name__'));
 
       let scoped: IndexedPage[];
       if (this.showScope && this.scope === 'current' && this.currentPkg && this.currentVersion) {
-        scoped = pages.filter((p) =>
-          p.p === this.currentPlatform &&
-          p.g === this.currentPkg &&
-          p.v === this.currentVersion
+        scoped = pages.filter(
+          (p) =>
+            p.p === this.currentPlatform && p.g === this.currentPkg && p.v === this.currentVersion,
         );
       } else if (this.showScope) {
         const platformPages = this.currentPlatform
@@ -720,14 +780,13 @@ const resolvedIndexUrl = indexUrl ?? `${basePath}api-search-index/manifest.json`
       }
 
       // Determine which categories handle page names
-      const nameCategories = this.categories.filter(c => c.kindCodes.includes('__name__'));
+      const nameCategories = this.categories.filter((c) => c.kindCodes.includes('__name__'));
 
       let scoped: IndexedPage[];
       if (this.showScope && this.scope === 'current' && this.currentPkg && this.currentVersion) {
-        scoped = pages.filter((p) =>
-          p.p === this.currentPlatform &&
-          p.g === this.currentPkg &&
-          p.v === this.currentVersion
+        scoped = pages.filter(
+          (p) =>
+            p.p === this.currentPlatform && p.g === this.currentPkg && p.v === this.currentVersion,
         );
       } else if (this.showScope) {
         const platformPages = this.currentPlatform
@@ -825,7 +884,7 @@ const resolvedIndexUrl = indexUrl ?? `${basePath}api-search-index/manifest.json`
 
       // Sort each bucket
       for (const [catId, list] of buckets.entries()) {
-        const isNameCat = nameCategories.some(c => c.id === catId);
+        const isNameCat = nameCategories.some((c) => c.id === catId);
         if (isNameCat) {
           list.sort((a, b) => {
             if (a.typeWeight !== b.typeWeight) return a.typeWeight - b.typeWeight;
@@ -853,7 +912,7 @@ const resolvedIndexUrl = indexUrl ?? `${basePath}api-search-index/manifest.json`
         this.tabsEl.hidden = true;
         this.tabsEl.innerHTML = '';
         const list = this.currentMatches.get('__all__') ?? [];
-        this.flatListEl.innerHTML = list.map(m => this.matchHtml(m)).join('');
+        this.flatListEl.innerHTML = list.map((m) => this.matchHtml(m)).join('');
         this.flatListEl.hidden = list.length === 0;
         return;
       }
@@ -870,23 +929,25 @@ const resolvedIndexUrl = indexUrl ?? `${basePath}api-search-index/manifest.json`
         const list = this.currentMatches.get(cat.id) ?? [];
         if (list.length === 0) continue;
         const slice = list.slice(0, this.allTabLimit);
-        const items = slice.map(m => this.matchHtml(m)).join('');
-        const moreBtn = list.length > slice.length
-          ? `<igc-button variant="flat" class="igd-search-more-btn" data-tab="${cat.id}">See` +
+        const items = slice.map((m) => this.matchHtml(m)).join('');
+        const moreBtn =
+          list.length > slice.length
+            ? `<igc-button variant="flat" class="igd-search-more-btn" data-tab="${cat.id}">See` +
               ` all ${list.length} ${escapeHtml(cat.label.toLowerCase())}` +
-            `</igc-button>`
-          : '';
+              `</igc-button>`
+            : '';
         allContent.push(
           `<span class="igd-search-category-header">${escapeHtml(cat.label)}</span>` +
-          `<igc-list class="igd-search-results">${items}</igc-list>` +
-          moreBtn + `<igc-divider></igc-divider>`
+            `<igc-list class="igd-search-results">${items}</igc-list>` +
+            moreBtn +
+            `<igc-divider></igc-divider>`,
         );
       }
       tabsHtml.push(
         `<igc-tab data-tab-id="all" label="All"${this.currentTab === 'all' ? ' selected' : ''}>` +
           `<span slot="suffix" class="igd-search-tab-count">${totalCount}</span>` +
           allContent.join('') +
-        `</igc-tab>`
+          `</igc-tab>`,
       );
 
       // Per-category tabs — capped to avoid freezing the main thread when many
@@ -901,9 +962,11 @@ const resolvedIndexUrl = indexUrl ?? `${basePath}api-search-index/manifest.json`
         tabsHtml.push(
           `<igc-tab data-tab-id="${cat.id}" label="${escapeHtml(cat.label)}"${isSelected ? ' selected' : ''}>` +
             `<span slot="suffix" class="igd-search-tab-count">${list.length}</span>` +
-            `<igc-list class="igd-search-results">${displayList.map(m => this.matchHtml(m)).join('')}</igc-list>` +
-            (hasMore ? `<p class="igd-search-refine-hint">Showing first ${MAX_PER_CATEGORY_TAB} of ${list.length} matches &mdash; refine your search to narrow results.</p>` : '') +
-          `</igc-tab>`
+            `<igc-list class="igd-search-results">${displayList.map((m) => this.matchHtml(m)).join('')}</igc-list>` +
+            (hasMore
+              ? `<p class="igd-search-refine-hint">Showing first ${MAX_PER_CATEGORY_TAB} of ${list.length} matches &mdash; refine your search to narrow results.</p>`
+              : '') +
+            `</igc-tab>`,
         );
       }
 
@@ -941,11 +1004,12 @@ const resolvedIndexUrl = indexUrl ?? `${basePath}api-search-index/manifest.json`
 
     private matchHtml(m: Match): string {
       const highlightedName = highlight(m.name, this.currentQuery);
-      const nameCategories = this.categories.filter(c => c.kindCodes.includes('__name__'));
-      const isNameMatch = nameCategories.some(c => c.id === m.category);
-      const subtitle = isNameMatch || m.category === '__all__'
-        ? `<span class="igd-search-kind">${escapeHtml(m.packageLabel)}</span>`
-        : `<span class="igd-search-kind">${escapeHtml(m.packageLabel)}</span><span class="igd-search-meta">in ${escapeHtml(m.pageName)}</span>`;
+      const nameCategories = this.categories.filter((c) => c.kindCodes.includes('__name__'));
+      const isNameMatch = nameCategories.some((c) => c.id === m.category);
+      const subtitle =
+        isNameMatch || m.category === '__all__'
+          ? `<span class="igd-search-kind">${escapeHtml(m.packageLabel)}</span>`
+          : `<span class="igd-search-kind">${escapeHtml(m.packageLabel)}</span><span class="igd-search-meta">in ${escapeHtml(m.pageName)}</span>`;
       return `<igc-list-item>
         <a href="${m.url}" class="igd-search-link">
           <span class="igd-search-result-title">${highlightedName}</span>
@@ -970,8 +1034,14 @@ const resolvedIndexUrl = indexUrl ?? `${basePath}api-search-index/manifest.json`
   }
 
   function compareVersions(a: string, b: string): number {
-    const ap = a.replace(/[^0-9.]/g, '').split('.').map(Number);
-    const bp = b.replace(/[^0-9.]/g, '').split('.').map(Number);
+    const ap = a
+      .replace(/[^0-9.]/g, '')
+      .split('.')
+      .map(Number);
+    const bp = b
+      .replace(/[^0-9.]/g, '')
+      .split('.')
+      .map(Number);
     for (let i = 0; i < Math.max(ap.length, bp.length); i++) {
       const d = (ap[i] || 0) - (bp[i] || 0);
       if (d !== 0) return d;
@@ -997,7 +1067,9 @@ const resolvedIndexUrl = indexUrl ?? `${basePath}api-search-index/manifest.json`
     if (i < 0) return escapeHtml(text);
     return (
       escapeHtml(text.slice(0, i)) +
-      '<mark>' + escapeHtml(text.slice(i, i + q.length)) + '</mark>' +
+      '<mark>' +
+      escapeHtml(text.slice(i, i + q.length)) +
+      '</mark>' +
       escapeHtml(text.slice(i + q.length))
     );
   }

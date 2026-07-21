@@ -43,8 +43,13 @@ const platformHeadEntries = getPlatformHead('angular', 'en');
 function iconUploadPlugin() {
   return {
     name: 'playground:icon-upload',
+    /** @param {import('vite').ViteDevServer} server */
     configureServer(server) {
-      server.middlewares.use('/api/icons/replace', async (req, res) => {
+      /**
+       * @param {import('node:http').IncomingMessage} req
+       * @param {import('node:http').ServerResponse} res
+       */
+      const handler = async (req, res) => {
         if (req.method !== 'POST') {
           res.writeHead(405).end('Method Not Allowed');
           return;
@@ -62,7 +67,7 @@ function iconUploadPlugin() {
         }
 
         // Security: only allow simple .svg filenames, no path traversal
-        if (typeof filename !== 'string' || !/^[\w\-]+\.svg$/.test(filename)) {
+        if (typeof filename !== 'string' || !/^[\w-]+\.svg$/.test(filename)) {
           res.writeHead(400).end('Invalid filename');
           return;
         }
@@ -79,11 +84,15 @@ function iconUploadPlugin() {
         try {
           fs.writeFileSync(dest, content, 'utf8');
           // Let Vite's filesystem watcher detect the change naturally (triggers HMR)
-          res.writeHead(200, { 'Content-Type': 'application/json' }).end(JSON.stringify({ ok: true }));
+          res
+            .writeHead(200, { 'Content-Type': 'application/json' })
+            .end(JSON.stringify({ ok: true }));
         } catch (err) {
           res.writeHead(500).end(String(err));
         }
-      });
+      };
+
+      server.middlewares.use('/api/icons/replace', handler);
     },
   };
 }
@@ -101,15 +110,18 @@ function iconUploadPlugin() {
 function virtualDocsModules() {
   const siteMetaId = 'virtual:docs-template/site-meta';
   const navHtmlId = 'virtual:docs-template/nav-html';
+  /** @param {string} id */
   const resolved = (id) => '\0' + id;
 
   return {
     name: 'playground:virtual-docs-modules',
+    /** @param {string} id */
     resolveId(id) {
       if (id === siteMetaId) return resolved(siteMetaId);
       if (id === navHtmlId) return resolved(navHtmlId);
       return null;
     },
+    /** @param {string} id */
     load(id) {
       if (id === resolved(siteMetaId)) {
         // Intentionally minimal — sidebar, title, and productLinks are
@@ -150,6 +162,7 @@ export const abContactSalesHtml = '';
 }
 
 const repoRoot = path.dirname(fileURLToPath(import.meta.url));
+/** @type {import('astro').ShikiConfig} */
 const markdownShikiConfig = {
   theme: 'dark-plus',
   wrap: true,
@@ -161,7 +174,7 @@ export default defineConfig({
   outDir: './dist',
   // Disable image optimization — playground pages just use plain <img>.
   image: { service: { entrypoint: 'astro/assets/services/noop' } },
-  integrations: [mdx()],
+  integrations: [mdx({ gfm: true })],
   markdown: {
     shikiConfig: markdownShikiConfig,
     rehypePlugins: [rehypeHeadingAnchors, rehypeTableWrapper],

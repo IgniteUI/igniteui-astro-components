@@ -36,15 +36,15 @@ Then open http://localhost:4567.
 
 ## Pages
 
-| Route | Component(s) under test |
-| --- | --- |
-| `/` | `DocsLayout`, `DocsSidebar` |
-| `/components/sidebar` | `DocsSidebar`, `SidebarTree`, `SidebarItem`, `SidebarFilterInput` |
-| `/components/nav-bar` | `GlobalNavBar`, `GlobalFooter` |
-| `/components/api-link` | `ApiLink` |
-| `/components/api-ref` | `ApiRef` |
-| `/components/badge` | `Badge` |
-| `/components/platform-block` | `PlatformBlock` |
+| Route                        | Component(s) under test                                           |
+| ---------------------------- | ----------------------------------------------------------------- |
+| `/`                          | `DocsLayout`, `DocsSidebar`                                       |
+| `/components/sidebar`        | `DocsSidebar`, `SidebarTree`, `SidebarItem`, `SidebarFilterInput` |
+| `/components/nav-bar`        | `GlobalNavBar`, `GlobalFooter`                                    |
+| `/components/api-link`       | `ApiLink`                                                         |
+| `/components/api-ref`        | `ApiRef`                                                          |
+| `/components/badge`          | `Badge`                                                           |
+| `/components/platform-block` | `PlatformBlock`                                                   |
 
 ## Caveats
 

@@ -21,9 +21,9 @@
 // Restore browser default (16px). Bootstrap 3 sets html { font-size: 10px }
 // inside @layer(bootstrap) which would break all rem-based sizing without this.
 html {
-	font-size: 16px;
-	background: var(--igd-app-bg);
-	scroll-padding-top: calc(var(--igd-toc-subheader-bottom) + var(--igd-toc-scroll-offset));
+  font-size: 16px;
+  background: var(--igd-app-bg);
+  scroll-padding-top: calc(var(--igd-toc-subheader-bottom) + var(--igd-toc-scroll-offset));
 }
 
 // Chromium scrolls a newly-focused element into view honoring scroll-padding-top.
@@ -32,40 +32,37 @@ html {
 // while one of the subheader selects is focused so item selection never scrolls.
 html:has(#package-select:focus),
 html:has(#version-select:focus) {
-	scroll-padding-top: 0;
+  scroll-padding-top: 0;
 }
 
 body {
-	scrollbar-gutter: stable;
+  scrollbar-gutter: stable;
 }
 
 // Define font CSS custom properties so components can reference or override them.
 // The actual @font-face rules come from @fontsource-variable (imported in DocsLayout.astro).
 :root {
-	--ig-theme: fluent;
-	--font-mono: 'JetBrains Mono Variable';
+  --ig-theme: fluent;
+  --font-mono: 'JetBrains Mono Variable';
 }
 
 @include sizing();
 @include spacing();
 @include elevations($material-elevations);
 
-@include typography(
-	$font-family: aktiv-grotesk,
-	$type-scale: $igd-type-scale
-);
+@include typography($font-family: aktiv-grotesk, $type-scale: $igd-type-scale);
 
 // scroll-behavior is applied via JS (astro:page-load) so it is not active
 // during the browser's initial scroll-position restoration on page refresh.
 
 .visually-hidden {
-	visibility: hidden;
-	opacity: 0;
-	position: absolute;
-	user-select: none;
-	pointer-events: none;
-	top: 0;
-	left: 0;
+  visibility: hidden;
+  opacity: 0;
+  position: absolute;
+  user-select: none;
+  pointer-events: none;
+  top: 0;
+  left: 0;
 }
 
 // PREVENT FOUC (Flash of Unstyled Content) for Ignite UI Web Components.
@@ -73,32 +70,34 @@ body {
 // been upgraded by the browser. Using opacity (not display/visibility) keeps
 // the element in the layout flow so there is no shift once it becomes defined.
 :is(
-	igc-accordion,
-	igc-badge,
-	igc-button,
-	igc-icon,
-	igc-icon-button,
-	igc-input,
-	igc-select,
-	igc-tree,
-	igc-tree-item,
-	igc-dialog
+  igc-accordion,
+  igc-badge,
+  igc-button,
+  igc-icon,
+  igc-icon-button,
+  igc-input,
+  igc-select,
+  igc-tree,
+  igc-tree-item,
+  igc-dialog
 ):not(:defined) {
-	opacity: 0;
+  opacity: 0;
 }
-igc-dialog:not(:defined) { display: none; }
+igc-dialog:not(:defined) {
+  display: none;
+}
 
 // Disable Astro view-transition animation for the sidebar and subheader so they
 // switch instantly — only the main content and TOC cross-fade between pages.
 ::view-transition-old(docs-sidebar),
 ::view-transition-old(docs-subheader) {
-	animation: none !important;
-	opacity: 0 !important;
+  animation: none !important;
+  opacity: 0 !important;
 }
 ::view-transition-new(docs-sidebar),
 ::view-transition-new(docs-subheader) {
-	animation: none !important;
-	opacity: 1 !important;
+  animation: none !important;
+  opacity: 1 !important;
 }
 
 // Global scrollbar styling.
@@ -109,20 +108,20 @@ igc-dialog:not(:defined) { display: none; }
 // when applied to the document-level scrollbar. We therefore add explicit scoped
 // overrides for dark mode below in addition to the variable-based defaults.
 * {
-	scrollbar-width: thin;
-	scrollbar-color: var(--igd-scrollbar-thumb) var(--igd-scrollbar-track);
+  scrollbar-width: thin;
+  scrollbar-color: var(--igd-scrollbar-thumb) var(--igd-scrollbar-track);
 }
 
 ::-webkit-scrollbar {
-	width: rem(5px);
-	height: rem(5px);
+  width: rem(5px);
+  height: rem(5px);
 }
 
 ::-webkit-scrollbar-track {
-	background-color: var(--igd-scrollbar-track);
+  background-color: var(--igd-scrollbar-track);
 }
 
 ::-webkit-scrollbar-thumb {
-	background-color: var(--igd-scrollbar-thumb);
-	border-radius: rem(5px);
+  background-color: var(--igd-scrollbar-thumb);
+  border-radius: rem(5px);
 }

@@ -9,17 +9,17 @@ import { SITE_TITLE, SIDEBAR } from '../../site-config';
 const slug = 'components/sample';
 
 const headings = [
-  { depth: 2, slug: 'full-widget',    text: 'Full widget (TSX + CSS)' },
-  { depth: 2, slug: 'angular-tabs',   text: 'Angular-style tabs (TS + HTML + SCSS)' },
-  { depth: 2, slug: 'blazor-tabs',    text: 'Blazor-style tabs (RAZOR + CS + CSS)' },
-  { depth: 2, slug: 'iframe-only',    text: 'iframe only' },
+  { depth: 2, slug: 'full-widget', text: 'Full widget (TSX + CSS)' },
+  { depth: 2, slug: 'angular-tabs', text: 'Angular-style tabs (TS + HTML + SCSS)' },
+  { depth: 2, slug: 'blazor-tabs', text: 'Blazor-style tabs (RAZOR + CS + CSS)' },
+  { depth: 2, slug: 'iframe-only', text: 'iframe only' },
   { depth: 2, slug: 'fullscreen-btn', text: 'iframe + fullscreen button' },
 ];
 
 const blazorTabs = [
   {
     label: 'RAZOR',
-    lang:  'razor',
+    lang: 'razor',
     content: `@page "/grid-sample"
 @using IgniteUI.Blazor.Controls
 
@@ -44,14 +44,14 @@ const blazorTabs = [
   },
   {
     label: 'CS',
-    lang:  'csharp',
+    lang: 'csharp',
     content: `namespace BlazorSample.Models;
 
 public record Employee(int ID, string Name, int Age, string City, string Role);`,
   },
   {
     label: 'CSS',
-    lang:  'css',
+    lang: 'css',
     content: `.grid-wrapper {
     padding: 16px;
 }`,
@@ -234,42 +234,54 @@ describe('GridSampleComponent', () => {
   <DocsSidebar slot="sidebar" items={SIDEBAR} currentSlug={slug} />
   <DocsToc slot="toc" headings={headings} offsetTarget=".docs-subheader" />
 
-    <h1>Sample</h1>
-    <p>
-      Renders a live demo widget with an embedded iframe, source-code tabs,
-      and live-edit buttons. The shell is rendered server-side; tab switching,
-      copy buttons, and iframe lazy-loading are handled by
-      <code>sample-widget.ts</code> on the client.
-    </p>
-    <p>
-      All iframes load from <code>/mock-demo</code> in this playground.
-      <strong>MockSample</strong> pre-renders code tabs with mock content so
-      the full shell is visible without a real demos server.
-    </p>
+  <h1>Sample</h1>
+  <p>
+    Renders a live demo widget with an embedded iframe, source-code tabs, and live-edit buttons. The
+    shell is rendered server-side; tab switching, copy buttons, and iframe lazy-loading are handled
+    by
+    <code>sample-widget.ts</code> on the client.
+  </p>
+  <p>
+    All iframes load from <code>/mock-demo</code> in this playground.
+    <strong>MockSample</strong> pre-renders code tabs with mock content so the full shell is visible without
+    a real demos server.
+  </p>
 
-    <h2 id="full-widget">Full widget (TSX + CSS)</h2>
-    <p>Default React-style tabs. Click any tab to switch, hover a code pane to reveal COPY CODE.</p>
-    <MockSample id="mock-sample-1" src="/mock-demo" height={360} alt="React Grid Example" />
+  <h2 id="full-widget">Full widget (TSX + CSS)</h2>
+  <p>Default React-style tabs. Click any tab to switch, hover a code pane to reveal COPY CODE.</p>
+  <MockSample id="mock-sample-1" src="/mock-demo" height={360} alt="React Grid Example" />
 
-    <h2 id="angular-tabs">Angular-style tabs (TS + HTML + SCSS)</h2>
-    <p>Pass a custom <code>tabs</code> array to render any combination of code tabs.</p>
-    <MockSample id="mock-sample-angular" src="/mock-demo" height={360} alt="Angular Grid Example" tabs={angularTabs} />
+  <h2 id="angular-tabs">Angular-style tabs (TS + HTML + SCSS)</h2>
+  <p>Pass a custom <code>tabs</code> array to render any combination of code tabs.</p>
+  <MockSample
+    id="mock-sample-angular"
+    src="/mock-demo"
+    height={360}
+    alt="Angular Grid Example"
+    tabs={angularTabs}
+  />
 
-    <h2 id="blazor-tabs">Blazor-style tabs (RAZOR + CS + CSS)</h2>
-    <p>Razor is highlighted natively via Shiki.</p>
-    <MockSample id="mock-sample-blazor" src="/mock-demo" height={360} alt="Blazor Grid Example" tabs={blazorTabs} />
+  <h2 id="blazor-tabs">Blazor-style tabs (RAZOR + CS + CSS)</h2>
+  <p>Razor is highlighted natively via Shiki.</p>
+  <MockSample
+    id="mock-sample-blazor"
+    src="/mock-demo"
+    height={360}
+    alt="Blazor Grid Example"
+    tabs={blazorTabs}
+  />
 
-    <h2 id="iframe-only">iframe only</h2>
-    <p>
-      Use <code>iframeOnly</code> to strip the navbar and footer - useful when
-      embedding a demo inline without the widget chrome.
-    </p>
-    <SampleWidget src="/mock-demo" height={260} alt="React Example" iframeOnly />
+  <h2 id="iframe-only">iframe only</h2>
+  <p>
+    Use <code>iframeOnly</code> to strip the navbar and footer - useful when embedding a demo inline without
+    the widget chrome.
+  </p>
+  <SampleWidget src="/mock-demo" height={260} alt="React Example" iframeOnly />
 
-    <h2 id="fullscreen-btn">iframe + fullscreen button</h2>
-    <p>
-      <code>iframeOnly</code> combined with <code>fullscreenBtn</code> renders a
-      "View in full screen" link below the iframe.
-    </p>
-    <SampleWidget src="/mock-demo" height={200} alt="React Example" iframeOnly fullscreenBtn />
+  <h2 id="fullscreen-btn">iframe + fullscreen button</h2>
+  <p>
+    <code>iframeOnly</code> combined with <code>fullscreenBtn</code> renders a "View in full screen" link
+    below the iframe.
+  </p>
+  <SampleWidget src="/mock-demo" height={200} alt="React Example" iframeOnly fullscreenBtn />
 </DocsLayout>

@@ -10,8 +10,8 @@ import GlobalNavBar from 'igniteui-astro-components/components/GlobalNavBar.astr
 
 ## Props
 
-| Prop | Type | Description |
-|------|------|-------------|
+| Prop   | Type      | Description                                        |
+| ------ | --------- | -------------------------------------------------- |
 | `lang` | `NavLang` | **Required.** Locale — `'en'` \| `'jp'` \| `'kr'`. |
 
 `NavLang`: `'en' | 'jp' | 'kr'`
@@ -27,6 +27,7 @@ import GlobalNavBar from 'igniteui-astro-components/components/GlobalNavBar.astr
 ---
 import GlobalNavBar from 'igniteui-astro-components/components/GlobalNavBar.astro';
 ---
+
 <GlobalNavBar lang="en" />
 ```
 

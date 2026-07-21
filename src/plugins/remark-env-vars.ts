@@ -37,7 +37,10 @@ function loadEnv(): Record<string, string> {
   _envSourcePath = currentPath;
   _env = null;
 
-  if (!currentPath) { _env = {}; return _env; }
+  if (!currentPath) {
+    _env = {};
+    return _env;
+  }
   const sourceRoot = path.resolve(currentPath);
   const parent = path.dirname(sourceRoot);
 
@@ -48,7 +51,7 @@ function loadEnv(): Record<string, string> {
     path.join(parent, 'en', 'environment.json'),
   ];
 
-  const envPath = candidates.find(c => fs.existsSync(c));
+  const envPath = candidates.find((c) => fs.existsSync(c));
 
   if (!envPath) {
     try {
@@ -59,8 +62,13 @@ function loadEnv(): Record<string, string> {
         const docConfig = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
         const demosUrl: string =
           docConfig[platform]?.samplesBrowsers?.[envKey] ??
-          docConfig[platform]?.samplesBrowsers?.['development'] ?? '';
-        _env = { dvDemosBaseUrl: demosUrl, demosBaseUrl: demosUrl, infragisticsBaseUrl: 'https://www.infragistics.com' };
+          docConfig[platform]?.samplesBrowsers?.['development'] ??
+          '';
+        _env = {
+          dvDemosBaseUrl: demosUrl,
+          demosBaseUrl: demosUrl,
+          infragisticsBaseUrl: 'https://www.infragistics.com',
+        };
       } else {
         _env = {};
       }

@@ -5,57 +5,72 @@ import DocsAside from '../../../../src/components/mdx/DocsAside/DocsAside.astro'
 import DocsToc from '../../../../src/components/DocsToc/DocsToc.astro';
 import DocsSubHeader from '../../../../src/components/DocsSubHeader/DocsSubHeader.astro';
 import SearchAdvanced from '../../../../src/components/SearchAdvanced/SearchAdvanced.astro';
-import { SITE_TITLE, SIDEBAR, PRODUCT_LINKS, SEARCH_TABS, PACKAGES, VERSIONS } from '../../site-config';
+import {
+  SITE_TITLE,
+  SIDEBAR,
+  PRODUCT_LINKS,
+  SEARCH_TABS,
+  PACKAGES,
+  VERSIONS,
+} from '../../site-config';
 
 const slug = 'components/docs-aside';
 
 const headings = [
-  { depth: 2, slug: 'variants',      text: 'Variants' },
-  { depth: 2, slug: 'custom-title',  text: 'Custom title' },
-  { depth: 2, slug: 'custom-color',  text: 'Custom color' },
-  { depth: 2, slug: 'no-icon',       text: 'No icon' },
+  { depth: 2, slug: 'variants', text: 'Variants' },
+  { depth: 2, slug: 'custom-title', text: 'Custom title' },
+  { depth: 2, slug: 'custom-color', text: 'Custom color' },
+  { depth: 2, slug: 'no-icon', text: 'No icon' },
 ];
 ---
 
 <DocsLayout title="DocsAside" siteTitle={SITE_TITLE} hasSidebar currentSlug={slug}>
-  <DocsSubHeader slot="subheader" pageTitle="DocsAside" currentSlug={slug} siteTitle={SITE_TITLE}
-    productLinks={PRODUCT_LINKS} showThemeToggle={true}
-    packages={[...PACKAGES]} selectedPackage={PACKAGES[0].value}
-    versions={[...VERSIONS]} selectedVersion={VERSIONS[0]}
+  <DocsSubHeader
+    slot="subheader"
+    pageTitle="DocsAside"
+    currentSlug={slug}
+    siteTitle={SITE_TITLE}
+    productLinks={PRODUCT_LINKS}
+    showThemeToggle={true}
+    packages={[...PACKAGES]}
+    selectedPackage={PACKAGES[0].value}
+    versions={[...VERSIONS]}
+    selectedVersion={VERSIONS[0]}
   >
     <SearchAdvanced slot="search" tabs={SEARCH_TABS} showScope={true} />
   </DocsSubHeader>
   <DocsSidebar slot="sidebar" items={SIDEBAR} currentSlug={slug} />
   <DocsToc slot="toc" headings={headings} offsetTarget=".docs-subheader" />
-    <h1>DocsAside</h1>
-    <p>
-      Styled callout blocks for notes, tips, warnings, and danger notices.
-      Each variant has a type-specific color accent and inline SVG icon.
-    </p>
+  <h1>DocsAside</h1>
+  <p>
+    Styled callout blocks for notes, tips, warnings, and danger notices. Each variant has a
+    type-specific color accent and inline SVG icon.
+  </p>
 
-    <h4 id="variants">Variants</h4>
+  <h4 id="variants">Variants</h4>
 
-    <DocsAside type="note">
-      This is a <strong>note</strong>. Use it for supplementary information the reader should be aware of.
-    </DocsAside>
+  <DocsAside type="note">
+    This is a <strong>note</strong>. Use it for supplementary information the reader should be aware
+    of.
+  </DocsAside>
 
-    <DocsAside type="info">
-      This is a <strong>tip</strong>. Use it to share helpful shortcuts or best practices.
-    </DocsAside>
+  <DocsAside type="info">
+    This is a <strong>tip</strong>. Use it to share helpful shortcuts or best practices.
+  </DocsAside>
 
-    <DocsAside type="warning">
-      This is a <strong>warning</strong>. Use it to warn about potential pitfalls or breaking changes.
-    </DocsAside>
+  <DocsAside type="warning">
+    This is a <strong>warning</strong>. Use it to warn about potential pitfalls or breaking changes.
+  </DocsAside>
 
-    <h4 id="custom-title">Custom title</h4>
+  <h4 id="custom-title">Custom title</h4>
 
-    <DocsAside type="warning" title="Breaking change in v3">
-      The <code>foo</code> prop has been removed. Migrate to <code>bar</code> before upgrading.
-    </DocsAside>
+  <DocsAside type="warning" title="Breaking change in v3">
+    The <code>foo</code> prop has been removed. Migrate to <code>bar</code> before upgrading.
+  </DocsAside>
 
-    <h2 id="no-icon">No icon</h2>
+  <h2 id="no-icon">No icon</h2>
 
-    <DocsAside type="info" icon="">
-      This tip has no icon - pass <code>icon=""</code> to suppress it.
-    </DocsAside>
+  <DocsAside type="info" icon="">
+    This tip has no icon - pass <code>icon=""</code> to suppress it.
+  </DocsAside>
 </DocsLayout>

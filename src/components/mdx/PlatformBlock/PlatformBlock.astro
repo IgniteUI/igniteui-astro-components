@@ -13,12 +13,13 @@
 import type { PlatformContext } from '../../../lib/types';
 
 interface Props {
-    /** Comma-separated list of platform names to show content for. */
-    for: string;
+  /** Comma-separated list of platform names to show content for. */
+  for: string;
 }
 
 const { for: forProp } = Astro.props;
 const allowed = forProp.split(',').map((s) => s.trim());
 const { name } = Astro.locals.platformContext as PlatformContext;
 ---
+
 {allowed.includes(name) && <slot />}

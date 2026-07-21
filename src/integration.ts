@@ -55,8 +55,13 @@ import { defineConfig } from 'astro/config';
 import type { AstroIntegration } from 'astro';
 import mdx from '@astrojs/mdx';
 import {
-    buildLlmsTxt, buildLlmsMetaMap, getBroadSectionsForPlatform, toUrlSlug,
-    type LlmsMeta, type LlmsSet, type SidebarItem,
+  buildLlmsTxt,
+  buildLlmsMetaMap,
+  getBroadSectionsForPlatform,
+  toUrlSlug,
+  type LlmsMeta,
+  type LlmsSet,
+  type SidebarItem,
 } from './llms.ts';
 import { buildSidebarFromToc } from './sidebar';
 import { getPlatformHead } from './platform';
@@ -79,36 +84,36 @@ export type DocsMode = 'development' | 'staging' | 'production';
 // ---------------------------------------------------------------------------
 
 export interface ProductLink {
-    /** Display label shown in the DocsSubHeader, e.g. `"Angular"`. */
-    label: string;
-    /** Absolute or root-relative href to the sibling docs site. */
-    href: string;
-    /**
-     * Optional platform key (matches `PlatformKey`).
-     * When it equals the current build's platform the link is omitted from the DocsSubHeader.
-     */
-    platform?: PlatformKey;
+  /** Display label shown in the DocsSubHeader, e.g. `"Angular"`. */
+  label: string;
+  /** Absolute or root-relative href to the sibling docs site. */
+  href: string;
+  /**
+   * Optional platform key (matches `PlatformKey`).
+   * When it equals the current build's platform the link is omitted from the DocsSubHeader.
+   */
+  platform?: PlatformKey;
 }
 
 export interface SiteMetaOptions {
-    title: string;
-    description?: string;
-    /** Path to the source markdown files. */
-    docsDir?: string;
-    sidebar?: SidebarItem[];
-    platform?: PlatformKey | null;
-    navLang?: NavLang;
-    /** Build / deployment mode. Exposed via `process.env.DOCS_BUILD_MODE`. */
-    mode?: DocsMode;
-    /** Named documentation subsets linked from llms.txt. */
-    llmsSets?: LlmsSet[];
-    /** Cross-product navigation links rendered in the DocsSubHeader. */
-    productLinks?: ProductLink[];
-    /**
-     * Extra `<head>` entries injected via the `virtual:docs-template/site-meta`
-     * module and rendered by `DocsLayout.astro`.
-     */
-    head?: HeadEntry[];
+  title: string;
+  description?: string;
+  /** Path to the source markdown files. */
+  docsDir?: string;
+  sidebar?: SidebarItem[];
+  platform?: PlatformKey | null;
+  navLang?: NavLang;
+  /** Build / deployment mode. Exposed via `process.env.DOCS_BUILD_MODE`. */
+  mode?: DocsMode;
+  /** Named documentation subsets linked from llms.txt. */
+  llmsSets?: LlmsSet[];
+  /** Cross-product navigation links rendered in the DocsSubHeader. */
+  productLinks?: ProductLink[];
+  /**
+   * Extra `<head>` entries injected via the `virtual:docs-template/site-meta`
+   * module and rendered by `DocsLayout.astro`.
+   */
+  head?: HeadEntry[];
 }
 
 /**
@@ -122,250 +127,278 @@ export interface SiteMetaOptions {
  *  - Inline <style>{`…`}</style> blocks
  */
 function stripMdxForLlms(raw: string): string {
-    return raw
-        // Remove all import lines
-        .replace(/^import\s+.+from\s+['"][^'"]+['"];?\r?\n/gm, '')
-        // Remove <style>{`...`}</style> blocks (multiline)
-        .replace(/<style>\{`[\s\S]*?`\}<\/style>\s*/g, '')
-        // Remove self-closing components: <Sample … />, <ApiRef … />, <ApiLink … />
-        .replace(/<(Sample|ApiRef|ApiLink|ComponentBlock|PlatformBlock)\b[^>]*\/>\s*/g, '')
-        // Remove paired components: <ApiRef …>…</ApiRef>
-        .replace(/<(ApiRef|ApiLink|ComponentBlock|PlatformBlock)\b[^>]*>[\s\S]*?<\/\1>\s*/g, '')
-        // Collapse 3+ blank lines left behind into 2
-        .replace(/\n{3,}/g, '\n\n')
-        .trim() + '\n';
+  return (
+    raw
+      // Remove all import lines
+      .replace(/^import\s+.+from\s+['"][^'"]+['"];?\r?\n/gm, '')
+      // Remove <style>{`...`}</style> blocks (multiline)
+      .replace(/<style>\{`[\s\S]*?`\}<\/style>\s*/g, '')
+      // Remove self-closing components: <Sample … />, <ApiRef … />, <ApiLink … />
+      .replace(/<(Sample|ApiRef|ApiLink|ComponentBlock|PlatformBlock)\b[^>]*\/>\s*/g, '')
+      // Remove paired components: <ApiRef …>…</ApiRef>
+      .replace(/<(ApiRef|ApiLink|ComponentBlock|PlatformBlock)\b[^>]*>[\s\S]*?<\/\1>\s*/g, '')
+      // Collapse 3+ blank lines left behind into 2
+      .replace(/\n{3,}/g, '\n\n')
+      .trim() + '\n'
+  );
 }
 
 /**
  * Astro integration that exposes site metadata as the virtual module
  * `virtual:docs-template/site-meta` and generates /llms.txt at build time.
  */
-export function siteMetaIntegration({
+export function siteMetaIntegration(
+  {
     title,
     description = '',
     docsDir,
     sidebar,
     platform = null,
     navLang = 'en',
-    mode = 'development',
+    mode: _mode = 'development',
     llmsSets = [],
     productLinks = [],
     head = [],
-}: SiteMetaOptions = {} as SiteMetaOptions): AstroIntegration {
-    const llmsMetaMap = docsDir
-        ? buildLlmsMetaMap(docsDir, sidebar ?? [])
-        : new Map<string, LlmsMeta>();
+  }: SiteMetaOptions = {} as SiteMetaOptions,
+): AstroIntegration {
+  const llmsMetaMap = docsDir
+    ? buildLlmsMetaMap(docsDir, sidebar ?? [])
+    : new Map<string, LlmsMeta>();
 
-    const virtualId = 'virtual:docs-template/site-meta';
-    const resolvedId = '\0' + virtualId;
+  const virtualId = 'virtual:docs-template/site-meta';
+  const resolvedId = '\0' + virtualId;
 
-    const navVirtualId = 'virtual:docs-template/nav-html';
-    const navResolvedId = '\0' + navVirtualId;
+  const navVirtualId = 'virtual:docs-template/nav-html';
+  const navResolvedId = '\0' + navVirtualId;
 
-    // Navigation buckets for this platform.
-    const broadSections = getBroadSectionsForPlatform(platform ?? null);
-    // Captured from astro:config:done; used to generate llms.txt content and virtual module.
-    let configuredSite = '';
-    // Cached virtual module source — built once in astro:config:done after
-    // trailingSlash is known and reused on every subsequent Vite load() call.
-    let siteMetaCode = '';
+  // Navigation buckets for this platform.
+  const broadSections = getBroadSectionsForPlatform(platform ?? null);
+  // Captured from astro:config:done; used to generate llms.txt content and virtual module.
+  let configuredSite = '';
+  // Cached virtual module source — built once in astro:config:done after
+  // trailingSlash is known and reused on every subsequent Vite load() call.
+  let siteMetaCode = '';
 
-    return {
-        name: 'docs-template:site-meta',
-        hooks: {
-            'astro:config:done'({ config }) {
-                configuredSite = (config.site?.toString() ?? '').replace(/\/$/, '');
-                siteMetaCode = `export const title = ${JSON.stringify(title)};
+  return {
+    name: 'docs-template:site-meta',
+    hooks: {
+      'astro:config:done'({ config }) {
+        configuredSite = (config.site?.toString() ?? '').replace(/\/$/, '');
+        siteMetaCode = `export const title = ${JSON.stringify(title)};
 export const sidebar = ${JSON.stringify(sidebar ?? [])};
 export const productLinks = ${JSON.stringify(productLinks)};
 export const headEntries = ${JSON.stringify(head ?? [])};
 export const trailingSlash = ${JSON.stringify(config.trailingSlash)};
 export const navLang = ${JSON.stringify(navLang)};
 `;
+      },
+      'astro:config:setup'({ updateConfig, injectRoute }) {
+        injectRoute({
+          pattern: '/sitemap.xml',
+          entrypoint: fileURLToPath(new URL('./routes/sitemap.xml.ts', import.meta.url)),
+          prerender: true,
+        });
+
+        // Inject the dynamic doc-page route so consuming projects don't
+        // need their own [...slug].astro. Project pages take priority over
+        // injected routes, so the template's own src/pages/[...slug].astro
+        // still wins when the template is used standalone.
+        injectRoute({
+          pattern: '/[...slug]',
+          entrypoint: fileURLToPath(new URL('./routes/[...slug].astro', import.meta.url)),
+          prerender: true,
+        });
+
+        // Configure Sass loadPaths so bare `highlight.js/scss/vs2015`
+        // imports in the platform theme files resolve from node_modules.
+        updateConfig({
+          vite: {
+            css: {
+              preprocessorOptions: {
+                scss: {
+                  loadPaths: [path.join(process.cwd(), 'node_modules')],
+                  // The if-function deprecation originates inside
+                  // igniteui-theming (vendor code we cannot modify).
+                  silenceDeprecations: ['if-function'],
+                },
+              },
             },
-            'astro:config:setup'({ updateConfig, injectRoute }) {
-                injectRoute({
-                    pattern: '/sitemap.xml',
-                    entrypoint: fileURLToPath(new URL('./routes/sitemap.xml.ts', import.meta.url)),
-                    prerender: true,
-                });
+          },
+        });
+        updateConfig({
+          vite: {
+            plugins: [
+              {
+                name: 'vite-plugin-docs-template-site-meta',
+                resolveId(id: string) {
+                  if (id === virtualId) return resolvedId;
+                  if (id === navVirtualId) return navResolvedId;
+                },
+                load(id: string) {
+                  if (id === resolvedId) return siteMetaCode;
+                  if (id !== navResolvedId) return;
 
-                // Inject the dynamic doc-page route so consuming projects don't
-                // need their own [...slug].astro. Project pages take priority over
-                // injected routes, so the template's own src/pages/[...slug].astro
-                // still wins when the template is used standalone.
-                injectRoute({
-                    pattern: '/[...slug]',
-                    entrypoint: fileURLToPath(new URL('./routes/[...slug].astro', import.meta.url)),
-                    prerender: true,
-                });
+                  return `export const platform = ${JSON.stringify(platform ?? null)};`;
+                },
+              },
+            ],
+          },
+        });
+      },
 
+      'astro:server:setup'({ server }) {
+        if (!docsDir) return;
+        server.middlewares.use(async (req, res, next) => {
+          // Only handle requests ending in .md
+          if (!req.url?.endsWith('.md')) return next();
+          // Strip leading slash and .md suffix to get the slug
+          const slug = req.url.slice(1, -3);
+          for (const ext of ['.md', '.mdx']) {
+            const src = path.join(docsDir, slug + ext);
+            try {
+              const raw = await fsp.readFile(src, 'utf-8');
+              res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+              res.end(raw);
+              return;
+            } catch {
+              /* try next extension */
+            }
+          }
+          next();
+        });
+      },
 
-                // Configure Sass loadPaths so bare `highlight.js/scss/vs2015`
-                // imports in the platform theme files resolve from node_modules.
-                updateConfig({
-                    vite: {
-                        css: {
-                            preprocessorOptions: {
-                                scss: {
-                                    loadPaths: [path.join(process.cwd(), 'node_modules')],
-                                    // The if-function deprecation originates inside
-                                    // igniteui-theming (vendor code we cannot modify).
-                                    silenceDeprecations: ['if-function'],
-                                },
-                            },
-                        },
-                    },
-                });
-                updateConfig({
-                    vite: {
-                        plugins: [{
-                            name: 'vite-plugin-docs-template-site-meta',
-                            resolveId(id: string) {
-                                if (id === virtualId) return resolvedId;
-                                if (id === navVirtualId) return navResolvedId;
-                            },
-                            load(id: string) {
-                                if (id === resolvedId) return siteMetaCode;
-                                if (id !== navResolvedId) return;
+      async 'astro:build:done'({ dir, pages }) {
+        const outDir = fileURLToPath(dir);
 
-                                return `export const platform = ${JSON.stringify(platform ?? null)};`;
-                            },
-                        }],
-                    },
-                });
-            },
+        // Copy package scripts to the build output /scripts/ directory.
+        const pkgScripts = fileURLToPath(new URL('../public/scripts', import.meta.url));
+        if (fs.existsSync(pkgScripts)) copyDirSync(pkgScripts, path.join(outDir, 'scripts'));
 
-            'astro:server:setup'({ server }) {
-                if (!docsDir) return;
-                server.middlewares.use(async (req, res, next) => {
-                    // Only handle requests ending in .md
-                    if (!req.url?.endsWith('.md')) return next();
-                    // Strip leading slash and .md suffix to get the slug
-                    const slug = req.url.slice(1, -3);
-                    for (const ext of ['.md', '.mdx']) {
-                        const src = path.join(docsDir, slug + ext);
-                        try {
-                            const raw = await fsp.readFile(src, 'utf-8');
-                            res.setHeader('Content-Type', 'text/plain; charset=utf-8');
-                            res.end(raw);
-                            return;
-                        } catch { /* try next extension */ }
-                    }
-                    next();
-                });
-            },
+        // Write our custom llms.txt after all rendering — always wins over plugin output.
+        const llmsContent = buildLlmsTxt(
+          configuredSite,
+          title,
+          description,
+          sidebar ?? [],
+          llmsMetaMap,
+          llmsSets,
+          broadSections,
+        );
+        await fsp.writeFile(path.join(outDir, 'llms.txt'), llmsContent, 'utf-8');
 
-            async 'astro:build:done'({ dir, pages }) {
-                const outDir = fileURLToPath(dir);
+        if (!docsDir) return;
 
-                // Copy package scripts to the build output /scripts/ directory.
-                const pkgScripts = fileURLToPath(new URL('../public/scripts', import.meta.url));
-                if (fs.existsSync(pkgScripts)) copyDirSync(pkgScripts, path.join(outDir, 'scripts'));
+        // pages[].pathname is like "accordion/" or "charts/chart-api/" — strip trailing slash.
+        const slugs = pages
+          .map((p) => p.pathname.replace(/\/$/, ''))
+          .filter((s) => s && s !== '404' && s !== 'index');
 
-                // Write our custom llms.txt after all rendering — always wins over plugin output.
-                const llmsContent = buildLlmsTxt(configuredSite, title, description, sidebar ?? [], llmsMetaMap, llmsSets, broadSections);
-                await fsp.writeFile(path.join(outDir, 'llms.txt'), llmsContent, 'utf-8');
+        await Promise.all(
+          slugs.map(async (slug) => {
+            for (const ext of ['.md', '.mdx']) {
+              const src = path.join(docsDir, slug + ext);
+              try {
+                const raw = await fsp.readFile(src, 'utf-8');
+                const dest = path.join(outDir, slug + '.md');
+                await fsp.mkdir(path.dirname(dest), { recursive: true });
+                await fsp.writeFile(dest, stripMdxForLlms(raw), 'utf-8');
+                break;
+              } catch {
+                /* try next extension */
+              }
+            }
+          }),
+        );
 
-                if (!docsDir) return;
+        // ── llms-full.txt / llms-small.txt ──────────────────────────────────
+        // Read back the already-written per-page .md files and combine them.
+        const pageTexts = (
+          await Promise.all(
+            slugs.map(async (slug) => {
+              try {
+                return await fsp.readFile(path.join(outDir, slug + '.md'), 'utf-8');
+              } catch {
+                return '';
+              }
+            }),
+          )
+        ).filter(Boolean);
 
-                // pages[].pathname is like "accordion/" or "charts/chart-api/" — strip trailing slash.
-                const slugs = pages
-                    .map(p => p.pathname.replace(/\/$/, ''))
-                    .filter(s => s && s !== '404' && s !== 'index');
+        const fullContent = pageTexts.join('\n\n---\n\n');
+        await fsp.writeFile(path.join(outDir, 'llms-full.txt'), fullContent, 'utf-8');
 
+        // Small variant: strip fenced code blocks and inline code.
+        const smallContent = fullContent
+          .replace(/^```[\s\S]*?^```/gm, '')
+          .replace(/`[^`\n]+`/g, '')
+          .replace(/\n{3,}/g, '\n\n')
+          .trim();
+        await fsp.writeFile(path.join(outDir, 'llms-small.txt'), smallContent, 'utf-8');
+
+        // ── /_llms-txt/{set-slug}.txt ────────────────────────────────────────
+        if (llmsSets.length > 0) {
+          const llmsTxtDir = path.join(outDir, '_llms-txt');
+          await fsp.mkdir(llmsTxtDir, { recursive: true });
+
+          await Promise.all(
+            llmsSets.map(async (set) => {
+              const matchingSlugs = slugs.filter((slug) =>
+                set.paths.some((pattern) => {
+                  if (pattern.endsWith('*')) {
+                    return slug.startsWith(pattern.slice(0, -1));
+                  }
+                  return slug === pattern || slug.startsWith(pattern + '/');
+                }),
+              );
+
+              const setText = (
                 await Promise.all(
-                    slugs.map(async (slug) => {
-                        for (const ext of ['.md', '.mdx']) {
-                            const src = path.join(docsDir, slug + ext);
-                            try {
-                                const raw = await fsp.readFile(src, 'utf-8');
-                                const dest = path.join(outDir, slug + '.md');
-                                await fsp.mkdir(path.dirname(dest), { recursive: true });
-                                await fsp.writeFile(dest, stripMdxForLlms(raw), 'utf-8');
-                                break;
-                            } catch { /* try next extension */ }
-                        }
-                    })
-                );
+                  matchingSlugs.map(async (slug) => {
+                    try {
+                      return await fsp.readFile(path.join(outDir, slug + '.md'), 'utf-8');
+                    } catch {
+                      return '';
+                    }
+                  }),
+                )
+              )
+                .filter(Boolean)
+                .join('\n\n---\n\n');
 
-                // ── llms-full.txt / llms-small.txt ──────────────────────────────────
-                // Read back the already-written per-page .md files and combine them.
-                const pageTexts = (
-                    await Promise.all(
-                        slugs.map(async (slug) => {
-                            try {
-                                return await fsp.readFile(path.join(outDir, slug + '.md'), 'utf-8');
-                            } catch { return ''; }
-                        })
-                    )
-                ).filter(Boolean);
+              await fsp.writeFile(
+                path.join(llmsTxtDir, toUrlSlug(set.label) + '.txt'),
+                setText,
+                'utf-8',
+              );
+            }),
+          );
+        }
 
-                const fullContent = pageTexts.join('\n\n---\n\n');
-                await fsp.writeFile(path.join(outDir, 'llms-full.txt'), fullContent, 'utf-8');
-
-                // Small variant: strip fenced code blocks and inline code.
-                const smallContent = fullContent
-                    .replace(/^```[\s\S]*?^```/gm, '')
-                    .replace(/`[^`\n]+`/g, '')
-                    .replace(/\n{3,}/g, '\n\n')
-                    .trim();
-                await fsp.writeFile(path.join(outDir, 'llms-small.txt'), smallContent, 'utf-8');
-
-                // ── /_llms-txt/{set-slug}.txt ────────────────────────────────────────
-                if (llmsSets.length > 0) {
-                    const llmsTxtDir = path.join(outDir, '_llms-txt');
-                    await fsp.mkdir(llmsTxtDir, { recursive: true });
-
-                    await Promise.all(
-                        llmsSets.map(async (set) => {
-                            const matchingSlugs = slugs.filter((slug) =>
-                                set.paths.some((pattern) => {
-                                    if (pattern.endsWith('*')) {
-                                        return slug.startsWith(pattern.slice(0, -1));
-                                    }
-                                    return slug === pattern || slug.startsWith(pattern + '/');
-                                })
-                            );
-
-                            const setText = (
-                                await Promise.all(
-                                    matchingSlugs.map(async (slug) => {
-                                        try {
-                                            return await fsp.readFile(path.join(outDir, slug + '.md'), 'utf-8');
-                                        } catch { return ''; }
-                                    })
-                                )
-                            ).filter(Boolean).join('\n\n---\n\n');
-
-                            await fsp.writeFile(
-                                path.join(llmsTxtDir, toUrlSlug(set.label) + '.txt'),
-                                setText,
-                                'utf-8',
-                            );
-                        })
-                    );
-                }
-
-                // Run pagefind to generate the search index from the built HTML.
-                // The index is written to <outDir>/pagefind/ and served statically.
-                console.log('[docs-template] Running pagefind…');
-                try {
-                    const { index, errors: initErrors } = await pagefindCreateIndex({});
-                    if (initErrors?.length) throw new Error(initErrors.join(', '));
-                    const { errors: addErrors } = await index!.addDirectory({ path: outDir, rootSelector: 'main' });
-                    if (addErrors?.length) console.warn('[docs-template] pagefind addDirectory warnings:', addErrors);
-                    const { errors: writeErrors } = await index!.writeFiles({
-                        outputPath: path.join(outDir, 'pagefind'),
-                    });
-                    if (writeErrors?.length) console.warn('[docs-template] pagefind writeFiles warnings:', writeErrors);
-                    console.log('[docs-template] pagefind index written.');
-                } catch (err) {
-                    console.warn('[docs-template] pagefind failed — search index will be unavailable.', err);
-                }
-            },
-        },
-    };
+        // Run pagefind to generate the search index from the built HTML.
+        // The index is written to <outDir>/pagefind/ and served statically.
+        console.log('[docs-template] Running pagefind…');
+        try {
+          const { index, errors: initErrors } = await pagefindCreateIndex({});
+          if (initErrors?.length) throw new Error(initErrors.join(', '));
+          const { errors: addErrors } = await index!.addDirectory({
+            path: outDir,
+            rootSelector: 'main',
+          });
+          if (addErrors?.length)
+            console.warn('[docs-template] pagefind addDirectory warnings:', addErrors);
+          const { errors: writeErrors } = await index!.writeFiles({
+            outputPath: path.join(outDir, 'pagefind'),
+          });
+          if (writeErrors?.length)
+            console.warn('[docs-template] pagefind writeFiles warnings:', writeErrors);
+          console.log('[docs-template] pagefind index written.');
+        } catch (err) {
+          console.warn('[docs-template] pagefind failed — search index will be unavailable.', err);
+        }
+      },
+    },
+  };
 }
 
 export { buildSidebarFromToc };
@@ -376,19 +409,24 @@ export type { LlmsMeta, LlmsSet } from './llms.ts';
 // ---------------------------------------------------------------------------
 
 const MIME: Record<string, string> = {
-    png: 'image/png', jpg: 'image/jpeg', jpeg: 'image/jpeg',
-    gif: 'image/gif', svg: 'image/svg+xml', webp: 'image/webp',
-    avif: 'image/avif', ico: 'image/x-icon',
+  png: 'image/png',
+  jpg: 'image/jpeg',
+  jpeg: 'image/jpeg',
+  gif: 'image/gif',
+  svg: 'image/svg+xml',
+  webp: 'image/webp',
+  avif: 'image/avif',
+  ico: 'image/x-icon',
 };
 
 function copyDirSync(src: string, dest: string): void {
-    fs.mkdirSync(dest, { recursive: true });
-    for (const entry of fs.readdirSync(src, { withFileTypes: true })) {
-        const s = path.join(src, entry.name);
-        const d = path.join(dest, entry.name);
-        if (entry.isDirectory()) copyDirSync(s, d);
-        else fs.copyFileSync(s, d);
-    }
+  fs.mkdirSync(dest, { recursive: true });
+  for (const entry of fs.readdirSync(src, { withFileTypes: true })) {
+    const s = path.join(src, entry.name);
+    const d = path.join(dest, entry.name);
+    if (entry.isDirectory()) copyDirSync(s, d);
+    else fs.copyFileSync(s, d);
+  }
 }
 
 /**
@@ -399,51 +437,51 @@ function copyDirSync(src: string, dest: string): void {
  * @param options.urlPath - URL prefix under which images are served (default `'/images'`).
  */
 export function staticImagesIntegration(
-    imagesDir: string,
-    { urlPath = '/images' }: { urlPath?: string } = {},
+  imagesDir: string,
+  { urlPath = '/images' }: { urlPath?: string } = {},
 ): AstroIntegration {
-    return {
-        name: 'static-images',
-        hooks: {
-            'astro:server:setup'({ server }) {
-                server.middlewares.use(urlPath, (req, res, next) => {
-                    // Extract path (no query string)
-                    const rawUrl = req.url || '/';
-                    const requestPath = rawUrl.split('?', 1)[0] || '/';
-                    // Decode URL component; reject malformed encodings
-                    let decodedPath: string;
-                    try {
-                        decodedPath = decodeURIComponent(requestPath);
-                    } catch {
-                        return next();
-                    }
-                    // Build absolute file path and ensure it stays within imagesDir
-                    const basePath = path.resolve(imagesDir);
-                    const relativePath = decodedPath.replace(/^\/+/, '');
-                    const filePath = path.resolve(path.join(basePath, relativePath));
-                    // Prevent path traversal outside of imagesDir
-                    if (filePath !== basePath && !filePath.startsWith(basePath + path.sep)) {
-                        return next();
-                    }
-                    try {
-                        if (fs.statSync(filePath).isFile()) {
-                            const ext = path.extname(filePath).slice(1).toLowerCase();
-                            res.setHeader('Content-Type', MIME[ext] || 'application/octet-stream');
-                            fs.createReadStream(filePath).pipe(res);
-                            return;
-                        }
-                    } catch {
-                        /* file not found — fall through */
-                    }
-                    next();
-                });
-            },
-            async 'astro:build:done'({ dir }) {
-                const destImages = path.join(fileURLToPath(dir), urlPath.replace(/^\//, ''));
-                copyDirSync(imagesDir, destImages);
-            },
-        },
-    };
+  return {
+    name: 'static-images',
+    hooks: {
+      'astro:server:setup'({ server }) {
+        server.middlewares.use(urlPath, (req, res, next) => {
+          // Extract path (no query string)
+          const rawUrl = req.url || '/';
+          const requestPath = rawUrl.split('?', 1)[0] || '/';
+          // Decode URL component; reject malformed encodings
+          let decodedPath: string;
+          try {
+            decodedPath = decodeURIComponent(requestPath);
+          } catch {
+            return next();
+          }
+          // Build absolute file path and ensure it stays within imagesDir
+          const basePath = path.resolve(imagesDir);
+          const relativePath = decodedPath.replace(/^\/+/, '');
+          const filePath = path.resolve(path.join(basePath, relativePath));
+          // Prevent path traversal outside of imagesDir
+          if (filePath !== basePath && !filePath.startsWith(basePath + path.sep)) {
+            return next();
+          }
+          try {
+            if (fs.statSync(filePath).isFile()) {
+              const ext = path.extname(filePath).slice(1).toLowerCase();
+              res.setHeader('Content-Type', MIME[ext] || 'application/octet-stream');
+              fs.createReadStream(filePath).pipe(res);
+              return;
+            }
+          } catch {
+            /* file not found — fall through */
+          }
+          next();
+        });
+      },
+      async 'astro:build:done'({ dir }) {
+        const destImages = path.join(fileURLToPath(dir), urlPath.replace(/^\//, ''));
+        copyDirSync(imagesDir, destImages);
+      },
+    },
+  };
 }
 
 /**
@@ -452,34 +490,34 @@ export function staticImagesIntegration(
  * (e.g. raw `<img>` tags in markdown/MDX content).
  */
 function createBasePrependIntegration(base: string): AstroIntegration {
-    const normalizedBase = base.replace(/\/$/, '');
+  const normalizedBase = base.replace(/\/$/, '');
 
-    function rewriteDir(dir: string): void {
-        for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
-            const full = path.join(dir, entry.name);
-            if (entry.isDirectory()) { rewriteDir(full); continue; }
-            if (!entry.name.endsWith('.html')) continue;
+  function rewriteDir(dir: string): void {
+    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+      const full = path.join(dir, entry.name);
+      if (entry.isDirectory()) {
+        rewriteDir(full);
+        continue;
+      }
+      if (!entry.name.endsWith('.html')) continue;
 
-            const original = fs.readFileSync(full, 'utf-8');
-            const rewritten = original.replace(
-                /\bsrc="(\/[^"]*)"/g,
-                (_: string, url: string) => {
-                    if (url.startsWith(normalizedBase + '/')) return `src="${url}"`;
-                    return `src="${normalizedBase}${url}"`;
-                },
-            );
-            if (rewritten !== original) fs.writeFileSync(full, rewritten, 'utf-8');
-        }
+      const original = fs.readFileSync(full, 'utf-8');
+      const rewritten = original.replace(/\bsrc="(\/[^"]*)"/g, (_: string, url: string) => {
+        if (url.startsWith(normalizedBase + '/')) return `src="${url}"`;
+        return `src="${normalizedBase}${url}"`;
+      });
+      if (rewritten !== original) fs.writeFileSync(full, rewritten, 'utf-8');
     }
+  }
 
-    return {
-        name: 'docs-template:base-prepend',
-        hooks: {
-            'astro:build:done'({ dir }) {
-                rewriteDir(fileURLToPath(dir));
-            },
-        },
-    };
+  return {
+    name: 'docs-template:base-prepend',
+    hooks: {
+      'astro:build:done'({ dir }) {
+        rewriteDir(fileURLToPath(dir));
+      },
+    },
+  };
 }
 
 // ---------------------------------------------------------------------------
@@ -487,65 +525,65 @@ function createBasePrependIntegration(base: string): AstroIntegration {
 // ---------------------------------------------------------------------------
 
 export interface DocsSiteSource {
-    /** Absolute path to the TOC file. */
-    tocPath: string;
-    /** Absolute path to the Markdown docs directory. */
-    docsDir: string;
-    /**
-     * Absolute path to images directory.
-     * Omit to skip the images integration.
-     */
-    imagesDir?: string;
+  /** Absolute path to the TOC file. */
+  tocPath: string;
+  /** Absolute path to the Markdown docs directory. */
+  docsDir: string;
+  /**
+   * Absolute path to images directory.
+   * Omit to skip the images integration.
+   */
+  imagesDir?: string;
 }
 
 export interface CreateDocsSiteOptions {
-    /** Deployed site URL. */
-    site: string;
-    /** Base path, e.g. `'/docs'`. */
-    base?: string;
-    /** Site title shown in the browser tab and DocsSubHeader. */
-    title: string;
-    /** Short description for the llms.txt header. */
-    description?: string;
-    /** Content source paths. */
-    source: Partial<DocsSiteSource>;
-    /** Sidebar builder options. */
-    sidebar?: {
-        /** Patterns to exclude from the TOC. */
-        exclude?: RegExp[];
-    };
-    /**
-     * Platform identifier. Drives CDN styles/scripts injected into `<head>`
-     * and the build-time nav prefetch endpoint.
-     */
-    platform?: PlatformKey | null;
-    /** Locale for the nav prefetch URL. */
-    navLang?: NavLang;
-    /**
-     * Extra `<head>` entries appended after the platform entries.
-     */
-    head?: HeadEntry[];
-    /**
-     * Build / deployment mode.
-     * - `'development'` — local development (default)
-     * - `'staging'` — pre-production environment
-     * - `'production'` — production deployment
-     *
-     * Exposed as `process.env.DOCS_BUILD_MODE`.
-     */
-    mode?: DocsMode;
-    /**
-     * Named documentation subsets. Each entry generates a dedicated
-     * `/_llms-txt/{slug}.txt` and adds a link under
-     * `## Documentation sets` in `llms.txt`.
-     */
-    llmsSets?: LlmsSet[];
-    /** Cross-product navigation links rendered in the DocsSubHeader. */
-    productLinks?: ProductLink[];
-    /** Extra Astro integrations appended after the built-in ones. */
-    integrations?: AstroIntegration[];
-    /** Any remaining keys are spread into `defineConfig` (markdown, image, build, …). */
-    [key: string]: unknown;
+  /** Deployed site URL. */
+  site: string;
+  /** Base path, e.g. `'/docs'`. */
+  base?: string;
+  /** Site title shown in the browser tab and DocsSubHeader. */
+  title: string;
+  /** Short description for the llms.txt header. */
+  description?: string;
+  /** Content source paths. */
+  source: Partial<DocsSiteSource>;
+  /** Sidebar builder options. */
+  sidebar?: {
+    /** Patterns to exclude from the TOC. */
+    exclude?: RegExp[];
+  };
+  /**
+   * Platform identifier. Drives CDN styles/scripts injected into `<head>`
+   * and the build-time nav prefetch endpoint.
+   */
+  platform?: PlatformKey | null;
+  /** Locale for the nav prefetch URL. */
+  navLang?: NavLang;
+  /**
+   * Extra `<head>` entries appended after the platform entries.
+   */
+  head?: HeadEntry[];
+  /**
+   * Build / deployment mode.
+   * - `'development'` — local development (default)
+   * - `'staging'` — pre-production environment
+   * - `'production'` — production deployment
+   *
+   * Exposed as `process.env.DOCS_BUILD_MODE`.
+   */
+  mode?: DocsMode;
+  /**
+   * Named documentation subsets. Each entry generates a dedicated
+   * `/_llms-txt/{slug}.txt` and adds a link under
+   * `## Documentation sets` in `llms.txt`.
+   */
+  llmsSets?: LlmsSet[];
+  /** Cross-product navigation links rendered in the DocsSubHeader. */
+  productLinks?: ProductLink[];
+  /** Extra Astro integrations appended after the built-in ones. */
+  integrations?: AstroIntegration[];
+  /** Any remaining keys are spread into `defineConfig` (markdown, image, build, …). */
+  [key: string]: unknown;
 }
 
 /**
@@ -565,133 +603,149 @@ export interface CreateDocsSiteOptions {
  *
  * @param options - Configuration options.
  */
-export function createDocsSite(options: CreateDocsSiteOptions = {} as CreateDocsSiteOptions): ReturnType<typeof defineConfig> {
-    const {
-        site,
-        base,
+export function createDocsSite(
+  options: CreateDocsSiteOptions = {} as CreateDocsSiteOptions,
+): ReturnType<typeof defineConfig> {
+  const {
+    site,
+    base,
+    title,
+    description = '',
+    source = {},
+    sidebar: sidebarOptions = {},
+    platform = null,
+    navLang = 'en',
+    mode = 'development',
+    productLinks = [],
+    head = [],
+    llmsSets = [] as LlmsSet[],
+    integrations: extraIntegrations = [],
+    ...astroExtra
+  } = options;
+
+  const sidebar = buildSidebarFromToc({
+    tocPath: source.tocPath!,
+    docsDir: source.docsDir!,
+    exclude: sidebarOptions.exclude ?? [],
+  });
+
+  // Expose env vars so consuming content.config.ts and components can read them.
+  if (source.docsDir) {
+    process.env.DOCS_SOURCE_PATH = source.docsDir;
+  }
+  process.env.DOCS_BUILD_MODE = mode;
+  process.env.DOCS_BASE = base ? base.replace(/\/$/, '') : '';
+  if (!process.env.DOCS_ENV) {
+    process.env.DOCS_ENV = mode;
+  }
+  // Expose the platform so plugins can set data-platform on widgets they generate.
+  if (platform) {
+    process.env.DOCS_PLATFORM = platform;
+  }
+
+  // Platform CDN entries come first so site-specific `head` entries can override.
+  const platformHead = platform ? getPlatformHead(platform, navLang) : [];
+
+  // highlight.js for code-tab syntax highlighting inside code-view widgets.
+  const codeViewHead: HeadEntry[] = [
+    {
+      tag: 'link',
+      attrs: {
+        rel: 'stylesheet',
+        href: 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/vs2015.min.css',
+      },
+    },
+    {
+      tag: 'script',
+      attrs: {
+        src: 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js',
+        defer: true,
+      },
+    },
+  ];
+
+  // Auto-configure a Vite dev-server proxy so sample-widget.ts can fetch
+  // /code-viewer/*.json from the local demos server without CORS issues.
+  const devProxy: Record<string, object> = {};
+  if (source.docsDir) {
+    try {
+      const docsRoot = path.resolve(source.docsDir);
+      const envCandidates = [
+        path.join(docsRoot, 'en', 'environment.json'),
+        path.join(docsRoot, 'environment.json'),
+        path.join(path.dirname(docsRoot), 'environment.json'),
+        path.join(path.dirname(docsRoot), 'en', 'environment.json'),
+      ];
+      const envFile = envCandidates.find((c) => fs.existsSync(c));
+      if (envFile) {
+        const envData = JSON.parse(fs.readFileSync(envFile, 'utf-8'));
+        const envKey = process.env.DOCS_ENV ?? process.env.NODE_ENV ?? 'production';
+        const env: Record<string, string> = envData[envKey] ?? envData.production ?? {};
+        const demosUrl = env.dvDemosBaseUrl || env.demosBaseUrl;
+        if (demosUrl) {
+          const u = new URL(demosUrl);
+          if (u.hostname === 'localhost' || u.hostname === '127.0.0.1') {
+            const cfg = { target: demosUrl, changeOrigin: true, secure: false };
+            devProxy['/code-viewer'] = cfg;
+            devProxy['/assets/code-viewer'] = cfg;
+          }
+        }
+      }
+    } catch {
+      /* non-fatal — proxy just won't be configured */
+    }
+  }
+
+  return defineConfig({
+    site,
+    ...(base !== undefined ? { base } : {}),
+    // Docs sites serve images statically — disable Astro's image optimization
+    // so relative image paths in markdown don't cause build errors.
+    image: { service: { entrypoint: 'astro/assets/services/noop' }, ...(astroExtra as any).image },
+    ...astroExtra,
+    vite: {
+      ...(astroExtra as any).vite,
+      server: {
+        ...(astroExtra as any).vite?.server,
+        proxy: {
+          ...devProxy,
+          ...(astroExtra as any).vite?.server?.proxy,
+        },
+      },
+    },
+    markdown: {
+      ...(astroExtra as any).markdown,
+      remarkPlugins: [
+        remarkEnvVars,
+        remarkMdLinks,
+        remarkHtmlTransforms,
+        ...((astroExtra as any).markdown?.remarkPlugins ?? []),
+      ],
+      rehypePlugins: [
+        rehypeCodeView,
+        rehypeTableWrapper,
+        rehypeHeadingAnchors,
+        rehypePagefindIgnore,
+        ...((astroExtra as any).markdown?.rehypePlugins ?? []),
+      ],
+    },
+    integrations: [
+      siteMetaIntegration({
         title,
-        description = '',
-        source = {},
-        sidebar: sidebarOptions = {},
-        platform = null,
-        navLang = 'en',
-        mode = 'development',
-        productLinks = [],
-        head = [],
-        llmsSets = [] as LlmsSet[],
-        integrations: extraIntegrations = [],
-        ...astroExtra
-    } = options;
-
-    const sidebar = buildSidebarFromToc({
-        tocPath: source.tocPath!,
-        docsDir: source.docsDir!,
-        exclude: sidebarOptions.exclude ?? [],
-    });
-
-    // Expose env vars so consuming content.config.ts and components can read them.
-    if (source.docsDir) {
-        process.env.DOCS_SOURCE_PATH = source.docsDir;
-    }
-    process.env.DOCS_BUILD_MODE = mode;
-    process.env.DOCS_BASE = base ? base.replace(/\/$/, '') : '';
-    if (!process.env.DOCS_ENV) {
-        process.env.DOCS_ENV = mode;
-    }
-    // Expose the platform so plugins can set data-platform on widgets they generate.
-    if (platform) {
-        process.env.DOCS_PLATFORM = platform;
-    }
-
-    // Platform CDN entries come first so site-specific `head` entries can override.
-    const platformHead = platform ? getPlatformHead(platform, navLang) : [];
-
-    // highlight.js for code-tab syntax highlighting inside code-view widgets.
-    const codeViewHead: HeadEntry[] = [
-        { tag: 'link', attrs: { rel: 'stylesheet', href: 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/vs2015.min.css' } },
-        { tag: 'script', attrs: { src: 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js', defer: true } },
-    ];
-
-    // Auto-configure a Vite dev-server proxy so sample-widget.ts can fetch
-    // /code-viewer/*.json from the local demos server without CORS issues.
-    const devProxy: Record<string, object> = {};
-    if (source.docsDir) {
-        try {
-            const docsRoot = path.resolve(source.docsDir);
-            const envCandidates = [
-                path.join(docsRoot, 'en', 'environment.json'),
-                path.join(docsRoot, 'environment.json'),
-                path.join(path.dirname(docsRoot), 'environment.json'),
-                path.join(path.dirname(docsRoot), 'en', 'environment.json'),
-            ];
-            const envFile = envCandidates.find(c => fs.existsSync(c));
-            if (envFile) {
-                const envData = JSON.parse(fs.readFileSync(envFile, 'utf-8'));
-                const envKey = process.env.DOCS_ENV ?? process.env.NODE_ENV ?? 'production';
-                const env: Record<string, string> = envData[envKey] ?? envData.production ?? {};
-                const demosUrl = env.dvDemosBaseUrl || env.demosBaseUrl;
-                if (demosUrl) {
-                    const u = new URL(demosUrl);
-                    if (u.hostname === 'localhost' || u.hostname === '127.0.0.1') {
-                        const cfg = { target: demosUrl, changeOrigin: true, secure: false };
-                        devProxy['/code-viewer'] = cfg;
-                        devProxy['/assets/code-viewer'] = cfg;
-                    }
-                }
-            }
-        } catch { /* non-fatal — proxy just won't be configured */ }
-    }
-
-    return defineConfig({
-        site,
-        ...(base !== undefined ? { base } : {}),
-        // Docs sites serve images statically — disable Astro's image optimization
-        // so relative image paths in markdown don't cause build errors.
-        image: { service: { entrypoint: 'astro/assets/services/noop' }, ...(astroExtra as any).image },
-        ...astroExtra,
-        vite: {
-            ...(astroExtra as any).vite,
-            server: {
-                ...(astroExtra as any).vite?.server,
-                proxy: {
-                    ...devProxy,
-                    ...(astroExtra as any).vite?.server?.proxy,
-                },
-            },
-        },
-        markdown: {
-            ...(astroExtra as any).markdown,
-            remarkPlugins: [
-                remarkEnvVars,
-                remarkMdLinks,
-                remarkHtmlTransforms,
-                ...((astroExtra as any).markdown?.remarkPlugins ?? []),
-            ],
-            rehypePlugins: [
-                rehypeCodeView,
-                rehypeTableWrapper,
-                rehypeHeadingAnchors,
-                rehypePagefindIgnore,
-                ...((astroExtra as any).markdown?.rehypePlugins ?? []),
-            ],
-        },
-        integrations: [
-            siteMetaIntegration({
-                title,
-                description,
-                docsDir: source.docsDir,
-                sidebar,
-                platform,
-                navLang,
-                mode,
-                llmsSets,
-                productLinks,
-                head: [...platformHead, ...codeViewHead, ...head],
-            }),
-            mdx(),
-            ...(source.imagesDir ? [staticImagesIntegration(source.imagesDir)] : []),
-            ...(base ? [createBasePrependIntegration(base)] : []),
-            ...extraIntegrations,
-        ],
-    });
+        description,
+        docsDir: source.docsDir,
+        sidebar,
+        platform,
+        navLang,
+        mode,
+        llmsSets,
+        productLinks,
+        head: [...platformHead, ...codeViewHead, ...head],
+      }),
+      mdx(),
+      ...(source.imagesDir ? [staticImagesIntegration(source.imagesDir)] : []),
+      ...(base ? [createBasePrependIntegration(base)] : []),
+      ...extraIntegrations,
+    ],
+  });
 }
