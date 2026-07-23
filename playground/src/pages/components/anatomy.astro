@@ -1,0 +1,224 @@
+---
+import { Code } from 'astro:components';
+import DocsLayout from '../../../../src/layouts/DocsLayout/DocsLayout.astro';
+import DocsSidebar from '../../../../src/components/DocsSidebar/DocsSidebar.astro';
+import DocsToc from '../../../../src/components/DocsToc/DocsToc.astro';
+import DocsAside from '../../../../src/components/mdx/DocsAside/DocsAside.astro';
+import Anatomy from '../../../../src/components/mdx/Anatomy/Anatomy.astro';
+import { SITE_TITLE, SIDEBAR } from '../../site-config';
+
+const slug = 'components/anatomy';
+
+// API reference
+// One row per prop, kept in sync with the Props interface in
+// src/components/mdx/Anatomy/Anatomy.astro.
+
+interface PropRow {
+  name: string;
+  type: string;
+  def: string;
+  /** Description (HTML). */
+  description: string;
+}
+
+const propRows: PropRow[] = [
+  {
+    name: 'src',
+    type: 'string',
+    def: '— (required)',
+    description: `The image URL. Points at an anatomy diagram — a screenshot or
+            illustration that labels a component's parts.`,
+  },
+  {
+    name: 'alt',
+    type: 'string',
+    def: '— (required)',
+    description: `The image's accessible description. Propagates to the inner
+            <code>&lt;img&gt;</code>'s <code>alt</code>. Anatomy diagrams are
+            <strong>informative</strong>, so describe the parts the diagram labels — not
+            just the component's name (see <a href="#accessibility">Accessibility</a>).
+            Passing an empty <code>alt</code> throws at build time.`,
+  },
+  {
+    name: 'class',
+    type: 'string',
+    def: '—',
+    description: `Optional extra class(es) forwarded to the frame — for one-off
+            overrides such as a custom <code>--igd-anatomy-padding</code>.`,
+  },
+];
+
+const headings = [
+  { depth: 2, slug: 'quick-start', text: 'Quick start' },
+  { depth: 2, slug: 'props', text: 'Props (API reference)' },
+  { depth: 2, slug: 'default', text: 'Default' },
+  { depth: 2, slug: 'centering', text: 'Centering small images' },
+  { depth: 2, slug: 'accessibility', text: 'Accessibility' },
+  { depth: 2, slug: 'best-practices', text: 'Best practices' },
+];
+
+// ─ Snippets ────────────────────────────────────────────────────────────────────
+
+// The `---` fences are interpolated (not written literally at line-start) so the
+// Astro-aware linter doesn't mistake them for the end of this file's frontmatter.
+const usageQuickStart = `${'---'}
+import Anatomy from 'igniteui-astro-components/mdx/Anatomy/Anatomy.astro';
+${'---'}
+
+<Anatomy
+  src="/images/anatomy/button.svg"
+  alt="Button anatomy: prefix icon, label, suffix icon, and container"
+/>`;
+
+const usageDefault = `<Anatomy
+  src="/mock-anatomy/button.svg"
+  alt="Button anatomy: prefix icon, label, suffix icon, and container"
+/>`;
+
+const usageCentering = `<!-- A small image keeps its intrinsic size and is centered by the frame's grid -->
+<Anatomy
+  src="/mock-anatomy/badge.svg"
+  alt="Badge anatomy: label and pill container"
+/>`;
+---
+
+<DocsLayout title="Anatomy" siteTitle={SITE_TITLE} hasSidebar currentSlug={slug}>
+  <DocsSidebar slot="sidebar" items={SIDEBAR} currentSlug={slug} />
+  <DocsToc slot="toc" headings={headings} offsetTarget=".docs-subheader" />
+
+  <h1>Anatomy</h1>
+  <p>
+    <code>Anatomy</code> is a <strong>frame for anatomy images</strong> — the diagrams that show a component's
+    parts (label, icons, container, and so on). It draws a light-gray, bordered canvas with internal padding
+    and centers the image inside it. The image can never spill past the padding: its <code
+      >max-width</code
+    > is 100% of the frame's content box, and its height scales to keep the aspect ratio.
+  </p>
+  <p>
+    The frame is a centering grid (<code>place-items: center</code>), so an image <em>smaller</em> than
+    the frame sits in the middle rather than pinned to a corner, while an image as wide as the frame simply
+    fills the space inside the padding.
+  </p>
+
+  <h2 id="quick-start">Quick start</h2>
+  <p>
+    Import the component and point <code>src</code> at your anatomy image. Always pass a descriptive <code
+      >alt</code
+    > — it is the accessible description of the diagram:
+  </p>
+  <Code code={usageQuickStart} lang="astro" theme="dark-plus" wrap />
+  <DocsAside type="info">
+    Both <code>src</code> and <code>alt</code> are required. The
+    <code>alt</code> should describe the parts the diagram labels, not just name the component — see <a
+      href="#accessibility">Accessibility</a
+    >.
+  </DocsAside>
+
+  <h2 id="props">Props (API reference)</h2>
+  <div class="igd-table-wrapper" role="region" aria-labelledby="props-table-caption" tabindex="0">
+    <table>
+      <caption id="props-table-caption" class="visually-hidden">Anatomy component props</caption>
+      <thead>
+        <tr><th>Prop</th><th>Type</th><th>Default</th><th>Description</th></tr>
+      </thead>
+      <tbody>
+        {
+          propRows.map((row) => (
+            <tr>
+              <td>
+                <code>{row.name}</code>
+              </td>
+              <td>
+                <code>{row.type}</code>
+              </td>
+              <td>{row.def}</td>
+              <td set:html={row.description} />
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <h2 id="default">Default</h2>
+  <p>
+    The default rendering: the image sits on the padded, bordered canvas. This diagram is as wide as
+    the frame, so it grows to fill the content box — never past the padding, no matter how large the
+    source image is.
+  </p>
+  <Code code={usageDefault} lang="astro" theme="dark-plus" wrap />
+  <Anatomy
+    src="/mock-anatomy/button.svg"
+    alt="Button anatomy: prefix icon, label, suffix icon, and container"
+  />
+
+  <h2 id="centering">Centering small images</h2>
+  <p>
+    An image smaller than the frame keeps its intrinsic size and is centered by the frame's grid —
+    you don't position it yourself. Here a compact badge diagram sits in the middle of the same
+    padded canvas:
+  </p>
+  <Code code={usageCentering} lang="astro" theme="dark-plus" wrap />
+  <Anatomy src="/mock-anatomy/badge.svg" alt="Badge anatomy: label and pill container" />
+
+  <h2 id="accessibility">Accessibility</h2>
+  <p>
+    An anatomy diagram is an <strong>informative</strong> image: it carries meaning a sighted reader gets
+    from the labels and callouts. That meaning has to reach screen-reader users too, so <code
+      >alt</code
+    > is required and propagates straight to the inner <code>&lt;img&gt;</code>.
+  </p>
+  <ul>
+    <li>
+      <strong>Describe the parts, not the component.</strong>
+      <code>alt="Button anatomy: prefix icon, label, suffix icon, and container"</code> conveys what the
+      diagram shows;
+      <code>alt="Button"</code> throws away the very information the diagram exists to communicate.
+    </li>
+    <li>
+      <strong>Never leave <code>alt</code> empty.</strong> An empty
+      <code>alt</code> marks an image as decorative and hides it from assistive technology — wrong for
+      a diagram. The component throws at build time if <code>alt</code> is missing or empty, so this can't
+      ship by accident.
+    </li>
+    <li>
+      <strong>The image is a real <code>&lt;img&gt;</code>.</strong> It is not a CSS background, so it
+      is exposed to assistive tech, honored by high-contrast modes, and lazily loaded (<code
+        >loading="lazy"</code
+      >,
+      <code>decoding="async"</code>) without any extra work.
+    </li>
+    <li>
+      <strong>The frame is a <code>&lt;figure&gt;</code>.</strong> The diagram is grouped as a self-contained
+      figure, which is the right semantic for an illustrative graphic sitting alongside prose.
+    </li>
+  </ul>
+  <DocsAside type="warning">
+    Text baked <em>into</em> the image (the callout labels here) is not selectable or translatable and
+    can blur when zoomed. For complex diagrams, make sure the surrounding prose also names each labeled
+    part so the information survives independently of the picture.
+  </DocsAside>
+
+  <h2 id="best-practices">Best practices</h2>
+  <ul>
+    <li>
+      <strong>Always write a descriptive <code>alt</code>.</strong> List the parts the diagram labels
+      — that is the diagram's payload for anyone who can't see it.
+    </li>
+    <li>
+      <strong>Let the frame own the sizing.</strong> Don't set a width on the image; the frame caps it
+      at 100% of the content box and centers anything smaller. Export the source image at (or above) the
+      width you want it to fill.
+    </li>
+    <li>
+      <strong>Prefer SVG for diagrams.</strong> Vector callouts stay crisp at every zoom level and in
+      both light and dark themes; a raster screenshot is fine when that's all you have.
+    </li>
+    <li>
+      <strong>Retune padding per context if needed.</strong> The frame reads
+      <code>--igd-anatomy-padding</code> (default 24px) with the background, border color, and radius
+      exposed as variables too — override them from an ancestor or via <code>class</code> rather than
+      wrapping the component in extra markup.
+    </li>
+  </ul>
+</DocsLayout>

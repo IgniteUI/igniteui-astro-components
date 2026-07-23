@@ -1,0 +1,34 @@
+@use 'igniteui-theming/sass/typography' as *;
+
+// Framed canvas for component anatomy images. A centering grid so a small image
+// sits in the middle of the frame; padding the image can never spill past
+// because the image's max-width is 100% of the content box (inside the padding)
+// and there is no negative margin to break out of it.
+.igd-anatomy {
+  // Retunable from any ancestor, e.g. :root { --igd-anatomy-padding: 32px; }
+  --igd-anatomy-padding: #{rem(24px)};
+  --igd-anatomy-bg: light-dark(var(--ig-gray-100), var(--ig-gray-100));
+  --igd-anatomy-border-color: var(--ig-gray-300);
+  --igd-anatomy-radius: #{rem(4px)};
+
+  display: grid;
+  place-items: center;
+  padding: var(--igd-anatomy-padding);
+  background-color: var(--igd-anatomy-bg);
+  border: rem(1px) solid var(--igd-anatomy-border-color);
+  border-radius: var(--igd-anatomy-radius);
+  margin: 0 0 rem(26px);
+  // Never let the frame itself overflow its column.
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.igd-anatomy__image {
+  display: block;
+  // The image can grow to — but never past — the frame's content box (the
+  // area inside the padding). Smaller images keep their intrinsic size and
+  // are centered by the grid above.
+  max-width: 100%;
+  height: auto;
+  margin: 0;
+}
