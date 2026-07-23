@@ -52,6 +52,7 @@ const headings = [
   { depth: 2, slug: 'quick-start', text: 'Quick start' },
   { depth: 2, slug: 'props', text: 'Props (API reference)' },
   { depth: 2, slug: 'default', text: 'Default' },
+  { depth: 2, slug: 'raster', text: 'Raster screenshot' },
   { depth: 2, slug: 'centering', text: 'Centering small images' },
   { depth: 2, slug: 'accessibility', text: 'Accessibility' },
   { depth: 2, slug: 'best-practices', text: 'Best practices' },
@@ -73,6 +74,12 @@ ${'---'}
 const usageDefault = `<Anatomy
   src="/mock-anatomy/button.svg"
   alt="Button anatomy: prefix icon, label, suffix icon, and container"
+/>`;
+
+const usageRaster = `<!-- A large raster (PNG) screenshot: the frame caps it at 100% of the content box -->
+<Anatomy
+  src="/mock-anatomy/anatomy-test.png"
+  alt="Human anatomy chart: full-body figures showing the muscular system, skeletal system, and the arterial (red) and venous (blue) circulatory systems, with close-up insets of the skull, eye, knee, and shoulder joints"
 />`;
 
 const usageCentering = `<!-- A small image keeps its intrinsic size and is centered by the frame's grid -->
@@ -150,6 +157,20 @@ const usageCentering = `<!-- A small image keeps its intrinsic size and is cente
   <Anatomy
     src="/mock-anatomy/button.svg"
     alt="Button anatomy: prefix icon, label, suffix icon, and container"
+  />
+
+  <h2 id="raster">Raster screenshot</h2>
+  <p>
+    A real, high-resolution raster image (an 8000×4726 PNG here) works the same way as an SVG: the
+    frame caps it at 100% of its content box and scales the height to keep the aspect ratio, so even
+    a huge screenshot never spills past the padding. SVG stays crisper at every zoom, but a raster
+    screenshot is fine when that's all you have — just remember the baked-in labels aren't
+    selectable (see the warning under <a href="#accessibility">Accessibility</a>).
+  </p>
+  <Code code={usageRaster} lang="astro" theme="dark-plus" wrap />
+  <Anatomy
+    src="/mock-anatomy/anatomy-test.png"
+    alt="Human anatomy chart: full-body figures showing the muscular system, skeletal system, and the arterial (red) and venous (blue) circulatory systems, with close-up insets of the skull, eye, knee, and shoulder joints"
   />
 
   <h2 id="centering">Centering small images</h2>
