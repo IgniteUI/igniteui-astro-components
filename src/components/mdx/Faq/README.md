@@ -38,6 +38,10 @@ import FaqItem from 'igniteui-astro-components/components/mdx/FaqItem.astro';
 
 Short, static copy. `answer` is injected as an HTML string.
 
+> **`answer` is not sanitized.** It goes straight through `set:html`, so pass
+> only trusted, author-controlled markup. Anything untrusted or user-generated
+> belongs in the default slot (slot mode), which Astro escapes.
+
 ```astro
 ---
 import Faq from 'igniteui-astro-components/components/mdx/Faq.astro';
@@ -92,26 +96,42 @@ import FaqItem from 'igniteui-astro-components/components/mdx/FaqItem.astro';
 
 ## Props — `Faq`
 
-| Prop                     | Type                         | Default | Notes                                                                                                                              |
-| ------------------------ | ---------------------------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------- |
-| `items`                  | `FaqEntry[]`                 | —       | Data-driven entries. Omit for slot mode.                                                                                           |
-| `singleExpand`           | `boolean`                    | `false` | → `igc-accordion[single-expand]`. Only one answer open at once.                                                                    |
-| `indicatorPosition`      | `'start' \| 'end' \| 'none'` | `start` | Applies to `items` entries only — see the note below.                                                                              |
-| `class`                  | `string`                     | —       | Forwarded to `<igc-accordion>`.                                                                                                    |
-| `id`, `aria-*`, `data-*` | `string`                     | —       | Spread onto `<igc-accordion>`. Enumerated in `Props` (no open index signature) so typos in the named props above stay type errors. |
+| Prop                                                | Type                          | Default | Notes                                                                            |
+| --------------------------------------------------- | ----------------------------- | ------- | -------------------------------------------------------------------------------- |
+| `items`                                             | `FaqEntry[]`                  | —       | Data-driven entries. Omit for slot mode.                                         |
+| `singleExpand`                                      | `boolean`                     | `false` | → `igc-accordion[single-expand]`. Only one answer open at once.                  |
+| `indicatorPosition`                                 | `'start' \| 'end' \| 'none'`  | `start` | Applies to `items` entries only — see the note below.                            |
+| `class`                                             | `string`                      | —       | Forwarded to `<igc-accordion>`.                                                  |
+| `id`                                                | `string`                      | —       | Spread onto `<igc-accordion>`.                                                   |
+| `aria-label`, `aria-labelledby`, `aria-describedby` | `string`                      | —       | Spread onto `<igc-accordion>`. Typed for autocomplete — see the caveat below.    |
+| `data-*`                                            | `string \| number \| boolean` | —       | Spread onto `<igc-accordion>` via a ``[key: `data-${string}`]`` index signature. |
 
 ## Props — `FaqItem`
 
-| Prop                     | Type                         | Default | Notes                                                                              |
-| ------------------------ | ---------------------------- | ------- | ---------------------------------------------------------------------------------- |
-| `question`               | `string`                     | —       | Required. Rendered in the panel's `title` slot.                                    |
-| `subtitle`               | `string`                     | —       | Optional second header line (`subtitle` slot).                                     |
-| `answer`                 | `string`                     | —       | HTML string answer, rendered as the slot's fallback — slotted content always wins. |
-| `open`                   | `boolean`                    | `false` | → `igc-expansion-panel[open]`.                                                     |
-| `disabled`               | `boolean`                    | `false` | → `igc-expansion-panel[disabled]`. Skipped by keyboard nav.                        |
-| `indicatorPosition`      | `'start' \| 'end' \| 'none'` | `start` | → `igc-expansion-panel[indicator-position]`.                                       |
-| `class`                  | `string`                     | —       | Forwarded to `<igc-expansion-panel>`.                                              |
-| `id`, `aria-*`, `data-*` | `string`                     | —       | Spread onto `<igc-expansion-panel>`. Enumerated in `Props`, same as above.         |
+| Prop                                                | Type                          | Default | Notes                                                                                                            |
+| --------------------------------------------------- | ----------------------------- | ------- | ---------------------------------------------------------------------------------------------------------------- |
+| `question`                                          | `string`                      | —       | Required. Rendered in the panel's `title` slot.                                                                  |
+| `subtitle`                                          | `string`                      | —       | Optional second header line (`subtitle` slot).                                                                   |
+| `answer`                                            | `string`                      | —       | HTML string answer, rendered as the slot's fallback — slotted content always wins. **Not sanitized**, see above. |
+| `open`                                              | `boolean`                     | `false` | → `igc-expansion-panel[open]`.                                                                                   |
+| `disabled`                                          | `boolean`                     | `false` | → `igc-expansion-panel[disabled]`. Skipped by keyboard nav.                                                      |
+| `indicatorPosition`                                 | `'start' \| 'end' \| 'none'`  | `start` | → `igc-expansion-panel[indicator-position]`.                                                                     |
+| `class`                                             | `string`                      | —       | Forwarded to `<igc-expansion-panel>`.                                                                            |
+| `id`                                                | `string`                      | —       | Spread onto `<igc-expansion-panel>`.                                                                             |
+| `aria-label`, `aria-labelledby`, `aria-describedby` | `string`                      | —       | Spread onto `<igc-expansion-panel>`. Typed for autocomplete — see the caveat below.                              |
+| `data-*`                                            | `string \| number \| boolean` | —       | Spread onto `<igc-expansion-panel>` via a ``[key: `data-${string}`]`` index signature.                           |
+
+`Props` deliberately has **no** open `[key: string]: unknown` index signature —
+that is what keeps a misspelt `indicatorPostion` (or a stray `datatestid`) a
+type error. Anything outside the rows above needs adding to `Props` first.
+
+**Caveat:** TypeScript exempts JSX attribute names that are not valid JS
+identifiers — i.e. every hyphenated name, so all `aria-*` and `data-*` — from
+excess-property checking. A misspelt `aria-describedbyy` therefore passes
+silently no matter what `Props` declares. The enumerated ARIA props exist for
+autocomplete and intent, not enforcement; only identifier-style props
+(`singleExpand`, `indicatorPosition`, `question`, …) are spell-checked by the
+compiler.
 
 The `indicator` and `indicator-expanded` slots are forwarded, so the default
 chevron can be replaced per item:

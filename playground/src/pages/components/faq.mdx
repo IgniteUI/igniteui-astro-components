@@ -89,6 +89,10 @@ markdown instead of raw text.
 Pass `items` when the answers are short static copy. `answer` is injected as
 an HTML string.
 
+`answer` is **not sanitized** — it goes straight through `set:html`. Pass only
+trusted, author-controlled markup; anything untrusted or user-generated belongs
+in the default slot, which Astro escapes.
+
 <Faq items={items} indicatorPosition="end" />
 
 ```mdx

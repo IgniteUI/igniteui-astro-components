@@ -15,6 +15,10 @@ export interface FaqEntry {
   /**
    * Answer body as an HTML string. Rendered as the default slot's fallback,
    * so slotted content always wins. Use slot mode for rich content.
+   *
+   * SECURITY: injected verbatim via `set:html` — it is NOT sanitized. Only
+   * pass trusted, author-controlled markup. For untrusted or user-generated
+   * content use the default slot, which Astro escapes.
    */
   answer?: string;
   /** Secondary header line rendered under the question. */
