@@ -133,6 +133,8 @@
   --igd-faq-answer-color: light-dark(var(--ig-gray-800), var(--ig-gray-600));
   --igd-faq-indicator-color: var(--igd-accent);
   --igd-faq-disabled-color: light-dark(var(--ig-gray-400), var(--ig-gray-300));
+  --igd-faq-disabled-bg: light-dark(var(--ig-gray-100), var(--ig-gray-50));
+  --igd-faq-disabled-border-color: light-dark(var(--ig-gray-200), var(--ig-gray-100));
 
   // TABLES
   --igd-table-max-height: #{rem(350px)};

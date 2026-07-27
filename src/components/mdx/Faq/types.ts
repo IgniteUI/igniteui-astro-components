@@ -12,7 +12,10 @@ export type FaqIndicatorPosition = 'start' | 'end' | 'none';
 export interface FaqEntry {
   /** Header text — the question. */
   question: string;
-  /** Answer body as an HTML string. Use slot mode for rich content. */
+  /**
+   * Answer body as an HTML string. Rendered as the default slot's fallback,
+   * so slotted content always wins. Use slot mode for rich content.
+   */
   answer?: string;
   /** Secondary header line rendered under the question. */
   subtitle?: string;

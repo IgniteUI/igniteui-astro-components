@@ -41,7 +41,15 @@ export interface Props {
   indicatorPosition?: FaqIndicatorPosition;
   /** Extra CSS classes forwarded to the igc-accordion element. */
   class?: string;
-  [key: string]: unknown;
+
+  // Pass-through attributes, enumerated rather than an open
+  // `[key: string]: unknown` index signature so a misspelt named prop
+  // (`singleExpland`) is still a type error.
+  /** Forwarded to the igc-accordion element. */
+  id?: string;
+  'aria-label'?: string;
+  'aria-labelledby'?: string;
+  [key: `data-${string}`]: string | number | boolean | undefined;
 }
 
 const { items, singleExpand = false, indicatorPosition, class: className, ...rest } = Astro.props;

@@ -42,9 +42,11 @@
   // Clip the header/body backgrounds to the rounded corners.
   overflow: hidden;
 
-  &::part(indicator) {
-    color: var(--igd-faq-indicator-color);
-  }
+  // NOTE: do not colour ::part(indicator) / the slotted title from here. The
+  // panel already paints them from the bridged tokens above, and it swaps them
+  // for --disabled-text-color under :host([disabled]). An outer-tree ::part()
+  // rule always beats the shadow tree's own rules, so re-stating the colour
+  // here would silently defeat the disabled state.
 }
 
 // Wrapper around a caller-supplied indicator — must not affect the layout the
@@ -59,22 +61,30 @@
   border-color: var(--igd-faq-open-border-color);
 }
 
+// The panel only greys its own text under [disabled] — mute the card the docs
+// theme draws around it too, otherwise a disabled question still reads as live.
+.igd-faq__item[disabled] {
+  --ig-expansion-panel-header-background: var(--igd-faq-disabled-bg);
+  --ig-expansion-panel-body-background: var(--igd-faq-disabled-bg);
+
+  border-color: var(--igd-faq-disabled-border-color);
+}
+
 // TYPOGRAPHY STYLES
 
+// Type only — colour is inherited from the panel's [part=title] / [part=subtitle],
+// which is what lets the disabled state grey them out. Setting `color` here
+// would win over that inheritance and pin the text to its enabled colour.
 .igd-faq__question {
   @include type-style('h6') {
     margin: 0;
   }
-
-  color: var(--igd-faq-question-color);
 }
 
 .igd-faq__subtitle {
   @include type-style('caption') {
     margin: 0;
   }
-
-  color: var(--igd-faq-subtitle-color);
 }
 
 .igd-faq__answer {
@@ -83,7 +93,8 @@
     font-weight: 400;
   }
 
-  color: var(--igd-faq-answer-color);
+  // Colour inherited from :host { color: var(--body-color) } — bridged from
+  // --igd-faq-answer-color above.
 
   // Long links / wide code samples must not stretch the panel.
   overflow: auto;
