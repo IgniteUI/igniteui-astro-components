@@ -1,0 +1,100 @@
+---
+/**
+ * FaqItem — a single question / answer pair.
+ *
+ * Wraps <igc-expansion-panel> and exposes its public properties as props
+ * (`open`, `disabled`, `indicatorPosition`). Intended to be nested inside
+ * <Faq>, which owns the <igc-accordion> and the keyboard navigation.
+ *
+ * The question goes into the panel's `title` slot as a plain <span>: the
+ * panel header already carries `role="button"`, and a heading nested inside
+ * a button role is dropped from the accessibility tree anyway.
+ *
+ * The default slot is the answer. Pass `answer` instead when the content is
+ * a static HTML string (used by <Faq items={…}>).
+ */
+import './Faq.scss';
+import type { FaqIndicatorPosition } from './types';
+
+export interface Props {
+  /** Header text — the question. Required. */
+  question: string;
+  /** Secondary header line rendered under the question. */
+  subtitle?: string;
+  /** Answer body as an HTML string. Ignored when default slot content is present. */
+  answer?: string;
+  /** Renders the panel expanded. @default false */
+  open?: boolean;
+  /** Non-interactive panel — skipped by accordion keyboard navigation. @default false */
+  disabled?: boolean;
+  /** Where the expand indicator sits. @default 'start' */
+  indicatorPosition?: FaqIndicatorPosition;
+  /** Extra CSS classes forwarded to the igc-expansion-panel element. */
+  class?: string;
+  [key: string]: unknown;
+}
+
+const {
+  question,
+  subtitle,
+  answer,
+  open = false,
+  disabled = false,
+  indicatorPosition,
+  class: className,
+  ...rest
+} = Astro.props;
+---
+
+<igc-expansion-panel
+  class:list={['igd-faq__item', className]}
+  open={open ? '' : undefined}
+  disabled={disabled ? '' : undefined}
+  indicator-position={indicatorPosition}
+  {...rest}
+>
+  <span slot="title" class="igd-faq__question">{question}</span>
+  {
+    subtitle && (
+      <span slot="subtitle" class="igd-faq__subtitle">
+        {subtitle}
+      </span>
+    )
+  }
+
+  {
+    /*
+    Forward the panel's indicator slots so callers can swap the chevron.
+    The wrapper is required: `slot=` on an Astro <slot> only forwards to another
+    Astro component, not to a custom element's light DOM. It is rendered only
+    when content was passed — an empty wrapper would count as assigned content
+    and suppress the panel's default indicator.
+  */
+  }
+  {
+    Astro.slots.has('indicator') && (
+      <div slot="indicator" class="igd-faq__indicator">
+        <slot name="indicator" />
+      </div>
+    )
+  }
+  {
+    Astro.slots.has('indicator-expanded') && (
+      <div slot="indicator-expanded" class="igd-faq__indicator">
+        <slot name="indicator-expanded" />
+      </div>
+    )
+  }
+
+  <div class="igd-faq__answer">
+    {answer ? <Fragment set:html={answer} /> : <slot />}
+  </div>
+</igc-expansion-panel>
+
+<script>
+  // Only the panel — Faq.astro registers the accordion. Splitting the two
+  // keeps Astro from emitting two identical hoisted script bundles.
+  import { defineComponents, IgcExpansionPanelComponent } from 'igniteui-webcomponents';
+
+  defineComponents(IgcExpansionPanelComponent);
+</script>

@@ -1,0 +1,94 @@
+@use 'igniteui-theming/sass/typography' as *;
+
+// STRUCTURE STYLES
+
+.igd-faq {
+  display: flex;
+  flex-direction: column;
+  gap: var(--igd-faq-gap);
+  margin-block-end: var(--igd-faq-margin-bottom);
+}
+
+.igd-faq__item {
+  // Bridge: every igd-* FAQ token feeds the matching igc-expansion-panel
+  // theme property, so consumers only ever set --igd-faq-* variables.
+  //
+  // Geometry is deliberately NOT overridden here. igc-expansion-panel derives
+  // its header padding, body padding, and indicator margin from the layout
+  // scale (--ig-size / --ig-spacing); hard-coding padding on ::part(header)
+  // and ::part(content) would freeze the component at one density and — for
+  // the body — double up, because the real body padding lives on the inner
+  // `[part~=content] > slot`, which is not an exposed part. Scale the density
+  // through --igd-faq-spacing instead.
+  --ig-spacing: var(--igd-faq-spacing);
+
+  --ig-expansion-panel-header-background: var(--igd-faq-header-bg);
+  --ig-expansion-panel-header-focus-background: var(--igd-faq-header-focus-bg);
+  --ig-expansion-panel-header-title-color: var(--igd-faq-question-color);
+  --ig-expansion-panel-header-description-color: var(--igd-faq-subtitle-color);
+  --ig-expansion-panel-header-icon-color: var(--igd-faq-indicator-color);
+  --ig-expansion-panel-body-background: var(--igd-faq-body-bg);
+  --ig-expansion-panel-body-color: var(--igd-faq-answer-color);
+  --ig-expansion-panel-disabled-text-color: var(--igd-faq-disabled-color);
+  --ig-expansion-panel-disabled-description-color: var(--igd-faq-disabled-color);
+  --ig-expansion-panel-border-radius: var(--igd-faq-border-radius);
+  // The accordion's own gap owns the vertical rhythm — see .igd-faq { gap }.
+  --ig-expansion-panel-expanded-margin: 0;
+
+  border: var(--igd-faq-border-width) var(--igd-faq-border-style) var(--igd-faq-border-color);
+  border-radius: var(--igd-faq-border-radius);
+  background: var(--igd-faq-header-bg);
+
+  // Clip the header/body backgrounds to the rounded corners.
+  overflow: hidden;
+
+  &::part(indicator) {
+    color: var(--igd-faq-indicator-color);
+  }
+}
+
+// Wrapper around a caller-supplied indicator — must not affect the layout the
+// panel's own indicator part sets up.
+.igd-faq__indicator {
+  display: contents;
+}
+
+// THEME STYLES
+
+.igd-faq__item[open] {
+  border-color: var(--igd-faq-open-border-color);
+}
+
+// TYPOGRAPHY STYLES
+
+.igd-faq__question {
+  @include type-style('h6') {
+    margin: 0;
+  }
+
+  color: var(--igd-faq-question-color);
+}
+
+.igd-faq__subtitle {
+  @include type-style('caption') {
+    margin: 0;
+  }
+
+  color: var(--igd-faq-subtitle-color);
+}
+
+.igd-faq__answer {
+  @include type-style('body-2') {
+    margin: 0;
+    font-weight: 400;
+  }
+
+  color: var(--igd-faq-answer-color);
+
+  // Long links / wide code samples must not stretch the panel.
+  overflow: auto;
+
+  > :last-child {
+    margin-block-end: 0;
+  }
+}

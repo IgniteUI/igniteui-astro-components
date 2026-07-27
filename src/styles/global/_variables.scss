@@ -108,6 +108,32 @@
   --igd-aside-note-border: light-dark(var(--ig-gray-700), var(--ig-gray-400));
   --igd-aside-note-code-background: light-dark(var(--ig-sgray-100), var(--ig-secondary-900));
 
+  // FAQ MDX
+  // Consumers style the FAQ exclusively through these tokens — Faq.scss maps
+  // each of them onto the matching --ig-expansion-panel-* theme property.
+  --igd-faq-gap: #{rem(12px)};
+  --igd-faq-margin-bottom: #{rem(26px)};
+  // Density knob — feeds --ig-spacing on the panel, so header padding, body
+  // padding and indicator margin all scale together and stay --ig-size aware.
+  // 0 = flush, 1 = Ignite UI default, 2 = double. Fractions allowed.
+  --igd-faq-spacing: 1;
+
+  --igd-faq-border-width: var(--igd-app-outline-size);
+  --igd-faq-border-style: var(--igd-app-outline-style);
+  --igd-faq-border-color: var(--igd-app-outline-color);
+  --igd-faq-open-border-color: var(--igd-accent);
+  --igd-faq-border-radius: var(--igd-border-radius-xl);
+
+  --igd-faq-header-bg: var(--igd-layout-sections-bg);
+  --igd-faq-header-focus-bg: light-dark(var(--ig-gray-100), var(--ig-gray-50));
+  --igd-faq-body-bg: var(--igd-layout-sections-bg);
+
+  --igd-faq-question-color: light-dark(var(--ig-gray-900), var(--ig-gray-700));
+  --igd-faq-subtitle-color: light-dark(var(--ig-gray-700), var(--ig-gray-500));
+  --igd-faq-answer-color: light-dark(var(--ig-gray-800), var(--ig-gray-600));
+  --igd-faq-indicator-color: var(--igd-accent);
+  --igd-faq-disabled-color: light-dark(var(--ig-gray-400), var(--ig-gray-300));
+
   // TABLES
   --igd-table-max-height: #{rem(350px)};
   --igd-table-pinned-border-size: #{rem(1px)};
