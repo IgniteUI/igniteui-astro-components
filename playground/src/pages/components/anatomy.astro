@@ -37,7 +37,7 @@ const propRows: PropRow[] = [
             <code>&lt;img&gt;</code>'s <code>alt</code>. Anatomy diagrams are
             <strong>informative</strong>, so describe the parts the diagram labels — not
             just the component's name (see <a href="#accessibility">Accessibility</a>).
-            Passing an empty <code>alt</code> throws at build time.`,
+            Passing an empty or whitespace-only <code>alt</code> throws at build time.`,
   },
   {
     name: 'class',
@@ -63,7 +63,7 @@ const headings = [
 // The `---` fences are interpolated (not written literally at line-start) so the
 // Astro-aware linter doesn't mistake them for the end of this file's frontmatter.
 const usageQuickStart = `${'---'}
-import Anatomy from 'igniteui-astro-components/mdx/Anatomy/Anatomy.astro';
+import Anatomy from 'igniteui-astro-components/components/mdx/Anatomy.astro';
 ${'---'}
 
 <Anatomy
@@ -199,8 +199,8 @@ const usageCentering = `<!-- A small image keeps its intrinsic size and is cente
     <li>
       <strong>Never leave <code>alt</code> empty.</strong> An empty
       <code>alt</code> marks an image as decorative and hides it from assistive technology — wrong for
-      a diagram. The component throws at build time if <code>alt</code> is missing or empty, so this can't
-      ship by accident.
+      a diagram. The component throws at build time if <code>alt</code> is missing, empty, or contains
+      only whitespace, so this can't ship by accident.
     </li>
     <li>
       <strong>The image is a real <code>&lt;img&gt;</code>.</strong> It is not a CSS background, so it
@@ -237,9 +237,9 @@ const usageCentering = `<!-- A small image keeps its intrinsic size and is cente
     </li>
     <li>
       <strong>Retune padding per context if needed.</strong> The frame reads
-      <code>--igd-anatomy-padding</code> (default 24px) with the background, border color, and radius
-      exposed as variables too — override them from an ancestor or via <code>class</code> rather than
-      wrapping the component in extra markup.
+      <code>--igd-anatomy-padding</code> (default <code>60px 24px</code> — vertical, then horizontal)
+      with the background, border color, and radius exposed as variables too — override them from an ancestor
+      or via <code>class</code> rather than wrapping the component in extra markup.
     </li>
   </ul>
 </DocsLayout>

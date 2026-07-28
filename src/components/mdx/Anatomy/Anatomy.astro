@@ -33,12 +33,13 @@ interface Props {
 
 const { src, alt, class: className } = Astro.props;
 
-if (!src) {
+if (!src?.trim()) {
   throw new Error('<Anatomy> requires a `src` (image URL).');
 }
-// Anatomy diagrams are informative, not decorative — an empty/absent alt would
-// hide the diagram's meaning from screen-reader users. Fail loudly in dev.
-if (!alt) {
+// Anatomy diagrams are informative, not decorative — an absent, empty or
+// whitespace-only alt would hide the diagram's meaning from screen-reader
+// users. Fail loudly in dev.
+if (!alt?.trim()) {
   throw new Error(
     '<Anatomy> requires a non-empty `alt` describing the diagram for screen readers.',
   );
