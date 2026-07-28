@@ -39,6 +39,7 @@ export const SIDEBAR: SidebarEntry[] = [
     label: 'MDX Components',
     collapsed: false,
     items: [
+      { label: 'Anatomy', slug: 'components/anatomy' },
       { label: 'ApiLink', slug: 'components/api-link' },
       { label: 'ApiRef', slug: 'components/api-ref' },
       { label: 'Badge', slug: 'components/badge' },

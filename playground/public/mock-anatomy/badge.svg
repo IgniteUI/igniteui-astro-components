@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="220" height="120" viewBox="0 0 220 120" font-family="system-ui, sans-serif" role="img" aria-label="Badge anatomy diagram">
+  <!-- The component being annotated -->
+  <rect x="70" y="46" width="80" height="28" rx="14" fill="#198754"/>
+  <text x="110" y="65" fill="#ffffff" font-size="14" text-anchor="middle">New</text>
+
+  <!-- Callout: label -->
+  <line x1="110" y1="60" x2="110" y2="100" stroke="#8a8a8a" stroke-width="1"/>
+  <circle cx="110" cy="60" r="3" fill="#8a8a8a"/>
+  <text x="110" y="114" fill="#4a4a4a" font-size="12" text-anchor="middle">Label</text>
+
+  <!-- Callout: pill container -->
+  <line x1="150" y1="60" x2="184" y2="24" stroke="#8a8a8a" stroke-width="1"/>
+  <circle cx="150" cy="60" r="3" fill="#8a8a8a"/>
+  <text x="188" y="22" fill="#4a4a4a" font-size="12">Container</text>
+</svg>

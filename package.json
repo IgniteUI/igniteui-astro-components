@@ -60,6 +60,7 @@
     "./components/DocsTree/DocsTreeItem.astro": "./src/components/DocsTree/DocsTreeItem.astro",
     "./components/DocsTree/types": "./src/components/DocsTree/types.ts",
     "./components/DocsTree/docs-tree.css": "./src/components/DocsTree/docs-tree.css",
+    "./components/mdx/Anatomy.astro": "./src/components/mdx/Anatomy/Anatomy.astro",
     "./components/mdx/ApiRef.astro": "./src/components/mdx/ApiRef/ApiRef.astro",
     "./components/mdx/ApiLink.astro": "./src/components/mdx/ApiLink/ApiLink.astro",
     "./components/mdx/DocsAside.astro": "./src/components/mdx/DocsAside/DocsAside.astro",
