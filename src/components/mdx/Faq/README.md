@@ -100,7 +100,7 @@ import FaqItem from 'igniteui-astro-components/components/mdx/FaqItem.astro';
 | --------------------------------------------------- | ----------------------------- | ------- | -------------------------------------------------------------------------------- |
 | `items`                                             | `FaqEntry[]`                  | —       | Data-driven entries. Omit for slot mode.                                         |
 | `singleExpand`                                      | `boolean`                     | `false` | → `igc-accordion[single-expand]`. Only one answer open at once.                  |
-| `indicatorPosition`                                 | `'start' \| 'end' \| 'none'`  | `start` | Applies to `items` entries only — see the note below.                            |
+| `indicatorPosition`                                 | `'start' \| 'end' \| 'none'`  | `end`   | Applies to `items` entries only — see the note below.                            |
 | `class`                                             | `string`                      | —       | Forwarded to `<igc-accordion>`.                                                  |
 | `id`                                                | `string`                      | —       | Spread onto `<igc-accordion>`.                                                   |
 | `aria-label`, `aria-labelledby`, `aria-describedby` | `string`                      | —       | Spread onto `<igc-accordion>`. Typed for autocomplete — see the caveat below.    |
@@ -115,7 +115,7 @@ import FaqItem from 'igniteui-astro-components/components/mdx/FaqItem.astro';
 | `answer`                                            | `string`                      | —       | HTML string answer, rendered as the slot's fallback — slotted content always wins. **Not sanitized**, see above. |
 | `open`                                              | `boolean`                     | `false` | → `igc-expansion-panel[open]`.                                                                                   |
 | `disabled`                                          | `boolean`                     | `false` | → `igc-expansion-panel[disabled]`. Skipped by keyboard nav.                                                      |
-| `indicatorPosition`                                 | `'start' \| 'end' \| 'none'`  | `start` | → `igc-expansion-panel[indicator-position]`.                                                                     |
+| `indicatorPosition`                                 | `'start' \| 'end' \| 'none'`  | `end`   | → `igc-expansion-panel[indicator-position]`.                                                                     |
 | `class`                                             | `string`                      | —       | Forwarded to `<igc-expansion-panel>`.                                                                            |
 | `id`                                                | `string`                      | —       | Spread onto `<igc-expansion-panel>`.                                                                             |
 | `aria-label`, `aria-labelledby`, `aria-describedby` | `string`                      | —       | Spread onto `<igc-expansion-panel>`. Typed for autocomplete — see the caveat below.                              |
