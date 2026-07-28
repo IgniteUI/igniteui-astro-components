@@ -66,7 +66,7 @@ const {
   class:list={['igd-faq__item', className]}
   open={open ? '' : undefined}
   disabled={disabled ? '' : undefined}
-  indicator-position={indicatorPosition}
+  indicator-position={indicatorPosition ?? 'end'}
   {...rest}
 >
   <span slot="title" class="igd-faq__question">{question}</span>
