@@ -1,4 +1,5 @@
 @use 'igniteui-theming/sass/typography' as *;
+@use 'igniteui-theming/sass/color' as *;
 
 // Framed canvas for component anatomy images. A centering grid so a small image
 // sits in the middle of the frame; padding the image can never spill past
@@ -7,7 +8,10 @@
 .igd-anatomy {
   // Retunable from any ancestor, e.g. :root { --igd-anatomy-padding: 32px; }
   --igd-anatomy-padding: #{rem(60px)} #{rem(24px)};
-  --igd-anatomy-bg: light-dark(var(--ig-gray-100), var(--ig-surface-500));
+  --igd-anatomy-bg: light-dark(
+    #{color($color: gray, $variant: 100, $opacity: 0.8)},
+    #{color($color: surface, $variant: 500, $opacity: 0.8)}
+  );
   --igd-anatomy-border-color: light-dark(var(--ig-gray-300), var(--ig-surface-700));
   --igd-anatomy-radius: #{rem(4px)};
 
