@@ -1,0 +1,86 @@
+---
+/**
+ * Faq - a question / answer list built on <igc-accordion>.
+ *
+ * Two authoring modes, both usable from `.astro` and `.mdx`:
+ *
+ *   1. Slot mode (preferred in MDX) — nest <FaqItem> children so the answer
+ *      body can contain rich markdown, links, code blocks, other components.
+ *   2. Data mode — pass `items={[{ question, answer }]}`. `answer` is injected
+ *      as an unsanitized HTML string (see FaqEntry.answer), so it is only
+ *      suitable for short, static, author-controlled copy.
+ *
+ * Both modes render into the same <igc-accordion>, so the two can be mixed.
+ *
+ * Every prop that maps to an underlying Ignite UI property is forwarded
+ * verbatim; anything not covered by a named prop is spread onto the
+ * <igc-accordion> element (`id`, `data-*`, `aria-*`, …).
+ *
+ * NOTE on `indicatorPosition`: Astro cannot pass props into slotted children,
+ * so the value set here applies to `items` entries only. In slot mode set it
+ * per <FaqItem>.
+ */
+import './Faq.scss';
+import FaqItem from './FaqItem.astro';
+import type { FaqEntry, FaqIndicatorPosition } from './types';
+
+export type { FaqEntry, FaqIndicatorPosition };
+
+export interface Props {
+  /** Data-driven entries. Omit and nest <FaqItem> children instead for rich answers. */
+  items?: FaqEntry[];
+  /**
+   * Allows only one question to be expanded at a time.
+   * Forwarded to `igc-accordion[single-expand]`.
+   * @default false
+   */
+  singleExpand?: boolean;
+  /**
+   * Indicator position forwarded to each panel rendered from `items`.
+   * @default 'start' (the igc-expansion-panel default)
+   */
+  indicatorPosition?: FaqIndicatorPosition;
+  /** Extra CSS classes forwarded to the igc-accordion element. */
+  class?: string;
+
+  // Pass-through attributes, enumerated rather than an open
+  // `[key: string]: unknown` index signature so a misspelt named prop
+  // (`singleExpland`) is still a type error.
+  /** Forwarded to the igc-accordion element. */
+  id?: string;
+  'aria-label'?: string;
+  'aria-labelledby'?: string;
+  'aria-describedby'?: string;
+  [key: `data-${string}`]: string | number | boolean | undefined;
+}
+
+const { items, singleExpand = false, indicatorPosition, class: className, ...rest } = Astro.props;
+---
+
+<igc-accordion
+  class:list={['igd-faq', className]}
+  single-expand={singleExpand ? '' : undefined}
+  {...rest}
+>
+  {
+    items?.map((item) => (
+      <FaqItem
+        question={item.question}
+        subtitle={item.subtitle}
+        answer={item.answer}
+        open={item.open}
+        disabled={item.disabled}
+        indicatorPosition={item.indicatorPosition ?? indicatorPosition}
+        id={item.id}
+      />
+    ))
+  }
+  <slot />
+</igc-accordion>
+
+<script>
+  // Only the accordion — FaqItem.astro registers the panel.
+  import { defineComponents, IgcAccordionComponent } from 'igniteui-webcomponents';
+
+  defineComponents(IgcAccordionComponent);
+</script>
