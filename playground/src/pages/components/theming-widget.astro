@@ -149,7 +149,6 @@ const headings = [
   .tw-demo {
     border: 1px solid var(--ig-gray-300);
     border-radius: 8px;
-    overflow: hidden;
   }
 
   .tw-demo__preview {
@@ -158,6 +157,8 @@ const headings = [
     min-height: 160px;
     padding: 24px;
     text-align: center;
+    border-start-start-radius: 8px;
+    border-start-end-radius: 8px;
     background: light-dark(#fff, var(--ig-gray-100));
     color: var(--ig-gray-700);
     transition:
@@ -188,6 +189,13 @@ const headings = [
     justify-content: flex-end;
     padding: 8px 12px;
     border-block-start: 1px solid var(--ig-gray-300);
+    border-end-start-radius: 8px;
+    border-end-end-radius: 8px;
     background: var(--ig-gray-100);
+  }
+
+  /* Give the widget a comfortable, non-shrinking width inside the toolbar. */
+  .tw-demo__toolbar .igd-theming {
+    width: 200px;
   }
 </style>

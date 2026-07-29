@@ -95,6 +95,17 @@
     }
   }
 
+  // Light mode shows only the two accent dots; dark mode adds the leading
+  // (surface) dot for three total. Mirrors the Figma light/dark variants.
+  .igd-theming[data-mode='light'] .igd-theming__dot:first-child {
+    display: none;
+  }
+
+  // The now-first visible dot must not keep the overlap offset.
+  .igd-theming[data-mode='light'] .igd-theming__dot:first-child + .igd-theming__dot {
+    margin-inline-start: 0;
+  }
+
   // ── Panel ────────────────────────────────────────────────────────────────
   .igd-theming__panel {
     position: absolute;
