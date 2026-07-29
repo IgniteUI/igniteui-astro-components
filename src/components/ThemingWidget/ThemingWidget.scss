@@ -1,0 +1,218 @@
+@use 'igniteui-theming/sass/typography/functions' as *;
+
+@layer components {
+  .igd-theming {
+    // Public custom properties (override from an ancestor or via `class`)
+    --igd-theming-radius: #{rem(5px)};
+    --igd-theming-border: var(--ig-gray-300);
+    --igd-theming-bg: light-dark(#fff, var(--ig-gray-100));
+    --igd-theming-fg: var(--ig-gray-900);
+    --igd-theming-muted: var(--ig-gray-500);
+    --igd-theming-hover-bg: var(--ig-gray-100);
+    --igd-theming-accent: var(--igd-accent, var(--ig-primary-500));
+
+    position: relative;
+    display: inline-block;
+    font-family: var(--igd-font-sans, inherit);
+    font-size: #{rem(14px)};
+    color: var(--igd-theming-fg);
+  }
+
+  // ── Trigger ──────────────────────────────────────────────────────────────
+  .igd-theming__trigger {
+    display: inline-flex;
+    align-items: center;
+    gap: rem(8px);
+    width: 100%;
+    min-height: rem(36px);
+    padding: rem(6px) rem(10px);
+    background: var(--igd-theming-bg);
+    color: inherit;
+    border: rem(1px) solid var(--igd-theming-border);
+    border-radius: var(--igd-theming-radius);
+    cursor: pointer;
+    line-height: 1;
+    transition:
+      border-color 0.15s ease,
+      box-shadow 0.15s ease;
+
+    &:hover {
+      border-color: var(--ig-gray-400);
+    }
+
+    &:focus-visible {
+      outline: none;
+      border-color: var(--igd-theming-accent);
+      box-shadow: 0 0 0 rem(2px) color-mix(in srgb, var(--igd-theming-accent) 25%, transparent);
+    }
+  }
+
+  .igd-theming__value {
+    display: inline-flex;
+    align-items: baseline;
+    gap: rem(4px);
+    margin-inline-end: auto;
+    white-space: nowrap;
+  }
+
+  .igd-theming__theme-name {
+    font-weight: 600;
+  }
+
+  .igd-theming__mode-name {
+    color: var(--igd-theming-muted);
+    font-weight: 400;
+    font-size: #{rem(13px)};
+  }
+
+  .igd-theming__chevron {
+    flex-shrink: 0;
+    color: var(--igd-theming-muted);
+    transition: transform 0.15s ease;
+  }
+
+  .igd-theming.is-open .igd-theming__chevron {
+    transform: rotate(180deg);
+  }
+
+  // ── Swatch ───────────────────────────────────────────────────────────────
+  .igd-theming__swatch {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+  }
+
+  .igd-theming__dot {
+    display: inline-block;
+    width: rem(12px);
+    height: rem(12px);
+    border-radius: 50%;
+    background: var(--dot);
+    box-shadow: 0 0 0 rem(1.5px) var(--igd-theming-bg);
+
+    & + & {
+      margin-inline-start: rem(-5px);
+    }
+  }
+
+  // ── Panel ────────────────────────────────────────────────────────────────
+  .igd-theming__panel {
+    position: absolute;
+    inset-block-start: calc(100% + #{rem(4px)});
+    inset-inline-start: 0;
+    z-index: 100;
+    min-width: 100%;
+    width: max-content;
+    padding: rem(6px);
+    background: var(--igd-theming-bg);
+    border: rem(1px) solid var(--igd-theming-border);
+    border-radius: var(--igd-theming-radius);
+    box-shadow: 0 rem(8px) rem(24px) rgb(0 0 0 / 12%);
+
+    &[hidden] {
+      display: none;
+    }
+  }
+
+  // ── Mode row ─────────────────────────────────────────────────────────────
+  .igd-theming__mode-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: rem(12px);
+    padding: rem(4px) rem(6px) rem(8px);
+    border-block-end: rem(1px) solid var(--ig-gray-200);
+    margin-block-end: rem(4px);
+  }
+
+  .igd-theming__section-label {
+    font-size: #{rem(11px)};
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--igd-theming-muted);
+  }
+
+  .igd-theming__mode-buttons {
+    display: inline-flex;
+    gap: rem(2px);
+  }
+
+  .igd-theming__mode-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: rem(28px);
+    height: rem(28px);
+    padding: 0;
+    background: transparent;
+    color: var(--igd-theming-muted);
+    border: none;
+    border-radius: rem(4px);
+    cursor: pointer;
+    transition:
+      background 0.15s ease,
+      color 0.15s ease;
+
+    &:hover {
+      background: var(--igd-theming-hover-bg);
+      color: var(--igd-theming-fg);
+    }
+
+    &[aria-pressed='true'] {
+      background: var(--igd-theming-fg);
+      color: var(--igd-theming-bg);
+    }
+
+    &:focus-visible {
+      outline: rem(2px) solid var(--igd-theming-accent);
+      outline-offset: rem(1px);
+    }
+  }
+
+  // ── Theme list ───────────────────────────────────────────────────────────
+  .igd-theming__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .igd-theming__option {
+    display: flex;
+    align-items: center;
+    gap: rem(10px);
+    width: 100%;
+    padding: rem(8px) rem(8px);
+    background: transparent;
+    color: inherit;
+    border: none;
+    border-radius: rem(4px);
+    cursor: pointer;
+    text-align: start;
+    font: inherit;
+
+    &:hover {
+      background: var(--igd-theming-hover-bg);
+    }
+
+    &:focus-visible {
+      outline: rem(2px) solid var(--igd-theming-accent);
+      outline-offset: rem(-2px);
+    }
+  }
+
+  .igd-theming__option-name {
+    margin-inline-end: auto;
+    font-weight: 500;
+  }
+
+  .igd-theming__check {
+    flex-shrink: 0;
+    color: var(--igd-theming-accent);
+    opacity: 0;
+  }
+
+  .igd-theming__option[aria-selected='true'] .igd-theming__check {
+    opacity: 1;
+  }
+}

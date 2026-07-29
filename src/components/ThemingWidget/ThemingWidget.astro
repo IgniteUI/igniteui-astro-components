@@ -1,0 +1,412 @@
+---
+/**
+ * ThemingWidget
+ *
+ * A compact theme picker dropdown used inside sample viewers. The trigger shows
+ * the active theme (a small multi-dot color swatch + the theme name and, when a
+ * mode is active, a muted mode label). Opening the trigger reveals a panel with:
+ *
+ *   • an optional MODE row — three icon toggles for Light / Dark / System, and
+ *   • a list of selectable themes, each with its swatch; the active one is checked.
+ *
+ * The widget is self-contained (no web-component dependency): icons are inlined
+ * SVGs and all behavior is wired by a small client script. On change it:
+ *   • dispatches a bubbling `igd-theme-change` CustomEvent with `{ theme, mode }`,
+ *   • persists the selection to `localStorage` (when `storageKey` is set), and
+ *   • reflects `data-igd-theme` / `data-igd-mode` on the optional `target` element.
+ *
+ * Mirrors the "Theme-Input-Dropdown" design from the Doc Samples Figma file.
+ */
+import './ThemingWidget.scss';
+
+export interface ThemeOption {
+  /** Stable identifier, also used as the value in events / storage. */
+  name: string;
+  /** Display label. Defaults to a title-cased `name`. */
+  label?: string;
+  /** Swatch dot colors (left → right). Any length; the design uses three. */
+  swatch: string[];
+}
+
+export type ThemeMode = 'light' | 'dark' | 'system';
+
+interface Props {
+  /** Selectable themes. Defaults to Material, Fluent, Bootstrap and Indigo. */
+  themes?: ThemeOption[];
+  /** Active theme `name`. Defaults to the first theme. */
+  selectedTheme?: string;
+  /** Active color mode. Defaults to `'light'`. */
+  mode?: ThemeMode;
+  /** Show the MODE (Light / Dark / System) toggle row. Defaults to `true`. */
+  showMode?: boolean;
+  /** Element id for the root. Defaults to an auto-generated id. */
+  id?: string;
+  /** Extra class(es) forwarded to the root. */
+  class?: string;
+  /** Accessible label for the trigger. Defaults to `'Select theme'`. */
+  label?: string;
+  /**
+   * CSS selector for an element to reflect the selection onto via
+   * `data-igd-theme` / `data-igd-mode`. When omitted, nothing is reflected.
+   */
+  target?: string;
+  /** `localStorage` key for persisting the selection. When omitted, nothing is stored. */
+  storageKey?: string;
+}
+
+const DEFAULT_THEMES: ThemeOption[] = [
+  { name: 'material', label: 'Material', swatch: ['#000000', '#e41c77', '#1eb2ea'] },
+  { name: 'fluent', label: 'Fluent', swatch: ['#000000', '#0e6cf0', '#57b0ff'] },
+  { name: 'bootstrap', label: 'Bootstrap', swatch: ['#000000', '#0d6efd', '#8a919b'] },
+  { name: 'indigo', label: 'Indigo', swatch: ['#000000', '#3f51b5', '#7f88d1'] },
+];
+
+const {
+  themes = DEFAULT_THEMES,
+  selectedTheme,
+  mode = 'light',
+  showMode = true,
+  id,
+  class: className,
+  label = 'Select theme',
+  target,
+  storageKey,
+} = Astro.props;
+
+const rootId = id ?? `igd-theming-${Math.random().toString(36).slice(2, 9)}`;
+
+const titleCase = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+
+const activeName = selectedTheme ?? themes[0]?.name;
+const active = themes.find((t) => t.name === activeName) ?? themes[0];
+const activeLabel = active ? (active.label ?? titleCase(active.name)) : '';
+
+const modeLabels: Record<ThemeMode, string> = {
+  light: 'Light',
+  dark: 'Dark',
+  system: 'System',
+};
+
+const MODES: ThemeMode[] = ['light', 'dark', 'system'];
+---
+
+<div
+  class:list={['igd-theming', className]}
+  id={rootId}
+  data-target={target}
+  data-storage-key={storageKey}
+  data-mode={mode}
+  data-theme={active?.name}
+>
+  <button
+    type="button"
+    class="igd-theming__trigger"
+    aria-haspopup="listbox"
+    aria-expanded="false"
+    aria-label={label}
+  >
+    <span class="igd-theming__swatch" data-swatch>
+      {active?.swatch.map((c) => <span class="igd-theming__dot" style={`--dot: ${c}`} />)}
+    </span>
+    <span class="igd-theming__value">
+      <span class="igd-theming__theme-name" data-theme-name>{activeLabel}</span>
+      {
+        showMode && (
+          <span class="igd-theming__mode-name" data-mode-name>
+            {modeLabels[mode]}
+          </span>
+        )
+      }
+    </span>
+    <svg
+      class="igd-theming__chevron"
+      width="12"
+      height="12"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden="true"
+    >
+      <path
+        d="M6 9l6 6 6-6"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"></path>
+    </svg>
+  </button>
+
+  <div class="igd-theming__panel" role="dialog" hidden>
+    {
+      showMode && (
+        <div class="igd-theming__mode-row">
+          <span class="igd-theming__section-label">Mode</span>
+          <div class="igd-theming__mode-buttons" role="group" aria-label="Color mode">
+            {MODES.map((m) => (
+              <button
+                type="button"
+                class="igd-theming__mode-btn"
+                data-mode-btn={m}
+                aria-pressed={m === mode ? 'true' : 'false'}
+                aria-label={modeLabels[m]}
+                title={modeLabels[m]}
+              >
+                {m === 'light' && (
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="2" />
+                    <path
+                      d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M19.1 4.9l-1.4 1.4M6.3 17.7l-1.4 1.4"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                    />
+                  </svg>
+                )}
+                {m === 'dark' && (
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path
+                      d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                )}
+                {m === 'system' && (
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <rect
+                      x="3"
+                      y="4"
+                      width="18"
+                      height="12"
+                      rx="1.5"
+                      stroke="currentColor"
+                      stroke-width="2"
+                    />
+                    <path
+                      d="M8 20h8M12 16v4"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                    />
+                  </svg>
+                )}
+              </button>
+            ))}
+          </div>
+        </div>
+      )
+    }
+
+    <ul class="igd-theming__list" role="listbox" aria-label={label}>
+      {
+        themes.map((t) => {
+          const name = t.label ?? titleCase(t.name);
+          const isActive = t.name === active?.name;
+          return (
+            <li>
+              <button
+                type="button"
+                class="igd-theming__option"
+                role="option"
+                aria-selected={isActive ? 'true' : 'false'}
+                data-option={t.name}
+                data-label={name}
+                data-swatch={t.swatch.join(',')}
+              >
+                <span class="igd-theming__swatch">
+                  {t.swatch.map((c) => (
+                    <span class="igd-theming__dot" style={`--dot: ${c}`} />
+                  ))}
+                </span>
+                <span class="igd-theming__option-name">{name}</span>
+                <svg
+                  class="igd-theming__check"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M5 13l4 4L19 7"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </button>
+            </li>
+          );
+        })
+      }
+    </ul>
+  </div>
+</div>
+
+<script>
+  class IgdThemingWidget {
+    private root: HTMLElement;
+    private trigger: HTMLButtonElement;
+    private panel: HTMLElement;
+
+    constructor(root: HTMLElement) {
+      this.root = root;
+      this.trigger = root.querySelector('.igd-theming__trigger') as HTMLButtonElement;
+      this.panel = root.querySelector('.igd-theming__panel') as HTMLElement;
+
+      this.restore();
+      this.bind();
+    }
+
+    private get storageKey() {
+      return this.root.dataset.storageKey || '';
+    }
+
+    private restore() {
+      if (!this.storageKey) return;
+      try {
+        const raw = localStorage.getItem(this.storageKey);
+        if (!raw) return;
+        const saved = JSON.parse(raw) as { theme?: string; mode?: string };
+        if (saved.theme) {
+          const opt = this.root.querySelector<HTMLElement>(
+            `.igd-theming__option[data-option="${saved.theme}"]`,
+          );
+          if (opt) this.selectTheme(opt, false);
+        }
+        if (saved.mode) {
+          const btn = this.root.querySelector<HTMLElement>(
+            `.igd-theming__mode-btn[data-mode-btn="${saved.mode}"]`,
+          );
+          if (btn) this.selectMode(saved.mode, false);
+        }
+      } catch {
+        /* ignore malformed storage */
+      }
+    }
+
+    private bind() {
+      this.trigger.addEventListener('click', () => this.toggle());
+
+      this.root.querySelectorAll<HTMLElement>('.igd-theming__option').forEach((opt) => {
+        opt.addEventListener('click', () => {
+          this.selectTheme(opt, true);
+          this.close();
+        });
+      });
+
+      this.root.querySelectorAll<HTMLElement>('.igd-theming__mode-btn').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          this.selectMode(btn.dataset.modeBtn || 'light', true);
+        });
+      });
+
+      document.addEventListener('click', (e) => {
+        if (!this.root.contains(e.target as Node)) this.close();
+      });
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && this.isOpen()) {
+          this.close();
+          this.trigger.focus();
+        }
+      });
+    }
+
+    private isOpen() {
+      return this.trigger.getAttribute('aria-expanded') === 'true';
+    }
+
+    private toggle() {
+      if (this.isOpen()) {
+        this.close();
+      } else {
+        this.open();
+      }
+    }
+
+    private open() {
+      this.trigger.setAttribute('aria-expanded', 'true');
+      this.panel.hidden = false;
+      this.root.classList.add('is-open');
+    }
+
+    private close() {
+      this.trigger.setAttribute('aria-expanded', 'false');
+      this.panel.hidden = true;
+      this.root.classList.remove('is-open');
+    }
+
+    private selectTheme(opt: HTMLElement, emit: boolean) {
+      const name = opt.dataset.option || '';
+      const label = opt.dataset.label || name;
+      const swatch = (opt.dataset.swatch || '').split(',').filter(Boolean);
+
+      this.root
+        .querySelectorAll('.igd-theming__option')
+        .forEach((o) => o.setAttribute('aria-selected', 'false'));
+      opt.setAttribute('aria-selected', 'true');
+
+      const nameEl = this.trigger.querySelector('[data-theme-name]');
+      if (nameEl) nameEl.textContent = label;
+
+      const swatchEl = this.trigger.querySelector('[data-swatch]');
+      if (swatchEl) {
+        swatchEl.innerHTML = swatch
+          .map((c) => `<span class="igd-theming__dot" style="--dot: ${c}"></span>`)
+          .join('');
+      }
+
+      this.root.dataset.theme = name;
+      this.reflect();
+      if (emit) this.emitAndStore();
+    }
+
+    private selectMode(mode: string, emit: boolean) {
+      this.root.querySelectorAll<HTMLElement>('.igd-theming__mode-btn').forEach((b) => {
+        b.setAttribute('aria-pressed', b.dataset.modeBtn === mode ? 'true' : 'false');
+      });
+      this.root.dataset.mode = mode;
+
+      const modeNameEl = this.trigger.querySelector('[data-mode-name]');
+      if (modeNameEl) {
+        modeNameEl.textContent = mode.charAt(0).toUpperCase() + mode.slice(1);
+      }
+
+      this.reflect();
+      if (emit) this.emitAndStore();
+    }
+
+    private reflect() {
+      const sel = this.root.dataset.target;
+      if (!sel) return;
+      document.querySelectorAll<HTMLElement>(sel).forEach((el) => {
+        el.dataset.igdTheme = this.root.dataset.theme || '';
+        el.dataset.igdMode = this.root.dataset.mode || '';
+      });
+    }
+
+    private emitAndStore() {
+      const detail = { theme: this.root.dataset.theme, mode: this.root.dataset.mode };
+      this.root.dispatchEvent(new CustomEvent('igd-theme-change', { detail, bubbles: true }));
+      if (this.storageKey) {
+        try {
+          localStorage.setItem(this.storageKey, JSON.stringify(detail));
+        } catch {
+          /* storage may be unavailable */
+        }
+      }
+    }
+  }
+
+  function initThemingWidgets() {
+    document.querySelectorAll<HTMLElement>('.igd-theming').forEach((el) => {
+      if ((el as HTMLElement & { _igdInit?: boolean })._igdInit) return;
+      (el as HTMLElement & { _igdInit?: boolean })._igdInit = true;
+      new IgdThemingWidget(el);
+    });
+  }
+
+  document.addEventListener('astro:page-load', initThemingWidgets);
+  initThemingWidgets();
+</script>
