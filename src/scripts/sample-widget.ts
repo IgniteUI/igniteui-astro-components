@@ -250,6 +250,10 @@ function addFooter(
   const footer = document.createElement('div');
   footer.className = 'igd-code-view__footer-actions';
 
+  // Move the server-rendered theme picker (if any) into the existing footer,
+  // after the edit controls so it is the rightmost footer item.
+  const themingBar = widget.querySelector<HTMLElement>('.igd-sample-theming');
+
   if ((!explicitEditor || explicitEditor === 'stackblitz') && onStackblitz) {
     const btn = document.createElement('igc-button') as HTMLElement;
     btn.setAttribute('variant', 'outlined');
@@ -285,6 +289,11 @@ function addFooter(
     fsBtn.setAttribute('target', '_blank');
   }
   footer.appendChild(fsBtn);
+
+  if (themingBar) {
+    themingBar.hidden = false;
+    footer.appendChild(themingBar);
+  }
 
   widget.appendChild(footer);
 }
@@ -614,6 +623,46 @@ export function initSampleWidgets(): void {
       if (!igcTabs) return;
 
       const exampleTabId = `${widget.id}-example`;
+
+      // Wire the in-sample theme picker: on change (and on each iframe load)
+      // post the selection to the sample iframe so it can re-render with the
+      // chosen theme/mode. Targets the iframe's own origin (never a wildcard
+      // when the origin is known) to avoid leaking the message to other frames.
+      const themingBar = widget.querySelector<HTMLElement>('.igd-sample-theming');
+      if (themingBar && iframe) {
+        const targetOrigin = (() => {
+          try {
+            return new URL(iframeSrc, window.location.origin).origin;
+          } catch {
+            return window.location.origin;
+          }
+        })();
+        const postTheme = (theme?: string, mode?: string) => {
+          if (!theme) return;
+          iframe.contentWindow?.postMessage(
+            {
+              // `type` is kept compatible with the existing Angular sample
+              // browser contract. `event` is an explicit alias for xplat
+              // sample browsers that use a named event discriminator.
+              type: 'igd-sample-theme',
+              event: 'igd-sample-theme',
+              theme,
+              themeName: theme,
+              mode,
+            },
+            targetOrigin,
+          );
+        };
+        const themingRoot = themingBar.querySelector<HTMLElement>('.igd-theming');
+        themingBar.addEventListener('igd-theme-change', (e: Event) => {
+          const detail = (e as CustomEvent<{ theme: string; mode: string }>).detail;
+          postTheme(detail?.theme, detail?.mode);
+        });
+        // Send the current (possibly persisted) selection once the sample loads.
+        iframe.addEventListener('load', () =>
+          postTheme(themingRoot?.dataset.theme, themingRoot?.dataset.mode),
+        );
+      }
 
       // Toggle fullscreen button visibility based on active tab.
       igcTabs.addEventListener('igcChange', (e: Event) => {

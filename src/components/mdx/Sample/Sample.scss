@@ -147,6 +147,11 @@ igc-tab::part(tab-header) {
   border-block-start: rem(1px) solid var(--ig-gray-300);
 }
 
+// The in-sample theme picker is appended after the edit controls.
+.igd-code-view__footer-actions .igd-sample-theming {
+  margin-inline-start: 0;
+}
+
 .igd-code-view__header-actions,
 .igd-code-view__footer-actions {
   display: flex;

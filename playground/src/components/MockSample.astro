@@ -17,12 +17,20 @@ interface Props {
   height?: number;
   alt?: string;
   tabs?: CodeTab[];
+  /** Opt out of the in-sample theme picker (shown by default). */
+  noThemePicker?: boolean;
 }
 
-import stackblitzSvgRaw from '../../../src/assets/logos/stackblitz.svg?raw';
-import codeSandboxSvgRaw from '../../../src/assets/logos/code-sandbox.svg?raw';
+import ThemingWidget from '../../../src/components/ThemingWidget/ThemingWidget.astro';
 
-const { id, src = '/mock-demo', height = 400, alt = 'React Example', tabs } = Astro.props;
+const {
+  id,
+  src = '/mock-demo',
+  height = 400,
+  alt = 'React Example',
+  tabs,
+  noThemePicker = false,
+} = Astro.props;
 
 const exampleTabId = `${id}-example`;
 
@@ -117,22 +125,13 @@ function tabId(index: number) {
     </igc-tabs>
   </div>
 
-  <div class="igd-code-view__footer-actions">
-    <igc-button variant="outlined" class="stackblitz-btn igd-edit-in-btn">
-      <Fragment set:html={stackblitzSvgRaw} />
-    </igc-button>
-    <igc-button variant="outlined" class="codesandbox-btn igd-edit-in-btn">
-      <Fragment set:html={codeSandboxSvgRaw} />
-    </igc-button>
-    <igc-icon-button
-      name="open-link-blank"
-      collection="docs"
-      variant="outlined"
-      class="igd-full-screen-btn igd-edit-in-btn"
-      aria-label="Open in full screen"
-    >
-    </igc-icon-button>
-  </div>
+  {
+    !noThemePicker && (
+      <div class="igd-sample-theming" hidden>
+        <ThemingWidget storageKey="igd-sample-theme" />
+      </div>
+    )
+  }
 </div>
 
 <script>
