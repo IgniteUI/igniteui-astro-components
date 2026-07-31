@@ -8,7 +8,10 @@
  * Package: igniteui-webcomponents (public, MIT) — change the import path
  * in the <script> block below to use @infragistics/igniteui-webcomponents.
  */
-import { sidebar as sidebarData, trailingSlash as configuredTrailingSlash } from 'virtual:docs-template/site-meta';
+import {
+  sidebar as sidebarData,
+  trailingSlash as configuredTrailingSlash,
+} from 'virtual:docs-template/site-meta';
 import { platform as virtualPlatform } from 'virtual:docs-template/nav-html';
 import SidebarFilterInput from './SidebarFilterInput.astro';
 import './DocsSidebar.scss';
@@ -58,58 +61,57 @@ const {
 const items = (itemsProp ?? sidebarData) as SidebarEntry[];
 const nodes = toTreeNodes(items, currentSlug, { trailingSlash });
 const activeId = normalizeSlug(currentSlug);
----w
+---
 
 <sidebar-filter class="docs-sidebar" id="docs-sidebar" data-no-results="No topics match">
-    <div class="igd-sidebar-logo">
-        {/* Keep as <span>, not <h1> — avoids competing with the page <h1> in search. */}
-        <span class="igd-logo-text">{logoText}</span>
-        {platformLabel && <span class="igd-logo__platform">for {platformLabel}</span>}
-    </div>
-    <div class="sidebar-gutter">
-        { showFilter && <SidebarFilterInput/> }
-    </div>
-    <div class="sidebar-scroll" data-sidebar-scroll>
-        <DocsTree
-            nodes={ nodes }
-            variant="sidebar"
-            activeId={ activeId }
-            toggleNodeOnClick
-            ariaLabel="Sidebar navigation"
-            renderLabel={ SidebarLabel }
-        />
-    </div>
+  <div class="igd-sidebar-logo">
+    {/* Keep as <span>, not <h1> — avoids competing with the page <h1> in search. */}
+    <span class="igd-logo-text">{logoText}</span>
+    {platformLabel && <span class="igd-logo__platform">for {platformLabel}</span>}
+  </div>
+  <div class="sidebar-gutter">
+    {showFilter && <SidebarFilterInput />}
+  </div>
+  <div class="sidebar-scroll" data-sidebar-scroll>
+    <DocsTree
+      nodes={nodes}
+      variant="sidebar"
+      activeId={activeId}
+      toggleNodeOnClick
+      ariaLabel="Sidebar navigation"
+      renderLabel={SidebarLabel}
+    />
+  </div>
 </sidebar-filter>
 <div class="docs-sidebar-backdrop" id="docs-sidebar-backdrop" aria-hidden="true"></div>
 
 <script>
-    // Register Ignite UI Web Components used by the sidebar filter input.
-    // (DocsTree registers IgcTreeComponent / IgcTreeItemComponent itself.)
-    // To use the licensed package, change the import to:
-    //   import { ... } from '@infragistics/igniteui-webcomponents';
-    import {
-        defineComponents,
-        IgcBadgeComponent,
-        IgcInputComponent,
-        IgcButtonComponent,
-        IgcIconComponent,
-    } from 'igniteui-webcomponents';
+  // Register Ignite UI Web Components used by the sidebar filter input.
+  // (DocsTree registers IgcTreeComponent / IgcTreeItemComponent itself.)
+  // To use the licensed package, change the import to:
+  //   import { ... } from '@infragistics/igniteui-webcomponents';
+  import {
+    defineComponents,
+    IgcBadgeComponent,
+    IgcInputComponent,
+    IgcButtonComponent,
+    IgcIconComponent,
+  } from 'igniteui-webcomponents';
 
-    defineComponents(IgcBadgeComponent, IgcInputComponent, IgcButtonComponent, IgcIconComponent);
+  defineComponents(IgcBadgeComponent, IgcInputComponent, IgcButtonComponent, IgcIconComponent);
 
-    // Icons (sidebar-filter-search, sidebar-filter-clear) are registered via
-    // the icon registry which picks up all SVGs from src/assets/icons/.
-    import '../../scripts/icon-registry';
+  // Icons (sidebar-filter-search, sidebar-filter-clear) are registered via
+  // the icon registry which picks up all SVGs from src/assets/icons/.
+  import '../../scripts/icon-registry';
 
-    import './sidebar-filter';
+  import './sidebar-filter';
 
-    // Close the sidebar overlay when the backdrop is clicked.
-    document.addEventListener('click', (e) => {
-        if ((e.target as Element | null)?.closest('#docs-sidebar-backdrop')) {
-            document.body.removeAttribute('data-sidebar-open');
-            const toggle = document.querySelector<HTMLElement>('[data-sidebar-toggle]');
-            toggle?.setAttribute('aria-expanded', 'false');
-        }
-    });
+  // Close the sidebar overlay when the backdrop is clicked.
+  document.addEventListener('click', (e) => {
+    if ((e.target as Element | null)?.closest('#docs-sidebar-backdrop')) {
+      document.body.removeAttribute('data-sidebar-open');
+      const toggle = document.querySelector<HTMLElement>('[data-sidebar-toggle]');
+      toggle?.setAttribute('aria-expanded', 'false');
+    }
+  });
 </script>
-

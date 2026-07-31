@@ -6,33 +6,39 @@
  */
 
 interface CodeTab {
-    label: string;
-    lang:  string;
-    content: string;
+  label: string;
+  lang: string;
+  content: string;
 }
 
 interface Props {
-    id: string;
-    src?: string;
-    height?: number;
-    alt?: string;
-    tabs?: CodeTab[];
-    /** Same semantics as Sample.astro: content dictates the iframe size, `height` ignored. */
-    fitContent?: boolean;
-    /** Same semantics as Sample.astro: remove the container border. */
-    noBorder?: boolean;
-    /** Same semantics as Sample.astro: align the iframe, e.g. "center", "end top". */
-    position?: string;
+  id: string;
+  src?: string;
+  height?: number;
+  alt?: string;
+  tabs?: CodeTab[];
+  /** Same semantics as Sample.astro: content dictates the iframe size, `height` ignored. */
+  fitContent?: boolean;
+  /** Same semantics as Sample.astro: remove the container border. */
+  noBorder?: boolean;
+  /** Same semantics as Sample.astro: align the iframe, e.g. "center", "end top". */
+  position?: string;
 }
 
 import stackblitzSvgRaw from '../../../src/assets/logos/stackblitz.svg?raw';
 import codeSandboxSvgRaw from '../../../src/assets/logos/code-sandbox.svg?raw';
 
 const {
-    // height mirrors Sample.astro's default (150) so a snippet that omits it
-    // renders here exactly as the real component would.
-    id, src = '/mock-demo', height = 150, alt = 'React Example', tabs,
-    fitContent = false, noBorder = false, position,
+  // height mirrors Sample.astro's default (150) so a snippet that omits it
+  // renders here exactly as the real component would.
+  id,
+  src = '/mock-demo',
+  height = 150,
+  alt = 'React Example',
+  tabs,
+  fitContent = false,
+  noBorder = false,
+  position,
 } = Astro.props;
 
 const exampleTabId = `${id}-example`;
@@ -40,16 +46,20 @@ const exampleTabId = `${id}-example`;
 // Mirror Sample.astro's container computation so the pre-baked shell renders
 // the exact same markup the real component would.
 const posTokens = (position ?? '').toLowerCase().split(/\s+/).filter(Boolean);
-const hToken = posTokens.find(t => t === 'start' || t === 'end')   ?? (posTokens.includes('center') ? 'center' : undefined);
-const vToken = posTokens.find(t => t === 'top'   || t === 'bottom') ?? (posTokens.includes('center') ? 'center' : undefined);
+const hToken =
+  posTokens.find((t) => t === 'start' || t === 'end') ??
+  (posTokens.includes('center') ? 'center' : undefined);
+const vToken =
+  posTokens.find((t) => t === 'top' || t === 'bottom') ??
+  (posTokens.includes('center') ? 'center' : undefined);
 const useFlex = Boolean(hToken || vToken);
 const containerStyle = fitContent ? undefined : `height: ${height}px`;
 
 const defaultTabs: CodeTab[] = [
-    {
-        label: 'TSX',
-        lang:  'tsx',
-        content: `import React from 'react';
+  {
+    label: 'TSX',
+    lang: 'tsx',
+    content: `import React from 'react';
 import { IgrGrid, IgrColumn, IgrGridModule } from 'igniteui-react-grids';
 import 'igniteui-react-grids/grids/themes/light/bootstrap.css';
 import './GridSample.css';
@@ -77,70 +87,85 @@ export default function GridSample() {
     </div>
   );
 }`,
-    },
-    {
-        label: 'CSS',
-        lang:  'css',
-        content: `.grid-wrapper {
+  },
+  {
+    label: 'CSS',
+    lang: 'css',
+    content: `.grid-wrapper {
   padding: 16px;
 }`,
-    },
+  },
 ];
 
 const resolvedTabs: CodeTab[] = tabs ?? defaultTabs;
 
-function tabId(index: number) { return `${id}-code-${index}`; }
+function tabId(index: number) {
+  return `${id}-code-${index}`;
+}
 ---
 
-<div class="igd-code-view"
-     id={id}
-     data-iframe-src={src}
-     data-demos-base-url=""
-     data-github-src={src.replace(/^\//, '')}
-     data-platform="react">
-
-
-    <div class="igd-code-view__inner">
-        <igc-tabs id={`${id}-tabs`} alignment="start">
-            <igc-tab id={exampleTabId} label="EXAMPLE" selected>
-                <div class="igd-sample-container loading" data-spacing="md" aria-busy="true" style={containerStyle}>
-                    <igc-circular-progress indeterminate class="sample-loading-indicator" aria-label="Loading sample"></igc-circular-progress>
-                    <iframe
-                            data-src={src}
-                            title={alt}
-                            style="width: 100%; height: 100%;"
-                            frameborder="0"
-                            seamless
-                            aria-hidden="true"
-                    ></iframe>
-                </div>
-            </igc-tab>
-            {resolvedTabs.map((tab, i) => (
-                <igc-tab id={tabId(i)} label={tab.label}>
-                    <div class="code-wrapper">
-                        <pre><code class={`language-${tab.lang}`}>{tab.content}</code></pre>
-                        <igc-icon-button variant="flat" aria-label="Copy code" class="cv-hljs-code-copy"><igc-icon name="copy" collection="docs"></igc-icon></igc-icon-button>
-                    </div>
-                </igc-tab>
-            ))}
-        </igc-tabs>
+<div
+  class="igd-code-view"
+  id={id}
+  data-iframe-src={src}
+  data-demos-base-url=""
+  data-github-src={src.replace(/^\//, '')}
+  data-platform="react"
+>
+  <div class="igd-code-view__inner">
+    <igc-tabs id={`${id}-tabs`} alignment="start">
+      <igc-tab id={exampleTabId} label="EXAMPLE" selected>
+        <div
+          class="igd-sample-container loading"
+          data-spacing="md"
+          aria-busy="true"
+          style={containerStyle}
+        >
+          <igc-circular-progress
+            indeterminate
+            class="sample-loading-indicator"
+            aria-label="Loading sample"></igc-circular-progress>
+          <iframe
+            data-src={src}
+            title={alt}
+            style="width: 100%; height: 100%;"
+            frameborder="0"
+            seamless
+            aria-hidden="true"></iframe>
+        </div>
+      </igc-tab>
+      {
+        resolvedTabs.map((tab, i) => (
+          <igc-tab id={tabId(i)} label={tab.label}>
+            <div class="code-wrapper">
+              <pre>
+                <code class={`language-${tab.lang}`}>{tab.content}</code>
+              </pre>
+              <igc-icon-button variant="flat" aria-label="Copy code" class="cv-hljs-code-copy">
+                <igc-icon name="copy" collection="docs" />
+              </igc-icon-button>
+            </div>
+          </igc-tab>
+        ))
+      }
+    </igc-tabs>
   </div>
 
   <div class="igd-code-view__footer-actions">
     <igc-button variant="outlined" class="stackblitz-btn igd-edit-in-btn">
-        <Fragment set:html={stackblitzSvgRaw} />
+      <Fragment set:html={stackblitzSvgRaw} />
     </igc-button>
     <igc-button variant="outlined" class="codesandbox-btn igd-edit-in-btn">
-        <Fragment set:html={codeSandboxSvgRaw} />
+      <Fragment set:html={codeSandboxSvgRaw} />
     </igc-button>
-      <igc-icon-button
-              name="open-link-blank"
-              collection="docs"
-              variant="outlined"
-              class="igd-full-screen-btn igd-edit-in-btn"
-              aria-label="Open in full screen"
-      >
-      </igc-icon-button>
+    <igc-icon-button
+      name="open-link-blank"
+      collection="docs"
+      variant="outlined"
+      class="igd-full-screen-btn igd-edit-in-btn"
+      aria-label="Open in full screen"
+    >
+    </igc-icon-button>
   </div>
 </div>
 

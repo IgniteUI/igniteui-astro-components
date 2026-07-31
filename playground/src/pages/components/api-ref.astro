@@ -5,40 +5,54 @@ import DocsToc from '../../../../src/components/DocsToc/DocsToc.astro';
 import ApiRef from '../../../../src/components/mdx/ApiRef/ApiRef.astro';
 import DocsSubHeader from '../../../../src/components/DocsSubHeader/DocsSubHeader.astro';
 import SearchAdvanced from '../../../../src/components/SearchAdvanced/SearchAdvanced.astro';
-import { SITE_TITLE, SIDEBAR, PRODUCT_LINKS, SEARCH_TABS, PACKAGES, VERSIONS } from '../../site-config';
+import {
+  SITE_TITLE,
+  SIDEBAR,
+  PRODUCT_LINKS,
+  SEARCH_TABS,
+  PACKAGES,
+  VERSIONS,
+} from '../../site-config';
 
 const slug = 'components/api-ref';
 
 const headings = [
-  { depth: 2, slug: 'classes',             text: 'Classes (default kind)' },
-  { depth: 2, slug: 'interfaces',          text: 'Interfaces' },
-  { depth: 2, slug: 'enums',               text: 'Enums' },
-  { depth: 2, slug: 'charts-sub-package',  text: 'Charts sub-package' },
+  { depth: 2, slug: 'classes', text: 'Classes (default kind)' },
+  { depth: 2, slug: 'interfaces', text: 'Interfaces' },
+  { depth: 2, slug: 'enums', text: 'Enums' },
+  { depth: 2, slug: 'charts-sub-package', text: 'Charts sub-package' },
 ];
 ---
 
 <DocsLayout title="ApiRef" siteTitle={SITE_TITLE} hasSidebar currentSlug={slug}>
-  <DocsSubHeader slot="subheader" pageTitle="ApiRef" currentSlug={slug} siteTitle={SITE_TITLE}
-    productLinks={PRODUCT_LINKS} showThemeToggle={true}
-    packages={[...PACKAGES]} selectedPackage={PACKAGES[0].value}
-    versions={[...VERSIONS]} selectedVersion={VERSIONS[0]}
+  <DocsSubHeader
+    slot="subheader"
+    pageTitle="ApiRef"
+    currentSlug={slug}
+    siteTitle={SITE_TITLE}
+    productLinks={PRODUCT_LINKS}
+    showThemeToggle={true}
+    packages={[...PACKAGES]}
+    selectedPackage={PACKAGES[0].value}
+    versions={[...VERSIONS]}
+    selectedVersion={VERSIONS[0]}
   >
     <SearchAdvanced slot="search" tabs={SEARCH_TABS} showScope={true} />
   </DocsSubHeader>
   <DocsSidebar slot="sidebar" items={SIDEBAR} currentSlug={slug} />
   <DocsToc slot="toc" headings={headings} offsetTarget=".docs-subheader" />
-    <h1>ApiRef</h1>
-    <p>Renders the &quot;API References&quot; section listing one or more types.</p>
+  <h1>ApiRef</h1>
+  <p>Renders the &quot;API References&quot; section listing one or more types.</p>
 
-    <h2 id="classes">Classes (default kind)</h2>
-    <ApiRef types={["Toast", "Combo", "Calendar"]} />
+  <h2 id="classes">Classes (default kind)</h2>
+  <ApiRef types={['Toast', 'Combo', 'Calendar']} />
 
-    <h2 id="interfaces">Interfaces</h2>
-    <ApiRef kind="interface" types={["ComboTemplateProps"]} prefixed={false} />
+  <h2 id="interfaces">Interfaces</h2>
+  <ApiRef kind="interface" types={['ComboTemplateProps']} prefixed={false} />
 
-    <h2 id="enums">Enums</h2>
-    <ApiRef kind="enum" types={["CalendarSelection"]} />
+  <h2 id="enums">Enums</h2>
+  <ApiRef kind="enum" types={['CalendarSelection']} />
 
-    <h2 id="charts-sub-package">Charts sub-package</h2>
-    <ApiRef pkg="charts" types={["CategoryChart", "FinancialChart"]} />
+  <h2 id="charts-sub-package">Charts sub-package</h2>
+  <ApiRef pkg="charts" types={['CategoryChart', 'FinancialChart']} />
 </DocsLayout>

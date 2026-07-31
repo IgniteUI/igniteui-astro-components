@@ -12,23 +12,23 @@ import DocsSubHeader from 'igniteui-astro-components/components/DocsSubHeader.as
 
 ## Props
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `productLinks` | `{ label: string; href: string; platform?: string }[]` | virtual module | Override the cross-product navigation links. |
-| `sidebarItems` | `SidebarEntry[]` | virtual module | Override the sidebar tree used for breadcrumb generation. |
-| `packages` | `string[]` | — | Package names for the package selector dropdown. Hidden when omitted. |
-| `selectedPackage` | `string` | — | Currently selected package (must match one of `packages`). |
-| `packageLabel` | `string` | `'Package'` | Label rendered before the package selector. |
-| `versions` | `string[]` | — | Version labels for the version selector dropdown. Hidden when omitted. |
-| `selectedVersion` | `string` | — | Currently selected version (must match one of `versions`). |
-| `versionLabel` | `string` | `'Version'` | Label rendered before the version selector. |
-| `showThemeToggle` | `boolean` | `false` | Show a light/dark theme toggle button. |
-| `themeStorageKey` | `string` | `'docs-theme'` | `localStorage` key for persisting the theme preference. |
+| Prop              | Type                                                   | Default        | Description                                                            |
+| ----------------- | ------------------------------------------------------ | -------------- | ---------------------------------------------------------------------- |
+| `productLinks`    | `{ label: string; href: string; platform?: string }[]` | virtual module | Override the cross-product navigation links.                           |
+| `sidebarItems`    | `SidebarEntry[]`                                       | virtual module | Override the sidebar tree used for breadcrumb generation.              |
+| `packages`        | `string[]`                                             | —              | Package names for the package selector dropdown. Hidden when omitted.  |
+| `selectedPackage` | `string`                                               | —              | Currently selected package (must match one of `packages`).             |
+| `packageLabel`    | `string`                                               | `'Package'`    | Label rendered before the package selector.                            |
+| `versions`        | `string[]`                                             | —              | Version labels for the version selector dropdown. Hidden when omitted. |
+| `selectedVersion` | `string`                                               | —              | Currently selected version (must match one of `versions`).             |
+| `versionLabel`    | `string`                                               | `'Version'`    | Label rendered before the version selector.                            |
+| `showThemeToggle` | `boolean`                                              | `false`        | Show a light/dark theme toggle button.                                 |
+| `themeStorageKey` | `string`                                               | `'docs-theme'` | `localStorage` key for persisting the theme preference.                |
 
 ## Slots
 
-| Slot | Default | Description |
-|------|---------|-------------|
+| Slot     | Default      | Description                                           |
+| -------- | ------------ | ----------------------------------------------------- |
 | `search` | `<Search />` | Override the search widget rendered in the subheader. |
 
 ## Behaviour
@@ -46,11 +46,12 @@ import DocsSubHeader from 'igniteui-astro-components/components/DocsSubHeader.as
 import DocsSubHeader from 'igniteui-astro-components/components/DocsSubHeader.astro';
 
 const productLinks = [
-  { label: 'Angular',        href: '/angular/',        platform: 'angular' },
-  { label: 'React',          href: '/react/',          platform: 'react' },
+  { label: 'Angular', href: '/angular/', platform: 'angular' },
+  { label: 'React', href: '/react/', platform: 'react' },
   { label: 'Web Components', href: '/web-components/', platform: 'web-components' },
 ];
 ---
+
 <DocsSubHeader productLinks={productLinks} />
 ```
 
@@ -64,6 +65,7 @@ mount it directly when building a custom page shell.
 import DocsSubHeader from 'igniteui-astro-components/components/DocsSubHeader.astro';
 import SearchAdvanced from 'igniteui-astro-components/components/SearchAdvanced.astro';
 ---
+
 <DocsSubHeader
   siteTitle="Ignite UI for Angular"
   packages={['igniteui-angular', 'igniteui-charts']}

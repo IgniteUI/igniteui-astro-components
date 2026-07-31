@@ -3,40 +3,56 @@
 // via media queries against the iframe's own width, so dragging the resize
 // handle visibly changes the layout. Served at /mock-demo-responsive.
 ---
-<!DOCTYPE html>
+
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Mock Demo (responsive)</title>
-  <style>
-    body { margin: 0; font-family: system-ui, sans-serif; }
-    /* No padding around the demo itself — spacing comes from the host <Sample>. */
-    .cards { display: grid; gap: 12px; grid-template-columns: repeat(3, 1fr); }
-    .card {
-      padding: 20px 16px;
-      border-radius: 8px;
-      background: linear-gradient(135deg, #eef2ff, #f5f3ff);
-      border: 1px solid #e0e7ff;
-      text-align: center;
-      font-weight: 600;
-      color: #4338ca;
-    }
-    /* Reflows as the iframe (its own viewport) gets narrower. */
-    @media (max-width: 640px) { .cards { grid-template-columns: repeat(2, 1fr); } }
-    @media (max-width: 420px) { .cards { grid-template-columns: 1fr; } }
-  </style>
-</head>
-<body>
-  <div class="panel">
-    <div class="cards">
-      <div class="card">One</div>
-      <div class="card">Two</div>
-      <div class="card">Three</div>
-      <div class="card">Four</div>
-      <div class="card">Five</div>
-      <div class="card">Six</div>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mock Demo (responsive)</title>
+    <style>
+      body {
+        margin: 0;
+        font-family: system-ui, sans-serif;
+      }
+      /* No padding around the demo itself — spacing comes from the host <Sample>. */
+      .cards {
+        display: grid;
+        gap: 12px;
+        grid-template-columns: repeat(3, 1fr);
+      }
+      .card {
+        padding: 20px 16px;
+        border-radius: 8px;
+        background: linear-gradient(135deg, #eef2ff, #f5f3ff);
+        border: 1px solid #e0e7ff;
+        text-align: center;
+        font-weight: 600;
+        color: #4338ca;
+      }
+      /* Reflows as the iframe (its own viewport) gets narrower. */
+      @media (max-width: 640px) {
+        .cards {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+      @media (max-width: 420px) {
+        .cards {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="panel">
+      <div class="cards">
+        <div class="card">One</div>
+        <div class="card">Two</div>
+        <div class="card">Three</div>
+        <div class="card">Four</div>
+        <div class="card">Five</div>
+        <div class="card">Six</div>
+      </div>
     </div>
-  </div>
-</body>
+  </body>
 </html>

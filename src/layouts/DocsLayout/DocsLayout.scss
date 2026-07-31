@@ -9,69 +9,69 @@
 // ────────────────────────────────────────────────────────────────────────────
 
 .igd-page-layout {
-	display: grid;
-	grid-template-columns: var(--igd-page-layout-grid);
-	background: var(--igd-app-bg);
-	color: var(--igd-on-app-bg);
-	margin: 0;
-	position: relative;
-	z-index: 0;
+  display: grid;
+  grid-template-columns: var(--igd-page-layout-grid);
+  background: var(--igd-app-bg);
+  color: var(--igd-on-app-bg);
+  margin: 0;
+  position: relative;
+  z-index: 0;
 
-	&:not(:has(.igd-right-sidebar)) {
-		.igd-main-pane {
-			> main {
-				margin: 0
-			}
-		}
-	}
+  &:not(:has(.igd-right-sidebar)) {
+    .igd-main-pane {
+      > main {
+        margin: 0;
+      }
+    }
+  }
 }
 
 .igd-main-content {
-	display: grid;
-	position: relative;
-	//background: var(--ig-surface-500);
+  display: grid;
+  position: relative;
+  //background: var(--ig-surface-500);
 
-	&:not(:has(.igd-right-sidebar)) {
-		.igd-main-pane {
-			> main {
-				margin: 0
-			}
-		}
-	}
+  &:not(:has(.igd-right-sidebar)) {
+    .igd-main-pane {
+      > main {
+        margin: 0;
+      }
+    }
+  }
 }
 
 .igd-main-content__page {
-	display: grid;
-	background-color: var(--igd-layout-sections-bg);
-	border-inline-end: var(--igd-app-outline);
-	width: 100%;
+  display: grid;
+  background-color: var(--igd-layout-sections-bg);
+  border-inline-end: var(--igd-app-outline);
+  width: 100%;
 }
 
 .igd-main-content__inner:not(:has(aside)) {
-	.igd-main-content__page {
-		border-inline: var(--igd-app-outline);
-	}
+  .igd-main-content__page {
+    border-inline: var(--igd-app-outline);
+  }
 }
 
 .igd-main-content__page + aside {
-	margin-inline-end: auto;
+  margin-inline-end: auto;
 }
 
 .igd-main-content__inner {
-	display: flex;
-	position: relative;
+  display: flex;
+  position: relative;
 
-	&:has(aside) {
-		.igd-main-content__page {
-			margin-inline-end: 0;
-		}
-	}
+  &:has(aside) {
+    .igd-main-content__page {
+      margin-inline-end: 0;
+    }
+  }
 }
 
 .content {
-	max-width: 60rem;
-	margin: 0 auto;
-	padding: 0;
+  max-width: 60rem;
+  margin: 0 auto;
+  padding: 0;
 }
 
 // ════════════════════════════════════════════════════════════════════════════
@@ -85,235 +85,235 @@
 // the docs layout and the components rendered inside `.igd-page-layout`.
 // ════════════════════════════════════════════════════════════════════════════
 
-
 @media (min-width: #{$bp-desktop-wide}) {
-	//.igd-page-layout {
-	//	--igd-page-layout-grid: #{rem(320px)} 1fr;
-	//}
-	
-	.igd-main-content__page {
-		gap: var(--ig-padding);
-		margin-inline: auto;
-		border-inline: var(--igd-app-outline);
-		width: clamp(rem(1200px), 100%, rem(1200px));
-	}
+  //.igd-page-layout {
+  //	--igd-page-layout-grid: #{rem(320px)} 1fr;
+  //}
+
+  .igd-main-content__page {
+    gap: var(--ig-padding);
+    margin-inline: auto;
+    border-inline: var(--igd-app-outline);
+    width: clamp(rem(1200px), 100%, rem(1200px));
+  }
 }
 
 // ── Mobile + Tablet (< 1280px) — everything below desktop ──────────────────
 @media (max-width: #{$bp-tablet-max}) {
-	:root {
-		--igd-header-height: #{rem(60px)};
-		--igd-page-padding: #{rem(24px)};
-	}
-	
-	// Single-column page grid; subheader follows via subgrid.
-	.igd-page-layout {
-		--igd-page-layout-grid: auto 1fr;
-	}
-	
-	.igd-logo__text {
-		display: none;
-	}
-	
-	.igd-main-content {
-		grid-row: 2;
-	}
-	
-	.igd-search-mobile-bar {
-		display: flex;
-	}
+  :root {
+    --igd-header-height: #{rem(60px)};
+    --igd-page-padding: #{rem(24px)};
+  }
 
-	// Sidebar becomes a fixed slide-in overlay, hidden off-screen by default.
-	.docs-sidebar {
-		--igd-sidebar-z-index: 1000;
-		
-		position: fixed;
-		inset-block: 0;
-		inset-inline-start: 0;
-		height: 100dvh;
-		max-height: 100dvh;
-		width: min(rem(360px), 85vw);
-		transform: translateX(-100%);
-		transition: transform 250ms ease, box-shadow 250ms ease;
-		box-shadow: none;
-	}
+  // Single-column page grid; subheader follows via subgrid.
+  .igd-page-layout {
+    --igd-page-layout-grid: auto 1fr;
+  }
 
-	.docs-sidebar-backdrop {
-		display: block;
-		position: fixed;
-		inset: 0;
-		z-index: 99;
-		background: light-dark(var(--ig-gray-900), var(--ig-gray-100));
-		opacity: 0;
-		pointer-events: none;
-		transition: opacity 250ms ease;
-	}
+  .igd-logo__text {
+    display: none;
+  }
 
-	body[data-sidebar-open] {
-		overflow: hidden;
+  .igd-main-content {
+    grid-row: 2;
+  }
 
-		.docs-sidebar {
-			transform: translateX(0);
-			box-shadow: var(--ig-elevation-8);
-		}
+  .igd-search-mobile-bar {
+    display: flex;
+  }
 
-		.docs-sidebar-backdrop {
-			opacity: .6;
-			pointer-events: auto;
-			backdrop-filter: blur(10px);
-		}
-	}
-	
-	body[data-sidebar-open],
-	body[data-search-modal-open] {
-		.globalnav {
-			z-index: 0;
-		}
-	}
+  // Sidebar becomes a fixed slide-in overlay, hidden off-screen by default.
+  .docs-sidebar {
+    --igd-sidebar-z-index: 1000;
 
-	// Subheader sidebar toggle reveals when the sidebar is not persistent.
-	.subheader-sidebar-toggle {
-		display: flex;
-		flex-shrink: 0;
-	}
+    position: fixed;
+    inset-block: 0;
+    inset-inline-start: 0;
+    height: 100dvh;
+    max-height: 100dvh;
+    width: min(rem(360px), 85vw);
+    transform: translateX(-100%);
+    transition:
+      transform 250ms ease,
+      box-shadow 250ms ease;
+    box-shadow: none;
+  }
 
-	// Logo inside the slide-in sidebar (visible only when sidebar is an overlay).
-	.igd-sidebar-logo {
-		display: flex;
-	}
+  .docs-sidebar-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 99;
+    background: light-dark(var(--ig-gray-900), var(--ig-gray-100));
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 250ms ease;
+  }
 
-	.igd-main-content__inner {
-		padding-inline: 0;
-	}
-	
-	// This is the height of the input in fluent theme + 8px padding + height of the logo above
-	.sidebar-gutter {
-		align-items: center;
-	}
+  body[data-sidebar-open] {
+    overflow: hidden;
+
+    .docs-sidebar {
+      transform: translateX(0);
+      box-shadow: var(--ig-elevation-8);
+    }
+
+    .docs-sidebar-backdrop {
+      opacity: 0.6;
+      pointer-events: auto;
+      backdrop-filter: blur(10px);
+    }
+  }
+
+  body[data-sidebar-open],
+  body[data-search-modal-open] {
+    .globalnav {
+      z-index: 0;
+    }
+  }
+
+  // Subheader sidebar toggle reveals when the sidebar is not persistent.
+  .subheader-sidebar-toggle {
+    display: flex;
+    flex-shrink: 0;
+  }
+
+  // Logo inside the slide-in sidebar (visible only when sidebar is an overlay).
+  .igd-sidebar-logo {
+    display: flex;
+  }
+
+  .igd-main-content__inner {
+    padding-inline: 0;
+  }
+
+  // This is the height of the input in fluent theme + 8px padding + height of the logo above
+  .sidebar-gutter {
+    align-items: center;
+  }
 }
 
 // ── Mobile only (< 768px) ──────────────────────────────────────────────────
 @media (max-width: #{$bp-mobile-max}) {
-	.igd-search-content {
-		max-height: 100%;
-	}
-	
-	.search-decoration {
-		width: 40px;
-		aspect-ratio: 1;
-		
-		.search-trigger {
-			display: none;
-		}
-		
-		&:has(.search-trigger:defined)::before {
-			animation: rotation 6s linear infinite;
-			opacity: 1;
-			transition-delay: 500ms;
-		}
-	}
-	
-	.search-trigger-mobile {
-		--size: 100%;
-		--border-radius: #{rem(10px)};
-		
-		display: flex;
-		
-		width: 100%;
-		height: 100%;
-	}
-	
-	.igniteui-page-logo {
-		display: block;
-	}
-	
-	.igd-version-select {
-		max-width: rem(90px);
-	}
+  .igd-search-content {
+    max-height: 100%;
+  }
 
-	.igd-docs-subheader {
-		padding-inline: rem(16px);
-	}
+  .search-decoration {
+    width: 40px;
+    aspect-ratio: 1;
 
-	.igd-docs-subheader__content:last-child {
-		margin-inline-end: 0;
-	}
+    .search-trigger {
+      display: none;
+    }
 
-	.mobile-toc {
-		display: block;
-		position: sticky;
-		top: var(--igd-header-height);
-		z-index: 10;
-		grid-column: 1 / -1;
-		border-block-end: var(--igd-app-outline);
-		background-color: var(--igd-layout-sections-bg);
-	}
+    &:has(.search-trigger:defined)::before {
+      animation: rotation 6s linear infinite;
+      opacity: 1;
+      transition-delay: 500ms;
+    }
+  }
 
-	.igd-main-content__markdown {
-		padding-inline: rem(32px);
-	}
+  .search-trigger-mobile {
+    --size: 100%;
+    --border-radius: #{rem(10px)};
 
-	// Search dialog goes fullscreen on mobile only.
-	// `.igd-page-layout` prefix bumps specificity so this beats the
-	// centered-card base styles declared in Search.scss / SearchAdvanced.scss
-	// (those files load after this one in the Astro bundle).
-	.igd-page-layout .search-dialog,
-	.igd-page-layout .igd-search-dialog::part(base) {
-		--border-radius: #{rem(8px)};
-		
-		margin: 0;
-		width: 100%;
-		max-width: 100%;
-		height: 100dvh;
-		max-height: 100dvh;
-	}
-	
-	
-	.igd-search-shell {
-		grid-template-rows: auto calc(100% - (var(--search-header-footer-height) * 2)) auto;
-		
-		igc-divider {
-			margin-block-start: auto;
-		}
-	}
-	
-	.igd-search-footer {
-		display: flex;
-		align-items: center;
-		justify-content: end;
-		border-block-start: var(--igd-app-outline);
-	}
+    display: flex;
+
+    width: 100%;
+    height: 100%;
+  }
+
+  .igniteui-page-logo {
+    display: block;
+  }
+
+  .igd-version-select {
+    max-width: rem(90px);
+  }
+
+  .igd-docs-subheader {
+    padding-inline: rem(16px);
+  }
+
+  .igd-docs-subheader__content:last-child {
+    margin-inline-end: 0;
+  }
+
+  .mobile-toc {
+    display: block;
+    position: sticky;
+    top: var(--igd-header-height);
+    z-index: 10;
+    grid-column: 1 / -1;
+    border-block-end: var(--igd-app-outline);
+    background-color: var(--igd-layout-sections-bg);
+  }
+
+  .igd-main-content__markdown {
+    padding-inline: rem(32px);
+  }
+
+  // Search dialog goes fullscreen on mobile only.
+  // `.igd-page-layout` prefix bumps specificity so this beats the
+  // centered-card base styles declared in Search.scss / SearchAdvanced.scss
+  // (those files load after this one in the Astro bundle).
+  .igd-page-layout .search-dialog,
+  .igd-page-layout .igd-search-dialog::part(base) {
+    --border-radius: #{rem(8px)};
+
+    margin: 0;
+    width: 100%;
+    max-width: 100%;
+    height: 100dvh;
+    max-height: 100dvh;
+  }
+
+  .igd-search-shell {
+    grid-template-rows: auto calc(100% - (var(--search-header-footer-height) * 2)) auto;
+
+    igc-divider {
+      margin-block-start: auto;
+    }
+  }
+
+  .igd-search-footer {
+    display: flex;
+    align-items: center;
+    justify-content: end;
+    border-block-start: var(--igd-app-outline);
+  }
 }
 
 @media (max-width: #{$bp-hide-toc}) {
-	.igd-main-content__inner {
-		aside {
-			display: none;
-		}
-	}
-	
-	.igd-main-content__page {
-		border: none;
-	}
+  .igd-main-content__inner {
+    aside {
+      display: none;
+    }
+  }
+
+  .igd-main-content__page {
+    border: none;
+  }
 }
 
 // ── Tablet + Desktop (≥ 768px) ─────────────────────────────────────────────
 @media (min-width: #{$bp-tablet-min}) {
-	.search-decoration {
-		&:has(.search-trigger-mobile:defined)::before {
-			animation: rotation 6s linear infinite;
-			opacity: 1;
-			transition-delay: 500ms;
-		}
-	}
-	
-	.sidebar-gutter {
-		&:has(.igd-sidebar-logo:only-child) {
-			display: none;
-		}
-	}
-	
-	.igd-page-layout {
-		justify-content: center;
-	}
+  .search-decoration {
+    &:has(.search-trigger-mobile:defined)::before {
+      animation: rotation 6s linear infinite;
+      opacity: 1;
+      transition-delay: 500ms;
+    }
+  }
+
+  .sidebar-gutter {
+    &:has(.igd-sidebar-logo:only-child) {
+      display: none;
+    }
+  }
+
+  .igd-page-layout {
+    justify-content: center;
+  }
 }

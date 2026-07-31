@@ -30,9 +30,9 @@ interface Props {
 const { currentSlug = '', pageTitle = '', siteTitle: siteTitleProp, sidebarItems } = Astro.props;
 
 const resolvedSiteTitle = siteTitleProp ?? siteTitleVirtual;
-const resolvedSidebar   = (sidebarItems ?? sidebarData) as SidebarEntry[];
-const sidebarCrumbs     = currentSlug ? getBreadcrumb(resolvedSidebar, currentSlug) : [];
-const crumbs            = sidebarCrumbs.length > 0 ? sidebarCrumbs : (pageTitle ? [pageTitle] : []);
+const resolvedSidebar = (sidebarItems ?? sidebarData) as SidebarEntry[];
+const sidebarCrumbs = currentSlug ? getBreadcrumb(resolvedSidebar, currentSlug) : [];
+const crumbs = sidebarCrumbs.length > 0 ? sidebarCrumbs : pageTitle ? [pageTitle] : [];
 
 // Expose the crumb trail as Pagefind `breadcrumb` meta (this nav is inside <main>)
 // for the location line under each search result. Commas split inline meta — strip them.
@@ -40,21 +40,33 @@ const breadcrumbPath = crumbs.join(' › ');
 const breadcrumbMeta = breadcrumbPath.replace(/,/g, '');
 ---
 
-{(resolvedSiteTitle || crumbs.length > 0) && (
-<nav class="docs-breadcrumb" aria-label="Breadcrumb" data-pagefind-meta={breadcrumbMeta ? `breadcrumb:${breadcrumbMeta}` : undefined}>
-    <ol class="docs-breadcrumb-list">
-        { resolvedSiteTitle && (
-            <li class="docs-breadcrumb-item docs-breadcrumb-home">
-                <span>{ resolvedSiteTitle }</span>
-            </li>
-        ) }
-        { crumbs.map((label, i) => (
-            <li class="docs-breadcrumb-item">
-                <igc-icon name="chevron" collection="docs" class="docs-breadcrumb-sep" aria-hidden="true"></igc-icon>
-                <span class="docs-breadcrumb-crumb" title={ label }>{ label }</span>
-            </li>
-        )) }
-    </ol>
-</nav>
-)}
-
+{
+  (resolvedSiteTitle || crumbs.length > 0) && (
+    <nav
+      class="docs-breadcrumb"
+      aria-label="Breadcrumb"
+      data-pagefind-meta={breadcrumbMeta ? `breadcrumb:${breadcrumbMeta}` : undefined}
+    >
+      <ol class="docs-breadcrumb-list">
+        {resolvedSiteTitle && (
+          <li class="docs-breadcrumb-item docs-breadcrumb-home">
+            <span>{resolvedSiteTitle}</span>
+          </li>
+        )}
+        {crumbs.map((label, i) => (
+          <li class="docs-breadcrumb-item">
+            <igc-icon
+              name="chevron"
+              collection="docs"
+              class="docs-breadcrumb-sep"
+              aria-hidden="true"
+            />
+            <span class="docs-breadcrumb-crumb" title={label}>
+              {label}
+            </span>
+          </li>
+        ))}
+      </ol>
+    </nav>
+  )
+}

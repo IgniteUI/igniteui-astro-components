@@ -12,7 +12,9 @@
     "clean": "astro clean"
   },
   "devDependencies": {
-    "igniteui-theming": "*"
+    "@astrojs/check": "^0.9.9",
+    "igniteui-theming": "*",
+    "typescript": "^5.9.3"
   },
   "dependencies": {
     "@astrojs/mdx": "^5.0.6",

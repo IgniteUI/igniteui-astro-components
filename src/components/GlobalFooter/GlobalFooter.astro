@@ -26,15 +26,15 @@ const resolvedLang = lang;
 // Fetch footer HTML directly (cached per locale per build).
 const igNav = await fetchIgNav(resolvedLang);
 ---
-<div class={styles.footer} data-igd-footer>
 
-{/* === IgniteUI / default Infragistics footer — fetched via fetchIgNav() === */}
-{
-  igNav?.prefetched && (
-    <>
-      <Fragment set:html={igNav.uiFooterHtml} />
-      {igNav.footerHtml && <Fragment set:html={igNav.footerHtml} />}
-    </>
-  )
-}
+<div class={styles.footer} data-igd-footer>
+  {/* === IgniteUI / default Infragistics footer — fetched via fetchIgNav() === */}
+  {
+    igNav?.prefetched && (
+      <>
+        <Fragment set:html={igNav.uiFooterHtml} />
+        {igNav.footerHtml && <Fragment set:html={igNav.footerHtml} />}
+      </>
+    )
+  }
 </div>

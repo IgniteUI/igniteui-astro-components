@@ -8,7 +8,6 @@ import DocsSubHeader from '../../components/DocsSubHeader/DocsSubHeader.astro';
 import DocsBreadcrumb from '../../components/DocsBreadcrumb/DocsBreadcrumb.astro';
 import LicenseIndicator from '../../components/LicenseIndicator/LicenseIndicator.astro';
 import igLogoRaw from '../../assets/ig-logo.svg?raw';
-import MobileSidebarToggle from '../../components/MobileSidebarToggle/MobileSidebarToggle.astro';
 import CopyCode from '../../components/CopyCode/CopyCode.astro';
 import { platform as virtualPlatform } from 'virtual:docs-template/nav-html';
 import { title as siteTitle, headEntries, navLang } from 'virtual:docs-template/site-meta';
@@ -53,179 +52,218 @@ export interface Props {
   themeStorageKey?: string;
 }
 
-const { title, description, keywords, hasToc = true, hasSidebar = true, currentSlug = '', siteTitle: siteTitleProp, license, is404 = false, packages, selectedPackage, packageLabel, versions, selectedVersion, versionLabel, showThemeToggle, themeStorageKey } = Astro.props;
+const {
+  title,
+  description,
+  keywords,
+  hasToc = true,
+  hasSidebar = true,
+  currentSlug = '',
+  siteTitle: siteTitleProp,
+  license,
+  is404 = false,
+  packages,
+  selectedPackage,
+  packageLabel,
+  versions,
+  selectedVersion,
+  versionLabel,
+  showThemeToggle,
+  themeStorageKey,
+} = Astro.props;
 const resolvedSiteTitle = siteTitleProp ?? siteTitle;
 const licenseType = license === 'commercial' ? 'premium' : license === 'MIT' ? 'opensource' : false;
 const navTheme = (virtualPlatform ?? import.meta.env.VITE_NAV_THEME ?? 'igniteui') as string;
 const showGlobalNav = navTheme !== 'none';
 const pageTitle = title ? `${title} | ${resolvedSiteTitle}` : resolvedSiteTitle;
 
-type HeadEntry = { tag: string; attrs?: Record<string, string | boolean | undefined>; content?: string };
+type HeadEntry = {
+  tag: string;
+  attrs?: Record<string, string | boolean | undefined>;
+  content?: string;
+};
 ---
 
-<!DOCTYPE html>
-<html lang="en" data-theme="light" style={!showGlobalNav ? '--docs-global-nav-height: 0' : undefined}>
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>{pageTitle}</title>
-  {description && <meta name="description" content={description} />}
-  {keywords && <meta name="keywords" content={keywords} />}
-  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-  <link rel="stylesheet" href="https://use.typekit.net/bng2zgw.css" />
-  {(headEntries as HeadEntry[]).map(({ tag: Tag, attrs = {}, content }) =>
-    content ? <Tag {...attrs} set:html={content} /> : <Tag {...attrs} />
-  )}
-  <slot name="head" />
-  <ClientRouter />
-  <script is:inline>
-    // Restore persisted theme (or default to light) on load and after every View Transitions swap
-    function applyStoredTheme() {
-      var stored;
-      try { stored = localStorage.getItem('docs-theme'); } catch (_) {}
-      document.documentElement.setAttribute('data-theme', stored || 'light');
+<!doctype html>
+<html
+  lang="en"
+  data-theme="light"
+  style={!showGlobalNav ? '--docs-global-nav-height: 0' : undefined}
+>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{pageTitle}</title>
+    {description && <meta name="description" content={description} />}
+    {keywords && <meta name="keywords" content={keywords} />}
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="https://use.typekit.net/bng2zgw.css" />
+    {
+      (headEntries as HeadEntry[]).map(({ tag: Tag, attrs = {}, content }) =>
+        content ? <Tag {...attrs} set:html={content} /> : <Tag {...attrs} />,
+      )
     }
-    applyStoredTheme();
-    document.addEventListener('astro:after-swap', applyStoredTheme);
+    <slot name="head" />
+    <ClientRouter />
+    <script is:inline>
+      // Restore persisted theme (or default to light) on load and after every View Transitions swap
+      function applyStoredTheme() {
+        var stored;
+        try {
+          stored = localStorage.getItem('docs-theme');
+        } catch (_) {}
+        document.documentElement.setAttribute('data-theme', stored || 'light');
+      }
+      applyStoredTheme();
+      document.addEventListener('astro:after-swap', applyStoredTheme);
 
-    // Enable smooth scrolling only after the page is fully loaded so the
-    // browser's scroll-position restoration on refresh is instant (no visible
-    // animated scroll). Remove it before a View Transition swap so navigation
-    // between pages is also instant, then re-enable after the new page loads.
-    document.addEventListener('astro:page-load', function () {
-      document.documentElement.style.scrollBehavior = 'smooth';
-    });
-    document.addEventListener('astro:before-swap', function () {
-      document.documentElement.style.removeProperty('scroll-behavior');
-    });
+      // Enable smooth scrolling only after the page is fully loaded so the
+      // browser's scroll-position restoration on refresh is instant (no visible
+      // animated scroll). Remove it before a View Transition swap so navigation
+      // between pages is also instant, then re-enable after the new page loads.
+      document.addEventListener('astro:page-load', function () {
+        document.documentElement.style.scrollBehavior = 'smooth';
+      });
+      document.addEventListener('astro:before-swap', function () {
+        document.documentElement.style.removeProperty('scroll-behavior');
+      });
 
-    // Root cause: Sample.astro SSR-renders an <igc-tab selected>. During Astro's
-    // client-side swap, <igc-tabs> connects and Lit runs firstUpdated() after
-    // Astro's moveToLocation() has already called scrollTo(0,0), but before
-    // astro:page-load. IgcTabsComponent then applies the selected tab and calls
-    // scrollIntoView() for its tab header, which can move the page down to the
-    // sample widget.
-    //
-    // Re-apply scroll-to-top on astro:page-load inside rAF, after Lit microtasks
-    // and selected-tab scrollIntoView() have settled. Do not override hash
-    // navigation, because hash fragments should keep their anchor behavior.
-    document.addEventListener('astro:page-load', function () {
-      if (!location.hash) {
-        requestAnimationFrame(function () {
-          if (!location.hash && window.scrollY > 0) {
-            window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+      // Root cause: Sample.astro SSR-renders an <igc-tab selected>. During Astro's
+      // client-side swap, <igc-tabs> connects and Lit runs firstUpdated() after
+      // Astro's moveToLocation() has already called scrollTo(0,0), but before
+      // astro:page-load. IgcTabsComponent then applies the selected tab and calls
+      // scrollIntoView() for its tab header, which can move the page down to the
+      // sample widget.
+      //
+      // Re-apply scroll-to-top on astro:page-load inside rAF, after Lit microtasks
+      // and selected-tab scrollIntoView() have settled. Do not override hash
+      // navigation, because hash fragments should keep their anchor behavior.
+      document.addEventListener('astro:page-load', function () {
+        if (!location.hash) {
+          requestAnimationFrame(function () {
+            if (!location.hash && window.scrollY > 0) {
+              window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+            }
+          });
+        }
+      });
+
+      // Preserve dynamically-injected <style> tags across View Transitions.
+      // Only styles added by JS at runtime (e.g. the IG nav widget) need
+      // preserving — Astro re-injects its own component styles on every page
+      // automatically. Tagging the initial styles caused duplicates: the
+      // preserved copy + the freshly-injected copy from the new page.
+      var _styleIndex = 0;
+      function tagStyle(style) {
+        var isAstroStyle = Array.from(style.attributes).some(function (a) {
+          return a.name.startsWith('data-astro');
+        });
+        if (!isAstroStyle && !style.hasAttribute('data-vt-preserved')) {
+          style.setAttribute('data-vt-preserved', String(++_styleIndex));
+        }
+      }
+      new MutationObserver(function (mutations) {
+        mutations.forEach(function (m) {
+          m.addedNodes.forEach(function (node) {
+            if (node instanceof HTMLStyleElement) tagStyle(node);
+          });
+        });
+      }).observe(document.head, { childList: true });
+      document.addEventListener('astro:before-swap', function (e) {
+        document.head.querySelectorAll('style[data-vt-preserved]').forEach(function (style) {
+          var id = style.getAttribute('data-vt-preserved');
+          if (!e.newDocument.head.querySelector('style[data-vt-preserved="' + id + '"]')) {
+            e.newDocument.head.appendChild(style.cloneNode(true));
           }
         });
-      }
-    });
-
-    // Preserve dynamically-injected <style> tags across View Transitions.
-    // Only styles added by JS at runtime (e.g. the IG nav widget) need
-    // preserving — Astro re-injects its own component styles on every page
-    // automatically. Tagging the initial styles caused duplicates: the
-    // preserved copy + the freshly-injected copy from the new page.
-    var _styleIndex = 0;
-    function tagStyle(style) {
-      var isAstroStyle = Array.from(style.attributes).some(function (a) { return a.name.startsWith('data-astro'); });
-      if (!isAstroStyle && !style.hasAttribute('data-vt-preserved')) {
-        style.setAttribute('data-vt-preserved', String(++_styleIndex));
-      }
-    }
-    new MutationObserver(function (mutations) {
-      mutations.forEach(function (m) {
-        m.addedNodes.forEach(function (node) {
-          if (node instanceof HTMLStyleElement) tagStyle(node);
-        });
       });
-    }).observe(document.head, { childList: true });
-    document.addEventListener('astro:before-swap', function (e) {
-      document.head.querySelectorAll('style[data-vt-preserved]').forEach(function (style) {
-        var id = style.getAttribute('data-vt-preserved');
-        if (!e.newDocument.head.querySelector('style[data-vt-preserved="' + id + '"]')) {
-          e.newDocument.head.appendChild(style.cloneNode(true));
+
+      function updateNavHeight() {
+        var navChild = document.querySelector(
+          '[data-astro-transition-persist="global-nav-bar"] > *:first-child',
+        );
+        if (!navChild) return;
+        var h = navChild.getBoundingClientRect().height;
+        if (h > 0) {
+          document.documentElement.style.setProperty('--docs-global-nav-height', h + 'px');
+          var wrapper = document.querySelector('[data-nav-height-wrapper]');
+          if (wrapper) wrapper.style.setProperty('--docs-global-nav-height', h + 'px');
         }
-      });
-    });
-
-    function updateNavHeight() {
-      var navChild = document.querySelector('[data-astro-transition-persist="global-nav-bar"] > *:first-child');
-      if (!navChild) return;
-      var h = navChild.getBoundingClientRect().height;
-      if (h > 0) {
-        document.documentElement.style.setProperty('--docs-global-nav-height', h + 'px');
-        var wrapper = document.querySelector('[data-nav-height-wrapper]');
-        if (wrapper) wrapper.style.setProperty('--docs-global-nav-height', h + 'px');
       }
-    }
-    document.addEventListener('astro:page-load', updateNavHeight);
-    window.addEventListener('resize', updateNavHeight);
-    updateNavHeight();
-    var _navChild = document.querySelector('[data-astro-transition-persist="global-nav-bar"] > *:first-child');
-    if (_navChild) new ResizeObserver(updateNavHeight).observe(_navChild);
+      document.addEventListener('astro:page-load', updateNavHeight);
+      window.addEventListener('resize', updateNavHeight);
+      updateNavHeight();
+      var _navChild = document.querySelector(
+        '[data-astro-transition-persist="global-nav-bar"] > *:first-child',
+      );
+      if (_navChild) new ResizeObserver(updateNavHeight).observe(_navChild);
 
-    // Clamp sidebar height so it never overlaps the footer.
-    // Uses the direct-child footer of .igd-page-layout to avoid matching
-    // any example/demo footers rendered inside page content (e.g. /nav-bar).
-    var _cleanupSidebarHeights;
-    function initSidebarHeights() {
-      if (_cleanupSidebarHeights) _cleanupSidebarHeights();
-      var footer = document.querySelector('.igd-page-layout > [data-igd-footer]');
-      if (!footer) return;
-      var sidebar = document.querySelector('.docs-sidebar');
-      if (!sidebar) return;
-      var rafId = 0;
-      function update() {
-        var sidebarTop = sidebar.getBoundingClientRect().top;
-        var footerTop = footer.getBoundingClientRect().top;
-        // Always clamp to viewport bottom; additionally clamp to footer
-        // top when the footer is on screen.
-        var maxH = Math.max(0, window.innerHeight - sidebarTop);
-        if (footerTop < window.innerHeight) {
-          maxH = Math.max(0, Math.min(maxH, footerTop - sidebarTop));
-        }
-        var next = maxH + 'px';
-        if (sidebar.style.maxHeight !== next) sidebar.style.maxHeight = next;
-      }
-      function schedule() {
-        if (rafId) return;
-        rafId = requestAnimationFrame(function() { update(); rafId = 0; });
-      }
-      window.addEventListener('scroll', schedule, { passive: true });
-      // ResizeObserver covers content-driven layout changes; the resize event
-      // covers viewport-only changes such as DevTools docking/undocking.
-      window.addEventListener('resize', schedule, { passive: true });
-      var ro = new ResizeObserver(schedule);
-      ro.observe(footer);
-      update();
-      _cleanupSidebarHeights = function() {
-        window.removeEventListener('scroll', schedule);
-        window.removeEventListener('resize', schedule);
-        ro.disconnect();
-        cancelAnimationFrame(rafId);
-      };
-    }
-    document.addEventListener('astro:page-load', initSidebarHeights);
-    initSidebarHeights();
-
-    // Toggle data-scrolled-y / data-scrolled-x on each .igd-table-wrapper
-    // so the sticky header/column can show a double border while scrolled.
-    function initTableScrollStates() {
-      document.querySelectorAll('.igd-table-wrapper').forEach(function(wrapper) {
+      // Clamp sidebar height so it never overlaps the footer.
+      // Uses the direct-child footer of .igd-page-layout to avoid matching
+      // any example/demo footers rendered inside page content (e.g. /nav-bar).
+      var _cleanupSidebarHeights;
+      function initSidebarHeights() {
+        if (_cleanupSidebarHeights) _cleanupSidebarHeights();
+        var footer = document.querySelector('.igd-page-layout > [data-igd-footer]');
+        if (!footer) return;
+        var sidebar = document.querySelector('.docs-sidebar');
+        if (!sidebar) return;
+        var rafId = 0;
         function update() {
-          wrapper.toggleAttribute('data-scrolled-y', wrapper.scrollTop > 0);
-          wrapper.toggleAttribute('data-scrolled-x', wrapper.scrollLeft > 0);
+          var sidebarTop = sidebar.getBoundingClientRect().top;
+          var footerTop = footer.getBoundingClientRect().top;
+          // Always clamp to viewport bottom; additionally clamp to footer
+          // top when the footer is on screen.
+          var maxH = Math.max(0, window.innerHeight - sidebarTop);
+          if (footerTop < window.innerHeight) {
+            maxH = Math.max(0, Math.min(maxH, footerTop - sidebarTop));
+          }
+          var next = maxH + 'px';
+          if (sidebar.style.maxHeight !== next) sidebar.style.maxHeight = next;
         }
-        wrapper.addEventListener('scroll', update, { passive: true });
+        function schedule() {
+          if (rafId) return;
+          rafId = requestAnimationFrame(function () {
+            update();
+            rafId = 0;
+          });
+        }
+        window.addEventListener('scroll', schedule, { passive: true });
+        // ResizeObserver covers content-driven layout changes; the resize event
+        // covers viewport-only changes such as DevTools docking/undocking.
+        window.addEventListener('resize', schedule, { passive: true });
+        var ro = new ResizeObserver(schedule);
+        ro.observe(footer);
         update();
-      });
-    }
-    document.addEventListener('astro:page-load', initTableScrollStates);
-    initTableScrollStates();
-  </script>
-</head>
-<body>
+        _cleanupSidebarHeights = function () {
+          window.removeEventListener('scroll', schedule);
+          window.removeEventListener('resize', schedule);
+          ro.disconnect();
+          cancelAnimationFrame(rafId);
+        };
+      }
+      document.addEventListener('astro:page-load', initSidebarHeights);
+      initSidebarHeights();
+
+      // Toggle data-scrolled-y / data-scrolled-x on each .igd-table-wrapper
+      // so the sticky header/column can show a double border while scrolled.
+      function initTableScrollStates() {
+        document.querySelectorAll('.igd-table-wrapper').forEach(function (wrapper) {
+          function update() {
+            wrapper.toggleAttribute('data-scrolled-y', wrapper.scrollTop > 0);
+            wrapper.toggleAttribute('data-scrolled-x', wrapper.scrollLeft > 0);
+          }
+          wrapper.addEventListener('scroll', update, { passive: true });
+          update();
+        });
+      }
+      document.addEventListener('astro:page-load', initTableScrollStates);
+      initTableScrollStates();
+    </script>
+  </head>
+  <body>
     <!-- INFRAGISTICS HEADER/NAVIGATION -->
-    { showGlobalNav && <GlobalNavBar lang={navLang}/> }
+    {showGlobalNav && <GlobalNavBar lang={navLang} />}
 
     <!-- MAIN PAGE GRID LAYOUT -->
     <!-- We don't set the CSS grid directly to the body -->
@@ -237,45 +275,53 @@ type HeadEntry = { tag: string; attrs?: Record<string, string | boolean | undefi
      Any igc component rendered dynamically on body level should have .ig-typography in order to have proper type styles.
     -->
     <div class={`igd-page-layout${is404 ? ' igd-page-layout--404' : ''}`}>
-        <!-- TODO: WE DONT NEED TO CALCULAtE THE IG HEADER HEIGHT ANYMORE - REMOVE IT -->
-        <!-- <DocsSubHeader style={ `--docs-global-nav-height: ${ showGlobalNav ? '4.7rem': '0' }` } data-nav-height-wrapper/> -->
-        <slot name="subheader">
-          <DocsSubHeader pageTitle={title} currentSlug={currentSlug} siteTitle={siteTitleProp} packages={packages} selectedPackage={selectedPackage} packageLabel={packageLabel} versions={versions} selectedVersion={selectedVersion} versionLabel={versionLabel} showThemeToggle={showThemeToggle} themeStorageKey={themeStorageKey} />
-        </slot>
+      <!-- TODO: WE DONT NEED TO CALCULAtE THE IG HEADER HEIGHT ANYMORE - REMOVE IT -->
+      <!-- <DocsSubHeader style={ `--docs-global-nav-height: ${ showGlobalNav ? '4.7rem': '0' }` } data-nav-height-wrapper/> -->
+      <slot name="subheader">
+        <DocsSubHeader
+          pageTitle={title}
+          currentSlug={currentSlug}
+          siteTitle={siteTitleProp}
+          packages={packages}
+          selectedPackage={selectedPackage}
+          packageLabel={packageLabel}
+          versions={versions}
+          selectedVersion={selectedVersion}
+          versionLabel={versionLabel}
+          showThemeToggle={showThemeToggle}
+          themeStorageKey={themeStorageKey}
+        />
+      </slot>
 
+      {hasSidebar && <slot name="sidebar" />}
 
-        { hasSidebar && (
-            <!--<MobileSidebarToggle/>-->
-            <slot name="sidebar"/>
-        ) }
+      <!-- Mobile TOC trigger row — only visible on mobile, provided by the page -->
+      <slot name="mobile-toc" />
 
-        <!-- Mobile TOC trigger row — only visible on mobile, provided by the page -->
-        <slot name="mobile-toc" />
+      <div class="igd-main-content">
+        <div class="igd-main-content__inner">
+          <div class="igd-main-content__page">
+            <main class="igd-main-content__markdown" data-pagefind-body>
+              <Fragment set:html={igLogoRaw} />
+              <LicenseIndicator license={licenseType} />
+              <DocsBreadcrumb
+                pageTitle={title}
+                currentSlug={currentSlug}
+                siteTitle={siteTitleProp}
+              />
+              <slot />
+            </main>
+          </div>
 
-        <div class="igd-main-content">
-            <div class="igd-main-content__inner">
-
-                <div class="igd-main-content__page">
-                    <main class="igd-main-content__markdown" data-pagefind-body>
-                        <Fragment set:html={igLogoRaw} />
-                        <LicenseIndicator license={licenseType} />
-                        <DocsBreadcrumb pageTitle={ title } currentSlug={ currentSlug } siteTitle={ siteTitleProp }/>
-                        <slot/>
-                    </main>
-                </div>
-
-                { hasToc && (
-                    <slot name="toc"/>
-                ) }
-            </div>
+          {hasToc && <slot name="toc" />}
         </div>
+      </div>
 
-        <CopyCode />
+      <CopyCode />
 
-        <!-- Footer is inside the grid so the sidebar's sticky containing block extends through it.
+      <!-- Footer is inside the grid so the sidebar's sticky containing block extends through it.
              The JS initSidebarHeights() clamps sidebar max-height to prevent visual overlap. -->
-        <GlobalFooter lang={navLang}/>
+      <GlobalFooter lang={navLang} />
     </div>
-</body>
+  </body>
 </html>
-

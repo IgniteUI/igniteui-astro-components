@@ -1,128 +1,126 @@
 @use 'igniteui-theming/sass/typography' as *;
 
 @layer components {
-	// Desktop base. On tablet/mobile DocsLayout.scss turns this into a slide-in overlay.
-	.docs-sidebar {
-		--igd-sidebar-z-index: 0;
-		
-		display: flex;
-		flex-direction: column;
-		z-index: var(--igd-sidebar-z-index);
-		border-inline-end: var(--igd-app-outline);
-		padding: 0;
-		background-color: var(--igd-layout-sections-bg);
-		position: sticky;
-		top: var(--igd-header-height);
-		height: calc(100dvh - var(--igd-header-height));
-		max-height: 100dvh;
-		align-self: start;
-		
-		.sidebar-gutter {
-			display: grid;
-			gap: rem(16px);
-			overflow-y: hidden;
-			padding: rem(16px);
-			border-bottom: var(--igd-app-outline);
-			//min-height: rem(73px);
-	
-			&:empty {
-				display: none;
-			}
-		}
-	}
-	
-	// Hidden by default. DocsLayout.scss reveals it on tablet/mobile when the sidebar is open.
-	.docs-sidebar-backdrop {
-		display: none;
-	}
-	
-	// Hidden by default; shown on mobile/tablet where the sidebar is a slide-in overlay.
-	.igd-sidebar-logo {
-		display: none;
-		flex-direction: column;
-		justify-content: center;
-		padding: rem(16px) rem(20px) rem(8px);
+  // Desktop base. On tablet/mobile DocsLayout.scss turns this into a slide-in overlay.
+  .docs-sidebar {
+    --igd-sidebar-z-index: 0;
 
-		.igd-logo-text {
-			@include type-style('h3') {
-				margin-block-end: rem(4px);
-				line-height: 1;
-			};
-			color: var(--ig-gray-800);
-		}
+    display: flex;
+    flex-direction: column;
+    z-index: var(--igd-sidebar-z-index);
+    border-inline-end: var(--igd-app-outline);
+    padding: 0;
+    background-color: var(--igd-layout-sections-bg);
+    position: sticky;
+    top: var(--igd-header-height);
+    height: calc(100dvh - var(--igd-header-height));
+    max-height: 100dvh;
+    align-self: start;
 
-		.igd-logo__platform {
-			@include type-style('subtitle', false) {
-				line-height: 1;
-				margin: 0;
-			};
-			color: var(--ig-gray-500);
-		}
-	}
-	
-	.sidebar-scroll {
-		overflow-y: auto;
-		min-height: 0;
-		padding-block: rem(12px);
-		scroll-behavior: smooth;
-		overscroll-behavior: contain;
-		flex-grow: 1;
-		flex-basis: 0%;
-	}
-	
-	.sidebar-premium-icon {
-		--size: #{rem(20px)};
-		
-		justify-self: end;
-		color: var(--igd-premium-color);
-		flex-shrink: 0;
-	}
-	
-	.igd-label-and-badge {
-		display: flex;
-		align-items: center;
-		gap: rem(8px);
-		
-		igc-badge {
-			justify-self: end;
-		}
-		
-	}
-	
-	.docs-tree-group {
-		gap: rem(8px);
-		padding: rem(12px) rem(8px);
-	}
-	
-	.group-label-text {
-		@include type-style('body-2') {
-			font-weight: 700;
-			margin-block: 0;
-		};
-		
-		color: light-dark(var(--ig-gray-900), var(--ig-gray-500));
-		user-select: none;
-	}
-	
-	.group-label-count {
-		color: light-dark(var(--ig-gray-700), var(--ig-gray-600));
-		background: light-dark(var(--ig-gray-100), var(--ig-gray-200));
-		padding: rem(2px) rem(8px);
-		aspect-ratio: 1;
-		border-radius: rem(4px);
-		margin-inline-start: rem(8px);
-		font-size: 12px;
-	}
-	
-	.igd-badge-container {
-		display: flex;
-		align-items: center;
-		gap: rem(4px);
-		margin-left: auto;
-		
-		igc-badge::part(base) {
-			max-height: 20px;
-		}
-	}
+    .sidebar-gutter {
+      display: grid;
+      gap: rem(16px);
+      overflow-y: hidden;
+      padding: rem(16px);
+      border-bottom: var(--igd-app-outline);
+      //min-height: rem(73px);
+
+      &:empty {
+        display: none;
+      }
+    }
+  }
+
+  // Hidden by default. DocsLayout.scss reveals it on tablet/mobile when the sidebar is open.
+  .docs-sidebar-backdrop {
+    display: none;
+  }
+
+  // Hidden by default; shown on mobile/tablet where the sidebar is a slide-in overlay.
+  .igd-sidebar-logo {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    padding: rem(16px) rem(20px) rem(8px);
+
+    .igd-logo-text {
+      @include type-style('h3') {
+        margin-block-end: rem(4px);
+        line-height: 1;
+      }
+      color: var(--ig-gray-800);
+    }
+
+    .igd-logo__platform {
+      @include type-style('subtitle', false) {
+        line-height: 1;
+        margin: 0;
+      }
+      color: var(--ig-gray-500);
+    }
+  }
+
+  .sidebar-scroll {
+    overflow-y: auto;
+    min-height: 0;
+    padding-block: rem(12px);
+    scroll-behavior: smooth;
+    overscroll-behavior: contain;
+    flex-grow: 1;
+    flex-basis: 0%;
+  }
+
+  .sidebar-premium-icon {
+    --size: #{rem(20px)};
+
+    justify-self: end;
+    color: var(--igd-premium-color);
+    flex-shrink: 0;
+  }
+
+  .igd-label-and-badge {
+    display: flex;
+    align-items: center;
+    gap: rem(8px);
+
+    igc-badge {
+      justify-self: end;
+    }
+  }
+
+  .docs-tree-group {
+    gap: rem(8px);
+    padding: rem(12px) rem(8px);
+  }
+
+  .group-label-text {
+    @include type-style('body-2') {
+      font-weight: 700;
+      margin-block: 0;
+    }
+
+    color: light-dark(var(--ig-gray-900), var(--ig-gray-500));
+    user-select: none;
+  }
+
+  .group-label-count {
+    color: light-dark(var(--ig-gray-700), var(--ig-gray-600));
+    background: light-dark(var(--ig-gray-100), var(--ig-gray-200));
+    padding: rem(2px) rem(8px);
+    aspect-ratio: 1;
+    border-radius: rem(4px);
+    margin-inline-start: rem(8px);
+    font-size: 12px;
+  }
+
+  .igd-badge-container {
+    display: flex;
+    align-items: center;
+    gap: rem(4px);
+    margin-left: auto;
+
+    igc-badge::part(base) {
+      max-height: 20px;
+    }
+  }
 }
-

@@ -34,15 +34,15 @@ the index is unavailable, `ApiLink` renders code text and does not guess a URL.
 
 ## TypeDoc Props
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `type` | `string` | *(required)* | Short symbol name without platform prefix, e.g. `"Grid"` instead of `"IgrGrid"`. |
-| `member` | `string` | — | Optional member name. Resolved through the generated member map when available. |
-| `label` | `string` | auto | Override the display text. |
-| `pkg` | `string` | — | Ambiguity override only. Use when the same symbol exists in multiple packages and the combined index cannot choose safely. |
-| `kind` | `'class' \| 'interface' \| 'enum' \| 'type' \| 'variable' \| 'function'` | auto | Optional narrowing. Usually unnecessary when the index is available. |
-| `prefixed` | `boolean` | `true` | Candidate-name override for symbols that are never platform-prefixed. Avoid for new docs when the index can resolve the symbol. |
-| `suffix` | `boolean` | `true` | Candidate-name override for symbols that never use the platform class suffix. Avoid for new docs when the index can resolve the symbol. |
+| Prop       | Type                                                                     | Default      | Description                                                                                                                             |
+| ---------- | ------------------------------------------------------------------------ | ------------ | --------------------------------------------------------------------------------------------------------------------------------------- |
+| `type`     | `string`                                                                 | _(required)_ | Short symbol name without platform prefix, e.g. `"Grid"` instead of `"IgrGrid"`.                                                        |
+| `member`   | `string`                                                                 | —            | Optional member name. Resolved through the generated member map when available.                                                         |
+| `label`    | `string`                                                                 | auto         | Override the display text.                                                                                                              |
+| `pkg`      | `string`                                                                 | —            | Ambiguity override only. Use when the same symbol exists in multiple packages and the combined index cannot choose safely.              |
+| `kind`     | `'class' \| 'interface' \| 'enum' \| 'type' \| 'variable' \| 'function'` | auto         | Optional narrowing. Usually unnecessary when the index is available.                                                                    |
+| `prefixed` | `boolean`                                                                | `true`       | Candidate-name override for symbols that are never platform-prefixed. Avoid for new docs when the index can resolve the symbol.         |
+| `suffix`   | `boolean`                                                                | `true`       | Candidate-name override for symbols that never use the platform class suffix. Avoid for new docs when the index can resolve the symbol. |
 
 Platform names use `PlatformContext.name`: `Angular`, `React`,
 `WebComponents`, or `Blazor`.
@@ -51,12 +51,15 @@ Platform names use `PlatformContext.name`: `Angular`, `React`,
 
 ```mdx
 {/* Let the generated index find package, kind, and exact symbol name. */}
+
 <ApiLink type="Grid" />
 
 {/* Member anchors are resolved from the generated member map. */}
+
 <ApiLink type="Grid" member="rowSelection" />
 
 {/* Use pkg only when the symbol name is ambiguous across packages. */}
+
 <ApiLink type="Workbook" pkg="excel" />
 ```
 
@@ -75,12 +78,12 @@ src/data/api-link-index/webcomponents/staging-latest.json
 
 Registry symbol fields are intentionally short because the files are large:
 
-| Field | Meaning |
-|-------|---------|
-| `p` | Package id that owns the symbol. |
-| `u` | Root-relative API URL path for the symbol page. |
-| `k` | Symbol kind, e.g. `class`, `interface`, `enum`, `type`. |
-| `m` | Member name to anchor map. |
+| Field | Meaning                                                 |
+| ----- | ------------------------------------------------------- |
+| `p`   | Package id that owns the symbol.                        |
+| `u`   | Root-relative API URL path for the symbol page.         |
+| `k`   | Symbol kind, e.g. `class`, `interface`, `enum`, `type`. |
+| `m`   | Member name to anchor map.                              |
 
 When `pkg` is present, `ApiLink` uses it only as a package filter for ambiguous
 symbol names; package URLs and kinds still come from the registry.
@@ -92,16 +95,17 @@ When a registry symbol exists but the requested member does not, `ApiLink`
 renders code text instead of generating a guessed member URL.
 
 ## Sass Props
+
 Use `kind="sass"` for Sass API reference links. Sass links do not use the
 api-docs link index; they read their base URL from `platformContext.sassApiUrl`.
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `kind` | `'sass'` | *(required)* | Enables Sass API link mode. |
-| `module` | `string` | — | Sass module path segment, e.g. `"animations"` or `"themes"`. |
-| `type` | `string` | — | Anchor fragment without `#`, e.g. `"mixin-slide-in-left"`. Omit it to link to the module page. |
-| `label` | `string` | auto | Override the display text. Defaults to `type`, then `module`, then an empty string. |
-| `code` | `boolean` | `true` | Wrap the label in `<code>`. Set `false` for prose labels. |
+| Prop     | Type      | Default      | Description                                                                                    |
+| -------- | --------- | ------------ | ---------------------------------------------------------------------------------------------- |
+| `kind`   | `'sass'`  | _(required)_ | Enables Sass API link mode.                                                                    |
+| `module` | `string`  | —            | Sass module path segment, e.g. `"animations"` or `"themes"`.                                   |
+| `type`   | `string`  | —            | Anchor fragment without `#`, e.g. `"mixin-slide-in-left"`. Omit it to link to the module page. |
+| `label`  | `string`  | auto         | Override the display text. Defaults to `type`, then `module`, then an empty string.            |
+| `code`   | `boolean` | `true`       | Wrap the label in `<code>`. Set `false` for prose labels.                                      |
 
 ```mdx
 <ApiLink kind="sass" module="animations" label="animations Sass module" code={false} />

@@ -4,48 +4,65 @@ import DocsSidebar from '../../../../src/components/DocsSidebar/DocsSidebar.astr
 import DocsToc from '../../../../src/components/DocsToc/DocsToc.astro';
 import DocsSubHeader from '../../../../src/components/DocsSubHeader/DocsSubHeader.astro';
 import SearchAdvanced from '../../../../src/components/SearchAdvanced/SearchAdvanced.astro';
-import { SITE_TITLE, SIDEBAR, PRODUCT_LINKS, SEARCH_TABS, PACKAGES, VERSIONS } from '../../site-config';
+import {
+  SITE_TITLE,
+  SIDEBAR,
+  PRODUCT_LINKS,
+  SEARCH_TABS,
+  PACKAGES,
+  VERSIONS,
+} from '../../site-config';
 
 const slug = 'components/sidebar';
 
 const headings = [
-  { depth: 2, slug: 'rendering',         text: 'Rendering' },
-  { depth: 2, slug: 'persistence',       text: 'Persistence' },
-  { depth: 2, slug: 'filter-input',      text: 'Filter input' },
+  { depth: 2, slug: 'rendering', text: 'Rendering' },
+  { depth: 2, slug: 'persistence', text: 'Persistence' },
+  { depth: 2, slug: 'filter-input', text: 'Filter input' },
 ];
 ---
 
 <DocsLayout title="Sidebar" siteTitle={SITE_TITLE} hasSidebar currentSlug={slug}>
-  <DocsSubHeader slot="subheader" pageTitle="Sidebar" currentSlug={slug} siteTitle={SITE_TITLE}
-    productLinks={PRODUCT_LINKS} showThemeToggle={true}
-    packages={[...PACKAGES]} selectedPackage={PACKAGES[0].value}
-    versions={[...VERSIONS]} selectedVersion={VERSIONS[0]}
+  <DocsSubHeader
+    slot="subheader"
+    pageTitle="Sidebar"
+    currentSlug={slug}
+    siteTitle={SITE_TITLE}
+    productLinks={PRODUCT_LINKS}
+    showThemeToggle={true}
+    packages={[...PACKAGES]}
+    selectedPackage={PACKAGES[0].value}
+    versions={[...VERSIONS]}
+    selectedVersion={VERSIONS[0]}
   >
     <SearchAdvanced slot="search" tabs={SEARCH_TABS} showScope={true} />
   </DocsSubHeader>
   <DocsSidebar slot="sidebar" items={SIDEBAR} currentSlug={slug} />
   <DocsToc slot="toc" headings={headings} offsetTarget=".docs-subheader" />
-    <h1>Sidebar</h1>
+  <h1>Sidebar</h1>
 
-    <h2 id="rendering">Rendering</h2>
-    <p>
-      The sidebar is rendered with <code>&lt;igc-tree&gt;</code> /
-      <code>&lt;igc-tree-item&gt;</code> from
-      <code>igniteui-webcomponents</code>. The current page is indicated
-      via <code>aria-current="page"</code> on the
-      <code>&lt;a slot="label"&gt;</code> for the active item.
-    </p>
+  <h2 id="rendering">Rendering</h2>
+  <p>
+    The sidebar is rendered with <code>&lt;igc-tree&gt;</code> /
+    <code>&lt;igc-tree-item&gt;</code> from
+    <code>igniteui-webcomponents</code>. The current page is indicated via <code
+      >aria-current="page"</code
+    > on the
+    <code>&lt;a slot="label"&gt;</code> for the active item.
+  </p>
 
-    <h2 id="persistence">Persistence</h2>
-    <p>
-      Expand / collapse state and scroll position are persisted in
-      <code>sessionStorage</code> across Astro client-side navigations via
-      the <code>&lt;sidebar-filter&gt;</code> custom element.
-    </p>
+  <h2 id="persistence">Persistence</h2>
+  <p>
+    Expand / collapse state and scroll position are persisted in
+    <code>sessionStorage</code> across Astro client-side navigations via the <code
+      >&lt;sidebar-filter&gt;</code
+    > custom element.
+  </p>
 
-    <h2 id="filter-input">Filter input</h2>
-    <p>
-      The filter input matches against item labels: matching items stay
-      visible; non-matching ones get <code>display:none</code>.
-    </p>
+  <h2 id="filter-input">Filter input</h2>
+  <p>
+    The filter input matches against item labels: matching items stay visible; non-matching ones get <code
+      >display:none</code
+    >.
+  </p>
 </DocsLayout>

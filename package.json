@@ -43,7 +43,7 @@
     "./components/GlobalNavBar.astro": "./src/components/GlobalNavBar/GlobalNavBar.astro",
     "./components/GlobalFooter.astro": "./src/components/GlobalFooter/GlobalFooter.astro",
     "./components/DocsSubHeader.astro": "./src/components/DocsSubHeader/DocsSubHeader.astro",
-    "./components/CopyCode.astro":  "./src/components/CopyCode/CopyCode.astro",
+    "./components/CopyCode.astro": "./src/components/CopyCode/CopyCode.astro",
     "./components/Search.astro": "./src/components/Search/Search.astro",
     "./components/SearchAdvanced.astro": "./src/components/SearchAdvanced/SearchAdvanced.astro",
     "./components/ThemingWidget.astro": "./src/components/ThemingWidget/ThemingWidget.astro",
@@ -60,10 +60,14 @@
     "./components/DocsTree/DocsTreeItem.astro": "./src/components/DocsTree/DocsTreeItem.astro",
     "./components/DocsTree/types": "./src/components/DocsTree/types.ts",
     "./components/DocsTree/docs-tree.css": "./src/components/DocsTree/docs-tree.css",
+    "./components/mdx/Anatomy.astro": "./src/components/mdx/Anatomy/Anatomy.astro",
     "./components/mdx/ApiRef.astro": "./src/components/mdx/ApiRef/ApiRef.astro",
     "./components/mdx/ApiLink.astro": "./src/components/mdx/ApiLink/ApiLink.astro",
     "./components/mdx/DocsAside.astro": "./src/components/mdx/DocsAside/DocsAside.astro",
     "./components/mdx/Badge.astro": "./src/components/mdx/Badge/Badge.astro",
+    "./components/mdx/Faq.astro": "./src/components/mdx/Faq/Faq.astro",
+    "./components/mdx/FaqItem.astro": "./src/components/mdx/Faq/FaqItem.astro",
+    "./components/mdx/Faq/types": "./src/components/mdx/Faq/types.ts",
     "./components/mdx/PlatformBlock.astro": "./src/components/mdx/PlatformBlock/PlatformBlock.astro",
     "./components/mdx/Sample.astro": "./src/components/mdx/Sample/Sample.astro",
     "./lib/sidebar/types": "./src/lib/sidebar/types.ts",
@@ -92,7 +96,12 @@
   "devDependencies": {
     "@types/jsdom": "^21.1.7",
     "astro": "^6.1.6",
+    "husky": "^9.1.7",
     "igniteui-theming": "^26.0.1",
+    "lint-staged": "^17.0.8",
+    "oxlint": "^1.72.0",
+    "prettier": "^3.9.4",
+    "prettier-plugin-astro": "^0.14.1",
     "sass": "^1.83.0",
     "typescript": "^5.6.0"
   },
@@ -108,6 +117,11 @@
     "playground:build": "npm --prefix playground run build",
     "playground:preview": "npm --prefix playground run preview",
     "playground:clean": "npm --prefix playground run clean",
-    "playground:check": "npm --prefix playground run check"
+    "playground:check": "npm --prefix playground run check",
+    "lint": "oxlint .",
+    "lint:fix": "oxlint . --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "prepare": "husky"
   }
 }

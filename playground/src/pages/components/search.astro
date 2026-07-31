@@ -10,68 +10,76 @@ import { SITE_TITLE, SIDEBAR, PRODUCT_LINKS, PACKAGES, VERSIONS } from '../../si
 const slug = 'components/search';
 
 const headings = [
-  { depth: 2, slug: 'overview',       text: 'Overview' },
-  { depth: 2, slug: 'pagefind',       text: 'Pagefind index' },
-  { depth: 2, slug: 'keyboard',       text: 'Keyboard shortcut' },
-  { depth: 2, slug: 'usage',          text: 'Usage' },
+  { depth: 2, slug: 'overview', text: 'Overview' },
+  { depth: 2, slug: 'pagefind', text: 'Pagefind index' },
+  { depth: 2, slug: 'keyboard', text: 'Keyboard shortcut' },
+  { depth: 2, slug: 'usage', text: 'Usage' },
 ];
 ---
 
 <DocsLayout title="Search" siteTitle={SITE_TITLE} hasSidebar currentSlug={slug}>
-  <DocsSubHeader slot="subheader" pageTitle="Search" currentSlug={slug} siteTitle={SITE_TITLE}
-    productLinks={PRODUCT_LINKS} showThemeToggle={true}
-    packages={[...PACKAGES]} selectedPackage={PACKAGES[0].value}
-    versions={[...VERSIONS]} selectedVersion={VERSIONS[0]}
+  <DocsSubHeader
+    slot="subheader"
+    pageTitle="Search"
+    currentSlug={slug}
+    siteTitle={SITE_TITLE}
+    productLinks={PRODUCT_LINKS}
+    showThemeToggle={true}
+    packages={[...PACKAGES]}
+    selectedPackage={PACKAGES[0].value}
+    versions={[...VERSIONS]}
+    selectedVersion={VERSIONS[0]}
   >
     <Search slot="search" />
   </DocsSubHeader>
   <DocsSidebar slot="sidebar" items={SIDEBAR} currentSlug={slug} />
   <DocsToc slot="toc" headings={headings} offsetTarget=".docs-subheader" />
 
-    <h1>Search</h1>
-    <DocsAside type="note">
-      The subheader on this page uses the <code>Search</code> component
-      instead of <code>SearchAdvanced</code>. Click the search button above to see it in action.
-    </DocsAside>
-    <p>
-      The <code>Search</code> component provides a full-text search modal powered by
-      <a href="https://pagefind.app" target="_blank" rel="noopener">Pagefind</a>.
-      The trigger button (visible in the subheader above) opens a dialog that renders
-      the Pagefind UI against a pre-built <code>/pagefind/</code> index.
-    </p>
+  <h1>Search</h1>
+  <DocsAside type="note">
+    The subheader on this page uses the <code>Search</code> component instead of <code
+      >SearchAdvanced</code
+    >. Click the search button above to see it in action.
+  </DocsAside>
+  <p>
+    The <code>Search</code> component provides a full-text search modal powered by
+    <a href="https://pagefind.app" target="_blank" rel="noopener">Pagefind</a>. The trigger button
+    (visible in the subheader above) opens a dialog that renders the Pagefind UI against a pre-built <code
+      >/pagefind/</code
+    > index.
+  </p>
 
-    <h2 id="overview">Overview</h2>
-    <p>
-      Unlike <code>SearchAdvanced</code>, this component searches <em>page body content</em>
-      (full-text) rather than a structured API index. It is best suited for documentation
-      sites where every page has prose content that should be discoverable.
-    </p>
+  <h2 id="overview">Overview</h2>
+  <p>
+    Unlike <code>SearchAdvanced</code>, this component searches <em>page body content</em>
+    (full-text) rather than a structured API index. It is best suited for documentation sites where every
+    page has prose content that should be discoverable.
+  </p>
 
-    <h2 id="pagefind">Pagefind index</h2>
-    <p>
-      The <code>/pagefind/</code> directory is produced by running
-      <code>pagefind --site &lt;outDir&gt;</code> after a production build. In the
-      playground the index is absent, so the dialog opens but shows no results — this
-      is expected behaviour in development.
-    </p>
+  <h2 id="pagefind">Pagefind index</h2>
+  <p>
+    The <code>/pagefind/</code> directory is produced by running
+    <code>pagefind --site &lt;outDir&gt;</code> after a production build. In the playground the index
+    is absent, so the dialog opens but shows no results — this is expected behaviour in development.
+  </p>
 
-    <h2 id="keyboard">Keyboard shortcut</h2>
-    <p>
-      The trigger button shows a <kbd>Ctrl</kbd>&nbsp;<kbd>K</kbd> hint
-      (or <kbd>⌘</kbd>&nbsp;<kbd>K</kbd> on macOS). Pressing that combination
-      opens or closes the search dialog from anywhere on the page.
-    </p>
+  <h2 id="keyboard">Keyboard shortcut</h2>
+  <p>
+    The trigger button shows a <kbd>Ctrl</kbd>&nbsp;<kbd>K</kbd> hint (or <kbd>⌘</kbd>&nbsp;<kbd
+      >K</kbd
+    > on macOS). Pressing that combination opens or closes the search dialog from anywhere on the page.
+  </p>
 
-    <h2 id="usage">Usage</h2>
-    <p>
-      Place the component in the <code>search</code> slot of
-      <code>DocsSubHeader</code>:
-    </p>
-    <pre><code>{`<DocsSubHeader slot="subheader" ...>
+  <h2 id="usage">Usage</h2>
+  <p>
+    Place the component in the <code>search</code> slot of
+    <code>DocsSubHeader</code>:
+  </p>
+  <pre><code>{`<DocsSubHeader slot="subheader" ...>
   <Search slot="search" />
 </DocsSubHeader>`}</code></pre>
-    <p>
-      No props are required. The Pagefind base URL is derived automatically from
-      <code>import.meta.env.BASE_URL</code>.
-    </p>
+  <p>
+    No props are required. The Pagefind base URL is derived automatically from
+    <code>import.meta.env.BASE_URL</code>.
+  </p>
 </DocsLayout>

@@ -23,10 +23,12 @@ const resolvedLang = lang;
 const igNav = await fetchIgNav(resolvedLang);
 ---
 
-{/* ============================================================
+{
+  /* ============================================================
     IG-family global nav (angular, react, blazor, web-components,
     slingshot, igniteui)
-    ============================================================ */}
+    ============================================================ */
+}
 <div class={styles.navBar} transition:persist="global-nav-bar">
   {/* IG nav — fetched directly via fetchIgNav(); falls back to static markup */}
   {igNav?.prefetched && <Fragment set:html={igNav.headerHtml} />}

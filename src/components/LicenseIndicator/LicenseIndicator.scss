@@ -1,7 +1,7 @@
 @use 'igniteui-theming/sass/typography/functions' as *;
 
 .license-indicator-badge {
-	&::part(base) {
-		padding-inline: rem(4px);
-	}
+  &::part(base) {
+    padding-inline: rem(4px);
+  }
 }

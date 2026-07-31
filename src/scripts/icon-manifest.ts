@@ -13,15 +13,20 @@ export const DOCS_COLLECTION = 'docs';
  * Only needed when the desired name differs from the filename (minus .svg).
  */
 export const ALIASES: Record<string, string> = {
-  'expand':     'expand-icon',
+  expand: 'expand-icon',
   'react-logo': 'react',
-  'wc-logo':    'web-component-logo',
+  'wc-logo': 'web-component-logo',
 };
 
 /** Icon names that belong to the "brand" category (logos). */
 export const BRAND_ICONS = new Set([
-  'angular-logo', 'blazor-logo', 'react-logo', 'wc-logo',
-  'github-logo', 'chatgpt', 'claude',
+  'angular-logo',
+  'blazor-logo',
+  'react-logo',
+  'wc-logo',
+  'github-logo',
+  'chatgpt',
+  'claude',
 ]);
 
 // Vite glob — imports raw SVG content at build time.
@@ -45,7 +50,10 @@ export interface IconEntry {
 function buildIconList(): IconEntry[] {
   const stemToSvg = new Map<string, string>();
   for (const [p, svg] of Object.entries(svgModules)) {
-    const stem = p.split('/').pop()!.replace(/\.svg$/, '');
+    const stem = p
+      .split('/')
+      .pop()!
+      .replace(/\.svg$/, '');
     stemToSvg.set(stem, svg);
   }
 
