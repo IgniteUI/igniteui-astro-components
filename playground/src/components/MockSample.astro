@@ -17,8 +17,8 @@ interface Props {
   height?: number;
   alt?: string;
   tabs?: CodeTab[];
-  /** Opt out of the in-sample theme picker (shown by default). */
-  noThemePicker?: boolean;
+  /** Opt in to the in-sample theme picker for this mock sample. */
+  showThemePicker?: boolean;
 }
 
 import ThemingWidget from '../../../src/components/ThemingWidget/ThemingWidget.astro';
@@ -29,7 +29,7 @@ const {
   height = 400,
   alt = 'React Example',
   tabs,
-  noThemePicker = false,
+  showThemePicker = false,
 } = Astro.props;
 
 const exampleTabId = `${id}-example`;
@@ -126,7 +126,7 @@ function tabId(index: number) {
   </div>
 
   {
-    !noThemePicker && (
+    showThemePicker && (
       <div class="igd-sample-theming" hidden>
         <ThemingWidget storageKey="igd-sample-theme" />
       </div>

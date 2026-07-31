@@ -79,6 +79,13 @@
       // the sample footer posts `{ type: 'igd-sample-theme', theme, mode }`;
       // a real sample app would swap its Ignite UI theme stylesheet here.
       window.addEventListener('message', (e) => {
+        const trustedOrigins = new Set([
+          window.location.origin,
+          'http://localhost:3000',
+          'http://127.0.0.1:3000',
+        ]);
+        if (!trustedOrigins.has(e.origin)) return;
+
         const msg = e.data;
         if (!msg || (msg.type !== 'igd-sample-theme' && msg.event !== 'igd-sample-theme')) return;
         document.documentElement.dataset.igdTheme = msg.theme || msg.themeName || '';

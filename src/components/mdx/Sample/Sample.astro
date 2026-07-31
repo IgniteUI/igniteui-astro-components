@@ -32,11 +32,8 @@ interface Props {
   iframeOnly?: boolean;
   /** When used with iframeOnly, also render a "View in full screen" button below. */
   fullscreenBtn?: boolean;
-  /**
-   * Opt out of the in-sample theme picker. The picker is shown by default; set
-   * this on samples that must not be re-themed (e.g. theme-specific demos).
-   */
-  noThemePicker?: boolean;
+  /** Opt in to the in-sample theme picker for this sample. */
+  showThemePicker?: boolean;
 }
 
 const {
@@ -48,7 +45,7 @@ const {
   crm = false,
   iframeOnly = false,
   fullscreenBtn = false,
-  noThemePicker = false,
+  showThemePicker = false,
 } = Astro.props;
 const { name, lower } = Astro.locals.platformContext as PlatformContext;
 const env = Astro.locals.envVars ?? {};
@@ -134,7 +131,7 @@ const exampleTabId = `${widgetId}-example`;
             </igc-tab>
           </igc-tabs>
         </div>
-        {!noThemePicker && (
+        {showThemePicker && (
           <div class="igd-sample-theming" hidden>
             <ThemingWidget storageKey="igd-sample-theme" />
           </div>

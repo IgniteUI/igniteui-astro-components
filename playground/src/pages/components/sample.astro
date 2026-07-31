@@ -249,7 +249,13 @@ describe('GridSampleComponent', () => {
 
   <h2 id="full-widget">Full widget (TSX + CSS)</h2>
   <p>Default React-style tabs. Click any tab to switch, hover a code pane to reveal COPY CODE.</p>
-  <MockSample id="mock-sample-1" src="/mock-demo" height={360} alt="React Grid Example" />
+  <MockSample
+    id="mock-sample-1"
+    src="/mock-demo"
+    height={360}
+    alt="React Grid Example"
+    showThemePicker
+  />
 
   <h2 id="angular-tabs">Angular-style tabs (TS + HTML + SCSS)</h2>
   <p>Pass a custom <code>tabs</code> array to render any combination of code tabs.</p>
