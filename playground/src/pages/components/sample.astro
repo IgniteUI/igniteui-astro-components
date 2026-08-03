@@ -86,13 +86,13 @@ const propRows: PropRow[] = [
   {
     name: 'spacing',
     type: "'none' | 'sm' | 'md' | 'lg'",
-    def: "'md'",
+    def: "'none'",
     description: `Padding around the iframe, applied by the host container:
             0 / 8px / 16px / 32px. Each size reads a CSS variable
             (<code>--igd-sample-spacing-sm/md/lg</code>) you can override from any
-            ancestor. <code>none</code> is meant for the borderless inline form
-            (<code>iframeOnly fitContent noBorder</code>). Demos never set their own
-            outer padding.`,
+            ancestor. The default <code>none</code> suits the borderless inline form
+            (<code>iframeOnly fitContent noBorder</code>); add a size whenever a border
+            or backdrop is visible. Demos never set their own outer padding.`,
   },
   {
     name: 'position',
@@ -117,18 +117,20 @@ const propRows: PropRow[] = [
   {
     name: 'noBorder',
     type: 'boolean',
-    def: 'false',
-    description: `Remove the default 1px border drawn around the iframe. Meant for
-            <code>iframeOnly</code> samples without <code>fullscreenBtn</code> — when
-            tabs or a button are visible, the border is what ties them to the demo.`,
+    def: 'true',
+    description: `Drop the 1px border around the iframe — on by default. Pass
+            <code>noBorder={false}</code> to draw it, which is what you want whenever
+            chrome is visible (the widget's tabs or <code>fullscreenBtn</code>): the
+            border is what ties that chrome to the demo.`,
   },
   {
     name: 'noBackground',
     type: 'boolean',
-    def: 'false',
-    description: `Hide the grid-pattern backdrop drawn behind the iframe — the
-            container becomes fully transparent, so a demo with no background of its
-            own sits directly on the page (see
+    def: 'true',
+    description: `Hide the grid-pattern backdrop drawn behind the iframe — on by
+            default, so the container is transparent and a demo with no background of
+            its own sits directly on the page. Pass
+            <code>noBackground={false}</code> to show the grid (see
             <a href="#no-background">No background</a>).`,
   },
 ];
@@ -322,8 +324,8 @@ const sections: Section[] = [
     title: 'Spacing',
     description: `<p><code>spacing</code> adds padding <em>around</em> the iframe, applied by
             the host container — demos never set their own outer padding.
-            <code>none</code> = 0, <code>sm</code> = 8px, <code>md</code> = 16px
-            (the default), <code>lg</code> = 32px.</p>
+            <code>none</code> = 0 (the default), <code>sm</code> = 8px,
+            <code>md</code> = 16px, <code>lg</code> = 32px.</p>
             <p>The three sizes read from CSS variables —
             <code>--igd-sample-spacing-sm</code>, <code>--igd-sample-spacing-md</code>,
             <code>--igd-sample-spacing-lg</code> — with the values above as fallbacks,
@@ -439,13 +441,13 @@ const sections: Section[] = [
   {
     slug: 'no-border',
     title: 'No border',
-    description: `<p>By default the sample draws a 1px border around the iframe. Add
-            <code>noBorder</code> to remove it — handy when the demo already provides
-            its own framing or should blend into the page.</p>
-            <p><code>noBorder</code> belongs on <code>iframeOnly</code> samples
+    description: `<p>The iframe is borderless by default (<code>noBorder</code> is
+            <code>true</code>) — the demo blends into the page. Pass
+            <code>noBorder={false}</code> to draw the 1px border back.</p>
+            <p>The borderless default suits <code>iframeOnly</code> samples
             <em>without</em> the fullscreen button. Once any chrome is visible — the
             widget's tabs or a "View in full screen" button below — the border is what
-            visually ties that chrome to the demo, and removing it just leaves the
+            visually ties that chrome to the demo, and leaving it off leaves the
             controls floating next to unframed content. If you want a borderless demo,
             drop the chrome too.</p>`,
     examples: [
@@ -463,11 +465,12 @@ const sections: Section[] = [
   {
     slug: 'no-background',
     title: 'No background',
-    description: `<p>Behind the iframe the container draws a subtle grid pattern — it gives
-            demos with a transparent page a visible canvas, so they don't look like a
-            hole in the docs. Add <code>noBackground</code> to hide it: the container
-            becomes fully transparent, and a demo with no background of its own sits
-            directly on the page.</p>
+    description: `<p>The container can draw a subtle grid pattern behind the iframe — it
+            gives demos with a transparent page a visible canvas, so they don't look
+            like a hole in the docs. It is hidden by default
+            (<code>noBackground</code> is <code>true</code>): the container is
+            transparent, and a demo with no background of its own sits directly on the
+            page. Pass <code>noBackground={false}</code> to show the grid.</p>
             <p>Compare with the avatar samples in
             <a href="#fit-content">Fit to content</a>, where the grid shows through the
             transparent demo page. It pairs naturally with the inline form

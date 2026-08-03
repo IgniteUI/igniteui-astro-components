@@ -47,8 +47,8 @@ interface Props {
    */
   fitContent?: boolean;
   /**
-   * Padding around the iframe inside the container: `none` = 0, `sm` = 8px,
-   * `md` = 16px (default), `lg` = 32px. The padding is applied by the host
+   * Padding around the iframe inside the container: `none` = 0 (default),
+   * `sm` = 8px, `md` = 16px, `lg` = 32px. The padding is applied by the host
    * container, never inside the embedded page.
    */
   spacing?: 'none' | 'sm' | 'md' | 'lg';
@@ -71,11 +71,11 @@ interface Props {
    * the height, so a reflowed demo never scrolls inside the iframe.
    */
   resizable?: boolean;
-  /** Remove the default border drawn around the iframe/container. */
+  /** Drop the 1px border drawn around the iframe/container. Defaults to true. */
   noBorder?: boolean;
   /**
-   * Hide the grid-pattern backdrop drawn behind the iframe. The container
-   * becomes fully transparent, so a demo without a background of its own
+   * Hide the grid-pattern backdrop drawn behind the iframe (default). The
+   * container is fully transparent, so a demo without a background of its own
    * sits directly on the page.
    */
   noBackground?: boolean;
@@ -90,11 +90,11 @@ const {
   iframeOnly = false,
   fullscreenBtn = false,
   fitContent = false,
-  spacing = 'md',
+  spacing = 'none',
   position,
   resizable = false,
-  noBorder = false,
-  noBackground = false,
+  noBorder = true,
+  noBackground = true,
 } = Astro.props;
 
 // Fixed samples default to 150px. In fitContent mode `height` is only the
