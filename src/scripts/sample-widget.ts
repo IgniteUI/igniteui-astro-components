@@ -638,7 +638,14 @@ function bindFitContentMessages(): void {
   _fitContentMessageBound = true;
   window.addEventListener('message', (e: MessageEvent) => {
     const data = e.data;
-    if (!data || data.type !== FIT_CONTENT_MESSAGE || typeof data.height !== 'number') return;
+    if (
+      !data ||
+      data.type !== FIT_CONTENT_MESSAGE ||
+      typeof data.height !== 'number' ||
+      !Number.isFinite(data.height) ||
+      data.height <= 0
+    )
+      return;
     document
       .querySelectorAll<HTMLIFrameElement>('.igd-sample-container[data-fit-content] iframe')
       .forEach((iframe) => {

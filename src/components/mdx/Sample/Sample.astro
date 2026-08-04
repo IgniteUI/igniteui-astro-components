@@ -106,7 +106,7 @@ const { name, lower } = Astro.locals.platformContext as PlatformContext;
 const env = Astro.locals.envVars ?? {};
 
 // ─ Layout options (spacing / position / resize) ────────────────────────────────
-const spacingVal = ['none', 'sm', 'md', 'lg'].includes(spacing) ? spacing : 'md';
+const spacingVal = ['none', 'sm', 'md', 'lg'].includes(spacing) ? spacing : 'none';
 
 // fitContent: the container grows around the iframe, so it gets no inline
 // height. The iframe carries `height` as the placeholder/fallback until the

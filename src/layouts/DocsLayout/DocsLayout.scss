@@ -86,9 +86,6 @@
 // ════════════════════════════════════════════════════════════════════════════
 
 @media (min-width: #{$bp-desktop-wide}) {
-  //.igd-page-layout {
-  //	--igd-page-layout-grid: #{rem(320px)} 1fr;
-  //}
 
   .igd-main-content__page {
     gap: var(--ig-padding);
