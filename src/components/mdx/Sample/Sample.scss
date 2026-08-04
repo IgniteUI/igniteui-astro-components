@@ -1,4 +1,5 @@
 @use 'igniteui-theming/sass/typography' as *;
+@use '../../../styles/global/copy-button' as *;
 
 igc-tabs {
   position: relative;
@@ -28,6 +29,7 @@ igc-tabs {
   .igd-code-view__header-actions {
     border-block: rem(1px) solid light-dark(var(--ig-gray-300), var(--ig-gray-200));
   }
+  border-radius: rem(4px) rem(4px) 0 0;
 
   .igd-sample-container {
     border-inline: none;
@@ -51,23 +53,37 @@ igc-tab {
     border: none;
     border-top: rem(1px) solid var(--ig-gray-300);
     max-height: rem(400px);
-    overflow: auto;
+    // Vertical scroll only — long lines wrap (see the pre below) instead of
+    // forcing a horizontal scrollbar on the pane.
+    overflow: hidden auto;
     overscroll-behavior: contain;
 
     pre {
       margin: 0;
       border: none;
-      padding: 0;
+      // Same spacing token the EXAMPLE pane uses for `md`, so the code
+      // and the demo share the same breathing room (and both follow an
+      // --igd-sample-spacing-md override).
+      padding: var(--igd-sample-spacing-md, #{rem(16px)});
       border-radius: 0;
+      white-space: pre-wrap;
+      word-break: break-word;
     }
 
+    // Match the page-level CopyCode button (.copy-btn): flat variant, same
+    // 8px corner offset, and the shared palette — the code pane is always
+    // dark (single dark Shiki theme) while the button's default colors
+    // follow the site theme, so without the palette the icon was invisible
+    // in light mode until hovered.
     .cv-hljs-code-copy {
       position: absolute;
-      top: rem(16px);
-      right: rem(16px);
+      inset-block-start: rem(8px);
+      inset-inline-end: rem(8px);
       opacity: 0;
       transition: opacity 0.2s ease;
       pointer-events: none;
+
+      @include copy-button-colors;
     }
 
     &:hover .cv-hljs-code-copy,
@@ -93,6 +109,7 @@ igc-tab::part(tab-header) {
 .igd-code-view {
   width: 100%;
   border: rem(1px) solid var(--ig-gray-300);
+  border-radius: rem(4px);
   margin-block-end: rem(26px);
 
   .igd-sample-container {
@@ -108,17 +125,19 @@ igc-tab::part(tab-header) {
 .igd-sample-container {
   --sample-container-header-height: #{rem(66px)};
 
+  display: grid;
   position: relative;
   border: rem(1px) solid var(--ig-gray-300);
-  min-height: rem(320px);
-  max-height: rem(800px);
-  overflow: hidden auto;
+  overflow: hidden;
   margin-block-end: rem(26px);
+  z-index: 0;
+  background: light-dark(var(--ig-gray-100), var(--ig-surface-500));
 
   iframe {
     display: block;
     border: none;
     margin: 0;
+    overflow: hidden;
   }
 
   .sample-loading-indicator {
@@ -136,6 +155,217 @@ igc-tab::part(tab-header) {
   &.loading .sample-loading-indicator {
     opacity: 1;
   }
+
+  // Fit-content mode: the embedded content dictates the size — the `height`
+  // prop is ignored (Sample.astro emits no inline height). sample-widget.ts
+  // sets an exact px height on the iframe (from same-origin measurement or a
+  // postMessage from the demo) and the frame/container grow around it,
+  // spacing padding included.
+  &--fit-content {
+    height: auto;
+    min-height: 0;
+    max-height: none;
+    // `clip` (not `visible`): the container is sized exactly to the iframe,
+    // and anything spilling out (e.g. the +1px grid-pattern ::after overlay)
+    // would otherwise inflate the ancestor igc-tabs' scrollWidth and lock its
+    // header into scroll-button mode.
+    overflow: clip;
+
+    iframe {
+      max-width: 100%;
+      // The iframe starts at the `height` placeholder and snaps to the
+      // measured content size once the demo loads/reports — ease that
+      // jump instead of letting the page reflow abruptly.
+      transition:
+        width 0.25s ease,
+        height 0.25s ease;
+
+      @media (prefers-reduced-motion: reduce) {
+        transition: none;
+      }
+    }
+  }
+
+  // Drop the default border/outline drawn around the iframe.
+  &--no-border {
+    border: none;
+  }
+
+  // Hide the grid-pattern backdrop drawn behind the iframe (the ::after
+  // overlay below) — the container becomes fully transparent, so demos
+  // without a background of their own sit directly on the page.
+  &--no-background {
+    background: transparent;
+
+    &::after {
+      display: none;
+    }
+  }
+
+  // Wrapper around the iframe. In the default (block) layout it is transparent
+  // (fills the container just like the bare iframe did); when the container
+  // opts into flex layout it becomes the positioned/resizable element.
+  .igd-sample-frame {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    flex: 0 0 auto;
+    overflow: auto;
+    z-index: 1;
+  }
+
+  // In fit-content mode the frame hugs the JS-sized iframe instead of filling
+  // the container, so flex alignment (position) can move the content-sized box
+  // around. Must come after the base .igd-sample-frame rule — same specificity,
+  // order decides.
+  &--fit-content .igd-sample-frame {
+    // Height hugs the JS-sized iframe. Width intentionally stays 100% (base
+    // rule): a shrink-to-fit frame would make the iframe's `width: 100%`
+    // indefinite and collapse it to the 300px intrinsic default — inner
+    // horizontal scrollbars on every unmeasured/cross-origin demo. When a
+    // real content width is measured/reported, sample-widget.ts switches
+    // the frame to `width: auto` inline so flex alignment can center it.
+    height: auto;
+  }
+
+  // Padding around the iframe. Applied by the host, never inside the demo.
+  // `md` is the default emitted by Sample.astro; `none` removes it entirely.
+  // Each size reads a CSS variable with the default as fallback, so consumers
+  // can retune the whole scale from any ancestor, e.g.
+  //   :root { --igd-sample-spacing-md: 24px; }
+  &[data-spacing='none'] {
+    padding: 0;
+  }
+
+  &[data-spacing='sm'] {
+    padding: var(--igd-sample-spacing-sm, #{rem(8px)});
+
+    .igd-code-view__header-actions {
+      margin-inline: calc(var(--igd-sample-spacing-sm, #{rem(8px)}) * -1);
+      margin-block-end: calc(var(--igd-sample-spacing-sm, #{rem(8px)}) * -1);
+    }
+  }
+
+  &[data-spacing='md'] {
+    padding: var(--igd-sample-spacing-md, #{rem(16px)});
+
+    .igd-code-view__header-actions {
+      margin-inline: calc(var(--igd-sample-spacing-md, #{rem(16px)}) * -1);
+      margin-block-end: calc(var(--igd-sample-spacing-md, #{rem(16px)}) * -1);
+    }
+  }
+
+  &[data-spacing='lg'] {
+    padding: var(--igd-sample-spacing-lg, #{rem(32px)});
+
+    .igd-code-view__header-actions {
+      margin-inline: calc(var(--igd-sample-spacing-lg, #{rem(32px)}) * -1);
+      margin-block-end: calc(var(--igd-sample-spacing-lg, #{rem(32px)}) * -1);
+    }
+  }
+
+  // Flex layout — only enabled when position/resize needs it. The `position`
+  // prop is emitted as data-justify / data-valign attributes.
+  &--flex {
+    display: flex;
+    justify-content: flex-start;
+    align-items: stretch;
+
+    &[data-justify='start'] {
+      justify-content: flex-start;
+    }
+    &[data-justify='center'] {
+      justify-content: center;
+    }
+    &[data-justify='end'] {
+      justify-content: flex-end;
+    }
+
+    &[data-valign='top'] {
+      align-items: flex-start;
+    }
+    &[data-valign='center'] {
+      align-items: center;
+    }
+    &[data-valign='bottom'] {
+      align-items: flex-end;
+    }
+
+    // A frame that fills the container has nothing to align, so give it slack
+    // on any axis that has an explicit (non-start/stretch) alignment. `start`
+    // keeps full width — it looks identical to the default. Resizing overrides
+    // the width inline, so this is only the initial state. Fit-content frames
+    // are excluded: there the measured content defines the frame size.
+    &[data-justify='center']:not([data-fit-content]) .igd-sample-frame,
+    &[data-justify='end']:not([data-fit-content]) .igd-sample-frame {
+      width: 65%;
+    }
+    &[data-valign]:not([data-fit-content]) .igd-sample-frame {
+      height: 65%;
+    }
+
+    // Keep the fullscreen bar pinned to the bottom instead of becoming a
+    // flex sibling of the iframe frame.
+    > .igd-code-view__header-actions {
+      position: absolute;
+      inset-inline: 0;
+      inset-block-end: 0;
+    }
+  }
+
+  // Resizable mode: a drag handle on the right edge resizes the iframe's width
+  // (see sample-widget.ts). The handle is always visible.
+  &--resizable {
+    &:focus-visible {
+      outline: rem(2px) solid var(--igd-accent);
+      outline-offset: rem(-2px);
+    }
+  }
+
+  // While dragging, stop the iframe from swallowing pointer moves.
+  &.resizing iframe {
+    pointer-events: none;
+  }
+
+  .igd-sample-resize-handle {
+    position: absolute;
+    inset-block: 0;
+    // Kept 16px off the edge at all times: the demo may show a vertical
+    // scrollbar at the iframe's right edge, and a handle sitting on top of
+    // it would intercept the pointer and make the scrollbar unusable.
+    inset-inline-end: rem(16px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: rem(10px);
+    cursor: ew-resize;
+    touch-action: none;
+    z-index: 2;
+
+    &::before {
+      content: '';
+      width: rem(4px);
+      height: rem(32px);
+      border-radius: rem(2px);
+      background: light-dark(var(--ig-gray-500), var(--ig-gray-400));
+    }
+  }
+
+  // Shod this conditionally
+  //&::after {
+  //	position: absolute;
+  //	inset: 0;
+  //	width: calc(100% + 1px);
+  //	height: calc(100% + 1px);
+  //	content: '';
+  //	background-color: #f9f9f9;
+  //	opacity: 0.1;
+  //	background-image:  repeating-linear-gradient(to right, transparent 0, transparent 2px, #f9f9f9 2px, #f9f9f9 6px, transparent 6px, transparent 8px), repeating-linear-gradient(to bottom, transparent 0, transparent 2px, #f9f9f9 2px, #f9f9f9 6px, transparent 6px, transparent 8px), linear-gradient(to bottom, #000000 0.72px, transparent 0.72px), linear-gradient(to right, #000000 0.72px, transparent 0.72px) ;
+  //	background-size: 100% 100%, 100% 100%, 24px 24px, 24px 24px;
+  //	background-position: 0 0, 0 0, 0 -0.24px, -0.24px 0;
+  //	z-index: 0;
+  //}
 }
 
 .full-screen-btn {
@@ -158,11 +388,10 @@ igc-tab::part(tab-header) {
 }
 
 .igd-code-view__header-actions {
-  position: sticky;
-  inset-block-end: 0;
   height: var(--sample-container-header-height);
   border-block-start: rem(1px) solid var(--ig-gray-300);
   background-color: var(--igd-layout-sections-bg);
+  z-index: 1;
 }
 
 igc-button {

@@ -47,7 +47,7 @@
 
   --igd-members-spacing: var(--igd-border-radius) #{rem(16px)};
 
-  --igd-page-layout-grid: #{rem(290px)} 1fr;
+  --igd-page-layout-grid: minmax(#{rem(200px)}, #{rem(320px)}) 1fr;
 
   --igd-page-padding: #{rem(48px)};
 

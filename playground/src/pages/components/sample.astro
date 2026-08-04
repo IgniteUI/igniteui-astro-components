@@ -1,233 +1,537 @@
 ---
+import { Code } from 'astro:components';
 import DocsLayout from '../../../../src/layouts/DocsLayout/DocsLayout.astro';
 import DocsSidebar from '../../../../src/components/DocsSidebar/DocsSidebar.astro';
 import DocsToc from '../../../../src/components/DocsToc/DocsToc.astro';
+import DocsAside from '../../../../src/components/mdx/DocsAside/DocsAside.astro';
 import SampleWidget from '../../../../src/components/mdx/Sample/Sample.astro';
 import MockSample from '../../components/MockSample.astro';
 import { SITE_TITLE, SIDEBAR } from '../../site-config';
 
 const slug = 'components/sample';
 
+// ─ API reference ───────────────────────────────────────────────────────────────
+// One row per prop, rendered as the Props table. Kept in sync with the Props
+// interface in src/components/mdx/Sample/Sample.astro.
+
+interface PropRow {
+  name: string;
+  type: string;
+  def: string;
+  /** Description (HTML). */
+  description: string;
+}
+
+const propRows: PropRow[] = [
+  {
+    name: 'src',
+    type: 'string',
+    def: '— (required)',
+    description: `The demo's path, e.g. <code>/grids/grid/overview</code>. Always
+            relative — the base URL is added from the docs environment config, so the
+            same page works in every environment.`,
+  },
+  {
+    name: 'height',
+    type: 'number',
+    def: '150 (50 with fitContent)',
+    description: `Iframe height in px. Set it only to restrict a very tall demo —
+            the content then scrolls inside the iframe. Typical for demos with no
+            internal scrollbar or <code>max-height</code> of their own; otherwise
+            prefer <code>fitContent</code>. With <code>fitContent</code> it is only the
+            placeholder shown while the demo loads (and the fallback if a cross-origin
+            demo never reports its size).`,
+  },
+  {
+    name: 'alt',
+    type: 'string',
+    def: "''",
+    description: `The iframe's accessible <code>title</code>. Always set it —
+            screen readers announce it. Falls back to
+            "<em>&lt;Platform&gt;</em> Example".`,
+  },
+  {
+    name: 'lob / dv / crm',
+    type: 'boolean',
+    def: 'false',
+    description: `Load the demo from an alternate demos server (LOB, Data-Viz, or
+            CRM base URL). <code>dv</code> is applied automatically for paths starting
+            with <code>charts/</code>, <code>gauges/</code>, <code>maps/</code>, or
+            <code>excel/</code>.`,
+  },
+  {
+    name: 'iframeOnly',
+    type: 'boolean',
+    def: 'false',
+    description: `Render just the embedded demo — no EXAMPLE/code tabs, no
+            live-edit footer. Usually paired with <code>fitContent</code> and
+            <code>noBorder</code> for demos that sit inline in the text.`,
+  },
+  {
+    name: 'fullscreenBtn',
+    type: 'boolean',
+    def: 'false',
+    description: `Only with <code>iframeOnly</code>: adds a "View in full screen"
+            button that opens the demo in a new tab.`,
+  },
+  {
+    name: 'fitContent',
+    type: 'boolean',
+    def: 'false',
+    description: `The embedded page dictates the iframe's size instead of a fixed
+            <code>height</code>. Same-origin demos are measured directly; cross-origin
+            demos must report their size via <code>postMessage</code> (see
+            <a href="#fit-content">Fit to content</a>).`,
+  },
+  {
+    name: 'spacing',
+    type: "'none' | 'sm' | 'md' | 'lg'",
+    def: "'none'",
+    description: `Padding around the iframe, applied by the host container:
+            0 / 8px / 16px / 32px. Each size reads a CSS variable
+            (<code>--igd-sample-spacing-sm/md/lg</code>) you can override from any
+            ancestor. The default <code>none</code> suits the borderless inline form
+            (<code>iframeOnly fitContent noBorder</code>); add a size whenever a border
+            or backdrop is visible. Demos never set their own outer padding.`,
+  },
+  {
+    name: 'position',
+    type: 'string',
+    def: '—',
+    description: `Where the iframe sits when it doesn't fill the container. A
+            horizontal token (<code>start</code>, <code>center</code>,
+            <code>end</code>) and/or a vertical one (<code>top</code>,
+            <code>center</code>, <code>bottom</code>), space-separated — e.g.
+            <code>"center"</code>, <code>"end top"</code>.`,
+  },
+  {
+    name: 'resizable',
+    type: 'boolean',
+    def: 'false',
+    description: `Adds a drag handle on the right edge to resize the iframe's
+            width — for previewing responsive demos. Keyboard: focus the sample and
+            use <kbd>←</kbd>/<kbd>→</kbd>. Pair it with <code>fitContent</code> (the
+            drag owns the width, the content keeps dictating the height) rather than
+            a fixed <code>height</code> — possible, but not encouraged.`,
+  },
+  {
+    name: 'noBorder',
+    type: 'boolean',
+    def: 'true',
+    description: `Drop the 1px border around the iframe — on by default. Pass
+            <code>noBorder={false}</code> to draw it, which is what you want whenever
+            chrome is visible (the widget's tabs or <code>fullscreenBtn</code>): the
+            border is what ties that chrome to the demo.`,
+  },
+  {
+    name: 'noBackground',
+    type: 'boolean',
+    def: 'true',
+    description: `Hide the grid-pattern backdrop drawn behind the iframe — on by
+            default, so the container is transparent and a demo with no background of
+            its own sits directly on the page. Pass
+            <code>noBackground={false}</code> to show the grid (see
+            <a href="#no-background">No background</a>).`,
+  },
+];
+
+// ─ Feature sections ───────────────────────────────────────────────────────────
+// Each live example is defined ONCE as a props object: the same object renders
+// the <Sample> widget and generates the copy-paste snippet above it, so the
+// snippet always matches the iframe's exact configuration. `src` points at
+// this playground's local mock pages — in real docs it's a demo path.
+
+type WidgetProps = Record<string, string | number | boolean>;
+
+interface Example {
+  /** Optional lead-in paragraph (HTML) shown before the snippet. */
+  intro?: string;
+  /** Comment lines rendered above the <Sample /> tag in the snippet. */
+  note?: string[];
+  props: WidgetProps;
+}
+
+interface Section {
+  slug: string;
+  title: string;
+  /** Section body (HTML) shown under the heading. */
+  description: string;
+  /** Optional warning (HTML) rendered as a callout after the description. */
+  warning?: string;
+  examples: Example[];
+}
+
+const attr = (key: string, value: string | number | boolean): string =>
+  value === true ? key : typeof value === 'number' ? `${key}={${value}}` : `${key}="${value}"`;
+
+const snippetFor = (ex: Example): string =>
+  [
+    ...(ex.note ?? []).map((line) => `<!-- ${line} -->`),
+    `<Sample ${Object.entries(ex.props)
+      .map(([k, v]) => attr(k, v))
+      .join(' ')} />`,
+  ].join('\n');
+
+// Interactive spacing demo: one widget whose data-spacing attribute is switched
+// live by the button group rendered above it (wired by the inline script below).
+const spacingDemo: Example = {
+  note: ['Pick a size with the buttons — the container padding switches live.'],
+  props: {
+    src: '/mock-demo-tall',
+    height: 220,
+    alt: 'Spacing Example',
+    iframeOnly: true,
+    spacing: 'md',
+  },
+};
+
+const sections: Section[] = [
+  {
+    slug: 'iframe-only',
+    title: 'iframe only',
+    description: `<p>Sometimes you just want the running demo inline in the text, without
+            the tabs and the live-edit footer. Add <code>iframeOnly</code> and only
+            the embedded demo is rendered:</p>`,
+    examples: [
+      {
+        props: { src: '/mock-demo', alt: 'Grid Example', iframeOnly: true },
+      },
+      {
+        intro: `In practice <code>iframeOnly</code> usually goes hand in hand with
+                    <a href="#fit-content"><code>fitContent</code></a> and
+                    <code>noBorder</code>: an inline demo reads best when it takes
+                    exactly the space its content needs and blends into the page like a
+                    figure, with no box around it. Add
+                    <a href="#spacing"><code>spacing="none"</code></a> to complete the
+                    form — with no border there is nothing for the padding to keep
+                    distance from. This is the combination to reach for by default:`,
+        note: ['The usual inline form: the demo sizes itself and blends into the page.'],
+        props: {
+          src: '/mock-demo-tall',
+          alt: 'Inline Example',
+          iframeOnly: true,
+          fitContent: true,
+          noBorder: true,
+          spacing: 'none',
+        },
+      },
+    ],
+  },
+  {
+    slug: 'fullscreen-btn',
+    title: 'iframe + fullscreen button',
+    description: `<p>An <code>iframeOnly</code> sample can still give readers an escape
+            hatch: <code>fullscreenBtn</code> adds a "View in full screen" button that
+            opens the demo in a new tab. It only works together with
+            <code>iframeOnly</code> — the full widget already has its own
+            full-screen action in the footer.</p>`,
+    examples: [
+      {
+        props: {
+          src: '/mock-demo',
+          alt: 'Grid Example',
+          fitContent: true,
+          iframeOnly: true,
+          fullscreenBtn: true,
+        },
+      },
+    ],
+  },
+  {
+    slug: 'fit-content',
+    title: 'Fit to content',
+    description: `<p>With a fixed <code>height</code>, a demo that is taller than the box
+            scrolls and a shorter one leaves empty space. <code>fitContent</code>
+            solves both: the embedded content dictates the iframe's size, growing or
+            shrinking to match the demo. <code>height</code> is then only the
+            placeholder/fallback — shown while the demo loads, and kept if a
+            cross-origin demo never reports its size.</p>
+            <ul>
+              <li><strong>Same-origin demos</strong> (like this playground's mocks) are
+                  measured directly and kept in sync with a <code>ResizeObserver</code>.
+                  Nothing to do on the demo side.</li>
+              <li><strong>Cross-origin demos</strong> can't be read from the host page, so
+                  they post their size instead:<br />
+                  <code>parent.postMessage({ type: 'igd-sample-height', height: 480 }, '*')</code>
+                  — add a <code>width</code> field when the sample is horizontally
+                  aligned via <code>position</code>.</li>
+            </ul>`,
+    warning: `If the component in your demo draws a <strong>shadow</strong> — or any
+            other ink overflow like a glow or a focus ring — the demo page itself must
+            reserve room for it. An iframe clips at its edge, and with
+            <code>fitContent</code> the iframe is sized exactly to the content, so a
+            shadow with no room around it gets cut off. Give the demo's
+            <code>body</code> padding at least as large as the shadow's blur + offset.
+            The avatar demo below does exactly this: its 16px body padding is not
+            layout — it exists only to keep the avatar's shadow inside the frame.`,
+    examples: [
+      {
+        intro: `A tall demo: its ~10 rows dictate the iframe height, so nothing
+                    scrolls and no <code>height</code> is passed:`,
+        note: [
+          'The embedded content dictates the iframe height — `height` is only the loading placeholder.',
+        ],
+        props: {
+          src: '/mock-demo-tall',
+          alt: 'Fit-content Example',
+          iframeOnly: true,
+          fitContent: true,
+        },
+      },
+      {
+        intro: `A single small item works too: the avatar alone defines the content
+                    size, so the iframe shrinks to it — width included. The demo page has
+                    <strong>no positioning styles of its own</strong>; the centering comes
+                    entirely from <code>position="center"</code> on the host, and
+                    <code>noBorder</code> drops the frame around it. One thing the demo
+                    <em>does</em> own: body padding reserving room for the avatar's
+                    shadow — an iframe clips at its edge, so ink overflow (shadows,
+                    glows) must fit inside the page's own layout.`,
+        note: [
+          'The avatar alone defines the iframe size; the host centers it.',
+          'Demos never position themselves — that is what `position` is for.',
+        ],
+        props: {
+          src: '/mock-demo-avatar',
+          alt: 'Avatar Example',
+          iframeOnly: true,
+          fitContent: true,
+          noBorder: true,
+          position: 'center',
+        },
+      },
+      {
+        intro: `The same avatar inside the full widget: drop <code>iframeOnly</code>
+                    and the tabs header and live-edit footer stay, while
+                    <code>fitContent</code> still sizes the example area to the avatar.
+                    Note the border is kept here — with the widget chrome around the
+                    demo, <code>noBorder</code> would leave the tabs and footer floating
+                    next to unframed content (see <a href="#no-border">No border</a>).`,
+        note: [
+          'Same avatar, full widget chrome — tabs header and footer kept, and so is the border.',
+        ],
+        props: {
+          src: '/mock-demo-avatar',
+          alt: 'Avatar Example',
+          fitContent: true,
+          position: 'center',
+        },
+      },
+    ],
+  },
+  {
+    slug: 'spacing',
+    title: 'Spacing',
+    description: `<p><code>spacing</code> adds padding <em>around</em> the iframe, applied by
+            the host container — demos never set their own outer padding.
+            <code>none</code> = 0 (the default), <code>sm</code> = 8px,
+            <code>md</code> = 16px, <code>lg</code> = 32px.</p>
+            <p>The three sizes read from CSS variables —
+            <code>--igd-sample-spacing-sm</code>, <code>--igd-sample-spacing-md</code>,
+            <code>--igd-sample-spacing-lg</code> — with the values above as fallbacks,
+            so the whole scale can be retuned from any ancestor, e.g.
+            <code>:root { --igd-sample-spacing-md: 24px; }</code>.</p>
+            <p>Use the buttons to switch the live sample between the three sizes:</p>`,
+    examples: [
+      {
+        intro: `<code>spacing="none"</code> removes the padding entirely. That only
+                    reads well when there is no box for the content to press against —
+                    which is why it is encouraged together with the inline trio
+                    (<code>iframeOnly</code>, <code>fitContent</code>,
+                    <code>noBorder</code>): the demo blends straight into the page and
+                    the page's own rhythm provides the breathing room. Inside a visible
+                    border, keep some spacing so the demo doesn't touch the frame:`,
+        note: [
+          'spacing="none" belongs with the borderless inline form — no frame for the demo to press against.',
+        ],
+        props: {
+          src: '/mock-demo-tall',
+          alt: 'Spacing none Example',
+          noBackground: true,
+          iframeOnly: true,
+          fitContent: true,
+          noBorder: true,
+          spacing: 'none',
+        },
+      },
+    ],
+  },
+  {
+    slug: 'position',
+    title: 'Position',
+    description: `<p><code>position</code> aligns the iframe inside the container. Pass a
+            horizontal token (<code>start</code>, <code>center</code>, <code>end</code>)
+            and/or a vertical token (<code>top</code>, <code>center</code>,
+            <code>bottom</code>) — <code>center</code> applies to whichever axis you
+            don't otherwise specify.</p>
+            <p><strong>Demos must not position themselves</strong> (no centering or
+            min-height on their body) — alignment is decided here, in one place. With
+            <code>fitContent</code> the iframe shrinks to its content, which is what
+            gives the alignment room to be visible; on fixed-size samples an aligned
+            axis gets some slack instead.</p>`,
+    examples: [
+      {
+        intro: `<code>position="start"</code> — the demo hugs the inline start
+                    (visually identical to the default, shown for completeness):`,
+        props: {
+          src: '/mock-demo-avatar',
+          alt: 'Position start Example',
+          iframeOnly: true,
+          fitContent: true,
+          noBorder: true,
+          position: 'start',
+        },
+      },
+      {
+        intro: `<code>position="center"</code> — centered; <code>center</code>
+                    also applies to whichever axis you don't otherwise specify:`,
+        props: {
+          src: '/mock-demo-avatar',
+          alt: 'Position center Example',
+          iframeOnly: true,
+          fitContent: true,
+          noBorder: true,
+          position: 'center',
+        },
+      },
+      {
+        intro: `<code>position="end"</code> — aligned to the inline end:`,
+        note: ['The demo shrinks to its content; the HOST right-aligns it via position="end".'],
+        props: {
+          src: '/mock-demo-avatar',
+          alt: 'Position end Example',
+          iframeOnly: true,
+          fitContent: true,
+          noBorder: true,
+          position: 'end',
+        },
+      },
+    ],
+  },
+  {
+    slug: 'resizable',
+    title: 'Resizable',
+    description: `<p><code>resizable</code> shows an always-visible drag handle on the right
+            edge that resizes the <strong>iframe's width only</strong> — the component's
+            own footprint never changes, so it's safe inline in docs. Focus the sample
+            and use <kbd>←</kbd> / <kbd>→</kbd> to resize from the keyboard. Meant for
+            showcasing responsive components; horizontal-only.</p>
+            <p>Pair it with <code>fitContent</code> and the two split the work:
+            <strong>your drag owns the width, the content owns the height</strong> —
+            drag the demo narrower and instead of scrolling inside a fixed box, the
+            iframe grows to fit the reflowed cards. Combining <code>resizable</code>
+            with a fixed <code>height</code> is possible, but not encouraged: the demo
+            ends up scrolling or leaving gaps at some widths.</p>`,
+    examples: [
+      {
+        note: [
+          'Drag the right-edge handle (or focus + arrow keys) to hit the demo breakpoints.',
+          'Drag owns the width; the content keeps dictating the height — no fixed height needed.',
+        ],
+        props: {
+          src: '/mock-demo-responsive',
+          alt: 'Resizable Example',
+          iframeOnly: true,
+          resizable: true,
+          fitContent: true,
+        },
+      },
+    ],
+  },
+  {
+    slug: 'no-border',
+    title: 'No border',
+    description: `<p>The iframe is borderless by default (<code>noBorder</code> is
+            <code>true</code>) — the demo blends into the page. Pass
+            <code>noBorder={false}</code> to draw the 1px border back.</p>
+            <p>The borderless default suits <code>iframeOnly</code> samples
+            <em>without</em> the fullscreen button. Once any chrome is visible — the
+            widget's tabs or a "View in full screen" button below — the border is what
+            visually ties that chrome to the demo, and leaving it off leaves the
+            controls floating next to unframed content. If you want a borderless demo,
+            drop the chrome too.</p>`,
+    examples: [
+      {
+        props: {
+          src: '/mock-demo-tall',
+          height: 260,
+          alt: 'No-border Example',
+          iframeOnly: true,
+          noBorder: true,
+        },
+      },
+    ],
+  },
+  {
+    slug: 'no-background',
+    title: 'No background',
+    description: `<p>The container can draw a subtle grid pattern behind the iframe — it
+            gives demos with a transparent page a visible canvas, so they don't look
+            like a hole in the docs. It is hidden by default
+            (<code>noBackground</code> is <code>true</code>): the container is
+            transparent, and a demo with no background of its own sits directly on the
+            page. Pass <code>noBackground={false}</code> to show the grid.</p>
+            <p>Compare with the avatar samples in
+            <a href="#fit-content">Fit to content</a>, where the grid shows through the
+            transparent demo page. It pairs naturally with the inline form
+            (<code>iframeOnly fitContent noBorder spacing="none"</code>) when the demo
+            should blend into the page completely:</p>`,
+    examples: [
+      {
+        note: ['The grid backdrop is hidden — the transparent demo sits directly on the page.'],
+        props: {
+          src: '/mock-demo-avatar',
+          alt: 'No-background Example',
+          iframeOnly: true,
+          fitContent: true,
+          noBorder: true,
+          spacing: 'none',
+          noBackground: true,
+          position: 'center',
+        },
+      },
+    ],
+  },
+];
+
 const headings = [
-  { depth: 2, slug: 'full-widget', text: 'Full widget (TSX + CSS)' },
-  { depth: 2, slug: 'angular-tabs', text: 'Angular-style tabs (TS + HTML + SCSS)' },
-  { depth: 2, slug: 'blazor-tabs', text: 'Blazor-style tabs (RAZOR + CS + CSS)' },
-  { depth: 2, slug: 'iframe-only', text: 'iframe only' },
-  { depth: 2, slug: 'fullscreen-btn', text: 'iframe + fullscreen button' },
+  { depth: 2, slug: 'quick-start', text: 'Quick start' },
+  { depth: 2, slug: 'choosing-mode', text: 'Which mode do I need?' },
+  { depth: 2, slug: 'props', text: 'Props (API reference)' },
+  { depth: 2, slug: 'full-widget', text: 'Default behavior' },
+  { depth: 2, slug: 'fixed-height', text: 'Fixed height' },
+  ...sections.map((s) => ({ depth: 2, slug: s.slug, text: s.title })),
+  { depth: 2, slug: 'demo-servers', text: 'Alternate demo servers' },
+  { depth: 2, slug: 'best-practices', text: 'Best practices' },
 ];
 
-const blazorTabs = [
-  {
-    label: 'RAZOR',
-    lang: 'razor',
-    content: `@page "/grid-sample"
-@using IgniteUI.Blazor.Controls
+// ─ Snippets for the hand-written sections ──────────────────────────────────────
 
-<IgbGrid Data="Data" Height="340px" Width="100%" PrimaryKey="ID">
-    <IgbColumn Field="ID"   Header="ID"   DataType="GridColumnDataType.Number" Width="80px"></IgbColumn>
-    <IgbColumn Field="Name" Header="Name" Sortable="true" Width="180px"></IgbColumn>
-    <IgbColumn Field="Age"  Header="Age"  DataType="GridColumnDataType.Number" Width="100px"></IgbColumn>
-    <IgbColumn Field="City" Header="City" Sortable="true" Width="140px"></IgbColumn>
-    <IgbColumn Field="Role" Header="Role" Sortable="true"></IgbColumn>
-</IgbGrid>
+// Built from a const rather than written inline: a bare `---` at the start of a
+// line inside a template literal makes oxlint's Astro parser treat it as the end
+// of this file's frontmatter, which fails the lint with "Unterminated string".
+const FENCE = '---';
 
-@code {
-    private static readonly Employee[] Data = new[]
-    {
-        new Employee(1, "Alice Johnson", 32, "London",  "Engineer"),
-        new Employee(2, "Bob Martinez",  28, "Berlin",  "Designer"),
-        new Employee(3, "Carol Zhang",   35, "Tokyo",   "Manager"),
-        new Employee(4, "David Kim",     41, "Seoul",   "Architect"),
-        new Employee(5, "Eve Mueller",   29, "Vienna",  "Engineer"),
-    };
-}`,
-  },
-  {
-    label: 'CS',
-    lang: 'csharp',
-    content: `namespace BlazorSample.Models;
+const usageQuickStart = `${FENCE}
+import Sample from 'igniteui-astro-components/mdx/Sample/Sample.astro';
+${FENCE}
 
-public record Employee(int ID, string Name, int Age, string City, string Role);`,
-  },
-  {
-    label: 'CSS',
-    lang: 'css',
-    content: `.grid-wrapper {
-    padding: 16px;
-}`,
-  },
-];
+<Sample src="/grids/grid/overview" alt="React Grid Example" />`;
 
-const angularTabs = [
-  {
-    label: 'TS',
-    lang: 'typescript',
-    content: `import { Component } from '@angular/core';
-import { IgxGridComponent, IgxColumnComponent } from 'igniteui-angular/grids';
+const usageFull = `<Sample src="/grids/grid/overview" alt="React Grid Example" />`;
 
-const DATA = [
-  { ID: 1, Name: 'Alice Johnson', City: 'London',  Role: 'Engineer'  },
-  { ID: 2, Name: 'Bob Martinez',  City: 'Berlin',  Role: 'Designer'  },
-  { ID: 3, Name: 'Carol Zhang',   City: 'Tokyo',   Role: 'Manager'   },
-  { ID: 4, Name: 'David Kim',     City: 'Seoul',   Role: 'Architect' },
-  { ID: 5, Name: 'Eve Mueller',   City: 'Vienna',  Role: 'Engineer'  },
-];
+const usageFixedHeight = `<!-- height is the iframe height in px; omit it and the default 150px is used -->
+<Sample src="/grids/grid/overview" height={240} alt="Grid Example" />`;
 
-@Component({
-    selector: 'app-grid-sample',
-    templateUrl: './grid-sample.component.html',
-    styleUrls: ['./grid-sample.component.scss'],
-    imports: [IgxGridComponent, IgxColumnComponent]
-})
-export class GridSampleComponent {
-    public data = DATA;
-    public formatCurrency(value: number) {
-        return '$' + value.toFixed(2);
-    }
-}`,
-  },
-  {
-    label: 'HTML',
-    lang: 'html',
-    content: `<div class="grid__wrapper">
-  <igx-grid [data]="data" height="340px" width="100%">
-    <igx-column field="ID"   header="ID"   dataType="number" width="80px"></igx-column>
-    <igx-column field="Name" header="Name" sortable="true"   width="200px"></igx-column>
-    <igx-column field="City" header="City" sortable="true"   width="160px"></igx-column>
-    <igx-column field="Role" header="Role" sortable="true"></igx-column>
-  </igx-grid>
-</div>`,
-  },
-  {
-    label: 'SCSS',
-    lang: 'scss',
-    content: `.grid__wrapper {
-    padding-top: 16px;
-    margin: 0 16px;
-}`,
-  },
-  {
-    label: 'MODULE',
-    lang: 'typescript',
-    content: `import { NgModule } from '@angular/core';
-import { BrowserModule } from '@angular/platform-browser';
-import { IgxGridModule } from 'igniteui-angular';
-import { GridSampleComponent } from './grid-sample.component';
+const usageServers = `<!-- Load from the LOB demos server instead of the default one -->
+<Sample src="/grid-dynamic/overview" lob height={360} alt="LOB Grid Example" />
 
-@NgModule({
-  declarations: [GridSampleComponent],
-  imports: [BrowserModule, IgxGridModule],
-  bootstrap: [GridSampleComponent],
-})
-export class AppModule {}`,
-  },
-  {
-    label: 'APP.ROUTES',
-    lang: 'typescript',
-    content: `import { Routes } from '@angular/router';
-import { GridSampleComponent } from './grid-sample/grid-sample.component';
+<!-- charts/, gauges/, maps/, excel/ paths pick the DV server automatically -->
+<Sample src="/charts/data-chart/overview" height={500} alt="Data Chart Example" />
 
-export const routes: Routes = [
-  { path: '', component: GridSampleComponent },
-];`,
-  },
-  {
-    label: 'MAIN.TS',
-    lang: 'typescript',
-    content: `import { bootstrapApplication } from '@angular/platform-browser';
-import { AppComponent } from './app/app.component';
-import { appConfig } from './app/app.config';
-
-bootstrapApplication(AppComponent, appConfig).catch(console.error);`,
-  },
-  {
-    label: 'APP.CONFIG',
-    lang: 'typescript',
-    content: `import { ApplicationConfig } from '@angular/core';
-import { provideRouter } from '@angular/router';
-import { routes } from './app.routes';
-
-export const appConfig: ApplicationConfig = {
-  providers: [provideRouter(routes)],
-};`,
-  },
-  {
-    label: 'ENVIRONMENT',
-    lang: 'typescript',
-    content: `export const environment = {
-  production: false,
-  apiUrl: 'https://api.example.com',
-  licenseKey: 'YOUR_LICENSE_KEY',
-};`,
-  },
-  {
-    label: 'GRID.SERVICE',
-    lang: 'typescript',
-    content: `import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
-
-@Injectable({ providedIn: 'root' })
-export class GridService {
-  constructor(private http: HttpClient) {}
-
-  getData(): Observable<any[]> {
-    return this.http.get<any[]>('/api/data');
-  }
-}`,
-  },
-  {
-    label: 'PIPE',
-    lang: 'typescript',
-    content: `import { Pipe, PipeTransform } from '@angular/core';
-
-@Pipe({ name: 'currency', standalone: true })
-export class CurrencyFormatPipe implements PipeTransform {
-  transform(value: number, symbol = '$'): string {
-    return symbol + value.toFixed(2);
-  }
-}`,
-  },
-  {
-    label: 'DIRECTIVES',
-    lang: 'typescript',
-    content: `import { Directive, ElementRef, HostListener } from '@angular/core';
-
-@Directive({ selector: '[appHighlight]', standalone: true })
-export class HighlightDirective {
-  constructor(private el: ElementRef) {}
-
-  @HostListener('mouseenter') onEnter() {
-    this.el.nativeElement.style.backgroundColor = 'lightyellow';
-  }
-
-  @HostListener('mouseleave') onLeave() {
-    this.el.nativeElement.style.backgroundColor = '';
-  }
-}`,
-  },
-  {
-    label: 'SPEC',
-    lang: 'typescript',
-    content: `import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { GridSampleComponent } from './grid-sample.component';
-
-describe('GridSampleComponent', () => {
-  let fixture: ComponentFixture<GridSampleComponent>;
-
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [GridSampleComponent],
-    }).compileComponents();
-    fixture = TestBed.createComponent(GridSampleComponent);
-  });
-
-  it('should create', () => {
-    expect(fixture.componentInstance).toBeTruthy();
-  });
-});`,
-  },
-];
+<!-- Force the DV or CRM server for paths that don't match a known prefix -->
+<Sample src="/some/dv-sample" dv height={400} alt="DV Example" />
+<Sample src="/dashboard/overview" crm height={400} alt="CRM Example" />`;
 ---
 
 <DocsLayout title="Sample" siteTitle={SITE_TITLE} hasSidebar currentSlug={slug}>
@@ -236,52 +540,253 @@ describe('GridSampleComponent', () => {
 
   <h1>Sample</h1>
   <p>
-    Renders a live demo widget with an embedded iframe, source-code tabs, and live-edit buttons. The
-    shell is rendered server-side; tab switching, copy buttons, and iframe lazy-loading are handled
-    by
-    <code>sample-widget.ts</code> on the client.
+    <code>Sample</code> embeds a <strong>live, running demo</strong> in a docs page. By default it renders
+    the full widget: an EXAMPLE tab with the demo in an iframe, source-code tabs for the demo's files,
+    and a footer with live-edit buttons (StackBlitz / CodeSandbox) and a full-screen action. The shell
+    is rendered server-side by Astro; tab switching, copy buttons, and iframe lazy-loading are handled
+    by <code>sample-widget.ts</code> on the client.
   </p>
   <p>
-    All iframes load from <code>/mock-demo</code> in this playground.
-    <strong>MockSample</strong> pre-renders code tabs with mock content so the full shell is visible without
-    a real demos server.
+    Every example on this page shows the <em>exact</em> markup that renders it — copy the snippet as-is
+    and swap <code>src</code> for your demo's path. In this playground the iframes load local <code
+      >/mock-demo*</code
+    >
+    pages instead of a real demos server, and <strong>MockSample</strong>
+    pre-renders the code tabs with mock content so the full shell is visible without one.
   </p>
 
-  <h2 id="full-widget">Full widget (TSX + CSS)</h2>
-  <p>Default React-style tabs. Click any tab to switch, hover a code pane to reveal COPY CODE.</p>
-  <MockSample id="mock-sample-1" src="/mock-demo" height={360} alt="React Grid Example" />
-
-  <h2 id="angular-tabs">Angular-style tabs (TS + HTML + SCSS)</h2>
-  <p>Pass a custom <code>tabs</code> array to render any combination of code tabs.</p>
-  <MockSample
-    id="mock-sample-angular"
-    src="/mock-demo"
-    height={360}
-    alt="Angular Grid Example"
-    tabs={angularTabs}
-  />
-
-  <h2 id="blazor-tabs">Blazor-style tabs (RAZOR + CS + CSS)</h2>
-  <p>Razor is highlighted natively via Shiki.</p>
-  <MockSample
-    id="mock-sample-blazor"
-    src="/mock-demo"
-    height={360}
-    alt="Blazor Grid Example"
-    tabs={blazorTabs}
-  />
-
-  <h2 id="iframe-only">iframe only</h2>
+  <h2 id="quick-start">Quick start</h2>
   <p>
-    Use <code>iframeOnly</code> to strip the navbar and footer - useful when embedding a demo inline without
-    the widget chrome.
+    Import the component and point <code>src</code> at a demo path. The base URL for the iframe comes
+    from the docs environment config, so
+    <code>src</code> is always relative:
   </p>
-  <SampleWidget src="/mock-demo" height={260} alt="React Example" iframeOnly />
+  <Code code={usageQuickStart} lang="astro" theme="dark-plus" wrap />
+  <DocsAside type="info">
+    Always pass <code>alt</code> (the iframe's accessible title). Prefer
+    <a href="#fit-content"><code>fitContent</code></a> and let the demo size itself; set a fixed <code
+      >height</code
+    > only to restrict a very tall demo (it then scrolls inside the iframe).
+  </DocsAside>
 
-  <h2 id="fullscreen-btn">iframe + fullscreen button</h2>
+  <h2 id="choosing-mode">Which mode do I need?</h2>
+  <div class="igd-table-wrapper" role="region" aria-labelledby="mode-table-caption" tabindex="0">
+    <table>
+      <caption id="mode-table-caption" class="visually-hidden"
+        >Which Sample mode to use for common goals</caption
+      >
+      <thead>
+        <tr><th>You want to…</th><th>Use</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Show a demo <em>and</em> its source code, with live-edit buttons</td>
+          <td>the default widget — just <code>src</code> and <code>alt</code></td>
+        </tr>
+        <tr>
+          <td>Embed only the running demo inline in the text</td>
+          <td
+            ><code>iframeOnly fitContent noBorder spacing="none"</code> — the usual form for inline demos</td
+          >
+        </tr>
+        <tr>
+          <td>…and still let readers open it in a new tab</td>
+          <td><code>iframeOnly fullscreenBtn</code></td>
+        </tr>
+        <tr>
+          <td>Let the demo decide its own height/width (no scrollbars, no gaps)</td>
+          <td><code>fitContent</code></td>
+        </tr>
+        <tr>
+          <td>Let readers preview a responsive demo at different widths</td>
+          <td
+            ><code>resizable</code> — add <code>fitContent</code> so the height follows the reflowed content</td
+          >
+        </tr>
+        <tr>
+          <td>Blend a small demo into the page (badge, avatar, button…)</td>
+          <td><code>iframeOnly fitContent noBorder position="center"</code></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2 id="props">Props (API reference)</h2>
+  <div class="igd-table-wrapper" role="region" aria-labelledby="props-table-caption" tabindex="0">
+    <table>
+      <caption id="props-table-caption" class="visually-hidden">Sample component props</caption>
+      <thead>
+        <tr><th>Prop</th><th>Type</th><th>Default</th><th>Description</th></tr>
+      </thead>
+      <tbody>
+        {
+          propRows.map((row) => (
+            <tr>
+              <td>
+                <code>{row.name}</code>
+              </td>
+              <td>
+                <code>{row.type}</code>
+              </td>
+              <td>{row.def}</td>
+              <td set:html={row.description} />
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <h2 id="full-widget">Default</h2>
   <p>
-    <code>iframeOnly</code> combined with <code>fullscreenBtn</code> renders a "View in full screen" link
-    below the iframe.
+    The default rendering: an EXAMPLE tab with the live demo plus one source tab per demo file. You
+    don't configure the tabs — <strong
+      >which tabs appear is driven by the demo's own source files</strong
+    >, fetched by the real component. Click any tab to switch; hover a code pane to reveal the COPY
+    CODE button. The footer opens the demo in StackBlitz, CodeSandbox, or full screen.
   </p>
-  <SampleWidget src="/mock-demo" height={200} alt="React Example" iframeOnly fullscreenBtn />
+  <Code code={usageFull} lang="astro" theme="dark-plus" wrap />
+  <MockSample id="mock-sample-1" src="/mock-demo" alt="React Grid Example" />
+
+  <h2 id="fixed-height">Fixed height</h2>
+  <p>
+    <code>height</code> sets the iframe's height in pixels. Use it when you want to <em>restrict</em
+    > a very tall sample: the demo then scrolls inside the iframe. It's typically for demos whose content
+    has no internal scrollbar or <code>max-height</code> of its own — anything else is usually better
+    served by <code>fitContent</code>. When omitted it defaults to <code>150</code>, which is what
+    the widget above uses (with
+    <code>fitContent</code> the default drops to <code>50</code>, where it only serves as the
+    loading placeholder). Here the same demo gets an explicit 240px instead:
+  </p>
+  <Code code={usageFixedHeight} lang="astro" theme="dark-plus" wrap />
+  <MockSample id="mock-sample-fixed-height" src="/mock-demo" height={240} alt="Grid Example" />
+
+  {
+    sections.map((section) => (
+      <>
+        <h2 id={section.slug}>{section.title}</h2>
+        <Fragment set:html={section.description} />
+        {section.warning && (
+          <DocsAside type="warning">
+            <Fragment set:html={section.warning} />
+          </DocsAside>
+        )}
+        {section.slug === 'spacing' && (
+          <>
+            <Code code={snippetFor(spacingDemo)} lang="astro" theme="dark-plus" wrap />
+            <div id="spacing-demo">
+              <igc-button-group selection="single-required" aria-label="Sample spacing">
+                <igc-toggle-button value="sm">sm</igc-toggle-button>
+                <igc-toggle-button value="md" selected>
+                  md
+                </igc-toggle-button>
+                <igc-toggle-button value="lg">lg</igc-toggle-button>
+              </igc-button-group>
+              <SampleWidget {...(spacingDemo.props as any)} />
+            </div>
+          </>
+        )}
+        {section.examples.map((ex) => (
+          <>
+            {ex.intro && <p set:html={ex.intro} />}
+            <Code code={snippetFor(ex)} lang="astro" theme="dark-plus" wrap />
+            <SampleWidget {...(ex.props as any)} />
+          </>
+        ))}
+      </>
+    ))
+  }
+
+  <h2 id="demo-servers">Alternate demo servers</h2>
+  <p>
+    Demos live on several servers, each configured as a base URL in the docs environment config. The
+    default server is used unless a flag (or a known path prefix) says otherwise — <code>src</code> itself
+    never contains a host. There is no live example here because the playground has no demo servers configured;
+    in real docs these render exactly like the samples above.
+  </p>
+  <Code code={usageServers} lang="astro" theme="dark-plus" wrap />
+
+  <h2 id="best-practices">Best practices</h2>
+  <ul>
+    <li>
+      <strong>Always set <code>alt</code>.</strong> It becomes the iframe's
+      <code>title</code>, which is what screen readers announce.
+    </li>
+    <li>
+      <strong>Set <code>height</code> only to cap a very tall demo.</strong>
+      Prefer <code>fitContent</code> and let the demo report its own size. Reach for a fixed <code
+        >height</code
+      > when you want to restrict an overly tall sample and let it scroll inside the iframe — typically
+      demos whose content has no internal scrollbar or
+      <code>max-height</code> of its own.
+    </li>
+    <li>
+      <strong>Demos never position themselves.</strong> No centering, margins, or <code
+        >min-height</code
+      > on the demo's body — alignment is the host's job via <code>position</code>, spacing via
+      <code>spacing</code>. This keeps every demo reusable in any layout.
+    </li>
+    <li>
+      using <code>fitContent</code> you should <strong
+        >reserve room for ink overflow inside the demo.</strong
+      > An iframe clips at its edge, so shadows, glows, and focus rings must fit inside the demo page's
+      own layout (e.g. body padding matching the shadow's blur + offset).
+    </li>
+    <li>
+      <strong>Pair <code>resizable</code> with <code>fitContent</code> for responsive demos.</strong
+      > The drag owns the width and the content owns the height, so the demo reflows without ever scrolling
+      inside the iframe. Note that fit mode stops adjusting the <em>width</em> on resizable samples —
+      the drag decides it.
+    </li>
+    <li>
+      <strong
+        ><code>iframeOnly</code>, <code>fitContent</code>,
+        <code>noBorder</code>, and <code>spacing="none"</code> travel together.</strong
+      > An inline demo reads best when it takes exactly its content's space and blends into the page like
+      a figure — and with no border there is nothing for the padding to keep distance from. Conversely,
+      keep the border (and some spacing inside it) whenever any chrome is visible — tabs or the fullscreen
+      button need the frame to tie them to the demo.
+    </li>
+    <li>
+      <strong><code>fullscreenBtn</code> needs <code>iframeOnly</code>.</strong>
+      The full widget already has a full-screen action in its footer.
+    </li>
+    <li>
+      <strong>Prefer the full widget when the source matters.</strong> Use
+      <code>iframeOnly</code> for quick inline illustrations; keep the tabs and live-edit footer when
+      readers are expected to copy or fork the demo's code.
+    </li>
+  </ul>
+  <DocsAside type="warning">
+    Cross-origin demos used with <code>fitContent</code>
+    <em>must</em> report their size via
+    <code set:html={"parent.postMessage({ type: 'igd-sample-height', height }, '*')"} />
+    — otherwise the iframe stays at the fallback <code>height</code>.
+  </DocsAside>
 </DocsLayout>
+
+<style>
+  #spacing-demo igc-button-group {
+    margin-block-end: 12px;
+    display: flex;
+  }
+</style>
+
+<script>
+  import { defineComponents, IgcButtonGroupComponent } from 'igniteui-webcomponents';
+
+  defineComponents(IgcButtonGroupComponent);
+
+  // Wire the spacing demo's button group: selecting a size swaps the
+  // data-spacing attribute on the live sample container.
+  function initSpacingDemo() {
+    const demo = document.getElementById('spacing-demo');
+    const container = demo?.querySelector('.igd-sample-container');
+    demo?.querySelector('igc-button-group')?.addEventListener('igcSelect', (e) => {
+      const size = (e as CustomEvent<string | undefined>).detail;
+      if (size && container) container.setAttribute('data-spacing', size);
+    });
+  }
+
+  document.addEventListener('astro:page-load', initSpacingDemo);
+</script>
