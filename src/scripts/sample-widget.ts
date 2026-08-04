@@ -209,8 +209,10 @@ function addCodeTab(igcTabs: HTMLElement, file: SampleFile): void {
   code.textContent = file.content;
   pre.appendChild(code);
 
+  // Same flat variant as the page-level CopyCode button so both copy
+  // affordances look identical.
   const copyBtn = document.createElement('igc-icon-button') as HTMLElement;
-  copyBtn.setAttribute('variant', 'outlined');
+  copyBtn.setAttribute('variant', 'flat');
   copyBtn.setAttribute('aria-label', 'Copy code');
   copyBtn.className = 'cv-hljs-code-copy';
 
@@ -247,6 +249,10 @@ function addFooter(
   onStackblitz: (() => void) | null,
   _onCodeSandbox: (() => void) | null,
 ): void {
+  // A footer may already be server-rendered (e.g. the playground's MockSample);
+  // don't append a second one.
+  if (widget.querySelector('.igd-code-view__footer-actions')) return;
+
   const footer = document.createElement('div');
   footer.className = 'igd-code-view__footer-actions';
 
@@ -559,6 +565,280 @@ class XplatCodeService {
   }
 }
 
+// ─── Fit-to-content sizing ──────────────────────────────────────────────────────
+
+/**
+ * Message a demo can post to resize its host `<Sample fitContent>` iframe:
+ *   parent.postMessage({ type: 'igd-sample-height', height: <px>, width: <px?> }, '*')
+ * This is the path for cross-origin demos, where the host page can't read the
+ * iframe's contentDocument to measure it directly. `width` is optional — post
+ * it when the sample is horizontally aligned via `position`.
+ */
+const FIT_CONTENT_MESSAGE = 'igd-sample-height';
+
+/**
+ * Posted INTO the iframe once it loads, telling the embedded demo that its
+ * host sizes itself to the content. The demo's reporter script reacts by
+ * neutralizing viewport-bound sizing (`html, body { height: 100% }` — which
+ * would otherwise just echo the iframe height back) and starts posting
+ * FIT_CONTENT_MESSAGE sizes. Demos in fixed-height samples never receive this
+ * and keep their percentage-height layouts.
+ */
+const FIT_CONTENT_ENABLE_MESSAGE = 'igd-sample-fit';
+
+let _fitContentMessageBound = false;
+
+/**
+ * Apply a measured content size to a fit-content iframe. The size goes on the
+ * iframe itself; the container has `height: auto` in fit-content mode, so it
+ * grows around the iframe (including any `spacing` padding). Width is only
+ * applied when reported/measured — see measureContentWidth().
+ */
+function setFitSize(iframe: HTMLIFrameElement, size: { height?: number; width?: number }): void {
+  if (size.height && size.height > 0) {
+    iframe.style.height = `${Math.ceil(size.height)}px`;
+    // Distinguish a real measured/reported size from the server-rendered
+    // `height` fallback the iframe starts with.
+    iframe.dataset.fitSized = 'true';
+  }
+  if (size.width && size.width > 0) {
+    iframe.style.width = `${Math.ceil(size.width)}px`;
+    // The frame defaults to full width (see Sample.scss); once the iframe
+    // has a definite px width, let the frame shrink-wrap it so the host's
+    // flex alignment (position) can move the content-sized box around.
+    const frame = iframe.closest<HTMLElement>('.igd-sample-frame');
+    if (frame) frame.style.width = 'auto';
+  }
+}
+
+/**
+ * Measure the intrinsic width of a same-origin demo's content. Only used when
+ * the host container aligns the iframe horizontally (`position` → data-justify):
+ * block-level demo content stretches to the viewport width, so instead we take
+ * the right-most element box. Demos with intrinsically sized content (a lone
+ * avatar, a button…) shrink the iframe to that content, letting the host's
+ * flex alignment actually center/end-align it. Full-width demos measure the
+ * viewport width and are left as-is.
+ *
+ * Resizable containers are excluded entirely: there the user's drag owns the
+ * width, and applying a measured width would clobber it on every observer tick.
+ */
+function measureContentWidth(iframe: HTMLIFrameElement, body: HTMLElement): number | undefined {
+  const container = iframe.closest<HTMLElement>('.igd-sample-container');
+  if (!container?.dataset.justify || container.dataset.resizable) return undefined;
+  const left = body.getBoundingClientRect().left;
+  let right = left;
+  body.querySelectorAll('*').forEach((el) => {
+    right = Math.max(right, el.getBoundingClientRect().right);
+  });
+  if (right <= left) return undefined;
+  // The right-most element edge includes the body's leading padding but not
+  // its trailing padding. Demos use body padding to reserve room for ink
+  // overflow (shadows, glows) — keep that room on the trailing side too.
+  const cs = iframe.contentWindow?.getComputedStyle(body);
+  const trailing = cs
+    ? parseFloat(cs.paddingRight || '0') + parseFloat(cs.borderRightWidth || '0')
+    : 0;
+  return right - left + trailing;
+}
+
+function bindFitContentMessages(): void {
+  if (_fitContentMessageBound) return;
+  _fitContentMessageBound = true;
+  window.addEventListener('message', (e: MessageEvent) => {
+    const data = e.data;
+    if (
+      !data ||
+      data.type !== FIT_CONTENT_MESSAGE ||
+      typeof data.height !== 'number' ||
+      !Number.isFinite(data.height) ||
+      data.height <= 0
+    )
+      return;
+    document
+      .querySelectorAll<HTMLIFrameElement>('.igd-sample-container[data-fit-content] iframe')
+      .forEach((iframe) => {
+        if (iframe.contentWindow !== e.source) return;
+        // Width only matters when the host aligns the iframe
+        // horizontally (position → data-justify); otherwise the iframe
+        // stays full-width and a reported width is ignored. Resizable
+        // containers ignore it too — the user's drag owns the width.
+        const container = iframe.closest<HTMLElement>('.igd-sample-container');
+        const useWidth = Boolean(container?.dataset.justify) && !container?.dataset.resizable;
+        setFitSize(iframe, {
+          height: data.height,
+          width: useWidth && typeof data.width === 'number' ? data.width : undefined,
+        });
+      });
+  });
+}
+
+/**
+ * Wire an iframe whose container opted into fit-content sizing.
+ *
+ * Same-origin demos (e.g. the playground mock) are measured directly and kept
+ * in sync with a ResizeObserver on their <body>. Cross-origin demos can't be
+ * read, so they must post their height (see FIT_CONTENT_MESSAGE).
+ *
+ * The `height` prop is only the placeholder/fallback in fit-content mode —
+ * once a size is measured/reported, the content dictates it. Measurement uses
+ * the html/body offset heights (not the document scrollHeight, which is
+ * clamped to the viewport) so the iframe can shrink below its current height
+ * as well as grow.
+ */
+function wireFitContent(iframe: HTMLIFrameElement): void {
+  if (iframe.dataset.fitContentWired) return;
+  iframe.dataset.fitContentWired = 'true';
+  bindFitContentMessages();
+
+  let bodyObserver: ResizeObserver | null = null;
+
+  const measure = () => {
+    try {
+      const doc = iframe.contentDocument;
+      const body = doc?.body;
+      if (!body) return; // cross-origin — rely on postMessage instead
+      setFitSize(iframe, {
+        height: Math.max(doc!.documentElement.offsetHeight, body.offsetHeight, body.scrollHeight),
+        width: measureContentWidth(iframe, body),
+      });
+    } catch {
+      /* cross-origin — rely on postMessage instead */
+    }
+  };
+
+  const onLoad = () => {
+    // Tell the demo this is a fit-content embed (see the constant's doc).
+    // `width: true` additionally asks it to shrink-wrap and report its
+    // intrinsic width, so the host's `position` can center/align it.
+    // Not on resizable containers — there the user's drag owns the width
+    // and the demo should keep filling whatever width it is given.
+    const container = iframe.closest<HTMLElement>('.igd-sample-container');
+    iframe.contentWindow?.postMessage(
+      {
+        type: FIT_CONTENT_ENABLE_MESSAGE,
+        width: Boolean(container?.dataset.justify) && !container?.dataset.resizable,
+      },
+      '*',
+    );
+    measure();
+    try {
+      const body = iframe.contentDocument?.body;
+      if (body && 'ResizeObserver' in window) {
+        // onLoad can run more than once (wire time + load event, or an
+        // iframe navigation) — replace the observer, never stack them.
+        bodyObserver?.disconnect();
+        bodyObserver = new ResizeObserver(measure);
+        bodyObserver.observe(body);
+        return;
+      }
+    } catch {
+      /* cross-origin — nothing to observe */
+    }
+    // Cross-origin demo: it must post its size (see FIT_CONTENT_MESSAGE) or
+    // the iframe stays at the `height` prop fallback. Surface that loudly —
+    // a silently non-fitting sample is hard to diagnose from the docs side.
+    setTimeout(() => {
+      if (!iframe.dataset.fitSized) {
+        console.warn(
+          `[sample-widget] fitContent: cross-origin demo "${iframe.src}" hasn't reported its size. ` +
+            `The demo must run: parent.postMessage({ type: '${FIT_CONTENT_MESSAGE}', height: document.documentElement.scrollHeight }, '*') ` +
+            `on load/resize; until then the iframe keeps the \`height\` prop as a fallback.`,
+        );
+      }
+    }, 3000);
+  };
+
+  // iframeOnly renders `src` directly, so the iframe may already be loaded —
+  // and a cross-origin iframe gives no way to detect that (contentDocument is
+  // null whether it's loaded or not). Run the handler once at wire time as
+  // well: on a not-yet-loaded iframe the enable message is simply lost and
+  // the `load` listener below re-sends it; on an already-loaded one this is
+  // the only chance to deliver it. Widget iframes load lazily (data-src, no
+  // src yet) and are handled purely by the `load` event.
+  if (iframe.src) onLoad();
+  iframe.addEventListener('load', onLoad);
+}
+
+function initFitContentIframes(): void {
+  document
+    .querySelectorAll<HTMLIFrameElement>('.igd-sample-container[data-fit-content] iframe')
+    .forEach(wireFitContent);
+}
+
+// ─── Resizable samples ──────────────────────────────────────────────────────────
+
+const RESIZE_MIN_WIDTH = 200; // px — narrowest the iframe can be dragged.
+const RESIZE_KEY_STEP = 24; // px — width change per arrow-key press.
+
+/**
+ * Wire a `<Sample resizable>` container: a right-edge drag handle plus left/right
+ * arrow keys resize the iframe's width (only the iframe, horizontally) so
+ * responsive demos can be previewed at different widths. The container's own
+ * footprint never changes.
+ */
+function wireResizable(container: HTMLElement): void {
+  if (container.dataset.resizableWired) return;
+  container.dataset.resizableWired = 'true';
+
+  const frame = container.querySelector<HTMLElement>('.igd-sample-frame');
+  const handle = container.querySelector<HTMLElement>('.igd-sample-resize-handle');
+  if (!frame) return;
+
+  // Widest the frame can be: the container's content box (minus padding).
+  const maxWidth = (): number => {
+    const cs = getComputedStyle(container);
+    const pad = parseFloat(cs.paddingLeft || '0') + parseFloat(cs.paddingRight || '0');
+    return Math.max(RESIZE_MIN_WIDTH, container.clientWidth - pad);
+  };
+
+  const setWidth = (px: number): void => {
+    const clamped = Math.round(Math.min(maxWidth(), Math.max(RESIZE_MIN_WIDTH, px)));
+    frame.style.width = `${clamped}px`;
+  };
+
+  // ─ Pointer drag ─
+  if (handle) {
+    handle.addEventListener('pointerdown', (e: PointerEvent) => {
+      e.preventDefault();
+      container.classList.add('resizing');
+      handle.setPointerCapture(e.pointerId);
+
+      const startX = e.clientX;
+      const startW = frame.getBoundingClientRect().width;
+      // A centered frame grows from both sides, so the handle covers half
+      // the width change per pixel moved.
+      const factor = getComputedStyle(container).justifyContent === 'center' ? 2 : 1;
+
+      const onMove = (ev: PointerEvent) => setWidth(startW + (ev.clientX - startX) * factor);
+      const onUp = (ev: PointerEvent) => {
+        container.classList.remove('resizing');
+        handle.releasePointerCapture?.(ev.pointerId);
+        handle.removeEventListener('pointermove', onMove);
+        handle.removeEventListener('pointerup', onUp);
+        handle.removeEventListener('pointercancel', onUp);
+      };
+      handle.addEventListener('pointermove', onMove);
+      handle.addEventListener('pointerup', onUp);
+      handle.addEventListener('pointercancel', onUp);
+    });
+  }
+
+  // ─ Keyboard (container is focusable via tabindex) ─
+  container.addEventListener('keydown', (e: KeyboardEvent) => {
+    if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+    e.preventDefault();
+    const current = frame.getBoundingClientRect().width;
+    setWidth(current + (e.key === 'ArrowRight' ? RESIZE_KEY_STEP : -RESIZE_KEY_STEP));
+  });
+}
+
+function initResizableSamples(): void {
+  document
+    .querySelectorAll<HTMLElement>('.igd-sample-container[data-resizable]')
+    .forEach(wireResizable);
+}
+
 // ─── Entry Point ──────────────────────────────────────────────────────────────
 
 /**
@@ -570,6 +850,13 @@ class XplatCodeService {
  * `.ig-code-view` elements managed by code-view.js.
  */
 export function initSampleWidgets(): void {
+  // Wire fit-content iframes (both full widgets and iframeOnly samples) up front
+  // so they start measuring as soon as their content loads.
+  initFitContentIframes();
+
+  // Wire resizable samples so their drag handle / arrow keys work immediately.
+  initResizableSamples();
+
   // Kick off the Shiki download immediately so it is ready before the user
   // opens a code tab (tabs appear only after an IntersectionObserver fires
   // + a JSON fetch completes, giving Shiki time to load in parallel).
