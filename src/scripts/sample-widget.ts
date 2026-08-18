@@ -941,14 +941,22 @@ export function initSampleWidgets(): void {
           );
         };
         const themingRoot = themingBar.querySelector<HTMLElement>('.igd-theming');
+        // Reflects the widget's mode onto the sample pane so its own background
+        // (not just the iframe content) can switch between the light-dark
+        // default and the dedicated dark surface — see `--igd-sample-bg-dark`.
+        const reflectMode = (mode?: string) => {
+          if (samplePane) samplePane.dataset.igdMode = mode || '';
+        };
         themingBar.addEventListener('igd-theme-change', (e: Event) => {
           const detail = (e as CustomEvent<{ theme: string; mode: string }>).detail;
           postTheme(detail?.theme, detail?.mode);
+          reflectMode(detail?.mode);
         });
         // Send the current (possibly persisted) selection once the sample loads.
-        iframe.addEventListener('load', () =>
-          postTheme(themingRoot?.dataset.theme, themingRoot?.dataset.mode),
-        );
+        iframe.addEventListener('load', () => {
+          postTheme(themingRoot?.dataset.theme, themingRoot?.dataset.mode);
+          reflectMode(themingRoot?.dataset.mode);
+        });
       }
 
       // Toggle fullscreen button visibility based on active tab.

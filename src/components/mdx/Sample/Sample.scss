@@ -124,6 +124,11 @@ igc-tab::part(tab-header) {
 
 .igd-sample-container {
   --sample-container-header-height: #{rem(66px)};
+  // Two selectable backgrounds: the site's own light/dark surface (default),
+  // or a dedicated dark surface used when the in-sample theming widget's mode
+  // is `dark` — see `[data-igd-mode='dark']` below.
+  --igd-sample-bg-light-dark: light-dark(var(--ig-gray-100), var(--ig-surface-500));
+  --igd-sample-bg-dark: #0a0b10;
 
   display: grid;
   position: relative;
@@ -131,7 +136,11 @@ igc-tab::part(tab-header) {
   overflow: hidden;
   margin-block-end: rem(26px);
   z-index: 0;
-  background: light-dark(var(--ig-gray-100), var(--ig-surface-500));
+  background: var(--igd-sample-bg-light-dark);
+
+  &[data-igd-mode='dark'] {
+    background: var(--igd-sample-bg-dark);
+  }
 
   iframe {
     display: block;
