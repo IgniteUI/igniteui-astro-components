@@ -86,10 +86,6 @@
 // ════════════════════════════════════════════════════════════════════════════
 
 @media (min-width: #{$bp-desktop-wide}) {
-  .igd-page-layout {
-    --igd-page-layout-grid: #{rem(400px)} 1fr;
-  }
-
   .igd-main-content__page {
     gap: var(--ig-padding);
     margin-inline: auto;
@@ -189,7 +185,6 @@
 
   // This is the height of the input in fluent theme + 8px padding + height of the logo above
   .sidebar-gutter {
-    min-height: rem(80px);
     align-items: center;
   }
 }

@@ -20,6 +20,10 @@ import './Sample.scss';
 
 interface Props {
   src: string;
+  /**
+   * Iframe height in px. Default 150. With `fitContent` it is only the
+   * loading placeholder / cross-origin fallback and defaults to 50.
+   */
   height?: number;
   alt?: string;
   /** Use lobDemosBaseUrl instead of demosBaseUrl (for LOB/grid-dynamic demos). */
@@ -34,11 +38,54 @@ interface Props {
   fullscreenBtn?: boolean;
   /** Opt in to the in-sample theme picker for this sample. */
   showThemePicker?: boolean;
+  /**
+   * Size the iframe to fit its content: the embedded page dictates the
+   * iframe's size. `height` serves only as the placeholder/fallback — shown
+   * while the demo loads and kept if a cross-origin demo never reports its
+   * size. Same-origin demos are measured directly; cross-origin demos must
+   * report via postMessage. See sample-widget.ts for the contract.
+   * Note: an iframe clips at its edge, so demos with ink overflow (shadows,
+   * glows, focus rings) must reserve room for it in their own layout —
+   * e.g. body padding matching the shadow's blur + offset.
+   */
+  fitContent?: boolean;
+  /**
+   * Padding around the iframe inside the container: `none` = 0 (default),
+   * `sm` = 8px, `md` = 16px, `lg` = 32px. The padding is applied by the host
+   * container, never inside the embedded page.
+   */
+  spacing?: 'none' | 'sm' | 'md' | 'lg';
+  /**
+   * Where the iframe sits inside the container when it doesn't fill it (e.g.
+   * after being resized narrower, or with `fitContent` on small content).
+   * Accepts a horizontal token (`start`, `center`, `end`) and/or a vertical
+   * token (`top`, `center`, `bottom`), space-separated in any order — e.g.
+   * "center", "start top", "end bottom". Demo pages must never position
+   * themselves (no centering/min-height on their body); this prop is the
+   * single place alignment is decided.
+   */
+  position?: string;
+  /**
+   * Show a drag handle on the right edge that resizes the iframe's width so
+   * responsive demos can be previewed at different widths. Only the iframe is
+   * resized (horizontally); the component's own footprint never changes.
+   * When focused, the left/right arrow keys resize it too. Combines with
+   * `fitContent`: the drag owns the width while the content keeps dictating
+   * the height, so a reflowed demo never scrolls inside the iframe.
+   */
+  resizable?: boolean;
+  /** Drop the 1px border drawn around the iframe/container. Defaults to true. */
+  noBorder?: boolean;
+  /**
+   * Hide the grid-pattern backdrop drawn behind the iframe (default). The
+   * container is fully transparent, so a demo without a background of its own
+   * sits directly on the page.
+   */
+  noBackground?: boolean;
 }
 
 const {
   src,
-  height = 400,
   alt = '',
   lob = false,
   dv = false,
@@ -46,9 +93,51 @@ const {
   iframeOnly = false,
   fullscreenBtn = false,
   showThemePicker = false,
+  fitContent = false,
+  spacing = 'none',
+  position,
+  resizable = false,
+  noBorder = true,
+  noBackground = true,
 } = Astro.props;
+
+// Fixed samples default to 150px. In fitContent mode `height` is only the
+// loading placeholder, so an unspecified one defaults lower (50px) to avoid
+// reserving a tall wall of space that collapses once the demo reports its size.
+const height = Astro.props.height ?? (fitContent ? 50 : 150);
 const { name, lower } = Astro.locals.platformContext as PlatformContext;
+
 const env = Astro.locals.envVars ?? {};
+
+// ─ Layout options (spacing / position / resize) ────────────────────────────────
+const spacingVal = ['none', 'sm', 'md', 'lg'].includes(spacing) ? spacing : 'none';
+
+// fitContent: the container grows around the iframe, so it gets no inline
+// height. The iframe carries `height` as the placeholder/fallback until the
+// demo's measured/reported size replaces it (sample-widget.ts).
+const containerStyle = fitContent ? undefined : `height: ${height}px`;
+const iframeStyle = fitContent ? `width: 100%; height: ${height}px;` : 'width: 100%; height: 100%;';
+
+// Split `position` into a horizontal + vertical token. "center" applies to
+// whichever axis isn't otherwise specified. These become data-attributes the
+// SCSS turns into flex alignment (and gives the frame slack so the alignment is
+// actually visible — a full-size frame has nothing to align).
+const posTokens = (position ?? '').toLowerCase().split(/\s+/).filter(Boolean);
+const hToken =
+  posTokens.find((t) => t === 'start' || t === 'end') ??
+  (posTokens.includes('center') ? 'center' : undefined);
+const vToken =
+  posTokens.find((t) => t === 'top' || t === 'bottom') ??
+  (posTokens.includes('center') ? 'center' : undefined);
+
+// Resizing is horizontal-only. With fitContent the drag owns the width and the
+// measured content keeps dictating the height (sample-widget.ts skips width
+// measurement on resizable containers so the two never fight).
+const isResizable = resizable;
+
+// Flex layout is only needed (and only turned on) when one of the new options
+// requires it — keeps the default rendering byte-for-byte unchanged.
+const useFlex = Boolean(hToken || vToken || isResizable);
 
 // DV samples (charts, gauges, maps, excel) use dvDemosBaseUrl when available.
 const DV_PREFIXES = ['gauges/', 'maps/', 'excel/', 'charts/'];
@@ -73,14 +162,38 @@ const exampleTabId = `${widgetId}-example`;
 {
   iframeOnly ? (
     <>
-      <div class="igd-sample-container" style={`height: ${height}px`}>
-        <iframe
-          src={iframeSrc}
-          title={alt || `${name} Example`}
-          style="width: 100%; height: 100%;"
-          frameborder="0"
-          seamless
-        />
+      <div
+        class:list={[
+          'igd-sample-container',
+          {
+            'igd-sample-container--fit-content': fitContent,
+            'igd-sample-container--flex': useFlex,
+            'igd-sample-container--resizable': isResizable,
+            'igd-sample-container--no-border': noBorder,
+            'igd-sample-container--no-background': noBackground,
+          },
+        ]}
+        data-fit-content={fitContent ? 'true' : undefined}
+        data-spacing={spacingVal}
+        data-justify={hToken}
+        data-valign={vToken}
+        data-resizable={isResizable ? 'true' : undefined}
+        tabindex={isResizable ? '0' : undefined}
+        aria-label={
+          isResizable ? 'Resizable sample — use the left and right arrow keys to resize' : undefined
+        }
+        style={containerStyle}
+      >
+        <div class="igd-sample-frame">
+          <iframe
+            src={iframeSrc}
+            title={alt || `${name} Example`}
+            style={iframeStyle}
+            frameborder="0"
+            seamless
+          />
+          {isResizable && <div class="igd-sample-resize-handle" aria-hidden="true" />}
+        </div>
         {fullscreenBtn && (
           <div class="igd-code-view__header-actions">
             <igc-icon-button
@@ -110,23 +223,47 @@ const exampleTabId = `${widgetId}-example`;
           <igc-tabs id={`${widgetId}-tabs`} alignment="start">
             <igc-tab id={exampleTabId} label="EXAMPLE" selected>
               <div
-                class="igd-sample-container loading"
+                class:list={[
+                  'igd-sample-container',
+                  'loading',
+                  {
+                    'igd-sample-container--fit-content': fitContent,
+                    'igd-sample-container--flex': useFlex,
+                    'igd-sample-container--resizable': isResizable,
+                    'igd-sample-container--no-border': noBorder,
+                    'igd-sample-container--no-background': noBackground,
+                  },
+                ]}
+                data-fit-content={fitContent ? 'true' : undefined}
+                data-spacing={spacingVal}
+                data-justify={hToken}
+                data-valign={vToken}
+                data-resizable={isResizable ? 'true' : undefined}
+                tabindex={isResizable ? '0' : undefined}
+                aria-label={
+                  isResizable
+                    ? 'Resizable sample — use the left and right arrow keys to resize'
+                    : undefined
+                }
                 aria-busy="true"
-                style={`height: ${height}px`}
+                style={containerStyle}
               >
                 <igc-circular-progress
                   indeterminate
                   class="sample-loading-indicator"
                   aria-label="Loading sample"
                 />
-                <iframe
-                  data-src={iframeSrc}
-                  title={alt || `${name} Example`}
-                  style="width: 100%; height: 100%;"
-                  frameborder="0"
-                  seamless
-                  aria-hidden="true"
-                />
+                <div class="igd-sample-frame">
+                  <iframe
+                    data-src={iframeSrc}
+                    title={alt || `${name} Example`}
+                    style={iframeStyle}
+                    frameborder="0"
+                    seamless
+                    aria-hidden="true"
+                  />
+                  {isResizable && <div class="igd-sample-resize-handle" aria-hidden="true" />}
+                </div>
               </div>
             </igc-tab>
           </igc-tabs>
