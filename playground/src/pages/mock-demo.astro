@@ -11,7 +11,7 @@
     <title>Mock Demo</title>
     <style>
       :root {
-        --demo-accent: #1eb2ea;
+        --demo-accent: #0099ff;
         --demo-bg: #ffffff;
         --demo-fg: #1a1a1a;
       }
@@ -20,10 +20,10 @@
         --demo-fg: #e6e6ec;
       }
       :root[data-igd-theme='material'] {
-        --demo-accent: #1eb2ea;
+        --demo-accent: #0099ff;
       }
       :root[data-igd-theme='fluent'] {
-        --demo-accent: #0e6cf0;
+        --demo-accent: #0078d4;
       }
       :root[data-igd-theme='bootstrap'] {
         --demo-accent: #0d6efd;
@@ -93,7 +93,18 @@
 
         const msg = e.data;
         if (!msg || (msg.type !== 'igd-sample-theme' && msg.event !== 'igd-sample-theme')) return;
-        document.documentElement.dataset.igdTheme = msg.theme || msg.themeName || '';
+        const theme = msg.theme || msg.themeName || '';
+        const accents = {
+          material: '#0099ff',
+          fluent: '#0078D4',
+          bootstrap: '#0d6efd',
+          indigo: '#3f51b5',
+        };
+        document.documentElement.style.setProperty(
+          '--demo-accent',
+          accents[theme] || accents.material,
+        );
+        document.documentElement.dataset.igdTheme = theme;
         document.documentElement.dataset.igdMode = msg.mode || '';
       });
     </script>
