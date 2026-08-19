@@ -211,6 +211,21 @@ igc-tab::part(tab-header) {
     }
   }
 
+  // Pure white backdrop instead of the default light gray. Only the light half
+  // of the token is swapped, so dark mode is untouched — both the site's dark
+  // surface and the theming widget's dedicated `--igd-sample-bg-dark`.
+  &--white-background {
+    --igd-sample-bg-light-dark: light-dark(#fff, var(--ig-surface-500));
+
+    // Asking for white implies a painted surface, so it also wins over the
+    // transparent container `--no-background` leaves behind — in light mode
+    // only: dark keeps the transparency it had. The `:not()` guard leaves the
+    // theming widget's dark surface in charge whenever its mode is `dark`.
+    &.igd-sample-container--no-background:not([data-igd-mode='dark']) {
+      background: light-dark(#fff, transparent);
+    }
+  }
+
   // Wrapper around the iframe. In the default (block) layout it is transparent
   // (fills the container just like the bare iframe did); when the container
   // opts into flex layout it becomes the positioned/resizable element.

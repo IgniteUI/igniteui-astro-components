@@ -82,6 +82,14 @@ interface Props {
    * sits directly on the page.
    */
   noBackground?: boolean;
+  /**
+   * Paint the backdrop behind the iframe pure white (#fff) instead of the
+   * default light gray. Only the light side changes: in dark mode — the site's
+   * own, or the in-sample theming widget's — the background is left exactly as
+   * it was. Asking for a white background implies a painted one, so it also
+   * overrides the transparency `noBackground` leaves behind (in light mode).
+   */
+  whiteBackground?: boolean;
 }
 
 const {
@@ -99,6 +107,7 @@ const {
   resizable = false,
   noBorder = true,
   noBackground = true,
+  whiteBackground = false,
 } = Astro.props;
 
 // Fixed samples default to 150px. In fitContent mode `height` is only the
@@ -171,6 +180,7 @@ const exampleTabId = `${widgetId}-example`;
             'igd-sample-container--resizable': isResizable,
             'igd-sample-container--no-border': noBorder,
             'igd-sample-container--no-background': noBackground,
+            'igd-sample-container--white-background': whiteBackground,
           },
         ]}
         data-fit-content={fitContent ? 'true' : undefined}
@@ -232,6 +242,7 @@ const exampleTabId = `${widgetId}-example`;
                     'igd-sample-container--resizable': isResizable,
                     'igd-sample-container--no-border': noBorder,
                     'igd-sample-container--no-background': noBackground,
+                    'igd-sample-container--white-background': whiteBackground,
                   },
                 ]}
                 data-fit-content={fitContent ? 'true' : undefined}
