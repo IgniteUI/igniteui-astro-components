@@ -952,10 +952,14 @@ export function initSampleWidgets(): void {
           postTheme(detail?.theme, detail?.mode);
           reflectMode(detail?.mode);
         });
-        // Send the current (possibly persisted) selection once the sample loads.
+        // Send the current (possibly persisted) selection once the sample
+        // loads. `resolvedMode` is the widget's `system` selection already
+        // resolved against `prefers-color-scheme`; `mode` is only the fallback
+        // for a widget whose script has not initialized yet.
         iframe.addEventListener('load', () => {
-          postTheme(themingRoot?.dataset.theme, themingRoot?.dataset.mode);
-          reflectMode(themingRoot?.dataset.mode);
+          const mode = themingRoot?.dataset.resolvedMode || themingRoot?.dataset.mode;
+          postTheme(themingRoot?.dataset.theme, mode);
+          reflectMode(mode);
         });
       }
 

@@ -51,13 +51,26 @@ const headings = [
   </p>
   <p>
     On change it dispatches a bubbling <code>igd-theme-change</code> event with
-    <code>{'{ theme, mode }'}</code>, optionally persists to <code>localStorage</code>, and reflects
-    <code>data-igd-theme</code> / <code>data-igd-mode</code> onto a <code>target</code> element.
+    <code>{'{ theme, mode, modePreference }'}</code> and reflects <code>data-igd-theme</code> / <code
+      >data-igd-mode</code
+    > onto a <code>target</code> element. The selection is not persisted — it resets on every page load.
+  </p>
+  <p>
+    <strong>System</strong> is resolved against the OS <code>prefers-color-scheme</code> before it leaves
+    the widget, so <code>mode</code> and <code>data-igd-mode</code> are always a concrete <code
+      >light</code
+    > or <code>dark</code>; the raw selection stays available as <code>modePreference</code>. While
+    System is selected, changing the OS appearance updates the widget live.
+  </p>
+  <p>
+    The panel opens in the top layer via the Popover API, so it is never clipped by a scrolling or
+    <code>overflow: hidden</code> ancestor. It flips above the trigger when there isn't room below and
+    caps its height (scrolling the list) when neither side fits.
   </p>
 
   <h2 id="default">Default</h2>
   <p>The default widget with the four built-in themes and the mode row:</p>
-  <ThemingWidget storageKey="playground-theming" />
+  <ThemingWidget />
 
   <h2 id="in-a-sample-toolbar">In a sample toolbar</h2>
   <p>
@@ -123,12 +136,6 @@ const headings = [
               >data-igd-mode</code
             > onto.</td
           >
-        </tr>
-        <tr>
-          <td><code>storageKey</code></td>
-          <td><code>string</code></td>
-          <td>—</td>
-          <td><code>localStorage</code> key for persisting the selection.</td>
         </tr>
         <tr>
           <td><code>label</code></td>

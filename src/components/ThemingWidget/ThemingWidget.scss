@@ -102,7 +102,23 @@
     margin-inline-start: 0;
   }
 
+  // `system` follows the OS preference. The dark arrangement is the default,
+  // so only the light half needs a rule — expressed in CSS rather than through
+  // the script's resolved mode so the swatch is already correct on first paint.
+  @media (prefers-color-scheme: light) {
+    .igd-theming[data-mode='system'] .igd-theming__dot:first-child {
+      display: none;
+    }
+
+    .igd-theming[data-mode='system'] .igd-theming__dot:first-child + .igd-theming__dot {
+      margin-inline-start: 0;
+    }
+  }
+
   // ── Panel ────────────────────────────────────────────────────────────────
+  // Fallback placement, used when the browser has no Popover API. The panel
+  // stays in flow next to the trigger and is therefore still subject to any
+  // clipping ancestor; it can at least flip via `.is-above`.
   .igd-theming__panel {
     position: absolute;
     inset-block-start: calc(100% + #{rem(4px)});
@@ -115,11 +131,27 @@
     border: rem(1px) solid var(--igd-theming-border);
     border-radius: var(--igd-theming-radius);
     box-shadow: 0 rem(8px) rem(24px) rgb(0 0 0 / 12%);
-    overflow: hidden;
+    overflow: hidden auto;
 
     &[hidden] {
       display: none;
     }
+  }
+
+  .igd-theming.is-above .igd-theming__panel {
+    inset-block-start: auto;
+    inset-block-end: calc(100% + #{rem(4px)});
+  }
+
+  // Top-layer placement: the script sets `popover` on the panel and drives
+  // `top`/`left` from the trigger's viewport rect, so the UA popover centering
+  // (`margin: auto; inset: 0`) has to be cleared.
+  .igd-theming__panel:popover-open {
+    position: fixed;
+    inset: auto;
+    margin: 0;
+    overflow: hidden auto;
+    overscroll-behavior: contain;
   }
 
   // ── Mode row ─────────────────────────────────────────────────────────────

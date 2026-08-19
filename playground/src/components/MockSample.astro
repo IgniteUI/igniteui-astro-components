@@ -45,6 +45,13 @@ const {
 
 const exampleTabId = `${id}-example`;
 
+// Mirror Sample.astro's ambient theme default so the mock picker opens on the
+// same theme the real component would for the playground's mock platform.
+const platformName = Astro.locals.platformContext?.name;
+const defaultTheme =
+  Astro.locals.envVars?.defaultSampleTheme ??
+  (platformName === 'Angular' ? 'material' : 'bootstrap');
+
 // Mirror Sample.astro's container computation so the pre-baked shell renders
 // the exact same markup the real component would.
 const posTokens = (position ?? '').toLowerCase().split(/\s+/).filter(Boolean);
@@ -156,7 +163,7 @@ function tabId(index: number) {
   {
     showThemePicker && (
       <div class="igd-sample-theming" hidden>
-        <ThemingWidget storageKey="igd-sample-theme" />
+        <ThemingWidget selectedTheme={defaultTheme} />
       </div>
     )
   }

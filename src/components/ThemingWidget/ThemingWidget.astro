@@ -4,23 +4,45 @@
  *
  * A compact theme picker dropdown used inside sample viewers. The trigger shows
  * the active theme (a small multi-dot color swatch + the theme name and, when a
- * mode is active, a muted mode label). Opening the trigger reveals a panel with:
+ * mode is active, a muted label with the mode it resolves to). Opening the
+ * trigger reveals a panel with:
  *
  *   • an optional MODE row — three icon toggles for Light / Dark / System, and
  *   • a list of selectable themes, each with its swatch; the active one is checked.
  *
  * The widget is self-contained (no web-component dependency): icons are inlined
  * SVGs and all behavior is wired by a small client script. On change it:
- *   • dispatches a bubbling `igd-theme-change` CustomEvent with `{ theme, mode }`,
- *   • persists the selection to `localStorage` (when `storageKey` is set), and
+ *   • dispatches a bubbling `igd-theme-change` CustomEvent with
+ *     `{ theme, mode, modePreference }`, and
  *   • reflects `data-igd-theme` / `data-igd-mode` on the optional `target` element.
+ *
+ * `system` is resolved against the OS `prefers-color-scheme` before it leaves
+ * the widget: `mode` (and everything reflected onto `target`) is always a
+ * concrete `light` / `dark`, while `modePreference` keeps the raw selection.
+ * While `system` is selected the widget follows OS changes live, re-reflecting
+ * and re-emitting whenever the preference flips.
+ *
+ * The selection is not persisted — the widget resets to its initial props on
+ * every page load.
+ *
+ * When `selectedTheme` / `mode` are omitted the widget falls back to the docs
+ * host's ambient configuration — `defaultSampleTheme` / `defaultSampleMode` on
+ * `Astro.locals.envVars` — so a site sets its starting theme once instead of at
+ * every call site.
+ *
+ * The panel is promoted to a native popover (top layer) when the browser
+ * supports it, so it escapes any clipping/stacking ancestor — e.g. the sample
+ * container's `overflow: hidden`. Its position is computed from the trigger and
+ * flips above it when there is not enough room below; when constrained it gets
+ * a `max-height` and scrolls. Browsers without the Popover API fall back to the
+ * absolutely positioned panel, which still flips.
  *
  * Mirrors the "Theme-Input-Dropdown" design from the Doc Samples Figma file.
  */
 import './ThemingWidget.scss';
 
 export interface ThemeOption {
-  /** Stable identifier, also used as the value in events / storage. */
+  /** Stable identifier, also used as the value in events. */
   name: string;
   /** Display label. Defaults to a title-cased `name`. */
   label?: string;
@@ -33,9 +55,15 @@ export type ThemeMode = 'light' | 'dark' | 'system';
 interface Props {
   /** Selectable themes. Defaults to Material, Fluent, Bootstrap and Indigo. */
   themes?: ThemeOption[];
-  /** Active theme `name`. Defaults to the first theme. */
+  /**
+   * Active theme `name`. When omitted, falls back to the host's
+   * `defaultSampleTheme` env var and then to the first theme.
+   */
   selectedTheme?: string;
-  /** Active color mode. Defaults to `'light'`. */
+  /**
+   * Active color mode. When omitted, falls back to the host's
+   * `defaultSampleMode` env var and then to `'light'`.
+   */
   mode?: ThemeMode;
   /** Show the MODE (Light / Dark / System) toggle row. Defaults to `true`. */
   showMode?: boolean;
@@ -50,8 +78,6 @@ interface Props {
    * `data-igd-theme` / `data-igd-mode`. When omitted, nothing is reflected.
    */
   target?: string;
-  /** `localStorage` key for persisting the selection. When omitted, nothing is stored. */
-  storageKey?: string;
 }
 
 const DEFAULT_THEMES: ThemeOption[] = [
@@ -64,38 +90,51 @@ const DEFAULT_THEMES: ThemeOption[] = [
 const {
   themes = DEFAULT_THEMES,
   selectedTheme,
-  mode = 'light',
+  mode: modeProp,
   showMode = true,
   id,
   class: className,
   label = 'Select theme',
   target,
-  storageKey,
 } = Astro.props;
 
 const rootId = id ?? `igd-theming-${Math.random().toString(36).slice(2, 9)}`;
 
 const titleCase = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
-const activeName = selectedTheme ?? themes[0]?.name;
+// Ambient defaults published by the docs host on `Astro.locals.envVars` (set
+// there by its middleware). Reading them means a widget rendered without props
+// still opens on the theme the surrounding site ships, instead of every call
+// site having to pass one. `locals` is `{}` when the consumer has no
+// middleware, so this degrades to the built-in defaults.
+const env = Astro.locals.envVars ?? {};
+
+const activeName = selectedTheme ?? env.defaultSampleTheme ?? themes[0]?.name;
 const active = themes.find((t) => t.name === activeName) ?? themes[0];
 const activeLabel = active ? (active.label ?? titleCase(active.name)) : '';
+
+const MODES: ThemeMode[] = ['light', 'dark', 'system'];
+
+// The env var is free-form text, so an unrecognized value falls back to 'light'
+// instead of reaching the markup as a bogus `data-mode`.
+const requestedMode = modeProp ?? env.defaultSampleMode;
+const mode: ThemeMode = MODES.includes(requestedMode as ThemeMode)
+  ? (requestedMode as ThemeMode)
+  : 'light';
 
 const modeLabels: Record<ThemeMode, string> = {
   light: 'Light',
   dark: 'Dark',
   system: 'System',
 };
-
-const MODES: ThemeMode[] = ['light', 'dark', 'system'];
 ---
 
 <div
   class:list={['igd-theming', className]}
   id={rootId}
   data-target={target}
-  data-storage-key={storageKey}
   data-mode={mode}
+  data-resolved-mode={mode === 'system' ? undefined : mode}
   data-theme={active?.name}
 >
   <button
@@ -113,7 +152,7 @@ const MODES: ThemeMode[] = ['light', 'dark', 'system'];
       {
         showMode && (
           <span class="igd-theming__mode-name" data-mode-name>
-            {modeLabels[mode]}
+            {modeLabels[mode === 'system' ? 'light' : mode]}
           </span>
         )
       }
@@ -249,41 +288,42 @@ const MODES: ThemeMode[] = ['light', 'dark', 'system'];
     private root: HTMLElement;
     private trigger: HTMLButtonElement;
     private panel: HTMLElement;
+    /** Whether the panel was promoted to a top-layer popover. */
+    private usePopover: boolean;
+    private reposition = () => this.position();
+    /** Backs the `system` mode: the OS color-scheme preference. */
+    private scheme = window.matchMedia('(prefers-color-scheme: dark)');
+    private onSchemeChange = () => {
+      // Only `system` tracks the OS; an explicit light/dark choice is fixed.
+      if (this.preference !== 'system') return;
+      this.applyResolvedMode();
+      this.emit();
+    };
 
     constructor(root: HTMLElement) {
       this.root = root;
       this.trigger = root.querySelector('.igd-theming__trigger') as HTMLButtonElement;
       this.panel = root.querySelector('.igd-theming__panel') as HTMLElement;
 
-      this.restore();
-      this.bind();
-    }
-
-    private get storageKey() {
-      return this.root.dataset.storageKey || '';
-    }
-
-    private restore() {
-      if (!this.storageKey) return;
-      try {
-        const raw = localStorage.getItem(this.storageKey);
-        if (!raw) return;
-        const saved = JSON.parse(raw) as { theme?: string; mode?: string };
-        if (saved.theme) {
-          const opt = this.root.querySelector<HTMLElement>(
-            `.igd-theming__option[data-option="${saved.theme}"]`,
-          );
-          if (opt) this.selectTheme(opt, false);
-        }
-        if (saved.mode) {
-          const btn = this.root.querySelector<HTMLElement>(
-            `.igd-theming__mode-btn[data-mode-btn="${saved.mode}"]`,
-          );
-          if (btn) this.selectMode(saved.mode, false);
-        }
-      } catch {
-        /* ignore malformed storage */
+      // Promote to the top layer so ancestors that clip (the sample container
+      // uses `overflow: hidden`) or create a stacking context can't swallow the
+      // panel. `manual` — not `auto` — because light dismiss and Escape are
+      // already handled below, and `auto` would also close the panel on the
+      // very click that opened it.
+      this.usePopover = typeof this.panel.showPopover === 'function';
+      if (this.usePopover) {
+        this.panel.setAttribute('popover', 'manual');
+        // A closed popover is `display: none` by UA style, so the `hidden`
+        // attribute (the no-JS fallback) is no longer needed and would win.
+        this.panel.hidden = false;
       }
+
+      this.bind();
+
+      // Turn a `system` selection into a concrete mode now, and keep following
+      // the OS for as long as it stays selected.
+      this.applyResolvedMode();
+      this.scheme.addEventListener('change', this.onSchemeChange);
     }
 
     private bind() {
@@ -327,14 +367,67 @@ const MODES: ThemeMode[] = ['light', 'dark', 'system'];
 
     private open() {
       this.trigger.setAttribute('aria-expanded', 'true');
-      this.panel.hidden = false;
+      if (this.usePopover) {
+        this.panel.showPopover();
+      } else {
+        this.panel.hidden = false;
+      }
       this.root.classList.add('is-open');
+      this.position();
+      // The trigger can live inside a scrolling container (or the page itself
+      // can scroll), so follow it for as long as the panel is open. Capture
+      // phase catches scrolls on any ancestor, not just the document.
+      window.addEventListener('scroll', this.reposition, { capture: true, passive: true });
+      window.addEventListener('resize', this.reposition, { passive: true });
     }
 
     private close() {
       this.trigger.setAttribute('aria-expanded', 'false');
-      this.panel.hidden = true;
-      this.root.classList.remove('is-open');
+      if (this.usePopover) {
+        if (this.panel.matches(':popover-open')) this.panel.hidePopover();
+      } else {
+        this.panel.hidden = true;
+      }
+      this.root.classList.remove('is-open', 'is-above');
+      window.removeEventListener('scroll', this.reposition, { capture: true });
+      window.removeEventListener('resize', this.reposition);
+    }
+
+    /**
+     * Place the panel below the trigger, or above it when the space below is
+     * too small and there is more room above. When neither side fits the full
+     * panel, the taller side wins and the panel is capped with a `max-height`
+     * (the list scrolls) so it always stays inside the viewport.
+     */
+    private position() {
+      if (!this.isOpen()) return;
+
+      const GAP = 4; // matches the CSS offset of the fallback panel
+      const EDGE = 8; // keep this much clearance from the viewport edges
+
+      const anchor = this.trigger.getBoundingClientRect();
+      this.panel.style.maxHeight = '';
+      const height = this.panel.offsetHeight;
+
+      const roomBelow = window.innerHeight - anchor.bottom - GAP - EDGE;
+      const roomAbove = anchor.top - GAP - EDGE;
+      const above = height > roomBelow && roomAbove > roomBelow;
+
+      const available = above ? roomAbove : roomBelow;
+      if (height > available) this.panel.style.maxHeight = `${Math.max(available, 96)}px`;
+      this.root.classList.toggle('is-above', above);
+
+      if (!this.usePopover) return;
+
+      // Top-layer popovers are positioned against the viewport, so the
+      // trigger's viewport rect can be used directly.
+      const shown = this.panel.offsetHeight; // post-cap height
+      const top = above ? Math.max(EDGE, anchor.top - GAP - shown) : anchor.bottom + GAP;
+      const maxLeft = window.innerWidth - this.panel.offsetWidth - EDGE;
+      const left = Math.max(EDGE, Math.min(anchor.left, maxLeft));
+
+      this.panel.style.top = `${top}px`;
+      this.panel.style.left = `${left}px`;
     }
 
     private selectTheme(opt: HTMLElement, emit: boolean) {
@@ -359,7 +452,39 @@ const MODES: ThemeMode[] = ['light', 'dark', 'system'];
 
       this.root.dataset.theme = name;
       this.reflect();
-      if (emit) this.emitAndStore();
+      if (emit) this.emit();
+    }
+
+    /** The user's selection: `light`, `dark` or `system`. */
+    private get preference() {
+      return this.root.dataset.mode || 'light';
+    }
+
+    /** The concrete mode that selection maps to: `light` or `dark`. */
+    private get resolvedMode() {
+      const pref = this.preference;
+      if (pref === 'system') return this.scheme.matches ? 'dark' : 'light';
+      return pref === 'dark' ? 'dark' : 'light';
+    }
+
+    /**
+     * Publish the resolved mode on the root — so consumers that read the DOM
+     * instead of listening (the sample widget does, when its iframe loads) get
+     * a concrete value — and push it out to the `target` elements.
+     */
+    private applyResolvedMode() {
+      const resolved = this.resolvedMode;
+      this.root.dataset.resolvedMode = resolved;
+
+      // The trigger names the mode the sample actually renders in, so `system`
+      // reads as "Light" / "Dark" there — the selection itself stays visible
+      // through the pressed state of the mode buttons.
+      const modeNameEl = this.trigger.querySelector('[data-mode-name]');
+      if (modeNameEl) {
+        modeNameEl.textContent = resolved.charAt(0).toUpperCase() + resolved.slice(1);
+      }
+
+      this.reflect();
     }
 
     private selectMode(mode: string, emit: boolean) {
@@ -368,13 +493,8 @@ const MODES: ThemeMode[] = ['light', 'dark', 'system'];
       });
       this.root.dataset.mode = mode;
 
-      const modeNameEl = this.trigger.querySelector('[data-mode-name]');
-      if (modeNameEl) {
-        modeNameEl.textContent = mode.charAt(0).toUpperCase() + mode.slice(1);
-      }
-
-      this.reflect();
-      if (emit) this.emitAndStore();
+      this.applyResolvedMode();
+      if (emit) this.emit();
     }
 
     private reflect() {
@@ -382,20 +502,19 @@ const MODES: ThemeMode[] = ['light', 'dark', 'system'];
       if (!sel) return;
       document.querySelectorAll<HTMLElement>(sel).forEach((el) => {
         el.dataset.igdTheme = this.root.dataset.theme || '';
-        el.dataset.igdMode = this.root.dataset.mode || '';
+        el.dataset.igdMode = this.root.dataset.resolvedMode || '';
       });
     }
 
-    private emitAndStore() {
-      const detail = { theme: this.root.dataset.theme, mode: this.root.dataset.mode };
+    private emit() {
+      const detail = {
+        theme: this.root.dataset.theme,
+        // Concrete, so consumers never have to resolve `system` themselves...
+        mode: this.root.dataset.resolvedMode,
+        // ...while the raw selection stays available for mirroring the UI.
+        modePreference: this.root.dataset.mode,
+      };
       this.root.dispatchEvent(new CustomEvent('igd-theme-change', { detail, bubbles: true }));
-      if (this.storageKey) {
-        try {
-          localStorage.setItem(this.storageKey, JSON.stringify(detail));
-        } catch {
-          /* storage may be unavailable */
-        }
-      }
     }
   }
 

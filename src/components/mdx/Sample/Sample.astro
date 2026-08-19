@@ -36,7 +36,10 @@ interface Props {
   iframeOnly?: boolean;
   /** When used with iframeOnly, also render a "View in full screen" button below. */
   fullscreenBtn?: boolean;
-  /** Opt in to the in-sample theme picker for this sample. */
+  /**
+   * Opt in to the in-sample theme picker for this sample. Its initial theme is
+   * resolved from the site (see `defaultTheme` below), not passed per usage.
+   */
   showThemePicker?: boolean;
   /**
    * Size the iframe to fit its content: the embedded page dictates the
@@ -117,6 +120,18 @@ const height = Astro.props.height ?? (fitContent ? 50 : 150);
 const { name, lower } = Astro.locals.platformContext as PlatformContext;
 
 const env = Astro.locals.envVars ?? {};
+
+// The in-sample theme picker opens on the theme the platform's sample browser
+// itself ships: the Angular browser serves Material, the xplat ones (React /
+// Web Components / Blazor) serve Bootstrap. Deriving it from the platform keeps
+// every <Sample> in the docs correct without a per-usage prop, and a host can
+// still override it for a whole site via `defaultSampleTheme`. This is not
+// cosmetic — the picker's current selection is posted into the iframe on every
+// load (sample-widget.ts), so a wrong default actively re-themes the demo.
+const PLATFORM_DEFAULT_THEME: Partial<Record<PlatformContext['name'], string>> = {
+  Angular: 'material',
+};
+const defaultTheme = env.defaultSampleTheme ?? PLATFORM_DEFAULT_THEME[name] ?? 'bootstrap';
 
 // ─ Layout options (spacing / position / resize) ────────────────────────────────
 const spacingVal = ['none', 'sm', 'md', 'lg'].includes(spacing) ? spacing : 'none';
@@ -281,7 +296,7 @@ const exampleTabId = `${widgetId}-example`;
         </div>
         {showThemePicker && (
           <div class="igd-sample-theming" hidden>
-            <ThemingWidget storageKey="igd-sample-theme" />
+            <ThemingWidget selectedTheme={defaultTheme} />
           </div>
         )}
       </div>
