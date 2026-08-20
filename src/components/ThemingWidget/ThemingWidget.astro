@@ -113,7 +113,9 @@ const activeName = selectedTheme ?? env.defaultSampleTheme ?? themes[0]?.name;
 const active = themes.find((t) => t.name === activeName) ?? themes[0];
 const activeLabel = active ? (active.label ?? titleCase(active.name)) : '';
 
-const MODES: ThemeMode[] = ['light', 'dark', 'system'];
+// ThemingWidget supports a "system" mode, but the docs host doesn't yet which results in an inconsistent behavior.
+// const const MODES: ThemeMode[] = ['light', 'dark', 'system'];
+const MODES: ThemeMode[] = ['light', 'dark'];
 
 // The env var is free-form text, so an unrecognized value falls back to 'light'
 // instead of reaching the markup as a bogus `data-mode`.

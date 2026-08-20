@@ -283,6 +283,11 @@ function addFooter(
   //     footer.appendChild(btn);
   // }
 
+  if (themingBar) {
+    themingBar.hidden = false;
+    footer.appendChild(themingBar);
+  }
+
   const fsBtn = document.createElement('igc-icon-button') as HTMLElement;
   fsBtn.setAttribute('name', 'open-link-blank');
   fsBtn.setAttribute('collection', 'docs');
@@ -295,11 +300,6 @@ function addFooter(
     fsBtn.setAttribute('target', '_blank');
   }
   footer.appendChild(fsBtn);
-
-  if (themingBar) {
-    themingBar.hidden = false;
-    footer.appendChild(themingBar);
-  }
 
   widget.appendChild(footer);
 }
@@ -437,6 +437,9 @@ class XplatCodeService {
     this.platform = platform;
     this.samplesOrder = XPLAT_SAMPLES_ORDER[platform] || ['ts', 'html', 'css'];
     this.codeBase = XPLAT_CODE_BASE[platform] || '/code-viewer/';
+    // Gates only the StackBlitz / CodeSandbox buttons — Blazor samples can't be
+    // live-edited in a browser sandbox. The footer itself is always rendered:
+    // it also carries the fullscreen button and the in-sample theme picker.
     this.enableLiveEditing = platform !== 'blazor';
   }
 
@@ -445,6 +448,10 @@ class XplatCodeService {
     const samplePath = getSamplePath(iframeSrc, demosBaseUrl);
     const fallbackStackblitz = () => this._openStackBlitzUrl(githubSrc, demosBaseUrl);
     const fallbackCodeSandbox = () => this._openCodeSandbox(githubSrc, demosBaseUrl);
+    // Live editing needs both a platform that supports it and a repo path to
+    // open; without either, the footer is still built — just without the
+    // edit-in buttons.
+    const liveEdit = this.enableLiveEditing && Boolean(githubSrc);
 
     try {
       // Blazor's local dev server uses a self-signed cert on a non-4200 port,
@@ -469,15 +476,23 @@ class XplatCodeService {
         )
         .forEach((file: SampleFile) => addCodeTab(igcTabs, file));
 
-      if (this.enableLiveEditing && githubSrc) {
-        // Use sdk.openProject() to avoid the StackBlitz GitHub clone freeze bug.
-        addFooter(widget, iframeSrc, null, () => this._openInStackBlitz(data), fallbackCodeSandbox);
-      }
+      // Use sdk.openProject() to avoid the StackBlitz GitHub clone freeze bug.
+      addFooter(
+        widget,
+        iframeSrc,
+        null,
+        liveEdit ? () => this._openInStackBlitz(data) : null,
+        liveEdit ? fallbackCodeSandbox : null,
+      );
     } catch (err: any) {
       console.warn('[sample-widget] Could not fetch xplat sample files:', err.message);
-      if (this.enableLiveEditing && githubSrc) {
-        addFooter(widget, iframeSrc, null, fallbackStackblitz, fallbackCodeSandbox);
-      }
+      addFooter(
+        widget,
+        iframeSrc,
+        null,
+        liveEdit ? fallbackStackblitz : null,
+        liveEdit ? fallbackCodeSandbox : null,
+      );
     }
   }
 

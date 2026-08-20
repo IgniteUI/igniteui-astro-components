@@ -126,12 +126,15 @@ const propRows: PropRow[] = [
   {
     name: 'noBackground',
     type: 'boolean',
-    def: 'true',
+    def: 'true (false with showThemePicker)',
     description: `Hide the grid-pattern backdrop drawn behind the iframe — on by
             default, so the container is transparent and a demo with no background of
             its own sits directly on the page. Pass
             <code>noBackground={false}</code> to show the grid (see
-            <a href="#no-background">No background</a>).`,
+            <a href="#no-background">No background</a>). With
+            <code>showThemePicker</code> the default flips to <code>false</code>: a
+            reader-switchable theme (and mode) needs a surface of its own to switch
+            against.`,
   },
   {
     name: 'whiteBackground',

@@ -83,6 +83,11 @@ interface Props {
    * Hide the grid-pattern backdrop drawn behind the iframe (default). The
    * container is fully transparent, so a demo without a background of its own
    * sits directly on the page.
+   *
+   * Defaults to `false` when `showThemePicker` is on: a sample whose theme —
+   * and mode — the reader can switch needs a surface of its own to switch
+   * against, otherwise a dark-mode demo would sit on the page's own light
+   * background. An explicit value always wins.
    */
   noBackground?: boolean;
   /**
@@ -109,9 +114,12 @@ const {
   position,
   resizable = false,
   noBorder = true,
-  noBackground = true,
   whiteBackground = false,
 } = Astro.props;
+
+// The theme picker implies a painted backdrop (see the prop's doc), so its
+// default flips with `showThemePicker`. An explicitly passed value still wins.
+const noBackground = Astro.props.noBackground ?? !showThemePicker;
 
 // Fixed samples default to 150px. In fitContent mode `height` is only the
 // loading placeholder, so an unspecified one defaults lower (50px) to avoid
