@@ -124,14 +124,12 @@ const propRows: PropRow[] = [
             border is what ties that chrome to the demo.`,
   },
   {
-    name: 'noBackground',
+    name: 'background',
     type: 'boolean',
     def: 'true',
-    description: `Hide the grid-pattern backdrop drawn behind the iframe — on by
-            default, so the container is transparent and a demo with no background of
-            its own sits directly on the page. Pass
-            <code>noBackground={false}</code> to show the grid (see
-            <a href="#no-background">No background</a>).`,
+    description: `Show the grid-pattern backdrop drawn behind the iframe — on by
+          default. Pass <code>background={false}</code> to make the container
+          transparent (see <a href="#no-background">No background</a>).`,
   },
 ];
 
@@ -347,7 +345,7 @@ const sections: Section[] = [
         props: {
           src: '/mock-demo-tall',
           alt: 'Spacing none Example',
-          noBackground: true,
+          background: false,
           iframeOnly: true,
           fitContent: true,
           noBorder: true,
@@ -467,10 +465,10 @@ const sections: Section[] = [
     title: 'No background',
     description: `<p>The container can draw a subtle grid pattern behind the iframe — it
             gives demos with a transparent page a visible canvas, so they don't look
-            like a hole in the docs. It is hidden by default
-            (<code>noBackground</code> is <code>true</code>): the container is
-            transparent, and a demo with no background of its own sits directly on the
-            page. Pass <code>noBackground={false}</code> to show the grid.</p>
+            like a hole in the docs. It is shown by default
+            (<code>background</code> is <code>true</code>). Pass
+            <code>background={false}</code> to make the container transparent, so a
+            demo with no background of its own sits directly on the page.</p>
             <p>Compare with the avatar samples in
             <a href="#fit-content">Fit to content</a>, where the grid shows through the
             transparent demo page. It pairs naturally with the inline form
@@ -486,7 +484,7 @@ const sections: Section[] = [
           fitContent: true,
           noBorder: true,
           spacing: 'none',
-          noBackground: true,
+          background: false,
           position: 'center',
         },
       },

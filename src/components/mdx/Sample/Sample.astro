@@ -73,12 +73,8 @@ interface Props {
   resizable?: boolean;
   /** Drop the 1px border drawn around the iframe/container. Defaults to true. */
   noBorder?: boolean;
-  /**
-   * Hide the grid-pattern backdrop drawn behind the iframe (default). The
-   * container is fully transparent, so a demo without a background of its own
-   * sits directly on the page.
-   */
-  noBackground?: boolean;
+  /** Show the grid-pattern backdrop drawn behind the iframe. Defaults to true. */
+  background?: boolean;
 }
 
 const {
@@ -94,7 +90,7 @@ const {
   position,
   resizable = false,
   noBorder = true,
-  noBackground = true,
+  background = true,
 } = Astro.props;
 
 // Fixed samples default to 150px. In fitContent mode `height` is only the
@@ -166,7 +162,7 @@ const exampleTabId = `${widgetId}-example`;
             'igd-sample-container--flex': useFlex,
             'igd-sample-container--resizable': isResizable,
             'igd-sample-container--no-border': noBorder,
-            'igd-sample-container--no-background': noBackground,
+            'igd-sample-container--no-background': !background,
           },
         ]}
         data-fit-content={fitContent ? 'true' : undefined}
@@ -227,7 +223,7 @@ const exampleTabId = `${widgetId}-example`;
                     'igd-sample-container--flex': useFlex,
                     'igd-sample-container--resizable': isResizable,
                     'igd-sample-container--no-border': noBorder,
-                    'igd-sample-container--no-background': noBackground,
+                    'igd-sample-container--no-background': !background,
                   },
                 ]}
                 data-fit-content={fitContent ? 'true' : undefined}
