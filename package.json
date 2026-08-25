@@ -85,7 +85,7 @@
   "peerDependencies": {
     "astro": "^7.0.0",
     "igniteui-theming": "^26.0.1",
-    "igniteui-webcomponents": "^7.2.4"
+    "igniteui-webcomponents": "^7.3.0-beta.1"
   },
   "dependencies": {
     "@astrojs/mdx": "^7.0.7",
