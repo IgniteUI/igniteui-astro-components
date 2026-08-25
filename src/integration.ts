@@ -25,7 +25,7 @@
  *       { tag: 'link', attrs: { rel: 'stylesheet', href: '...' } },
  *     ],
  *     // Extra Astro options (markdown, image, build, …)
- *     markdown: { remarkPlugins: [] },
+ *     markdown: { mdastPlugins: [], hastPlugins: [] },
  *   });
  *
  * --- Option B: manual composition (for full control) ---
@@ -66,6 +66,7 @@ import {
 import { buildSidebarFromToc } from './sidebar';
 import { getPlatformHead } from './platform';
 import type { HeadEntry, PlatformKey, NavLang } from './platform.ts';
+import { satteri } from '@astrojs/markdown-satteri';
 import { remarkEnvVars } from './plugins/remark-env-vars';
 export { rehypeTableWrapper } from './plugins/rehype-table-wrapper';
 import { rehypeTableWrapper } from './plugins/rehype-table-wrapper';
@@ -699,6 +700,13 @@ export function createDocsSite(
   return defineConfig({
     site,
     ...(base !== undefined ? { base } : {}),
+    // Astro 7 defaults to `compressHTML: 'jsx'`, which drops whitespace between
+    // inline elements entirely instead of collapsing it to a single space. That
+    // silently joins adjacent text — breadcrumb segments, badge labels and callout
+    // titles render as "Open SourceIgnite UI" / "InfoThe -y flag". Keeping the
+    // Astro 6 behaviour preserves the rendered copy; switch to 'jsx' only after
+    // auditing templates for the inline pairs that need an explicit {" "}.
+    compressHTML: true,
     // Docs sites serve images statically — disable Astro's image optimization
     // so relative image paths in markdown don't cause build errors.
     image: { service: { entrypoint: 'astro/assets/services/noop' }, ...(astroExtra as any).image },
@@ -715,19 +723,23 @@ export function createDocsSite(
     },
     markdown: {
       ...(astroExtra as any).markdown,
-      remarkPlugins: [
-        remarkEnvVars,
-        remarkMdLinks,
-        remarkHtmlTransforms,
-        ...((astroExtra as any).markdown?.remarkPlugins ?? []),
-      ],
-      rehypePlugins: [
-        rehypeCodeView,
-        rehypeTableWrapper,
-        rehypeHeadingAnchors,
-        rehypePagefindIgnore,
-        ...((astroExtra as any).markdown?.rehypePlugins ?? []),
-      ],
+      // Astro 7 renders Markdown/MDX with Sätteri instead of remark/rehype.
+      // MDAST plugins run before HAST plugins, matching the old
+      // remarkPlugins-then-rehypePlugins ordering.
+      processor: satteri({
+        mdastPlugins: [
+          remarkEnvVars,
+          remarkMdLinks,
+          remarkHtmlTransforms,
+          ...((astroExtra as any).markdown?.mdastPlugins ?? []),
+        ],
+        hastPlugins: [
+          rehypeTableWrapper,
+          rehypeHeadingAnchors,
+          rehypePagefindIgnore,
+          ...((astroExtra as any).markdown?.hastPlugins ?? []),
+        ],
+      }),
     },
     integrations: [
       siteMetaIntegration({
