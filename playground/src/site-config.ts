@@ -33,6 +33,7 @@ export const SIDEBAR: SidebarEntry[] = [
       { label: 'DocsToc', slug: 'components/docs-toc' },
       { label: 'Search', slug: 'components/search' },
       { label: 'SearchAdvanced', slug: 'components/search-advanced' },
+      { label: 'ThemingWidget', slug: 'components/theming-widget' },
     ],
   },
   {

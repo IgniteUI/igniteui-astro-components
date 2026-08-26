@@ -124,6 +124,11 @@ igc-tab::part(tab-header) {
 
 .igd-sample-container {
   --sample-container-header-height: #{rem(66px)};
+  // Two selectable backgrounds: the site's own light/dark surface (default),
+  // or a dedicated dark surface used when the in-sample theming widget's mode
+  // is `dark` — see `[data-igd-mode='dark']` below.
+  --igd-sample-bg-light-dark: light-dark(var(--ig-gray-100), var(--ig-surface-500));
+  --igd-sample-bg-dark: #0a0b10;
 
   display: grid;
   position: relative;
@@ -131,7 +136,11 @@ igc-tab::part(tab-header) {
   overflow: hidden;
   margin-block-end: rem(26px);
   z-index: 0;
-  background: light-dark(var(--ig-gray-100), var(--ig-surface-500));
+  background: var(--igd-sample-bg-light-dark);
+
+  &[data-igd-mode='dark'] {
+    background: var(--igd-sample-bg-dark);
+  }
 
   iframe {
     display: block;
@@ -199,6 +208,21 @@ igc-tab::part(tab-header) {
 
     &::after {
       display: none;
+    }
+  }
+
+  // Pure white backdrop instead of the default light gray. Only the light half
+  // of the token is swapped, so dark mode is untouched — both the site's dark
+  // surface and the theming widget's dedicated `--igd-sample-bg-dark`.
+  &--white-background {
+    --igd-sample-bg-light-dark: light-dark(#fff, var(--ig-surface-500));
+
+    // Asking for white implies a painted surface, so it also wins over the
+    // transparent container `--no-background` leaves behind — in light mode
+    // only: dark keeps the transparency it had. The `:not()` guard leaves the
+    // theming widget's dark surface in charge whenever its mode is `dark`.
+    &.igd-sample-container--no-background:not([data-igd-mode='dark']) {
+      background: light-dark(#fff, transparent);
     }
   }
 
@@ -375,6 +399,11 @@ igc-tab::part(tab-header) {
 
 .igd-code-view__footer-actions {
   border-block-start: rem(1px) solid var(--ig-gray-300);
+}
+
+// The in-sample theme picker is appended after the edit controls.
+.igd-code-view__footer-actions .igd-sample-theming {
+  margin-inline-start: 0;
 }
 
 .igd-code-view__header-actions,

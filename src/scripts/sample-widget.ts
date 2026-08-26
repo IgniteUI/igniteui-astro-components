@@ -256,6 +256,10 @@ function addFooter(
   const footer = document.createElement('div');
   footer.className = 'igd-code-view__footer-actions';
 
+  // Move the server-rendered theme picker (if any) into the existing footer,
+  // after the edit controls so it is the rightmost footer item.
+  const themingBar = widget.querySelector<HTMLElement>('.igd-sample-theming');
+
   if ((!explicitEditor || explicitEditor === 'stackblitz') && onStackblitz) {
     const btn = document.createElement('igc-button') as HTMLElement;
     btn.setAttribute('variant', 'outlined');
@@ -278,6 +282,11 @@ function addFooter(
   //     btn.addEventListener('click', onCodeSandbox);
   //     footer.appendChild(btn);
   // }
+
+  if (themingBar) {
+    themingBar.hidden = false;
+    footer.appendChild(themingBar);
+  }
 
   const fsBtn = document.createElement('igc-icon-button') as HTMLElement;
   fsBtn.setAttribute('name', 'open-link-blank');
@@ -428,6 +437,9 @@ class XplatCodeService {
     this.platform = platform;
     this.samplesOrder = XPLAT_SAMPLES_ORDER[platform] || ['ts', 'html', 'css'];
     this.codeBase = XPLAT_CODE_BASE[platform] || '/code-viewer/';
+    // Gates only the StackBlitz / CodeSandbox buttons — Blazor samples can't be
+    // live-edited in a browser sandbox. The footer itself is always rendered:
+    // it also carries the fullscreen button and the in-sample theme picker.
     this.enableLiveEditing = platform !== 'blazor';
   }
 
@@ -436,6 +448,10 @@ class XplatCodeService {
     const samplePath = getSamplePath(iframeSrc, demosBaseUrl);
     const fallbackStackblitz = () => this._openStackBlitzUrl(githubSrc, demosBaseUrl);
     const fallbackCodeSandbox = () => this._openCodeSandbox(githubSrc, demosBaseUrl);
+    // Live editing needs both a platform that supports it and a repo path to
+    // open; without either, the footer is still built — just without the
+    // edit-in buttons.
+    const liveEdit = this.enableLiveEditing && Boolean(githubSrc);
 
     try {
       // Blazor's local dev server uses a self-signed cert on a non-4200 port,
@@ -460,15 +476,23 @@ class XplatCodeService {
         )
         .forEach((file: SampleFile) => addCodeTab(igcTabs, file));
 
-      if (this.enableLiveEditing && githubSrc) {
-        // Use sdk.openProject() to avoid the StackBlitz GitHub clone freeze bug.
-        addFooter(widget, iframeSrc, null, () => this._openInStackBlitz(data), fallbackCodeSandbox);
-      }
+      // Use sdk.openProject() to avoid the StackBlitz GitHub clone freeze bug.
+      addFooter(
+        widget,
+        iframeSrc,
+        null,
+        liveEdit ? () => this._openInStackBlitz(data) : null,
+        liveEdit ? fallbackCodeSandbox : null,
+      );
     } catch (err: any) {
       console.warn('[sample-widget] Could not fetch xplat sample files:', err.message);
-      if (this.enableLiveEditing && githubSrc) {
-        addFooter(widget, iframeSrc, null, fallbackStackblitz, fallbackCodeSandbox);
-      }
+      addFooter(
+        widget,
+        iframeSrc,
+        null,
+        liveEdit ? fallbackStackblitz : null,
+        liveEdit ? fallbackCodeSandbox : null,
+      );
     }
   }
 
@@ -901,6 +925,58 @@ export function initSampleWidgets(): void {
       if (!igcTabs) return;
 
       const exampleTabId = `${widget.id}-example`;
+
+      // Wire the in-sample theme picker: on change (and on each iframe load)
+      // post the selection to the sample iframe so it can re-render with the
+      // chosen theme/mode. Targets the iframe's own origin (never a wildcard
+      // when the origin is known) to avoid leaking the message to other frames.
+      const themingBar = widget.querySelector<HTMLElement>('.igd-sample-theming');
+      if (themingBar && iframe) {
+        const targetOrigin = (() => {
+          try {
+            return new URL(iframeSrc, window.location.origin).origin;
+          } catch {
+            return window.location.origin;
+          }
+        })();
+        const postTheme = (theme?: string, mode?: string) => {
+          if (!theme) return;
+          iframe.contentWindow?.postMessage(
+            {
+              // `type` is kept compatible with the existing Angular sample
+              // browser contract. `event` is an explicit alias for xplat
+              // sample browsers that use a named event discriminator.
+              type: 'igd-sample-theme',
+              event: 'igd-sample-theme',
+              theme,
+              themeName: theme,
+              mode,
+            },
+            targetOrigin,
+          );
+        };
+        const themingRoot = themingBar.querySelector<HTMLElement>('.igd-theming');
+        // Reflects the widget's mode onto the sample pane so its own background
+        // (not just the iframe content) can switch between the light-dark
+        // default and the dedicated dark surface — see `--igd-sample-bg-dark`.
+        const reflectMode = (mode?: string) => {
+          if (samplePane) samplePane.dataset.igdMode = mode || '';
+        };
+        themingBar.addEventListener('igd-theme-change', (e: Event) => {
+          const detail = (e as CustomEvent<{ theme: string; mode: string }>).detail;
+          postTheme(detail?.theme, detail?.mode);
+          reflectMode(detail?.mode);
+        });
+        // Send the current (possibly persisted) selection once the sample
+        // loads. `resolvedMode` is the widget's `system` selection already
+        // resolved against `prefers-color-scheme`; `mode` is only the fallback
+        // for a widget whose script has not initialized yet.
+        iframe.addEventListener('load', () => {
+          const mode = themingRoot?.dataset.resolvedMode || themingRoot?.dataset.mode;
+          postTheme(themingRoot?.dataset.theme, mode);
+          reflectMode(mode);
+        });
+      }
 
       // Toggle fullscreen button visibility based on active tab.
       igcTabs.addEventListener('igcChange', (e: Event) => {
