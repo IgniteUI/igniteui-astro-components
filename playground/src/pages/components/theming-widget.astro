@@ -1,0 +1,208 @@
+---
+import DocsLayout from '../../../../src/layouts/DocsLayout/DocsLayout.astro';
+import DocsSidebar from '../../../../src/components/DocsSidebar/DocsSidebar.astro';
+import DocsToc from '../../../../src/components/DocsToc/DocsToc.astro';
+import DocsSubHeader from '../../../../src/components/DocsSubHeader/DocsSubHeader.astro';
+import SearchAdvanced from '../../../../src/components/SearchAdvanced/SearchAdvanced.astro';
+import ThemingWidget from '../../../../src/components/ThemingWidget/ThemingWidget.astro';
+import {
+  SITE_TITLE,
+  SIDEBAR,
+  PRODUCT_LINKS,
+  SEARCH_TABS,
+  PACKAGES,
+  VERSIONS,
+} from '../../site-config';
+
+const slug = 'components/theming-widget';
+
+const headings = [
+  { depth: 2, slug: 'default', text: 'Default' },
+  { depth: 2, slug: 'in-a-sample-toolbar', text: 'In a sample toolbar' },
+  { depth: 2, slug: 'without-mode', text: 'Without the mode row' },
+  { depth: 2, slug: 'props', text: 'Props' },
+];
+---
+
+<DocsLayout title="ThemingWidget" siteTitle={SITE_TITLE} hasSidebar currentSlug={slug}>
+  <DocsSubHeader
+    slot="subheader"
+    pageTitle="ThemingWidget"
+    currentSlug={slug}
+    siteTitle={SITE_TITLE}
+    productLinks={PRODUCT_LINKS}
+    showThemeToggle={true}
+    packages={[...PACKAGES]}
+    selectedPackage={PACKAGES[0].value}
+    versions={[...VERSIONS]}
+    selectedVersion={VERSIONS[0]}
+  >
+    <SearchAdvanced slot="search" tabs={SEARCH_TABS} showScope={true} />
+  </DocsSubHeader>
+  <DocsSidebar slot="sidebar" items={SIDEBAR} currentSlug={slug} />
+  <DocsToc slot="toc" headings={headings} offsetTarget=".docs-subheader" />
+
+  <h1>ThemingWidget</h1>
+  <p>
+    A compact theme picker dropdown for sample viewers. The trigger shows the active theme — a small
+    multi-dot color swatch plus the theme name and a muted mode label. Opening it reveals a
+    <strong>MODE</strong> toggle (Light / Dark / System) and the list of selectable themes, with the active
+    theme checked.
+  </p>
+  <p>
+    On change it dispatches a bubbling <code>igd-theme-change</code> event with
+    <code>{'{ theme, mode, modePreference }'}</code> and reflects <code>data-igd-theme</code> / <code
+      >data-igd-mode</code
+    > onto a <code>target</code> element. The selection is not persisted — it resets on every page load.
+  </p>
+  <p>
+    <strong>System</strong> is resolved against the OS <code>prefers-color-scheme</code> before it leaves
+    the widget, so <code>mode</code> and <code>data-igd-mode</code> are always a concrete <code
+      >light</code
+    > or <code>dark</code>; the raw selection stays available as <code>modePreference</code>. While
+    System is selected, changing the OS appearance updates the widget live.
+  </p>
+  <p>
+    The panel opens in the top layer via the Popover API, so it is never clipped by a scrolling or
+    <code>overflow: hidden</code> ancestor. It flips above the trigger when there isn't room below and
+    caps its height (scrolling the list) when neither side fits.
+  </p>
+
+  <h2 id="default">Default</h2>
+  <p>The default widget with the four built-in themes and the mode row:</p>
+  <ThemingWidget />
+
+  <h2 id="in-a-sample-toolbar">In a sample toolbar</h2>
+  <p>
+    Placed in a sample viewer's action bar. Here it reflects the selection onto the preview box via
+    <code>target</code>, so the box updates as you pick a theme and mode:
+  </p>
+  <div class="tw-demo">
+    <div class="tw-demo__preview" data-tw-preview>
+      <span
+        >Preview surface — reacts to <code>data-igd-theme</code> / <code>data-igd-mode</code></span
+      >
+    </div>
+    <div class="tw-demo__toolbar">
+      <ThemingWidget target="[data-tw-preview]" />
+    </div>
+  </div>
+
+  <h2 id="without-mode">Without the mode row</h2>
+  <p>Set <code>showMode={'{false}'}</code> to hide the Light / Dark / System toggle:</p>
+  <ThemingWidget showMode={false} selectedTheme="indigo" />
+
+  <h2 id="props">Props</h2>
+  <div class="igd-table-wrapper" role="region" tabindex="0">
+    <table>
+      <thead>
+        <tr><th>Prop</th><th>Type</th><th>Default</th><th>Description</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>themes</code></td>
+          <td><code>ThemeOption[]</code></td>
+          <td>Material, Fluent, Bootstrap, Indigo</td>
+          <td
+            >Selectable themes. Each has a <code>name</code>, optional <code>label</code>, and a <code
+              >swatch</code
+            > array of dot colors.</td
+          >
+        </tr>
+        <tr>
+          <td><code>selectedTheme</code></td>
+          <td><code>string</code></td>
+          <td>first theme</td>
+          <td>Active theme <code>name</code>.</td>
+        </tr>
+        <tr>
+          <td><code>mode</code></td>
+          <td><code>'light' | 'dark' | 'system'</code></td>
+          <td><code>'light'</code></td>
+          <td>Active color mode.</td>
+        </tr>
+        <tr>
+          <td><code>showMode</code></td>
+          <td><code>boolean</code></td>
+          <td><code>true</code></td>
+          <td>Show the MODE toggle row.</td>
+        </tr>
+        <tr>
+          <td><code>target</code></td>
+          <td><code>string</code></td>
+          <td>—</td>
+          <td
+            >CSS selector for an element to reflect <code>data-igd-theme</code> / <code
+              >data-igd-mode</code
+            > onto.</td
+          >
+        </tr>
+        <tr>
+          <td><code>label</code></td>
+          <td><code>string</code></td>
+          <td><code>'Select theme'</code></td>
+          <td>Accessible label for the trigger.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</DocsLayout>
+
+<style>
+  h2 {
+    margin-block-start: 3rem;
+  }
+
+  .tw-demo {
+    border: 1px solid var(--ig-gray-300);
+    border-radius: 8px;
+  }
+
+  .tw-demo__preview {
+    display: grid;
+    place-items: center;
+    min-height: 160px;
+    padding: 24px;
+    text-align: center;
+    border-start-start-radius: 8px;
+    border-start-end-radius: 8px;
+    background: light-dark(#fff, var(--ig-gray-100));
+    color: var(--ig-gray-700);
+    transition:
+      background 0.2s ease,
+      color 0.2s ease;
+  }
+
+  .tw-demo__preview[data-igd-mode='dark'] {
+    background: #1e1e24;
+    color: #e6e6ec;
+  }
+
+  .tw-demo__preview[data-igd-theme='material'] {
+    box-shadow: inset 0 4px 0 var(--demo-accent, #0099ff);
+  }
+  .tw-demo__preview[data-igd-theme='fluent'] {
+    box-shadow: inset 0 4px 0 #0078d4;
+  }
+  .tw-demo__preview[data-igd-theme='bootstrap'] {
+    box-shadow: inset 0 4px 0 #0d6efd;
+  }
+  .tw-demo__preview[data-igd-theme='indigo'] {
+    box-shadow: inset 0 4px 0 #3f51b5;
+  }
+
+  .tw-demo__toolbar {
+    display: flex;
+    justify-content: flex-end;
+    padding: 8px 12px;
+    border-block-start: 1px solid var(--ig-gray-300);
+    border-end-start-radius: 8px;
+    border-end-end-radius: 8px;
+    background: var(--ig-gray-100);
+  }
+
+  /* Give the widget a comfortable, non-shrinking width inside the toolbar. */
+  .tw-demo__toolbar .igd-theming {
+    width: 200px;
+  }
+</style>

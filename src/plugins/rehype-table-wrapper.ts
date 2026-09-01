@@ -1,49 +1,51 @@
-import { visit } from 'unist-util-visit';
-
-let _counter = 0;
+import { defineHastPlugin } from 'satteri';
 
 /**
- * Rehype plugin that wraps every <table> in a scroll container div.
+ * Sätteri HAST plugin that wraps every <table> in a scroll container div.
  * The wrapper is fully accessible per the recommendations in:
  * https://piccalil.li/blog/styling-tables-the-modern-css-way/
  *
  * - role="region" + aria-labelledby pointing to the <caption> (or a generated id)
  * - tabindex="0" makes the scroll region keyboard-focusable
+ *
+ * Exported as a factory so Sätteri calls it once per document, resetting the id
+ * counter — these ids only have to be unique within a single page.
  */
 export function rehypeTableWrapper() {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return (tree: any) => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    visit(tree, 'element', (node: any, index: number | undefined, parent: any) => {
-      if (node.tagName !== 'table' || !parent || index == null) return;
+  let counter = 0;
 
-      // Find an existing <caption> to use as the accessible label.
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const caption = node.children?.find((c: any) => c.tagName === 'caption');
-      let labelId: string;
+  return defineHastPlugin({
+    name: 'table-wrapper',
+    element: {
+      filter: ['table'],
+      visit(node, ctx) {
+        // Find an existing <caption> to use as the accessible label.
+        const caption = node.children?.find((c) => c.type === 'element' && c.tagName === 'caption');
+        let labelId: string;
 
-      if (caption) {
-        // Reuse or assign an id on the caption element.
-        labelId = caption.properties?.id || `igd-table-caption-${++_counter}`;
-        caption.properties = { ...caption.properties, id: labelId };
-      } else {
-        // No caption — generate a unique id for the wrapper itself.
-        labelId = `igd-table-${++_counter}`;
-      }
+        if (caption && caption.type === 'element') {
+          // Reuse or assign an id on the caption element.
+          const existing = caption.properties?.id;
+          labelId =
+            typeof existing === 'string' && existing ? existing : `igd-table-caption-${++counter}`;
+          ctx.setProperty(caption, 'id', labelId);
+        } else {
+          // No caption — generate a unique id for the wrapper itself.
+          labelId = `igd-table-${++counter}`;
+        }
 
-      const wrapper = {
-        type: 'element',
-        tagName: 'div',
-        properties: {
-          className: ['igd-table-wrapper'],
-          role: 'region',
-          'aria-labelledby': labelId,
-          tabIndex: 0,
-        },
-        children: [node],
-      };
-
-      parent.children[index] = wrapper;
-    });
-  };
+        ctx.wrapNode(node, {
+          type: 'element',
+          tagName: 'div',
+          properties: {
+            className: ['igd-table-wrapper'],
+            role: 'region',
+            'aria-labelledby': labelId,
+            tabIndex: 0,
+          },
+          children: [],
+        });
+      },
+    },
+  });
 }

@@ -126,12 +126,26 @@ const propRows: PropRow[] = [
   {
     name: 'noBackground',
     type: 'boolean',
-    def: 'true',
+    def: 'true (false with showThemePicker)',
     description: `Hide the grid-pattern backdrop drawn behind the iframe — on by
             default, so the container is transparent and a demo with no background of
             its own sits directly on the page. Pass
             <code>noBackground={false}</code> to show the grid (see
-            <a href="#no-background">No background</a>).`,
+            <a href="#no-background">No background</a>). With
+            <code>showThemePicker</code> the default flips to <code>false</code>: a
+            reader-switchable theme (and mode) needs a surface of its own to switch
+            against.`,
+  },
+  {
+    name: 'whiteBackground',
+    type: 'boolean',
+    def: 'false',
+    description: `Paint the backdrop behind the iframe pure white
+            (<code>#fff</code>) instead of the default light gray. Only the light
+            side changes — dark mode (the site's, or the in-sample theming
+            widget's) keeps its own surface. It implies a painted background, so
+            it also overrides the transparency <code>noBackground</code> leaves
+            behind in light mode.`,
   },
 ];
 
@@ -487,6 +501,35 @@ const sections: Section[] = [
           noBorder: true,
           spacing: 'none',
           noBackground: true,
+          position: 'center',
+        },
+      },
+    ],
+  },
+  {
+    slug: 'white-background',
+    title: 'White background',
+    description: `<p>When the light gray canvas is too heavy for a demo — anything that
+            should read as sitting on a white sheet — pass
+            <code>whiteBackground</code>. It swaps the container's light backdrop for
+            pure white (<code>#fff</code>) and leaves dark mode alone: the site's dark
+            surface, and the in-sample theming widget's dark mode, keep their own
+            colors.</p>
+            <p>Since asking for white implies a painted surface, it also takes
+            precedence over the transparent default (<code>noBackground</code>) in
+            light mode — you don't need <code>noBackground={false}</code> for it to
+            show.</p>`,
+    examples: [
+      {
+        note: ['White in light mode; unchanged in dark mode.'],
+        props: {
+          src: '/mock-demo-avatar',
+          alt: 'White-background Example',
+          iframeOnly: true,
+          fitContent: true,
+          noBorder: true,
+          spacing: 'md',
+          whiteBackground: true,
           position: 'center',
         },
       },

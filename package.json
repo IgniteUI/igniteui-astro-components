@@ -4,7 +4,7 @@
   "description": "Reusable Astro components, layouts, and integrations for Infragistics / Ignite UI documentation sites. Replaces the Starlight defaults with project-specific implementations.",
   "type": "module",
   "engines": {
-    "node": "^20.19.0 || ^22.13.0 || >=24.0.0"
+    "node": ">=22.12.0"
   },
   "license": "MIT",
   "author": "Infragistics",
@@ -83,41 +83,44 @@
     "./package.json": "./package.json"
   },
   "peerDependencies": {
-    "astro": "^5.0.0 || ^6.0.0",
-    "igniteui-webcomponents": "^7.2.4"
+    "astro": "^7.0.0",
+    "igniteui-theming": "^26.0.1",
+    "igniteui-webcomponents": "^7.3.0-beta.1"
   },
   "dependencies": {
+    "@astrojs/mdx": "^7.0.7",
+    "@astrojs/markdown-satteri": "^0.3.5",
     "@fontsource-variable/instrument-sans": "^5.2.8",
     "@fontsource-variable/inter": "^5.2.8",
     "@fontsource-variable/jetbrains-mono": "^5.2.8",
+    "github-slugger": "^2.0.0",
     "jsdom": "^29.0.1",
-    "shiki": "^3.23.0"
+    "satteri": "^0.9.5",
+    "shiki": "^4.3.0"
   },
   "devDependencies": {
+    "@astrojs/check": "^0.9.9",
     "@types/jsdom": "^21.1.7",
-    "astro": "^6.1.6",
+    "astro": "^7.2.2",
     "husky": "^9.1.7",
     "igniteui-theming": "^26.0.1",
+    "igniteui-webcomponents": "^7.3.0-beta.1",
     "lint-staged": "^17.0.8",
     "oxlint": "^1.72.0",
     "prettier": "^3.9.4",
     "prettier-plugin-astro": "^0.14.1",
     "sass": "^1.83.0",
-    "typescript": "^5.6.0"
+    "typescript": "^5.9.3"
   },
-  "workspaces": [
-    "playground"
-  ],
   "publishConfig": {
     "access": "public"
   },
   "scripts": {
-    "playground": "npm --prefix playground run dev",
-    "playground:dev": "npm --prefix playground run dev",
-    "playground:build": "npm --prefix playground run build",
-    "playground:preview": "npm --prefix playground run preview",
-    "playground:clean": "npm --prefix playground run clean",
-    "playground:check": "npm --prefix playground run check",
+    "playground": "npm run playground:dev",
+    "playground:dev": "astro sync --root playground && astro dev --root playground --port 4567",
+    "playground:build": "astro sync --root playground && astro build --root playground",
+    "playground:preview": "astro preview --root playground --port 4567",
+    "playground:check": "astro check --root playground",
     "lint": "oxlint .",
     "lint:fix": "oxlint . --fix",
     "format": "prettier --write .",

@@ -15,6 +15,7 @@
  * when a separate demosBaseUrl is present in the environment config.
  */
 import type { PlatformContext } from '../../../lib/types.ts';
+import ThemingWidget from '../../ThemingWidget/ThemingWidget.astro';
 import './Sample.scss';
 
 interface Props {
@@ -35,6 +36,11 @@ interface Props {
   iframeOnly?: boolean;
   /** When used with iframeOnly, also render a "View in full screen" button below. */
   fullscreenBtn?: boolean;
+  /**
+   * Opt in to the in-sample theme picker for this sample. Its initial theme is
+   * resolved from the site (see `defaultTheme` below), not passed per usage.
+   */
+  showThemePicker?: boolean;
   /**
    * Size the iframe to fit its content: the embedded page dictates the
    * iframe's size. `height` serves only as the placeholder/fallback — shown
@@ -77,8 +83,21 @@ interface Props {
    * Hide the grid-pattern backdrop drawn behind the iframe (default). The
    * container is fully transparent, so a demo without a background of its own
    * sits directly on the page.
+   *
+   * Defaults to `false` when `showThemePicker` is on: a sample whose theme —
+   * and mode — the reader can switch needs a surface of its own to switch
+   * against, otherwise a dark-mode demo would sit on the page's own light
+   * background. An explicit value always wins.
    */
   noBackground?: boolean;
+  /**
+   * Paint the backdrop behind the iframe pure white (#fff) instead of the
+   * default light gray. Only the light side changes: in dark mode — the site's
+   * own, or the in-sample theming widget's — the background is left exactly as
+   * it was. Asking for a white background implies a painted one, so it also
+   * overrides the transparency `noBackground` leaves behind (in light mode).
+   */
+  whiteBackground?: boolean;
 }
 
 const {
@@ -89,13 +108,18 @@ const {
   crm = false,
   iframeOnly = false,
   fullscreenBtn = false,
+  showThemePicker = false,
   fitContent = false,
   spacing = 'none',
   position,
   resizable = false,
   noBorder = true,
-  noBackground = true,
+  whiteBackground = false,
 } = Astro.props;
+
+// The theme picker implies a painted backdrop (see the prop's doc), so its
+// default flips with `showThemePicker`. An explicitly passed value still wins.
+const noBackground = Astro.props.noBackground ?? !showThemePicker;
 
 // Fixed samples default to 150px. In fitContent mode `height` is only the
 // loading placeholder, so an unspecified one defaults lower (50px) to avoid
@@ -104,6 +128,18 @@ const height = Astro.props.height ?? (fitContent ? 50 : 150);
 const { name, lower } = Astro.locals.platformContext as PlatformContext;
 
 const env = Astro.locals.envVars ?? {};
+
+// The in-sample theme picker opens on the theme the platform's sample browser
+// itself ships: the Angular browser serves Material, the xplat ones (React /
+// Web Components / Blazor) serve Bootstrap. Deriving it from the platform keeps
+// every <Sample> in the docs correct without a per-usage prop, and a host can
+// still override it for a whole site via `defaultSampleTheme`. This is not
+// cosmetic — the picker's current selection is posted into the iframe on every
+// load (sample-widget.ts), so a wrong default actively re-themes the demo.
+const PLATFORM_DEFAULT_THEME: Partial<Record<PlatformContext['name'], string>> = {
+  Angular: 'material',
+};
+const defaultTheme = env.defaultSampleTheme ?? PLATFORM_DEFAULT_THEME[name] ?? 'bootstrap';
 
 // ─ Layout options (spacing / position / resize) ────────────────────────────────
 const spacingVal = ['none', 'sm', 'md', 'lg'].includes(spacing) ? spacing : 'none';
@@ -167,6 +203,7 @@ const exampleTabId = `${widgetId}-example`;
             'igd-sample-container--resizable': isResizable,
             'igd-sample-container--no-border': noBorder,
             'igd-sample-container--no-background': noBackground,
+            'igd-sample-container--white-background': whiteBackground,
           },
         ]}
         data-fit-content={fitContent ? 'true' : undefined}
@@ -228,6 +265,7 @@ const exampleTabId = `${widgetId}-example`;
                     'igd-sample-container--resizable': isResizable,
                     'igd-sample-container--no-border': noBorder,
                     'igd-sample-container--no-background': noBackground,
+                    'igd-sample-container--white-background': whiteBackground,
                   },
                 ]}
                 data-fit-content={fitContent ? 'true' : undefined}
@@ -264,6 +302,11 @@ const exampleTabId = `${widgetId}-example`;
             </igc-tab>
           </igc-tabs>
         </div>
+        {showThemePicker && (
+          <div class="igd-sample-theming" hidden>
+            <ThemingWidget selectedTheme={defaultTheme} />
+          </div>
+        )}
       </div>
     </>
   )
