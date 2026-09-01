@@ -91,7 +91,7 @@ interface Props {
   /**
    * Text label shown in the logo area when the GlobalNavBar is visible.
    * Fades out and is replaced by the SVG logo once the subheader becomes sticky.
-   * Defaults to `'IgniteUI'`.
+   * Defaults to `'Ignite UI'` for web products and `'Ultimate UI'` for WinUI/Uno.
    */
   logoText?: string;
 }
@@ -110,7 +110,8 @@ const {
   versionLabel = 'Version',
   showThemeToggle = false,
   themeStorageKey = 'docs-theme',
-  logoText = 'Ignite UI',
+  logoText =
+    virtualPlatform === 'winui' || virtualPlatform === 'uno' ? 'Ultimate UI' : 'Ignite UI',
 } = Astro.props;
 const resolvedSiteTitle = siteTitleProp ?? siteTitle;
 const currentPlatform = virtualPlatform ?? null;
@@ -139,6 +140,8 @@ const PLATFORM_LABELS: Record<string, string> = {
   react: 'React',
   blazor: 'Blazor',
   'web-components': 'Web Components',
+  winui: 'WinUI',
+  uno: 'Uno Platform',
 };
 const platformLabel = currentPlatform ? (PLATFORM_LABELS[currentPlatform] ?? null) : null;
 ---

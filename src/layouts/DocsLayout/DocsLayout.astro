@@ -14,6 +14,8 @@ import { title as siteTitle, headEntries, navLang } from 'virtual:docs-template/
 import '../../styles/theme.scss';
 import './DocsLayout.scss';
 
+const showIgniteUiPageLogo = virtualPlatform !== 'winui' && virtualPlatform !== 'uno';
+
 export interface Props {
   title?: string;
   description?: string | null;
@@ -302,7 +304,7 @@ type HeadEntry = {
         <div class="igd-main-content__inner">
           <div class="igd-main-content__page">
             <main class="igd-main-content__markdown" data-pagefind-body>
-              <Fragment set:html={igLogoRaw} />
+              {showIgniteUiPageLogo && <Fragment set:html={igLogoRaw} />}
               <LicenseIndicator license={licenseType} />
               <DocsBreadcrumb
                 pageTitle={title}
