@@ -36,7 +36,7 @@ interface Props {
    * (exposed via the virtual module). Falls back to `true` if not configured.
    */
   trailingSlash?: boolean;
-  /** Logo text shown in the slide-in sidebar on mobile/tablet. Defaults to 'Ignite UI'. */
+  /** Logo text shown in the slide-in sidebar. Defaults to the current product family. */
   logoText?: string;
   /** Platform label shown below logoText (e.g. 'Angular'). Auto-detected from virtual module when omitted. */
   platformLabel?: string | null;
@@ -47,6 +47,8 @@ const PLATFORM_LABELS: Record<string, string> = {
   react: 'React',
   blazor: 'Blazor',
   'web-components': 'Web Components',
+  winui: 'WinUI',
+  uno: 'Uno Platform',
 };
 
 const useTrailingSlash = configuredTrailingSlash !== 'never';
@@ -55,7 +57,8 @@ const {
   items: itemsProp,
   showFilter = true,
   trailingSlash = useTrailingSlash,
-  logoText = 'Ignite UI',
+  logoText =
+    virtualPlatform === 'winui' || virtualPlatform === 'uno' ? 'Ultimate UI' : 'Ignite UI',
   platformLabel = virtualPlatform ? (PLATFORM_LABELS[virtualPlatform] ?? null) : null,
 } = Astro.props;
 const items = (itemsProp ?? sidebarData) as SidebarEntry[];

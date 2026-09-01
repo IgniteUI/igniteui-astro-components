@@ -1,4 +1,11 @@
-export type PlatformName = 'Angular' | 'React' | 'WebComponents' | 'Blazor';
+export type PlatformName =
+  | 'Angular'
+  | 'React'
+  | 'WebComponents'
+  | 'Blazor'
+  /** XAML platforms. Share the WinUI control surface; see the docs host's NonWeb platform group. */
+  | 'WinUI'
+  | 'Uno';
 
 export interface ApiPackageConfig {
   /** TypeDoc documentation root URL (no trailing slash). */

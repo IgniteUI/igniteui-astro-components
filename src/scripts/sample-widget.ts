@@ -43,13 +43,26 @@ const XPLAT_SAMPLES_ORDER: Record<string, string[]> = {
   react: ['tsx', 'ts', 'html', 'css'],
   wc: ['tsx', 'ts', 'html', 'css'],
   blazor: ['razor', 'cs', 'js', 'css'],
+  // XAML platforms: markup first, then code-behind. Samples are authored as
+  // Sample.xaml / Sample.xaml.cs plus optional data-model .cs files.
+  winui: ['xaml', 'cs'],
+  uno: ['xaml', 'cs'],
 };
 
 const XPLAT_CODE_BASE: Record<string, string> = {
   wc: '/assets/code-viewer/',
   react: '/code-viewer/',
   blazor: '/code-viewer/',
+  winui: '/code-viewer/',
+  uno: '/code-viewer/',
 };
+
+/**
+ * Platforms whose samples cannot be handed off to StackBlitz / CodeSandbox —
+ * they are compiled .NET apps, and their sources are not published in an
+ * `igniteui-<platform>-examples` repo. Gates the "open in" footer only.
+ */
+const SANDBOX_UNSUPPORTED_PLATFORMS = new Set(['blazor', 'winui', 'uno']);
 
 const DV_PATHS = ['gauges/', 'maps/', 'excel/', 'charts/'];
 const ASSETS_RE = /([.]{0,2}\/)*assets\//g;
@@ -88,7 +101,13 @@ function normalizePlatform(raw: string): string {
 }
 
 function isXplatPlatform(platform: string): boolean {
-  return platform === 'react' || platform === 'wc' || platform === 'blazor';
+  return (
+    platform === 'react' ||
+    platform === 'wc' ||
+    platform === 'blazor' ||
+    platform === 'winui' ||
+    platform === 'uno'
+  );
 }
 
 function getSamplePath(iframeSrc: string, demosBaseUrl: string): string {
@@ -437,10 +456,8 @@ class XplatCodeService {
     this.platform = platform;
     this.samplesOrder = XPLAT_SAMPLES_ORDER[platform] || ['ts', 'html', 'css'];
     this.codeBase = XPLAT_CODE_BASE[platform] || '/code-viewer/';
-    // Gates only the StackBlitz / CodeSandbox buttons — Blazor samples can't be
-    // live-edited in a browser sandbox. The footer itself is always rendered:
-    // it also carries the fullscreen button and the in-sample theme picker.
-    this.enableLiveEditing = platform !== 'blazor';
+    // Gates the StackBlitz / CodeSandbox footer, not editing of the embedded sample.
+    this.enableLiveEditing = !SANDBOX_UNSUPPORTED_PLATFORMS.has(platform);
   }
 
   async init(ctx: WidgetContext): Promise<void> {
