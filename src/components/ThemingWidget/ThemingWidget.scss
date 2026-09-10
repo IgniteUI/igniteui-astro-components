@@ -3,7 +3,7 @@
 @layer components {
   .igd-theming {
     // Public custom properties (override from an ancestor or via `class`)
-    --igd-theming-radius: #{rem(5px)};
+    --igd-theming-radius: #{rem(4px)};
     --igd-theming-border: var(--ig-gray-300);
     --igd-theming-bg: light-dark(#fff, var(--ig-gray-100));
     --igd-theming-fg: var(--ig-gray-900);
@@ -15,6 +15,8 @@
 
     position: relative;
     display: inline-block;
+    width: rem(203px);
+    max-width: 100%;
     font-family: var(--ig-font-family, 'Aktiv Grotesk', var(--igd-font-sans, sans-serif));
     font-size: #{rem(14px)};
     line-height: #{rem(20px)};
@@ -26,16 +28,18 @@
     display: inline-flex;
     align-items: center;
     gap: rem(8px);
-    width: rem(203px);
+    width: 100%;
     box-sizing: border-box;
     height: rem(40px);
     min-height: rem(40px);
-    padding: rem(8px) rem(16px);
+    padding: 0 rem(16px);
     background: var(--igd-theming-bg);
     color: var(--igd-theming-fg);
     border: rem(1px) solid var(--igd-theming-border);
     border-radius: var(--igd-theming-radius);
     cursor: pointer;
+    font: inherit;
+    letter-spacing: rem(0.25px);
     line-height: #{rem(20px)};
     transition:
       border-color 0.15s ease,
@@ -52,31 +56,45 @@
     display: inline-flex;
     align-items: baseline;
     gap: rem(4px);
+    min-width: 0;
     margin-inline-end: auto;
     white-space: nowrap;
   }
 
   .igd-theming__theme-name {
     font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .igd-theming__mode-name {
     color: var(--igd-theming-muted);
     font-weight: 400;
+    flex-shrink: 0;
+    font-size: rem(12px);
+    line-height: rem(16px);
+    letter-spacing: rem(0.4px);
   }
 
   .igd-theming__chevron {
     flex-shrink: 0;
-    color: var(--igd-theming-muted);
+    width: rem(18px);
+    height: rem(18px);
+    margin-inline-start: rem(8px);
+    color: var(--ig-gray-600);
+    background: currentColor;
+    mask: url('./assets/chevron.svg') center / contain no-repeat;
+    transform: rotate(180deg);
     transition: transform 0.15s ease;
   }
 
   .igd-theming.is-open .igd-theming__chevron {
-    transform: rotate(180deg);
+    transform: rotate(0);
   }
 
   // ── Swatch ───────────────────────────────────────────────────────────────
   .igd-theming__swatch {
+    gap: rem(2px);
     display: inline-flex;
     flex-shrink: 0;
     align-items: center;
@@ -88,7 +106,12 @@
     height: rem(12px);
     border-radius: 50%;
     background: var(--dot);
-    box-shadow: 0 0 0 rem(3px) var(--igd-theming-bg);
+  }
+
+  .igd-theming__dot:not(:last-child) {
+    width: rem(10.123px);
+    border-radius: 0;
+    mask: url('./assets/swatch-leading.svg') center / contain no-repeat;
   }
 
   // Light mode shows only the two accent dots; dark mode adds the leading
@@ -97,21 +120,12 @@
     display: none;
   }
 
-  // The now-first visible dot must not keep the overlap offset.
-  .igd-theming[data-mode='light'] .igd-theming__dot:first-child + .igd-theming__dot {
-    margin-inline-start: 0;
-  }
-
   // `system` follows the OS preference. The dark arrangement is the default,
   // so only the light half needs a rule — expressed in CSS rather than through
   // the script's resolved mode so the swatch is already correct on first paint.
   @media (prefers-color-scheme: light) {
     .igd-theming[data-mode='system'] .igd-theming__dot:first-child {
       display: none;
-    }
-
-    .igd-theming[data-mode='system'] .igd-theming__dot:first-child + .igd-theming__dot {
-      margin-inline-start: 0;
     }
   }
 
@@ -124,13 +138,13 @@
     inset-block-start: calc(100% + #{rem(4px)});
     inset-inline-start: 0;
     z-index: 100;
-    width: rem(203px);
+    width: 100%;
     box-sizing: border-box;
-    padding-block: 0;
+    padding: 0;
     background: var(--igd-theming-bg);
     border: rem(1px) solid var(--igd-theming-border);
     border-radius: var(--igd-theming-radius);
-    box-shadow: 0 rem(8px) rem(24px) rgb(0 0 0 / 12%);
+    color: var(--igd-theming-fg);
     overflow: hidden auto;
 
     &[hidden] {
@@ -169,7 +183,12 @@
   .igd-theming__section-label {
     @include type-style('overline');
 
-    color: var(--ig-gray-500);
+    color: var(--igd-theming-muted);
+    font-size: rem(10px);
+    font-weight: 400;
+    line-height: rem(16px);
+    letter-spacing: rem(1.5px);
+    text-transform: uppercase;
   }
 
   .igd-theming__mode-buttons {
@@ -179,6 +198,7 @@
   }
 
   .igd-theming__mode-btn {
+    position: relative;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -211,6 +231,48 @@
     }
   }
 
+  // Keep mode labels available on hover and keyboard focus, as in Figma.
+  .igd-theming__mode-btn:is(:hover, :focus-visible)::after {
+    content: attr(aria-label);
+    position: absolute;
+    z-index: 1;
+    inset-block-start: calc(100% + #{rem(4px)});
+    inset-inline-start: 50%;
+    transform: translateX(-50%);
+    padding: rem(4px) rem(8px);
+    border-radius: rem(4px);
+    background: color-mix(in srgb, var(--ig-gray-700) 90%, transparent);
+    color: var(--ig-gray-50);
+    font-family: inherit;
+    font-size: rem(10px);
+    font-weight: 500;
+    line-height: rem(16px);
+    letter-spacing: rem(0.33px);
+    white-space: nowrap;
+    pointer-events: none;
+  }
+
+  .igd-theming__mode-btn:is(:hover, :focus-visible)::before {
+    content: '';
+    position: absolute;
+    inset-block-start: 100%;
+    border-inline: rem(4px) solid transparent;
+    border-block-end: rem(4px) solid color-mix(in srgb, var(--ig-gray-700) 90%, transparent);
+    pointer-events: none;
+  }
+
+  .igd-theming__mode-icon {
+    display: block;
+    width: rem(18px);
+    height: rem(18px);
+    background: currentColor;
+    mask: url('./assets/sun.svg') center / contain no-repeat;
+  }
+
+  [data-mode-btn='dark'] .igd-theming__mode-icon {
+    mask-image: url('./assets/moon.svg');
+  }
+
   // ── Theme list ───────────────────────────────────────────────────────────
   .igd-theming .igd-theming__list {
     list-style: none;
@@ -219,7 +281,8 @@
     border: none;
   }
 
-  .igd-theming__list > li {
+  // Outrank the host documentation list spacing.
+  .igd-theming .igd-theming__list > li {
     margin: 0;
     padding: 0;
   }
@@ -236,7 +299,7 @@
     padding-block: 0;
     padding-inline: rem(24px) rem(12px);
     background: transparent;
-    color: #00142b;
+    color: var(--igd-theming-fg);
     border: none;
     cursor: pointer;
     text-align: start;
@@ -257,13 +320,17 @@
   }
 
   .igd-theming__option-name {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
     margin-inline-end: auto;
     font-family: var(--ig-body-2-font-family, var(--ig-font-family, 'Aktiv Grotesk', sans-serif));
     font-size: #{rem(14px)};
     line-height: #{rem(20px)};
     letter-spacing: 0.25px;
     font-weight: 500;
-    color: #00142b;
+    color: var(--igd-theming-fg);
   }
 
   .igd-theming__option[aria-selected='true'] .igd-theming__option-name {
@@ -272,6 +339,10 @@
 
   .igd-theming__check {
     flex-shrink: 0;
+    width: rem(20px);
+    height: rem(20px);
+    background: currentColor;
+    mask: url('./assets/check.svg') center / contain no-repeat;
     color: var(--igd-theming-accent);
     opacity: 0;
   }
