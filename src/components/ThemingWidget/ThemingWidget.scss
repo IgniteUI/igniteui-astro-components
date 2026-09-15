@@ -93,6 +93,13 @@
     white-space: nowrap;
   }
 
+  // Dark mode displays all three swatch dots. Reserve space for the extra dot
+  // before the absolutely positioned label so the two never overlap.
+  .igd-theming[data-resolved-mode='dark'] .igd-theming__selected-value {
+    left: rem(56px);
+    max-width: calc(100% - #{rem(96px)});
+  }
+
   .igd-theming__selected-theme,
   .igd-theming__selected-mode {
     overflow: hidden;
