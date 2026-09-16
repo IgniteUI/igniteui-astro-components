@@ -17,15 +17,14 @@ import {
   defineComponents,
   IgcTabsComponent,
   IgcTabComponent,
-  IgcButtonComponent,
   IgcIconButtonComponent,
   IgcIconComponent,
   IgcCircularProgressComponent,
+  registerIconFromText,
 } from 'igniteui-webcomponents';
 defineComponents(
   IgcTabsComponent,
   IgcTabComponent,
-  IgcButtonComponent,
   IgcIconButtonComponent,
   IgcIconComponent,
   IgcCircularProgressComponent,
@@ -33,7 +32,12 @@ defineComponents(
 
 import './icon-registry';
 import type { Highlighter } from 'shiki';
-import stackblitzSvg from '../assets/logos/stackblitz.svg?raw';
+import footerStackblitzIcon from '../components/mdx/Sample/assets/stackblitz.svg?raw';
+import footerOpenExternalIcon from '../components/mdx/Sample/assets/open-external.svg?raw';
+
+const FOOTER_ICON_COLLECTION = 'sample-footer';
+registerIconFromText('stackblitz', footerStackblitzIcon, FOOTER_ICON_COLLECTION);
+registerIconFromText('open-external', footerOpenExternalIcon, FOOTER_ICON_COLLECTION);
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -256,18 +260,22 @@ function addFooter(
   const footer = document.createElement('div');
   footer.className = 'igd-code-view__footer-actions';
 
+  const actions = document.createElement('div');
+  actions.className = 'igd-code-view__footer-edit-actions';
+
   // Move the server-rendered theme picker (if any) into the existing footer,
   // after the edit controls so it is the rightmost footer item.
   const themingBar = widget.querySelector<HTMLElement>('.igd-sample-theming');
 
   if ((!explicitEditor || explicitEditor === 'stackblitz') && onStackblitz) {
-    const btn = document.createElement('igc-button') as HTMLElement;
-    btn.setAttribute('variant', 'outlined');
+    const btn = document.createElement('igc-icon-button') as HTMLElement;
+    btn.setAttribute('name', 'stackblitz');
+    btn.setAttribute('collection', FOOTER_ICON_COLLECTION);
+    btn.setAttribute('variant', 'flat');
     btn.setAttribute('aria-label', 'Edit in StackBlitz');
     btn.className = 'stackblitz-btn igd-edit-in-btn';
-    btn.innerHTML = stackblitzSvg;
     btn.addEventListener('click', onStackblitz);
-    footer.appendChild(btn);
+    actions.appendChild(btn);
   }
 
   // CodeSandbox hidden, re-enable when https://github.com/codesandbox/codesandbox-client/issues/8884 is fixed.
@@ -283,15 +291,10 @@ function addFooter(
   //     footer.appendChild(btn);
   // }
 
-  if (themingBar) {
-    themingBar.hidden = false;
-    footer.appendChild(themingBar);
-  }
-
   const fsBtn = document.createElement('igc-icon-button') as HTMLElement;
-  fsBtn.setAttribute('name', 'open-link-blank');
-  fsBtn.setAttribute('collection', 'docs');
-  fsBtn.setAttribute('variant', 'outlined');
+  fsBtn.setAttribute('name', 'open-external');
+  fsBtn.setAttribute('collection', FOOTER_ICON_COLLECTION);
+  fsBtn.setAttribute('variant', 'flat');
   fsBtn.setAttribute('aria-label', 'Open in full screen');
   fsBtn.className = 'igd-full-screen-btn igd-edit-in-btn';
   if (iframeSrc) {
@@ -299,7 +302,13 @@ function addFooter(
     fsBtn.setAttribute('href', fullscreenSrc);
     fsBtn.setAttribute('target', '_blank');
   }
-  footer.appendChild(fsBtn);
+  actions.appendChild(fsBtn);
+  footer.appendChild(actions);
+
+  if (themingBar) {
+    themingBar.hidden = false;
+    footer.appendChild(themingBar);
+  }
 
   widget.appendChild(footer);
 }

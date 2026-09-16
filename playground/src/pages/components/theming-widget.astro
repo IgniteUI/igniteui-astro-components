@@ -46,21 +46,14 @@ const headings = [
   <p>
     A compact theme picker dropdown for sample viewers. The trigger shows the active theme — a small
     multi-dot color swatch plus the theme name and a muted mode label. Opening it reveals a
-    <strong>MODE</strong> toggle (Light / Dark / System) and the list of selectable themes, with the active
-    theme checked.
+    <strong>MODE</strong> toggle (Light / Dark) and the list of selectable themes, with the active theme
+    checked.
   </p>
   <p>
     On change it dispatches a bubbling <code>igd-theme-change</code> event with
     <code>{'{ theme, mode, modePreference }'}</code> and reflects <code>data-igd-theme</code> / <code
       >data-igd-mode</code
     > onto a <code>target</code> element. The selection is not persisted — it resets on every page load.
-  </p>
-  <p>
-    <strong>System</strong> is resolved against the OS <code>prefers-color-scheme</code> before it leaves
-    the widget, so <code>mode</code> and <code>data-igd-mode</code> are always a concrete <code
-      >light</code
-    > or <code>dark</code>; the raw selection stays available as <code>modePreference</code>. While
-    System is selected, changing the OS appearance updates the widget live.
   </p>
   <p>
     The panel opens in the top layer via the Popover API, so it is never clipped by a scrolling or
@@ -89,7 +82,7 @@ const headings = [
   </div>
 
   <h2 id="without-mode">Without the mode row</h2>
-  <p>Set <code>showMode={'{false}'}</code> to hide the Light / Dark / System toggle:</p>
+  <p>Set <code>showMode={'{false}'}</code> to hide the Light / Dark toggle:</p>
   <ThemingWidget showMode={false} selectedTheme="indigo" />
 
   <h2 id="props">Props</h2>
@@ -117,7 +110,7 @@ const headings = [
         </tr>
         <tr>
           <td><code>mode</code></td>
-          <td><code>'light' | 'dark' | 'system'</code></td>
+          <td><code>'light' | 'dark'</code></td>
           <td><code>'light'</code></td>
           <td>Active color mode.</td>
         </tr>

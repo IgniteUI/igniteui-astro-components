@@ -399,11 +399,28 @@ igc-tab::part(tab-header) {
 
 .igd-code-view__footer-actions {
   border-block-start: rem(1px) solid var(--ig-gray-300);
+  border-end-start-radius: 0.25rem;
+  border-end-end-radius: 0.25rem;
+  min-height: rem(56px);
+  padding: rem(8px) rem(24px);
+  gap: rem(8px);
+  background: light-dark(#fff, var(--ig-surface-500));
 }
 
-// The in-sample theme picker is appended after the edit controls.
+// The footer picker is intentionally borderless: the footer itself provides
+// the visual container while the select continues to own its menu and state.
 .igd-code-view__footer-actions .igd-sample-theming {
   margin-inline-start: 0;
+
+  .igd-theming__select {
+    --ig-input-group-border-color: transparent;
+    --ig-input-group-hover-border-color: transparent;
+  }
+
+  .igd-theming__select::part(input) {
+    border-color: transparent;
+    box-shadow: none;
+  }
 }
 
 .igd-code-view__header-actions,
@@ -414,6 +431,27 @@ igc-tab::part(tab-header) {
   position: relative;
   padding: rem(16px);
   gap: rem(16px);
+}
+
+.igd-code-view__footer-actions {
+  padding: rem(8px) rem(24px);
+  gap: rem(8px);
+
+  .igd-code-view__footer-edit-actions {
+    display: flex;
+    flex: 1 0 0;
+    align-items: center;
+    justify-content: flex-end;
+    min-width: 0;
+    padding-inline-start: rem(16px);
+    gap: rem(8px);
+  }
+
+  .igd-edit-in-btn {
+    --size: #{rem(24px)};
+    --ig-icon-size: #{rem(18px)};
+    --border-radius: #{rem(18px)};
+  }
 }
 
 .igd-code-view__header-actions {
