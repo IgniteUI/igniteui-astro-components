@@ -399,6 +399,8 @@ igc-tab::part(tab-header) {
 
 .igd-code-view__footer-actions {
   border-block-start: rem(1px) solid var(--ig-gray-300);
+  border-end-start-radius: 0.25rem;
+  border-end-end-radius: 0.25rem;
   min-height: rem(56px);
   padding: rem(8px) rem(24px);
   gap: rem(8px);
