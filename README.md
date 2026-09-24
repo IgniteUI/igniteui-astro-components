@@ -19,7 +19,7 @@ story simple for consumer repos.
 npm install igniteui-astro-components
 ```
 
-`astro@^5 || ^6` is required as a peer dependency.
+`astro@^7.3.4` is required as a peer dependency.
 
 ---
 

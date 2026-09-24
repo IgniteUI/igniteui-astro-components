@@ -83,25 +83,25 @@
     "./package.json": "./package.json"
   },
   "peerDependencies": {
-    "astro": "^7.0.0",
+    "astro": "^7.3.4",
     "igniteui-theming": "^26.0.1",
     "igniteui-webcomponents": "^7.3.0-beta.1"
   },
   "dependencies": {
-    "@astrojs/mdx": "^7.0.7",
-    "@astrojs/markdown-satteri": "^0.3.5",
+    "@astrojs/mdx": "^8.0.2",
+    "@astrojs/markdown-satteri": "^0.4.2",
     "@fontsource-variable/instrument-sans": "^5.2.8",
     "@fontsource-variable/inter": "^5.2.8",
     "@fontsource-variable/jetbrains-mono": "^5.2.8",
     "github-slugger": "^2.0.0",
     "jsdom": "^29.0.1",
-    "satteri": "^0.9.5",
+    "satteri": "^0.10.5",
     "shiki": "^4.3.0"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.9",
     "@types/jsdom": "^21.1.7",
-    "astro": "^7.2.2",
+    "astro": "^7.3.4",
     "husky": "^9.1.7",
     "igniteui-theming": "^26.0.1",
     "igniteui-webcomponents": "^7.3.0-beta.1",
