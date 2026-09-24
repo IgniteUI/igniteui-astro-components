@@ -1,17 +1,5 @@
-@use 'sass:map';
 @use 'igniteui-theming/sass/typography' as *;
-@use 'igniteui-theming/sass/color/presets' as presets;
 @use '../../../styles/global/copy-button' as *;
-
-// Dark palettes of the themes offered by the in-sample theming widget, keyed by
-// the widget's theme names. Their surface color becomes the sample pane's dark
-// background, so the backdrop matches the dark theme the demo is rendered in.
-$sample-dark-palettes: (
-  'material': presets.$dark-material-palette,
-  'bootstrap': presets.$dark-bootstrap-palette,
-  'fluent': presets.$dark-fluent-palette,
-  'indigo': presets.$dark-indigo-palette,
-);
 
 igc-tabs {
   position: relative;
@@ -138,9 +126,7 @@ igc-tab::part(tab-header) {
   --sample-container-header-height: #{rem(66px)};
   // Two selectable backgrounds: the site's own light/dark surface (default),
   // or a dedicated dark surface used when the in-sample theming widget's mode
-  // is `dark` — see `[data-igd-mode='dark']` below. The dark surface follows
-  // the widget's selected theme (`data-igd-theme`); the fallback covers a theme
-  // missing from `$sample-dark-palettes`.
+  // is `dark` — see `[data-igd-mode='dark']` below.
   --igd-sample-bg-light-dark: light-dark(var(--ig-gray-100), var(--ig-surface-500));
   --igd-sample-bg-dark: #0a0b10;
 
@@ -151,12 +137,6 @@ igc-tab::part(tab-header) {
   margin-block-end: rem(26px);
   z-index: 0;
   background: var(--igd-sample-bg-light-dark);
-
-  @each $theme, $palette in $sample-dark-palettes {
-    &[data-igd-theme='#{$theme}'] {
-      --igd-sample-bg-dark: #{map.get($palette, 'surface', '500')};
-    }
-  }
 
   &[data-igd-mode='dark'] {
     background: var(--igd-sample-bg-dark);
