@@ -965,16 +965,19 @@ export function initSampleWidgets(): void {
           );
         };
         const themingRoot = themingBar.querySelector<HTMLElement>('.igd-theming');
-        // Reflects the widget's mode onto the sample pane so its own background
-        // (not just the iframe content) can switch between the light-dark
-        // default and the dedicated dark surface — see `--igd-sample-bg-dark`.
-        const reflectMode = (mode?: string) => {
-          if (samplePane) samplePane.dataset.igdMode = mode || '';
+        // Reflects the widget's theme and mode onto the sample pane so its own
+        // background (not just the iframe content) can switch between the
+        // light-dark default and the selected theme's dark surface — see
+        // `--igd-sample-bg-dark`.
+        const reflectSelection = (theme?: string, mode?: string) => {
+          if (!samplePane) return;
+          samplePane.dataset.igdTheme = theme || '';
+          samplePane.dataset.igdMode = mode || '';
         };
         themingBar.addEventListener('igd-theme-change', (e: Event) => {
           const detail = (e as CustomEvent<{ theme: string; mode: string }>).detail;
           postTheme(detail?.theme, detail?.mode);
-          reflectMode(detail?.mode);
+          reflectSelection(detail?.theme, detail?.mode);
         });
         // Send the current (possibly persisted) selection once the sample
         // loads. `resolvedMode` is the widget's `system` selection already
@@ -983,7 +986,7 @@ export function initSampleWidgets(): void {
         iframe.addEventListener('load', () => {
           const mode = themingRoot?.dataset.resolvedMode || themingRoot?.dataset.mode;
           postTheme(themingRoot?.dataset.theme, mode);
-          reflectMode(mode);
+          reflectSelection(themingRoot?.dataset.theme, mode);
         });
       }
 
