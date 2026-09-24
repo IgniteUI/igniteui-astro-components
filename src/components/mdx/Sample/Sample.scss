@@ -160,6 +160,14 @@ igc-tab::part(tab-header) {
 
   &[data-igd-mode='dark'] {
     background: var(--igd-sample-bg-dark);
+
+    // The demo switches its own document to `color-scheme: dark`. When that
+    // differs from the iframe element's scheme (a light docs site), the browser
+    // paints an opaque default canvas behind the demo instead of letting this
+    // surface show through, so the iframe has to match the demo's scheme.
+    iframe {
+      color-scheme: dark;
+    }
   }
 
   iframe {
