@@ -9,6 +9,59 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Mock Demo</title>
+    <style>
+      :root {
+        --demo-accent: #0099ff;
+        --demo-bg: #ffffff;
+        --demo-fg: #1a1a1a;
+      }
+      :root[data-igd-mode='dark'] {
+        --demo-bg: #1e1e24;
+        --demo-fg: #e6e6ec;
+      }
+      :root[data-igd-theme='material'] {
+        --demo-accent: #0099ff;
+      }
+      :root[data-igd-theme='fluent'] {
+        --demo-accent: #0078d4;
+      }
+      :root[data-igd-theme='bootstrap'] {
+        --demo-accent: #0d6efd;
+      }
+      :root[data-igd-theme='indigo'] {
+        --demo-accent: #3f51b5;
+      }
+      body {
+        font-family: system-ui, sans-serif;
+        background: var(--demo-bg);
+        color: var(--demo-fg);
+        transition:
+          background 0.2s ease,
+          color 0.2s ease;
+      }
+      .badge {
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: 4px;
+        background: var(--demo-accent);
+        color: #fff;
+        font-size: 12px;
+      }
+      h1 {
+        color: var(--demo-accent);
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 6px;
+        margin-block-start: 12px;
+      }
+      .cell {
+        padding: 10px;
+        border: 1px solid var(--demo-accent);
+        border-radius: 4px;
+      }
+    </style>
   </head>
   <body>
     <div class="grid">
@@ -22,5 +75,35 @@
       <div class="cell">Row 2</div>
       <div class="cell">Row 2</div>
     </div>
+
+    <script is:inline>
+      // Demonstrates the Sample → iframe theming channel: the ThemingWidget in
+      // the sample footer posts `{ type: 'igd-sample-theme', theme, mode }`;
+      // a real sample app would swap its Ignite UI theme stylesheet here.
+      window.addEventListener('message', (e) => {
+        const trustedOrigins = new Set([
+          window.location.origin,
+          'http://localhost:3000',
+          'http://127.0.0.1:3000',
+        ]);
+        if (!trustedOrigins.has(e.origin)) return;
+
+        const msg = e.data;
+        if (!msg || (msg.type !== 'igd-sample-theme' && msg.event !== 'igd-sample-theme')) return;
+        const theme = msg.theme || msg.themeName || '';
+        const accents = {
+          material: '#0099ff',
+          fluent: '#0078D4',
+          bootstrap: '#0d6efd',
+          indigo: '#3f51b5',
+        };
+        document.documentElement.style.setProperty(
+          '--demo-accent',
+          accents[theme] || accents.material,
+        );
+        document.documentElement.dataset.igdTheme = theme;
+        document.documentElement.dataset.igdMode = msg.mode || '';
+      });
+    </script>
   </body>
 </html>

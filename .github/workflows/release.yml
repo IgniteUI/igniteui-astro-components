@@ -3,6 +3,12 @@ name: Release
 on:
   release:
     types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag to release (e.g. v1.2.3)'
+        required: true
+        type: string
 
 jobs:
   release:
@@ -15,6 +21,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v6
+        with:
+          ref: ${{ inputs.tag || github.ref }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v6
@@ -26,7 +34,9 @@ jobs:
         run: npm ci --ignore-scripts
 
       - name: Set version from release tag
-        run: npm version --no-git-tag-version "${GITHUB_REF_NAME#v}"
+        env:
+          RELEASE_TAG: ${{ inputs.tag || github.ref_name }}
+        run: npm version --no-git-tag-version "${RELEASE_TAG#v}"
 
       - name: Publish
         run: npm publish --provenance --access public

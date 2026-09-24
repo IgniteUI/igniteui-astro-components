@@ -18,10 +18,12 @@
  */
 
 import { defineConfig } from 'astro/config';
-import { fileURLToPath } from 'node:url';
+import { createRequire } from 'node:module';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import path from 'node:path';
 import fs from 'node:fs';
 import mdx from '@astrojs/mdx';
+import { satteri } from '@astrojs/markdown-satteri';
 import { getPlatformHead } from '../src/platform.ts';
 import { rehypeHeadingAnchors } from '../src/plugins/rehype-heading-anchors.ts';
 import { rehypeTableWrapper } from '../src/plugins/rehype-table-wrapper.ts';
@@ -162,6 +164,31 @@ export const abContactSalesHtml = '';
 }
 
 const repoRoot = path.dirname(fileURLToPath(import.meta.url));
+const themingPackageDir = path.dirname(
+  createRequire(import.meta.url).resolve('igniteui-theming/package.json'),
+);
+
+/**
+ * Sass importer for `igniteui-theming` subpaths.
+ * Vite 8 enforces the package export map, whose current Sass pattern does not
+ * resolve extensionless imports. Resolve them directly until the package is fixed.
+ */
+function createThemingSassImporter() {
+  const prefix = 'igniteui-theming/';
+
+  return {
+    /** @param {string} url */
+    findFileUrl(url) {
+      if (!url.startsWith(prefix)) return null;
+
+      const candidate = path.join(themingPackageDir, url.slice(prefix.length));
+      return fs.existsSync(candidate) || fs.existsSync(path.dirname(candidate))
+        ? pathToFileURL(candidate)
+        : null;
+    },
+  };
+}
+
 /** @type {import('astro').ShikiConfig} */
 const markdownShikiConfig = {
   theme: 'dark-plus',
@@ -174,10 +201,12 @@ export default defineConfig({
   outDir: './dist',
   // Disable image optimization — playground pages just use plain <img>.
   image: { service: { entrypoint: 'astro/assets/services/noop' } },
-  integrations: [mdx({ gfm: true })],
+  integrations: [mdx()],
   markdown: {
     shikiConfig: markdownShikiConfig,
-    rehypePlugins: [rehypeHeadingAnchors, rehypeTableWrapper],
+    processor: satteri({
+      hastPlugins: [rehypeHeadingAnchors, rehypeTableWrapper],
+    }),
   },
   vite: {
     define: {
@@ -187,13 +216,8 @@ export default defineConfig({
     css: {
       preprocessorOptions: {
         scss: {
-          // Allow `@use 'igniteui-theming'` (in ../src/styles/ig-theme.scss)
-          // to resolve from the playground's node_modules even though the
-          // file lives outside this folder.
-          loadPaths: [
-            path.join(repoRoot, 'node_modules'),
-            path.resolve(repoRoot, '..', 'node_modules'),
-          ],
+          importers: [createThemingSassImporter()],
+          loadPaths: [path.resolve(repoRoot, '..', 'node_modules')],
         },
       },
     },

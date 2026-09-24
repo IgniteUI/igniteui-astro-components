@@ -1,0 +1,374 @@
+---
+/**
+ * ThemingWidget
+ *
+ * A compact theme picker dropdown used inside sample viewers. The select shows
+ * the active theme (a small multi-dot color swatch and its name). Opening it
+ * reveals a panel with:
+ *
+ *   • an optional MODE row — two icon toggles for Light / Dark, and
+ *   • a list of selectable themes, each with its swatch; the active one is checked.
+ *
+ * The widget uses Ignite UI Web Components for the select, selectable options,
+ * and mode buttons. A small client script synchronizes the state. On change it:
+ *   • dispatches a bubbling `igd-theme-change` CustomEvent with
+ *     `{ theme, mode, modePreference }`, and
+ *   • reflects `data-igd-theme` / `data-igd-mode` on the optional `target` element.
+ *
+ * `system` is resolved against the OS `prefers-color-scheme` before it leaves
+ * the widget: `mode` (and everything reflected onto `target`) is always a
+ * concrete `light` / `dark`, while `modePreference` keeps the raw selection.
+ * While `system` is selected the widget follows OS changes live, re-reflecting
+ * and re-emitting whenever the preference flips.
+ *
+ * The selection is not persisted — the widget resets to its initial props on
+ * every page load.
+ *
+ * When `selectedTheme` / `mode` are omitted the widget falls back to the docs
+ * host's ambient configuration — `defaultSampleTheme` / `defaultSampleMode` on
+ * `Astro.locals.envVars` — so a site sets its starting theme once instead of at
+ * every call site.
+ *
+ * The select's built-in popover owns overlay positioning and keyboard navigation.
+ * Mirrors the Combo Input and Dropdown designs from the Doc Samples Figma file.
+ */
+import './ThemingWidget.scss';
+
+export interface ThemeOption {
+  /** Stable identifier, also used as the value in events. */
+  name: string;
+  /** Display label. Defaults to a title-cased `name`. */
+  label?: string;
+  /** Swatch dot colors (left → right). Any length; the design uses three. */
+  swatch: string[];
+}
+
+export type ThemeMode = 'light' | 'dark' | 'system';
+
+interface Props {
+  /** Selectable themes. Defaults to Material, Fluent, Bootstrap and Indigo. */
+  themes?: ThemeOption[];
+  /**
+   * Active theme `name`. When omitted, falls back to the host's
+   * `defaultSampleTheme` env var and then to the first theme.
+   */
+  selectedTheme?: string;
+  /**
+   * Active color mode. When omitted, falls back to the host's
+   * `defaultSampleMode` env var and then to `'light'`.
+   */
+  mode?: ThemeMode;
+  /** Show the MODE (Light / Dark) toggle row. Defaults to `true`. */
+  showMode?: boolean;
+  /** Element id for the root. Defaults to an auto-generated id. */
+  id?: string;
+  /** Extra class(es) forwarded to the root. */
+  class?: string;
+  /** Accessible label for the trigger. Defaults to `'Select theme'`. */
+  label?: string;
+  /**
+   * CSS selector for an element to reflect the selection onto via
+   * `data-igd-theme` / `data-igd-mode`. When omitted, nothing is reflected.
+   */
+  target?: string;
+}
+
+const DEFAULT_THEMES: ThemeOption[] = [
+  { name: 'material', label: 'Material', swatch: ['#000000', '#df1b74', '#0099ff'] },
+  { name: 'fluent', label: 'Fluent', swatch: ['#000000', '#0078D4', '#2B88D8'] },
+  { name: 'bootstrap', label: 'Bootstrap', swatch: ['#000000', '#0D6EFD', '#6C757D'] },
+  { name: 'indigo', label: 'Indigo', swatch: ['#000000', '#3F51B5', '#3F51B5'] },
+];
+
+const {
+  themes = DEFAULT_THEMES,
+  selectedTheme,
+  mode: modeProp,
+  showMode = true,
+  id,
+  class: className,
+  label = 'Select theme',
+  target,
+} = Astro.props;
+
+const rootId = id ?? `igd-theming-${Math.random().toString(36).slice(2, 9)}`;
+const modeButtonId = (mode: ThemeMode) => `${rootId}-${mode}-mode`;
+
+const titleCase = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+
+// Ambient defaults published by the docs host on `Astro.locals.envVars` (set
+// there by its middleware). Reading them means a widget rendered without props
+// still opens on the theme the surrounding site ships, instead of every call
+// site having to pass one. `locals` is `{}` when the consumer has no
+// middleware, so this degrades to the built-in defaults.
+const env = Astro.locals.envVars ?? {};
+
+const activeName = selectedTheme ?? env.defaultSampleTheme ?? themes[0]?.name;
+const active = themes.find((t) => t.name === activeName) ?? themes[0];
+const activeLabel = active ? (active.label ?? titleCase(active.name)) : '';
+// Only explicit light and dark modes are offered by the sample theme picker.
+const MODES: ThemeMode[] = ['light', 'dark'];
+
+// The env var is free-form text, so an unrecognized value falls back to 'light'
+// instead of reaching the markup as a bogus `data-mode`.
+const requestedMode = modeProp ?? env.defaultSampleMode;
+const mode: ThemeMode = MODES.includes(requestedMode as ThemeMode)
+  ? (requestedMode as ThemeMode)
+  : 'light';
+
+const modeLabels: Record<ThemeMode, string> = {
+  light: 'Light',
+  dark: 'Dark',
+  system: 'System',
+};
+---
+
+<div
+  class:list={['igd-theming', className]}
+  id={rootId}
+  data-target={target}
+  data-mode={mode}
+  data-resolved-mode={mode === 'system' ? undefined : mode}
+  data-theme={active?.name}
+>
+  <igc-select
+    class="igd-theming__select"
+    aria-label={label}
+    distance="4"
+    placement="bottom-end"
+    value={active?.name}
+    data-theme-select
+  >
+    <igc-icon
+      slot="toggle-icon"
+      name="chevron"
+      collection="theming-widget"
+      class="igd-theming__toggle-icon igd-theming__toggle-icon--collapsed"
+      aria-hidden="true"></igc-icon>
+    <igc-icon
+      slot="toggle-icon-expanded"
+      name="chevron"
+      collection="theming-widget"
+      class="igd-theming__toggle-icon"
+      aria-hidden="true"></igc-icon>
+    <span slot="prefix" class="igd-theming__swatch" data-swatch>
+      {active?.swatch.map((c) => <span class="igd-theming__dot" style={`--dot: ${c}`} />)}
+    </span>
+    {
+      showMode && (
+        <igc-select-header slot="header" class="igd-theming__mode-row">
+          <span class="igd-theming__section-label">Mode</span>
+          <div class="igd-theming__mode-buttons" role="group" aria-label="Color mode">
+            {MODES.map((m) => (
+              <igc-icon-button
+                variant="flat"
+                name={m === 'light' ? 'sun' : 'moon'}
+                collection="theming-widget"
+                class="igd-theming__mode-btn"
+                id={modeButtonId(m)}
+                data-mode-btn={m}
+                aria-pressed={m === mode ? 'true' : 'false'}
+                aria-label={modeLabels[m]}
+              />
+            ))}
+          </div>
+        </igc-select-header>
+      )
+    }
+    {
+      themes.map((t) => {
+        const name = t.label ?? titleCase(t.name);
+        return (
+          <igc-select-item
+            class="igd-theming__option"
+            value={t.name}
+            data-option={t.name}
+            data-label={name}
+            data-swatch={t.swatch.join(',')}
+          >
+            <span slot="prefix" class="igd-theming__swatch">
+              {t.swatch.map((c) => (
+                <span class="igd-theming__dot" style={`--dot: ${c}`} />
+              ))}
+            </span>
+            <span class="igd-theming__option-name">{name}</span>
+            <igc-icon slot="suffix" name="check" collection="theming-widget" aria-hidden="true" />
+          </igc-select-item>
+        );
+      })
+    }
+  </igc-select>
+  {
+    showMode &&
+      MODES.map((m) => (
+        <igc-tooltip
+          anchor={modeButtonId(m)}
+          class="igd-theming__mode-tooltip"
+          placement="bottom"
+          with-arrow
+        >
+          {modeLabels[m]}
+        </igc-tooltip>
+      ))
+  }
+  <span class="igd-theming__selected-value" aria-hidden="true">
+    <span class="igd-theming__selected-theme" data-selected-theme>{activeLabel}</span>
+    <span class="igd-theming__selected-mode" data-selected-mode>{modeLabels[mode]}</span>
+  </span>
+</div>
+
+<script>
+  import {
+    defineComponents,
+    IgcIconButtonComponent,
+    IgcIconComponent,
+    IgcSelectComponent,
+    IgcSelectHeaderComponent,
+    IgcSelectItemComponent,
+    IgcTooltipComponent,
+    registerIconFromText,
+  } from 'igniteui-webcomponents';
+  import sun from './assets/sun.svg?raw';
+  import moon from './assets/moon.svg?raw';
+  import check from './assets/check.svg?raw';
+  import chevron from './assets/chevron.svg?raw';
+
+  defineComponents(
+    IgcIconButtonComponent,
+    IgcIconComponent,
+    IgcSelectComponent,
+    IgcSelectHeaderComponent,
+    IgcSelectItemComponent,
+    IgcTooltipComponent,
+  );
+  registerIconFromText('sun', sun, 'theming-widget');
+  registerIconFromText('moon', moon, 'theming-widget');
+  registerIconFromText('check', check, 'theming-widget');
+  registerIconFromText('chevron', chevron, 'theming-widget');
+
+  class IgdThemingWidget {
+    private root: HTMLElement;
+    private select: HTMLElement & { value?: string };
+    /** Backs the `system` mode: the OS color-scheme preference. */
+    private scheme = window.matchMedia('(prefers-color-scheme: dark)');
+    private onSchemeChange = () => {
+      // Only `system` tracks the OS; an explicit light/dark choice is fixed.
+      if (this.preference !== 'system') return;
+      this.applyResolvedMode();
+      this.emit();
+    };
+
+    constructor(root: HTMLElement) {
+      this.root = root;
+      this.select = root.querySelector('[data-theme-select]') as HTMLElement & { value?: string };
+
+      this.bind();
+
+      // Turn a `system` selection into a concrete mode now, and keep following
+      // the OS for as long as it stays selected.
+      this.applyResolvedMode();
+      this.scheme.addEventListener('change', this.onSchemeChange);
+    }
+
+    private bind() {
+      this.select.addEventListener('igcChange', (event) => {
+        const option = (event as CustomEvent<HTMLElement>).detail;
+        if (option) this.selectTheme(option, true);
+      });
+
+      this.root.querySelectorAll<HTMLElement>('.igd-theming__mode-btn').forEach((btn) => {
+        btn.addEventListener('click', (event) => {
+          event.stopPropagation();
+          this.selectMode(btn.dataset.modeBtn || 'light', true);
+        });
+      });
+    }
+
+    private selectTheme(opt: HTMLElement, emit: boolean) {
+      const name = opt.dataset.option || '';
+      const swatch = (opt.dataset.swatch || '').split(',').filter(Boolean);
+
+      const swatchEl = this.root.querySelector('[data-swatch]');
+      if (swatchEl) {
+        swatchEl.innerHTML = swatch
+          .map((c) => `<span class="igd-theming__dot" style="--dot: ${c}"></span>`)
+          .join('');
+      }
+
+      const themeLabel = this.root.querySelector<HTMLElement>('[data-selected-theme]');
+      if (themeLabel) themeLabel.textContent = opt.dataset.label || name;
+
+      this.root.dataset.theme = name;
+      this.reflect();
+      if (emit) this.emit();
+    }
+
+    /** The user's selection: `light`, `dark` or `system`. */
+    private get preference() {
+      return this.root.dataset.mode || 'light';
+    }
+
+    /** The concrete mode that selection maps to: `light` or `dark`. */
+    private get resolvedMode() {
+      const pref = this.preference;
+      if (pref === 'system') return this.scheme.matches ? 'dark' : 'light';
+      return pref === 'dark' ? 'dark' : 'light';
+    }
+
+    /**
+     * Publish the resolved mode on the root — so consumers that read the DOM
+     * instead of listening (the sample widget does, when its iframe loads) get
+     * a concrete value — and push it out to the `target` elements.
+     */
+    private applyResolvedMode() {
+      const resolved = this.resolvedMode;
+      this.root.dataset.resolvedMode = resolved;
+
+      this.reflect();
+    }
+
+    private selectMode(mode: string, emit: boolean) {
+      this.root.querySelectorAll<HTMLElement>('.igd-theming__mode-btn').forEach((b) => {
+        b.setAttribute('aria-pressed', b.dataset.modeBtn === mode ? 'true' : 'false');
+      });
+      this.root.dataset.mode = mode;
+
+      const modeLabel = this.root.querySelector<HTMLElement>('[data-selected-mode]');
+      if (modeLabel) modeLabel.textContent = mode === 'dark' ? 'Dark' : 'Light';
+
+      this.applyResolvedMode();
+      if (emit) this.emit();
+    }
+
+    private reflect() {
+      const sel = this.root.dataset.target;
+      if (!sel) return;
+      document.querySelectorAll<HTMLElement>(sel).forEach((el) => {
+        el.dataset.igdTheme = this.root.dataset.theme || '';
+        el.dataset.igdMode = this.root.dataset.resolvedMode || '';
+      });
+    }
+
+    private emit() {
+      const detail = {
+        theme: this.root.dataset.theme,
+        // Concrete, so consumers never have to resolve `system` themselves...
+        mode: this.root.dataset.resolvedMode,
+        // ...while the raw selection stays available for mirroring the UI.
+        modePreference: this.root.dataset.mode,
+      };
+      this.root.dispatchEvent(new CustomEvent('igd-theme-change', { detail, bubbles: true }));
+    }
+  }
+
+  function initThemingWidgets() {
+    document.querySelectorAll<HTMLElement>('.igd-theming').forEach((el) => {
+      if ((el as HTMLElement & { _igdInit?: boolean })._igdInit) return;
+      (el as HTMLElement & { _igdInit?: boolean })._igdInit = true;
+      new IgdThemingWidget(el);
+    });
+  }
+
+  document.addEventListener('astro:page-load', initThemingWidgets);
+  initThemingWidgets();
+</script>
