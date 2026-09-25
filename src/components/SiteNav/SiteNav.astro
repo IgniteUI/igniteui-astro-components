@@ -1,0 +1,184 @@
+---
+/**
+ * SiteHeader — the global header, per "Nav Dropdown - Category Cards v7" and
+ * "Nav Mobile v2" (`design/navigation/`).
+ *
+ * The bar is Products ▾ · AI · Docs ▾ · Learn & Support ▾ · Pricing, then
+ * Search ▾, My Account, GitHub and the trial CTA. The IA and every link live in
+ * `src/config/navigation.ts`; this file only lays them out.
+ *
+ * Each panel is rendered straight after its trigger, inside the same item, so
+ * keyboard order is trigger → that panel's links → next trigger — the
+ * disclosure-navigation pattern — without any focus management. The panels are
+ * still positioned against the sticky `.nv`, so they centre under the whole
+ * bar rather than under their trigger.
+ *
+ * Panels open on CLICK, not hover — see `site-nav.ts`. With scripting absent
+ * they stay closed; every destination in them is also reachable from the
+ * footer.
+ *
+ * Styles are in `src/styles/nav.css`, global rather than scoped: the drawer
+ * re-uses the panel content components and restyles them from outside.
+ */
+import './nav.css';
+import igLogo from './assets/ig-logo.svg';
+import {
+  NAV_SECTIONS,
+  HEADER_ACTIONS,
+  PRODUCTS_PANEL,
+  DOCS_PANEL,
+  LEARN_PANEL,
+} from './nav-config';
+import NavPanel from './NavPanel.astro';
+import ProductsBody from './ProductsBody.astro';
+import DocsBody from './DocsBody.astro';
+import LearnBody from './LearnBody.astro';
+import SearchPanel from './SearchPanel.astro';
+import MobileSheet from './MobileSheet.astro';
+import { ext, chevron, githubMark } from './link';
+
+const { account, github, cta } = HEADER_ACTIONS;
+---
+
+<a class="nv__skip" href="#main-content">Skip to main content</a>
+
+<header class="nv" data-nav-root>
+  <div class="nv__bar">
+    <a href="/" class="nv__brand" aria-label="Infragistics — home">
+      <img src={igLogo.src} alt="Infragistics" width="180" height="24" />
+    </a>
+
+    <nav class="nv__items" aria-label="Main">
+      <ul class="nv__menu" role="list">
+        {
+          NAV_SECTIONS.map((s) =>
+            s.panel ? (
+              <li class="nv__item">
+                <button
+                  type="button"
+                  class="nv__trigger"
+                  id={`nav-t-${s.panel}`}
+                  data-nav-trigger={s.panel}
+                  aria-expanded="false"
+                  aria-controls={`nav-panel-${s.panel}`}
+                >
+                  {s.label}
+                  <Fragment set:html={chevron} />
+                </button>
+                {s.panel === 'products' && (
+                  <NavPanel
+                    id="nav-panel-products"
+                    panel="products"
+                    width="narrow"
+                    footer={PRODUCTS_PANEL.footer}
+                  >
+                    <ProductsBody />
+                  </NavPanel>
+                )}
+                {s.panel === 'docs' && (
+                  <NavPanel
+                    id="nav-panel-docs"
+                    panel="docs"
+                    width="narrow"
+                    footer={DOCS_PANEL.footer}
+                  >
+                    <DocsBody />
+                  </NavPanel>
+                )}
+                {s.panel === 'resources' && (
+                  <NavPanel id="nav-panel-resources" panel="resources" footer={LEARN_PANEL.footer}>
+                    <LearnBody />
+                  </NavPanel>
+                )}
+              </li>
+            ) : (
+              <li class="nv__item">
+                <a class="nv__trigger" href={s.href}>
+                  {s.label}
+                </a>
+              </li>
+            ),
+          )
+        }
+      </ul>
+    </nav>
+
+    <div class="nv__actions">
+      <div class="nv__item">
+        <button
+          type="button"
+          class="nv__icon-btn"
+          id="nav-t-search"
+          data-nav-trigger="search"
+          aria-label="Search"
+          aria-expanded="false"
+          aria-controls="nav-panel-search"
+        >
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            aria-hidden="true"
+          >
+            <circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path>
+          </svg>
+        </button>
+        <SearchPanel />
+      </div>
+
+      <a class="nv__account" href={account.href} {...ext(account)}>{account.label}</a>
+
+      <a
+        class="nv__icon-btn nv__github"
+        href={github.href}
+        aria-label={github.label}
+        title={github.label}
+        {...ext(github)}
+      >
+        <Fragment set:html={githubMark} />
+      </a>
+
+      <a class="nv__cta nv__cta--bar" href={cta.href}>{cta.label}</a>
+
+      <button
+        type="button"
+        class="nv__icon-btn nv__burger"
+        data-nav-burger
+        aria-label="Open menu"
+        aria-expanded="false"
+        aria-controls="nav-mobile-sheet"
+      >
+        <svg
+          width="22"
+          height="22"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          aria-hidden="true"
+        >
+          <path class="nv__burger-open" d="M4 7h16M4 12h16M4 17h16"></path>
+          <path class="nv__burger-close" d="M6 6l12 12M18 6 6 18"></path>
+        </svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+{
+  /* Dims the page under an open panel. Pure CSS off `.nv[data-panel-open]`;
+   * a click on it is an outside click, which the script already handles. */
+}
+<div class="nv__scrim" aria-hidden="true"></div>
+
+<MobileSheet />
+
+<script>
+  import { initSiteHeader } from './site-nav';
+  initSiteHeader();
+</script>

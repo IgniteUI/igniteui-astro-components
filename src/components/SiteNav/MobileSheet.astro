@@ -1,0 +1,79 @@
+---
+/**
+ * The drawer, per "Nav Mobile v2.dc.html": the same sections as the bar, each
+ * panel section expanding inline, with the trial CTA pinned to the bottom of
+ * the sheet (inline instead, on short screens, so it cannot eat the list).
+ *
+ * It renders the SAME content components as the desktop panels. Below the
+ * drawer breakpoint the desktop nav is `display: none`, so only one copy is
+ * ever in the accessibility tree.
+ *
+ * Outside <header> so the fixed overlay is not trapped by the sticky header's
+ * stacking context.
+ */
+import { NAV_SECTIONS, HEADER_ACTIONS, DOCS_PANEL } from './nav-config';
+import ProductsBody from './ProductsBody.astro';
+import DocsBody from './DocsBody.astro';
+import LearnBody from './LearnBody.astro';
+import { ext, chevron, githubMark } from './link';
+
+const { account, github, contact, cta } = HEADER_ACTIONS;
+const docsFoot = DOCS_PANEL.footer.link!;
+---
+
+<div class="nv__sheet" id="nav-mobile-sheet" data-mobile-sheet hidden>
+  <nav class="nv__sheet-scroll" aria-label="Main">
+    <ul class="nv__sheet-list" role="list">
+      {
+        NAV_SECTIONS.map((s) =>
+          s.panel ? (
+            <li class="nv__sheet-sec">
+              <button
+                type="button"
+                class="nv__sheet-trigger"
+                data-sheet-trigger
+                aria-expanded="false"
+                aria-controls={`nav-sheet-${s.panel}`}
+              >
+                {s.label}
+                <Fragment set:html={chevron} />
+              </button>
+              <div class="nv__sheet-body" id={`nav-sheet-${s.panel}`} hidden>
+                {s.panel === 'products' && <ProductsBody />}
+                {s.panel === 'docs' && (
+                  <Fragment>
+                    <DocsBody />
+                    <a class="nv__sheet-foot" href={docsFoot.href} {...ext(docsFoot)}>
+                      {docsFoot.label}
+                    </a>
+                  </Fragment>
+                )}
+                {s.panel === 'resources' && <LearnBody />}
+              </div>
+            </li>
+          ) : (
+            <li class="nv__sheet-sec">
+              <a class="nv__sheet-trigger" href={s.href}>
+                {s.label}
+              </a>
+            </li>
+          ),
+        )
+      }
+    </ul>
+
+    <div class="nv__sheet-actions">
+      <a class="nv__sheet-action" href={account.href} {...ext(account)}>{account.label}</a>
+      <a class="nv__sheet-action" href={github.href} {...ext(github)}>
+        <Fragment set:html={githubMark} />
+        {github.label}
+      </a>
+      <a class="nv__sheet-action nv__sheet-action--link" href={contact.href}>{contact.label}</a>
+      <a class="nv__cta nv__cta--block nv__sheet-cta-inline" href={cta.href}>{cta.label}</a>
+    </div>
+  </nav>
+
+  <div class="nv__sheet-cta">
+    <a class="nv__cta nv__cta--block" href={cta.href}>{cta.label}</a>
+  </div>
+</div>

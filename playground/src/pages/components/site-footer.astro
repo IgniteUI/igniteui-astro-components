@@ -1,0 +1,24 @@
+---
+/**
+ * SiteFooter — with and without the opt-in newsletter panel.
+ */
+import SiteFooter from '../../../../src/components/SiteFooter/SiteFooter.astro';
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>SiteFooter — playground</title>
+  </head>
+  <body>
+    <main style="padding: 40px; font-family: system-ui">
+      <h1>SiteFooter</h1>
+      <p>Below: default (no newsletter), then with the newsletter opted in.</p>
+    </main>
+    <SiteFooter />
+    <SiteFooter
+      newsletter={{ config: { leadSourceNumber: '9100010', eventDetail: 'newsletter signup' } }}
+    />
+  </body>
+</html>

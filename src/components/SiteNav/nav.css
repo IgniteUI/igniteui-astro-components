@@ -1,0 +1,1322 @@
+/*
+ * The marketing site sets `box-sizing: border-box` globally in its design
+ * system; a package cannot assume a host page does. Scoped to the nav, so a
+ * host page's own box model is untouched. See the same note in SiteFooter.
+ */
+.nv,
+.nv *,
+.nv *::before,
+.nv *::after {
+  box-sizing: border-box;
+}
+
+/**
+ * nav.css — the global header, per "Nav Dropdown - Category Cards v7" and
+ * "Nav Mobile v2" (`design/navigation/`).
+ *
+ * GLOBAL, not scoped: the drawer renders the panel content components a second
+ * time and restyles them from `.nv__sheet`, which scoped styles cannot reach.
+ * Every selector is namespaced under `nv`, so nothing leaks into the page.
+ *
+ * Colours come from the design-system tokens (`--ig-*`). The few values below
+ * that are the header's own are the canvas's hover fills, and two deliberate
+ * departures from it, both for contrast:
+ *   · link hover is #0f4fd6, not the canvas's #0084e0 (3.9:1 on white);
+ *   · the icon tiles keep the deeper v11 shades, so the white glyphs clear 3:1.
+ */
+
+.nv,
+.nv__sheet,
+.nv__scrim,
+.nv__skip {
+  --nv-bar-h: 70px;
+  --nv-gutter: 24px;
+  --nv-hover: #f5f9ff;
+  --nv-trigger-hover: #f0f5fb;
+  --nv-trigger-on: #e9f1ff;
+  --nv-action-hover: #0f4fd6;
+  --nv-cta-hover: #0b4ede;
+  --nv-on-dark: #aab4c4;
+  --nv-on-dark-accent: #7dd3fc;
+  --nv-ease: var(--ig-ease, cubic-bezier(0.4, 0, 0.2, 1));
+  --nv-transition: 160ms var(--nv-ease);
+
+  --tile-blue: #0077cc;
+  --tile-royal: #155dfc;
+  --tile-pink: #be1a5e;
+  --tile-violet: #9810fa;
+  --tile-teal: #0f766e;
+  --tile-cyan: #0e7490;
+  --tile-amber: #c2410c;
+}
+
+.nv ul,
+.nv__sheet ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.nv a,
+.nv__sheet a {
+  text-decoration: none;
+}
+
+/* Announce new-tab links, as the canvas does. */
+.nv a[target='_blank']::after,
+.nv__sheet a[target='_blank']::after {
+  content: ' (opens in new tab)';
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* ── skip link ───────────────────────────────────────────────────────── */
+.nv__skip {
+  position: absolute;
+  left: 16px;
+  top: 8px;
+  z-index: 200;
+  display: inline-flex;
+  align-items: center;
+  height: 36px;
+  padding: 0 14px;
+  border-radius: 6px;
+  background: var(--ig-action);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  transform: translateY(-160%);
+  transition: transform var(--nv-transition);
+}
+.nv__skip:focus-visible {
+  transform: translateY(0);
+}
+
+/* ── the bar ─────────────────────────────────────────────────────────── */
+.nv {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--ig-border-subtle);
+  color: var(--ig-body);
+  font-family: var(--ig-font-body);
+}
+
+.nv__bar {
+  max-width: var(--ig-container);
+  margin: 0 auto;
+  padding: 0 var(--nv-gutter);
+  min-height: var(--nv-bar-h);
+  display: flex;
+  align-items: center;
+  gap: clamp(16px, 2.4vw, 36px);
+}
+
+.nv__brand {
+  flex: 0 0 auto;
+  display: block;
+}
+.nv__brand img {
+  height: 24px;
+  width: auto;
+  display: block;
+}
+
+.nv__items {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.nv__menu {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: clamp(2px, 0.7vw, 8px);
+  font-size: clamp(13px, 1.15vw, 15px);
+  font-weight: 600;
+}
+
+.nv__trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 9px clamp(7px, 1vw, 15px);
+  background: none;
+  border: 0;
+  border-radius: var(--ig-radius-pill);
+  cursor: pointer;
+  font: inherit;
+  white-space: nowrap;
+  color: var(--ig-gray-450);
+  transition:
+    background var(--nv-transition),
+    color var(--nv-transition);
+}
+.nv__trigger:hover {
+  background: var(--nv-trigger-hover);
+  color: var(--ig-action);
+}
+.nv__trigger[aria-expanded='true'] {
+  background: var(--nv-trigger-on);
+  color: var(--ig-action);
+}
+
+.nv__chev {
+  transition: transform var(--nv-transition);
+}
+[aria-expanded='true'] > .nv__chev {
+  transform: rotate(180deg);
+}
+
+.nv__actions {
+  flex: 0 0 auto;
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.nv__icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  background: none;
+  border: 0;
+  border-radius: var(--ig-radius-pill);
+  cursor: pointer;
+  color: var(--ig-gray-450);
+  transition:
+    background var(--nv-transition),
+    color var(--nv-transition);
+}
+.nv__icon-btn:hover {
+  background: var(--nv-hover);
+  color: var(--ig-action);
+}
+.nv__icon-btn[aria-expanded='true'] {
+  background: var(--nv-trigger-on);
+  color: var(--ig-action);
+}
+
+.nv__account {
+  font-size: 15px;
+  font-weight: 600;
+  white-space: nowrap;
+  color: var(--ig-gray-450);
+  transition: color var(--nv-transition);
+}
+.nv__account:hover {
+  color: var(--ig-action);
+}
+
+.nv__burger {
+  display: none;
+}
+.nv__burger-close {
+  display: none;
+}
+.nv[data-sheet-open] .nv__burger-open {
+  display: none;
+}
+.nv[data-sheet-open] .nv__burger-close {
+  display: inline;
+}
+.nv[data-sheet-open] .nv__burger {
+  background: var(--nv-trigger-on);
+  color: var(--ig-action);
+}
+
+/* The primary button, as the design system's `Button size="sm"`. */
+.nv__cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 38px;
+  padding: 0 18px;
+  border: 0;
+  border-radius: var(--ig-radius-pill);
+  background: var(--ig-action);
+  color: #fff;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background var(--nv-transition);
+}
+.nv__cta:hover {
+  background: var(--nv-cta-hover);
+  color: #fff;
+}
+.nv__cta--block {
+  display: flex;
+  width: 100%;
+  height: auto;
+  min-height: 52px;
+  font-size: 17px;
+}
+
+/* ── the page scrim ──────────────────────────────────────────────────── */
+.nv__scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 49; /* just under the header, over anything the page stacks */
+  background: rgba(0, 0, 0, 0.2);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 180ms var(--nv-ease);
+}
+.nv[data-panel-open] ~ .nv__scrim {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* ── panels ──────────────────────────────────────────────────────────── */
+
+/* Positioned against `.nv`, the nearest positioned ancestor, so every panel
+ * centres under the whole bar whichever trigger owns it. The transparent top
+ * border is the gap between bar and panel; `background-clip` keeps it clear,
+ * and the elliptical top radius keeps the visible corner round across it. */
+.nv__panel {
+  position: absolute;
+  left: 50%;
+  top: 100%;
+  width: min(calc(100vw - 2 * var(--nv-gutter)), var(--ig-container));
+  max-height: calc(100dvh - var(--nv-bar-h) - 16px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  transform: translateX(-50%);
+  background: #fff;
+  background-clip: padding-box;
+  border-top: 12px solid transparent;
+  border-radius: 18px / 30px 30px 18px 18px;
+  filter: drop-shadow(0 22px 44px rgba(15, 23, 42, 0.16))
+    drop-shadow(0 2px 6px rgba(15, 23, 42, 0.06));
+  animation: nv-panel-in 160ms var(--nv-ease) both;
+  /* Panels sit inside the bar's list; reset what they would inherit from it. */
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.5;
+  white-space: normal;
+  text-align: left;
+  color: var(--ig-body);
+}
+.nv__panel[hidden] {
+  display: none;
+}
+.nv__panel--narrow {
+  width: min(calc(100vw - 2 * var(--nv-gutter)), 1140px);
+}
+
+@keyframes nv-panel-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -5px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+.nv__foot {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  padding: 16px var(--nv-gutter) 18px;
+  background: var(--ig-surface-sunken);
+  border-top: 1px solid var(--ig-border-subtle);
+  font-size: 16px;
+  font-weight: 600;
+}
+.nv__foot-link {
+  font-weight: 400;
+  color: var(--ig-body);
+  transition: color var(--nv-transition);
+}
+.nv__foot-link:hover {
+  color: var(--ig-action);
+}
+.nv__foot-note {
+  font-weight: 400;
+  color: var(--ig-gray-500);
+}
+.nv__foot-contact {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  white-space: nowrap;
+  color: var(--ig-action);
+}
+.nv__foot-contact:hover {
+  color: var(--nv-action-hover);
+}
+
+/* ── shared pieces ───────────────────────────────────────────────────── */
+.nv__eyebrow {
+  margin: 0 0 14px;
+  font-family: var(--ig-font-body);
+  line-height: 1.3;
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--ig-gray-500);
+}
+
+.nv__group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+
+.nv__group-head {
+  margin: 0 0 0 -12px;
+  padding: 12px;
+  border-radius: 12px;
+  font-family: var(--ig-font-display);
+  font-weight: 800;
+  font-size: clamp(17px, 1.5vw, 20px);
+  line-height: 1.15;
+  letter-spacing: -0.4px;
+  color: var(--ig-ink);
+}
+.nv__group-head--web {
+  background: var(--ig-violet-50);
+}
+.nv__group-head--desktop {
+  background: var(--ig-blue-50);
+}
+
+.nv__fw-logo {
+  flex: 0 0 auto;
+  width: 18px;
+  height: 16px;
+  object-fit: contain;
+}
+
+/* Row links that fill on hover. */
+.nv__lead,
+.nv__fw-link,
+.nv__sub,
+.nv__quiet {
+  border-radius: 10px;
+  transition:
+    background var(--nv-transition),
+    color var(--nv-transition);
+}
+.nv__lead:hover,
+.nv__fw-link:hover,
+.nv__sub:hover,
+.nv__quiet:hover {
+  background: var(--nv-hover);
+  color: var(--ig-action);
+}
+
+/* ── Products ────────────────────────────────────────────────────────── */
+.nv__products {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(320px, 380px);
+  gap: 24px 48px;
+  align-items: start;
+  padding: 34px calc(var(--nv-gutter) + 8px) 14px;
+}
+.nv__products-main {
+  display: flex;
+  flex-direction: column;
+  gap: 26px;
+  min-width: 0;
+}
+
+.nv__lead {
+  align-self: flex-start;
+  padding: 8px 12px;
+  margin-left: -12px;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--ig-ink);
+}
+
+.nv__fws {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px 28px;
+  margin: -2px 0 0 4px;
+  padding-left: 16px !important;
+  border-left: 1px solid var(--ig-border);
+}
+.nv__fws--flat {
+  gap: 4px 28px;
+  margin-top: 0;
+  border-left: 0;
+}
+
+.nv__fw {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.nv__fw-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px 5px;
+  margin-left: -12px;
+  font-size: 18px;
+  font-weight: 500;
+  white-space: nowrap;
+  color: var(--ig-gray-800);
+}
+.nv__fw-link--strong {
+  padding: 8px 12px;
+  font-weight: 600;
+  color: var(--ig-ink);
+}
+
+.nv__sub {
+  display: block;
+  padding: 5px 12px 5px 40px;
+  margin: -7px 0 0 -12px;
+  font-size: 16px;
+  white-space: nowrap;
+  color: var(--ig-gray-500);
+}
+
+.nv__rail {
+  grid-column: 1 / -1;
+  margin-top: 2px;
+  padding-top: 18px;
+  border-top: 1px solid var(--ig-border-subtle);
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 26px;
+}
+.nv__rail .nv__eyebrow {
+  margin: 0;
+  letter-spacing: 0.16em;
+}
+.nv__logos {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.nv__logo {
+  display: block;
+  padding: 6px 10px;
+  border-radius: 10px;
+  transition: background var(--nv-transition);
+}
+.nv__logo:hover {
+  background: var(--nv-hover);
+}
+.nv__logo img {
+  display: block;
+  height: var(--logo-h);
+  width: auto;
+}
+
+/* ── the dark promo card ─────────────────────────────────────────────── */
+.nv__promo {
+  position: relative;
+  overflow: hidden;
+  align-self: start;
+  border-radius: 18px;
+  background: linear-gradient(155deg, #16213d 0%, #101a30 42%, #0a0d16 100%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 22px 40px -22px rgba(9, 13, 26, 0.75);
+  color: var(--nv-on-dark);
+}
+.nv__promo-glow {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+}
+.nv__promo-glow--violet {
+  top: -170px;
+  left: -120px;
+  width: 340px;
+  height: 340px;
+  background: radial-gradient(circle, rgba(152, 16, 250, 0.5), transparent 62%);
+}
+.nv__promo-glow--blue {
+  top: -220px;
+  right: -230px;
+  width: 360px;
+  height: 360px;
+  background: radial-gradient(circle, rgba(0, 153, 255, 0.3), transparent 62%);
+}
+.nv__promo-waves {
+  position: absolute;
+  left: 50%;
+  bottom: -6%;
+  width: 250%;
+  max-width: none;
+  transform: translateX(-50%);
+  filter: brightness(0.75);
+  opacity: 0.22;
+  mask-image: linear-gradient(to top, #000, transparent 22%);
+  pointer-events: none;
+}
+.nv__promo-body {
+  position: relative;
+  padding: 20px 18px 16px;
+}
+.nv__promo--help .nv__promo-body {
+  padding: 20px 22px 22px;
+}
+
+.nv__badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 11px;
+  border-radius: var(--ig-radius-pill);
+  background: rgba(125, 211, 252, 0.16);
+  border: 1px solid rgba(125, 211, 252, 0.38);
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  white-space: nowrap;
+  color: var(--nv-on-dark-accent);
+}
+.nv__promo-kicker {
+  display: block;
+  margin-bottom: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+}
+.nv__promo-title {
+  margin: 12px 0 0;
+  font-family: var(--ig-font-display);
+  font-weight: 800;
+  font-size: clamp(19px, 1.9vw, 24px);
+  line-height: 1.1;
+  letter-spacing: -0.7px;
+  color: #f8fafc;
+}
+.nv__promo-title--sm {
+  margin: 0;
+  font-size: 20px;
+  line-height: 1.14;
+  letter-spacing: -0.6px;
+}
+.nv__grad {
+  background: linear-gradient(92deg, #38bdf8, #c084fc);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.nv__promo-text {
+  margin: 6px 0 0;
+  font-size: 16px;
+  line-height: 1.5;
+}
+.nv__promo--help .nv__promo-text {
+  margin: 9px 0 14px;
+  line-height: 1.55;
+}
+
+.nv__bundles {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  margin-top: 14px;
+}
+.nv__bundle {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 11px 13px;
+  border-radius: 11px;
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  background: rgba(255, 255, 255, 0.05);
+  transition:
+    background var(--nv-transition),
+    border-color var(--nv-transition);
+}
+.nv__bundle:hover {
+  background: rgba(56, 189, 248, 0.14);
+  border-color: rgba(125, 211, 252, 0.55);
+}
+.nv__bundle .nv__arrow {
+  flex: 0 0 auto;
+  width: 16px;
+  height: 16px;
+  margin-top: 4px;
+  color: var(--nv-on-dark-accent);
+}
+.nv__bundle-name {
+  display: block;
+  font-size: 18px;
+  font-weight: 600;
+  color: #f1f5f9;
+}
+.nv__bundle-desc {
+  display: block;
+  margin-top: 3px;
+  font-size: 16px;
+  line-height: 1.45;
+  color: var(--nv-on-dark);
+}
+
+.nv__promo-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--nv-on-dark-accent);
+}
+.nv__promo-link:hover {
+  color: #bae6fd;
+}
+
+.nv__promo :where(a):focus-visible {
+  outline-color: var(--nv-on-dark-accent);
+}
+
+@media (forced-colors: active) {
+  .nv__grad {
+    color: CanvasText;
+    background: none;
+  }
+}
+
+/* ── Docs ────────────────────────────────────────────────────────────── */
+.nv__docs {
+  display: flex;
+  flex-direction: column;
+  gap: 38px;
+  padding: 38px var(--nv-gutter) 34px;
+}
+.nv__docs-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px 28px;
+}
+.nv__doc {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.nv__doc-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 8px 0 10px;
+}
+.nv__doc-head .nv__fw-logo {
+  margin-top: 3px;
+}
+.nv__doc-name {
+  display: block;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--ig-ink);
+}
+.nv__doc-product {
+  display: block;
+  margin-top: 6px;
+  font-size: 16px;
+  color: var(--ig-gray-500);
+}
+.nv__doc-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  padding-left: 28px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.nv__arrow-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 0;
+  color: var(--ig-action);
+}
+.nv__arrow-link:hover {
+  color: var(--nv-action-hover);
+}
+.nv__arrow-link .nv__arrow {
+  flex: 0 0 auto;
+  width: 13px;
+  height: 13px;
+  opacity: 0;
+  transform: translateX(-4px);
+  transition:
+    opacity var(--nv-transition),
+    transform var(--nv-transition);
+}
+.nv__arrow-link:hover .nv__arrow,
+.nv__arrow-link:focus-visible .nv__arrow {
+  opacity: 1;
+  transform: none;
+}
+
+/* ── Learn & Support ─────────────────────────────────────────────────── */
+.nv__learn {
+  padding: 34px var(--nv-gutter) 30px;
+}
+.nv__cards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px 32px;
+}
+.nv__card {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 12px 13px;
+  margin: 0 -13px;
+  border-radius: 12px;
+  transition: background var(--nv-transition);
+}
+.nv__card:hover {
+  background: var(--nv-hover);
+}
+.nv__card-title {
+  display: block;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--ig-ink);
+}
+.nv__card-desc {
+  display: block;
+  margin-top: 3px;
+  font-size: 16px;
+  line-height: 1.45;
+  color: var(--ig-gray-500);
+}
+
+.nv__tile {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--ig-radius-tile);
+  color: #fff;
+}
+.nv__tile--blue {
+  background: var(--tile-blue);
+}
+.nv__tile--royal {
+  background: var(--tile-royal);
+}
+.nv__tile--pink {
+  background: var(--tile-pink);
+}
+.nv__tile--violet {
+  background: var(--tile-violet);
+}
+.nv__tile--teal {
+  background: var(--tile-teal);
+}
+.nv__tile--cyan {
+  background: var(--tile-cyan);
+}
+.nv__tile--amber {
+  background: var(--tile-amber);
+}
+
+/* ── Search ──────────────────────────────────────────────────────────── */
+.nv__search {
+  padding: 30px var(--nv-gutter) 32px;
+}
+
+.nv__field {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 8px 0 18px;
+  background: #f8fafc;
+  border: 1px solid var(--ig-border);
+  border-radius: var(--ig-radius-pill);
+  color: var(--ig-gray-500);
+  transition: border-color var(--nv-transition);
+}
+.nv__field:focus-within {
+  border-color: var(--ig-action);
+  outline: 3px solid var(--ig-action);
+  outline-offset: 2px;
+}
+.nv__field svg {
+  flex: 0 0 auto;
+}
+.nv__field input {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 15px 0;
+  background: none;
+  border: 0;
+  outline: none;
+  font-family: var(--ig-font-body);
+  font-size: 19px;
+  color: var(--ig-ink);
+}
+.nv__kbd {
+  flex: 0 0 auto;
+  padding: 3px 7px;
+  border: 1px solid var(--ig-border);
+  border-radius: 6px;
+  background: #fff;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ig-gray-500);
+}
+
+.nv__search-cols {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) minmax(220px, 260px);
+  gap: 30px;
+  margin-top: 26px;
+}
+.nv__search-cols .nv__eyebrow {
+  margin-bottom: 10px;
+}
+.nv__links {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.nv__quiet {
+  display: block;
+  padding: 8px 12px;
+  margin-left: -12px;
+  font-size: 18px;
+  color: var(--ig-gray-800);
+}
+.nv__quiet--strong {
+  font-weight: 600;
+  color: var(--ig-ink);
+}
+
+/* ── focus ───────────────────────────────────────────────────────────── */
+.nv :where(a, button, [tabindex]):focus-visible,
+.nv__sheet :where(a, button, [tabindex]):focus-visible {
+  outline: 3px solid var(--ig-action);
+  outline-offset: 2px;
+}
+
+/* ── the drawer ──────────────────────────────────────────────────────── */
+.nv__sheet {
+  position: fixed;
+  inset: var(--nv-bar-h) 0 0;
+  z-index: 49;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  font-family: var(--ig-font-body);
+  color: var(--ig-body);
+  animation: nv-sheet-in 200ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.nv__sheet[hidden] {
+  display: none;
+}
+@keyframes nv-sheet-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.nv__sheet-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 8px 0 20px;
+}
+
+.nv__sheet-sec + .nv__sheet-sec::before,
+.nv__sheet-list::after {
+  content: '';
+  display: block;
+  height: 1px;
+  margin: 0 24px;
+  background: var(--ig-border-subtle);
+}
+
+.nv__sheet-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  min-height: 60px;
+  padding: 0 24px;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 19px;
+  font-weight: 600;
+  text-align: left;
+  color: var(--ig-ink);
+  transition:
+    background var(--nv-transition),
+    color var(--nv-transition);
+}
+.nv__sheet-trigger[aria-expanded='true'] {
+  background: var(--nv-hover);
+  color: var(--ig-action);
+}
+.nv__sheet-trigger .nv__chev {
+  width: 16px;
+  height: 16px;
+}
+
+.nv__sheet-body {
+  padding: 6px 24px 22px;
+}
+.nv__sheet-body[hidden] {
+  display: none;
+}
+
+.nv__sheet-foot {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  margin-top: 6px;
+  font-size: 15px;
+  color: var(--ig-gray-500);
+}
+
+.nv__sheet-actions {
+  display: flex;
+  flex-direction: column;
+  padding: 14px 24px 0;
+}
+.nv__sheet-action {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 48px;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--ig-gray-450);
+}
+.nv__sheet-action--link {
+  color: var(--ig-action);
+}
+
+.nv__sheet-cta {
+  flex: 0 0 auto;
+  padding: 14px 20px calc(18px + env(safe-area-inset-bottom));
+  border-top: 1px solid var(--ig-border-subtle);
+  background: #fff;
+}
+.nv__sheet-cta-inline {
+  display: none;
+}
+
+/* On a short screen the pinned bar would eat the list; put the CTA inline. */
+@media (max-height: 600px) {
+  .nv__sheet-cta {
+    display: none;
+  }
+  .nv__sheet .nv__sheet-cta-inline {
+    display: flex;
+    margin-top: 12px;
+  }
+}
+
+/* The panel content, restyled for the drawer. */
+.nv__sheet .nv__products {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 0;
+}
+.nv__sheet .nv__products-main {
+  gap: 14px;
+}
+.nv__sheet .nv__group {
+  gap: 10px;
+}
+.nv__sheet .nv__group-head {
+  margin: 0 -12px;
+  padding: 10px 12px;
+  font-size: 17px;
+}
+
+.nv__sheet .nv__lead,
+.nv__sheet .nv__fw-link,
+.nv__sheet .nv__sub {
+  padding: 0;
+  margin: 0;
+}
+.nv__sheet .nv__lead:hover,
+.nv__sheet .nv__fw-link:hover,
+.nv__sheet .nv__sub:hover {
+  background: none;
+}
+.nv__sheet .nv__lead {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  font-size: 17px;
+}
+
+.nv__sheet .nv__fws {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0;
+  margin: -8px 0 0;
+  padding-left: 12px;
+}
+.nv__sheet .nv__fws--flat {
+  margin: 0;
+  padding: 0;
+}
+.nv__sheet .nv__fw {
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 0 18px;
+  padding: 8px 0 10px;
+}
+.nv__sheet .nv__fws--flat .nv__fw {
+  padding: 0;
+}
+.nv__sheet .nv__fw-link {
+  flex: 1 0 100%;
+  min-height: 36px;
+  font-size: 17px;
+}
+.nv__sheet .nv__fw-link--strong {
+  min-height: 44px;
+}
+.nv__sheet .nv__sub {
+  display: flex;
+  align-items: center;
+  min-height: 32px;
+  font-size: 15px;
+}
+.nv__sheet .nv__fw-link + .nv__sub {
+  margin-left: 28px;
+}
+
+.nv__sheet .nv__promo {
+  margin-top: 6px;
+}
+.nv__sheet .nv__promo-body {
+  padding: 18px 16px 16px;
+}
+.nv__sheet .nv__promo-title {
+  margin-top: 10px;
+  font-size: 21px;
+  letter-spacing: -0.6px;
+}
+.nv__sheet .nv__promo-text {
+  display: none;
+}
+.nv__sheet .nv__bundle-name {
+  font-size: 16px;
+}
+.nv__sheet .nv__bundle-desc {
+  margin-top: 2px;
+  font-size: 14px;
+}
+
+.nv__sheet .nv__rail {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0;
+  margin-top: 6px;
+  padding: 0;
+  border: 0;
+}
+.nv__sheet .nv__rail .nv__eyebrow {
+  font-size: 13px;
+}
+.nv__sheet .nv__logos {
+  gap: 24px;
+}
+.nv__sheet .nv__logo {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0;
+}
+.nv__sheet .nv__logo img {
+  height: calc(var(--logo-h) * 0.85);
+}
+
+.nv__sheet .nv__docs {
+  gap: 10px;
+  padding: 0;
+}
+.nv__sheet .nv__docs-grid {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0;
+}
+.nv__sheet .nv__doc {
+  padding: 6px 0 4px;
+}
+.nv__sheet .nv__doc-head {
+  padding: 0;
+}
+.nv__sheet .nv__doc-name {
+  font-size: 17px;
+}
+.nv__sheet .nv__doc-product {
+  margin-top: 4px;
+  font-size: 15px;
+}
+.nv__sheet .nv__doc-links {
+  gap: 0 20px;
+  margin-top: 4px;
+  font-size: 15px;
+}
+.nv__sheet .nv__arrow-link {
+  min-height: 40px;
+  padding: 0;
+}
+.nv__sheet .nv__arrow-link .nv__arrow {
+  display: none;
+}
+
+.nv__sheet .nv__learn {
+  margin: 0 -12px;
+  padding: 0;
+}
+.nv__sheet .nv__learn-head,
+.nv__sheet .nv__tile {
+  display: none;
+}
+.nv__sheet .nv__cards {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 4px;
+}
+.nv__sheet .nv__card {
+  align-items: center;
+  min-height: 64px;
+  padding: 10px 12px;
+  margin: 0;
+}
+.nv__sheet .nv__card-title {
+  font-size: 17px;
+}
+.nv__sheet .nv__card-desc {
+  margin-top: 2px;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+/* ── breakpoints, per the canvas ─────────────────────────────────────── */
+@media (max-width: 1180px) {
+  .nv__account {
+    display: none;
+  }
+  .nv__menu {
+    gap: 0;
+    font-size: 14px;
+  }
+}
+@media (max-width: 1100px) {
+  .nv__products {
+    grid-template-columns: minmax(0, 1fr) minmax(300px, 340px);
+    column-gap: 36px;
+  }
+  .nv__fws {
+    column-gap: 16px;
+  }
+  .nv__cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Below this the bar is brand + search + burger (+ GitHub and the CTA while
+ * they fit), and every section but Search lives in the drawer. Keep in step
+ * with MOBILE_QUERY in `siteHeader.ts`. */
+@media (max-width: 1040px) {
+  .nv,
+  .nv__sheet {
+    --nv-bar-h: 60px;
+    --nv-gutter: 16px;
+  }
+  .nv__bar {
+    gap: 12px;
+    padding-right: 10px;
+  }
+  .nv__brand img {
+    height: 22px;
+  }
+  .nv__items {
+    display: none;
+  }
+  .nv__actions {
+    gap: 4px;
+  }
+  .nv__burger {
+    display: inline-flex;
+    width: 44px;
+    height: 44px;
+  }
+  .nv__icon-btn {
+    width: 44px;
+    height: 44px;
+  }
+  .nv__cta--bar {
+    margin: 0 6px;
+  }
+  .nv__search-cols {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px 30px;
+  }
+  .nv__search-cols .nv__promo {
+    grid-column: 1 / -1;
+  }
+}
+@media (max-width: 640px) {
+  .nv__github,
+  .nv__cta--bar {
+    display: none;
+  }
+  .nv__kbd {
+    display: none;
+  }
+  .nv__field .nv__cta {
+    display: none;
+  }
+  .nv__search-cols {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nv__panel,
+  .nv__sheet {
+    animation: none;
+  }
+  .nv *,
+  .nv__sheet *,
+  .nv__scrim {
+    transition-duration: 1ms !important;
+  }
+}

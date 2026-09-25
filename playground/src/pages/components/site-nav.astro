@@ -1,0 +1,24 @@
+---
+/**
+ * SiteNav — the marketing chrome rendered from the package, with no network.
+ *
+ * Contrast with components/nav-bar.astro, which shows GlobalNavBar fetching the
+ * same chrome from /navigation at build time.
+ */
+import SiteNav from '../../../../src/components/SiteNav/SiteNav.astro';
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>SiteNav — playground</title>
+  </head>
+  <body>
+    <SiteNav />
+    <main style="padding: 40px; min-height: 60vh; font-family: system-ui">
+      <h1>SiteNav</h1>
+      <p>Rendered from the package. No build-time fetch, no scraping.</p>
+    </main>
+  </body>
+</html>

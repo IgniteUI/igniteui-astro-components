@@ -1,0 +1,28 @@
+---
+/**
+ * The Learn & Support menu's content — a grid of icon cards. The drawer shows
+ * the same cards without their tiles, as "Nav Mobile v2" has them.
+ */
+import { LEARN_PANEL } from './nav-config';
+import NavIcon from './NavIcon.astro';
+import { ext } from './link';
+---
+
+<div class="nv__learn">
+  <h3 class="nv__eyebrow nv__learn-head">{LEARN_PANEL.title}</h3>
+  <ul class="nv__cards" role="list">
+    {
+      LEARN_PANEL.cards.map((c) => (
+        <li>
+          <a class="nv__card" href={c.href} {...ext(c)}>
+            <NavIcon icon={c.icon} tile={c.tile} />
+            <span>
+              <span class="nv__card-title">{c.label}</span>
+              <span class="nv__card-desc">{c.desc}</span>
+            </span>
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</div>

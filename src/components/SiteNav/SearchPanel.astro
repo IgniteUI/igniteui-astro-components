@@ -1,0 +1,66 @@
+---
+/**
+ * The search dropdown. A real GET form, so it works without scripting. It is
+ * the one panel that still opens under the bar below the drawer breakpoint.
+ */
+import { SEARCH_PANEL, HEADER_ACTIONS } from './nav-config';
+import NavPanel from './NavPanel.astro';
+import PromoCard from './PromoCard.astro';
+import { ext, arrow } from './link';
+
+const { placeholder, aria, action, columns, help } = SEARCH_PANEL;
+---
+
+<NavPanel id="nav-panel-search" panel="search">
+  <div class="nv__search" role="search" aria-label="Site search">
+    <form class="nv__field" action={action} method="get">
+      <svg
+        width="19"
+        height="19"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        aria-hidden="true"
+      >
+        <circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path>
+      </svg>
+      <input type="search" name="q" data-search-input placeholder={placeholder} aria-label={aria} />
+      <kbd class="nv__kbd" aria-hidden="true">Esc</kbd>
+      <button type="submit" class="nv__cta">Search</button>
+    </form>
+
+    <div class="nv__search-cols">
+      {
+        columns.map((c) => (
+          <div>
+            <h3 class="nv__eyebrow">{c.title}</h3>
+            <ul class="nv__links" role="list">
+              {c.links.map((l) => (
+                <li>
+                  <a
+                    class:list={['nv__quiet', { 'nv__quiet--strong': c.strong }]}
+                    href={l.href}
+                    {...ext(l)}
+                  >
+                    {l.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))
+      }
+      <PromoCard class="nv__promo--help">
+        <span class="nv__promo-kicker">{help.eyebrow}</span>
+        <h3 class="nv__promo-title nv__promo-title--sm">{help.title}</h3>
+        <p class="nv__promo-text">{help.body}</p>
+        <a class="nv__promo-link" href={HEADER_ACTIONS.contact.href}>
+          {HEADER_ACTIONS.contact.label}
+          <Fragment set:html={arrow} />
+        </a>
+      </PromoCard>
+    </div>
+  </div>
+</NavPanel>

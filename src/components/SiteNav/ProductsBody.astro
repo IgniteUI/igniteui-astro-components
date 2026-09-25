@@ -1,0 +1,97 @@
+---
+/**
+ * The Products menu's content — rendered in the desktop panel and again in the
+ * drawer, which restyles it (see `.nv__sheet` rules in `nav.css`).
+ */
+import { PRODUCTS_PANEL } from './nav-config';
+import PromoCard from './PromoCard.astro';
+import { ext, arrow } from './link';
+
+const { web, desktop, promo, rail } = PRODUCTS_PANEL;
+---
+
+<div class="nv__products">
+  <div class="nv__products-main">
+    <section class="nv__group">
+      <h3 class="nv__group-head nv__group-head--web">{web.title}</h3>
+      <a class="nv__lead" href={web.lead.href} {...ext(web.lead)}>{web.lead.label}</a>
+      <ul class="nv__fws" role="list">
+        {
+          web.frameworks.map((f) => (
+            <li class="nv__fw">
+              <a class="nv__fw-link" href={f.href} {...ext(f)}>
+                <img class="nv__fw-logo" src={f.logo} alt="" width="18" height="16" />
+                {f.label}
+              </a>
+              {f.links?.map((l) => (
+                <a class="nv__sub" href={l.href} {...ext(l)}>
+                  {l.label}
+                  <span class="ig-sr-only"> for {f.label}</span>
+                </a>
+              ))}
+            </li>
+          ))
+        }
+      </ul>
+      <a class="nv__lead" href={web.tail.href} {...ext(web.tail)}>{web.tail.label}</a>
+    </section>
+
+    <section class="nv__group">
+      <h3 class="nv__group-head nv__group-head--desktop">{desktop.title}</h3>
+      <ul class="nv__fws nv__fws--flat" role="list">
+        {
+          desktop.frameworks.map((f) => (
+            <li class="nv__fw">
+              <a class="nv__fw-link nv__fw-link--strong" href={f.href} {...ext(f)}>
+                <img class="nv__fw-logo" src={f.logo} alt="" width="18" height="15" />
+                {f.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+  </div>
+
+  <PromoCard class="nv__promo--bundles">
+    <span class="nv__badge">{promo.eyebrow}</span>
+    <h3 class="nv__promo-title">{promo.title} <span class="nv__grad">{promo.accent}</span></h3>
+    <p class="nv__promo-text">{promo.body}</p>
+    <ul class="nv__bundles" role="list">
+      {
+        promo.links.map((b) => (
+          <li>
+            <a class="nv__bundle" href={b.href}>
+              <span>
+                <span class="nv__bundle-name">{b.label}</span>
+                <span class="nv__bundle-desc">{b.desc}</span>
+              </span>
+              <Fragment set:html={arrow} />
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </PromoCard>
+
+  <div class="nv__rail">
+    <h3 class="nv__eyebrow">{rail.title}</h3>
+    <ul class="nv__logos" role="list">
+      {
+        rail.logos.map((l) => (
+          <li>
+            <a class="nv__logo" href={l.href} target="_blank" rel="noopener">
+              <img
+                src={l.src}
+                alt={l.alt}
+                style={`--logo-h:${l.height}px`}
+                loading="lazy"
+                decoding="async"
+              />
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</div>
