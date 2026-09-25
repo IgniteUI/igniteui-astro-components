@@ -4,6 +4,8 @@ import '@fontsource-variable/jetbrains-mono/wght.css';
 import '@fontsource-variable/jetbrains-mono/wght-italic.css';
 import GlobalNavBar from '../../components/GlobalNavBar/GlobalNavBar.astro';
 import GlobalFooter from '../../components/GlobalFooter/GlobalFooter.astro';
+import SiteNav from '../../components/SiteNav/SiteNav.astro';
+import SiteFooter from '../../components/SiteFooter/SiteFooter.astro';
 import DocsSubHeader from '../../components/DocsSubHeader/DocsSubHeader.astro';
 import DocsBreadcrumb from '../../components/DocsBreadcrumb/DocsBreadcrumb.astro';
 import LicenseIndicator from '../../components/LicenseIndicator/LicenseIndicator.astro';
@@ -75,6 +77,23 @@ const resolvedSiteTitle = siteTitleProp ?? siteTitle;
 const licenseType = license === 'commercial' ? 'premium' : license === 'MIT' ? 'opensource' : false;
 const navTheme = (virtualPlatform ?? import.meta.env.VITE_NAV_THEME ?? 'igniteui') as string;
 const showGlobalNav = navTheme !== 'none';
+
+/**
+ * IG_CHROME=v2 swaps the fetched chrome for the components shipped in this
+ * package: `GlobalNavBar`/`GlobalFooter` -> `SiteNav`/`SiteFooter`.
+ *
+ * Why a flag and not a straight replacement: the two routes fail differently
+ * (see "Two ways to get the Infragistics chrome" in the README), and a docs
+ * site should be able to move between them in one env var rather than a
+ * refactor. Default stays on the fetch, which is what every consumer builds
+ * with today.
+ *
+ * `SiteNav` is English-only, so a jp/kr build should stay on the fetch until
+ * the package carries the localised nav data.
+ */
+const chromeV2 =
+  ((import.meta as unknown as { env?: Record<string, string | undefined> }).env?.PUBLIC_IG_CHROME ??
+    process.env.IG_CHROME) === 'v2';
 const pageTitle = title ? `${title} | ${resolvedSiteTitle}` : resolvedSiteTitle;
 
 type HeadEntry = {
@@ -178,10 +197,16 @@ type HeadEntry = {
         });
       });
 
+      function navChildEl() {
+        var root = document.querySelector('[data-astro-transition-persist="global-nav-bar"]');
+        if (!root) return null;
+        // `SiteNav` renders a skip link before the bar, so *:first-child would
+        // measure 36px of skip link instead of a 70px header.
+        return root.querySelector('header.nv') || root.firstElementChild;
+      }
+
       function updateNavHeight() {
-        var navChild = document.querySelector(
-          '[data-astro-transition-persist="global-nav-bar"] > *:first-child',
-        );
+        var navChild = navChildEl();
         if (!navChild) return;
         var h = navChild.getBoundingClientRect().height;
         if (h > 0) {
@@ -193,9 +218,7 @@ type HeadEntry = {
       document.addEventListener('astro:page-load', updateNavHeight);
       window.addEventListener('resize', updateNavHeight);
       updateNavHeight();
-      var _navChild = document.querySelector(
-        '[data-astro-transition-persist="global-nav-bar"] > *:first-child',
-      );
+      var _navChild = navChildEl();
       if (_navChild) new ResizeObserver(updateNavHeight).observe(_navChild);
 
       // Clamp sidebar height so it never overlaps the footer.
@@ -263,7 +286,19 @@ type HeadEntry = {
   </head>
   <body>
     <!-- INFRAGISTICS HEADER/NAVIGATION -->
-    {showGlobalNav && <GlobalNavBar lang={navLang} />}
+    {
+      showGlobalNav &&
+        (chromeV2 ? (
+          /* The height script measures `[data-astro-transition-persist=...] > *:first-child`,
+             and `.nv` is `position: sticky` — so the wrapper has to be sticky too, or the
+             nav would stop at the bottom of a wrapper exactly its own height. */
+          <div transition:persist="global-nav-bar" style="position: sticky; top: 0; z-index: 50">
+            <SiteNav />
+          </div>
+        ) : (
+          <GlobalNavBar lang={navLang} />
+        ))
+    }
 
     <!-- MAIN PAGE GRID LAYOUT -->
     <!-- We don't set the CSS grid directly to the body -->
@@ -321,7 +356,18 @@ type HeadEntry = {
 
       <!-- Footer is inside the grid so the sidebar's sticky containing block extends through it.
              The JS initSidebarHeights() clamps sidebar max-height to prevent visual overlap. -->
-      <GlobalFooter lang={navLang} />
+      {
+        chromeV2 ? (
+          /* `.igd-page-layout` is a grid; GlobalFooter's wrapper spans it with
+             `grid-column: 1 / -1`. Without the same span the footer is placed
+             beside the content instead of below it and stretches to its height. */
+          <div style="grid-column: 1 / -1">
+            <SiteFooter />
+          </div>
+        ) : (
+          <GlobalFooter lang={navLang} />
+        )
+      }
     </div>
   </body>
 </html>

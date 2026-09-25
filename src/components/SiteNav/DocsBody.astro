@@ -1,0 +1,45 @@
+---
+/**
+ * The Docs menu's content — one block per framework with its getting-started
+ * guide and API reference. Rendered in the desktop panel and in the drawer.
+ */
+import { DOCS_PANEL } from './nav-config';
+import { arrow } from './link';
+
+const { groups, links } = DOCS_PANEL;
+---
+
+<div class="nv__docs">
+  {
+    groups.map((g) => (
+      <section class="nv__group">
+        <h3 class={`nv__group-head nv__group-head--${g.tint}`}>{g.title}</h3>
+        <ul class="nv__docs-grid" role="list">
+          {g.items.map((d) => (
+            <li class="nv__doc">
+              <span class="nv__doc-head">
+                <img class="nv__fw-logo" src={d.logo} alt="" width="18" height="16" />
+                <span>
+                  <span class="nv__doc-name">{d.label}</span>
+                  {d.product && <span class="nv__doc-product">{d.product}</span>}
+                </span>
+              </span>
+              <span class="nv__doc-links">
+                <a class="nv__arrow-link" href={d.start}>
+                  {links.start}
+                  <span class="ig-sr-only"> for {d.label}</span>
+                  <Fragment set:html={arrow} />
+                </a>
+                <a class="nv__arrow-link" href={d.api}>
+                  {links.api}
+                  <span class="ig-sr-only"> for {d.label}</span>
+                  <Fragment set:html={arrow} />
+                </a>
+              </span>
+            </li>
+          ))}
+        </ul>
+      </section>
+    ))
+  }
+</div>

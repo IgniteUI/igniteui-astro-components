@@ -1,0 +1,54 @@
+---
+/**
+ * The floating dropdown: a rounded sheet centred under the bar, with an
+ * optional footer strip. Its content is the slot.
+ *
+ * It is rendered straight after its trigger (see `SiteHeader.astro`), so the
+ * tab order runs trigger → panel → next trigger, and it is positioned against
+ * the sticky `.nv`, not against the trigger.
+ */
+import type { PanelFooter } from './nav-config';
+import { HEADER_ACTIONS } from './nav-config';
+import { ext, arrow } from './link';
+
+interface Props {
+  id: string;
+  panel: string;
+  /** `narrow` caps the panel at 1140px, as the canvas does for Products and Docs. */
+  width?: 'narrow' | 'wide';
+  footer?: PanelFooter;
+}
+
+const { id, panel, width = 'wide', footer } = Astro.props;
+const { contact, cta } = HEADER_ACTIONS;
+---
+
+<div
+  class:list={['nv__panel', `nv__panel--${panel}`, { 'nv__panel--narrow': width === 'narrow' }]}
+  id={id}
+  data-panel={panel}
+  hidden
+>
+  <slot />
+  {
+    footer && (
+      <div class="nv__foot">
+        {footer.link && (
+          <a class="nv__foot-link" href={footer.link.href} {...ext(footer.link)}>
+            {footer.link.label}
+          </a>
+        )}
+        {footer.note && <span class="nv__foot-note">{footer.note}</span>}
+        <a class="nv__foot-contact" href={contact.href}>
+          {contact.label}
+          <Fragment set:html={arrow} />
+        </a>
+        {footer.cta && (
+          <a class="nv__cta" href={cta.href}>
+            {cta.label}
+          </a>
+        )}
+      </div>
+    )
+  }
+</div>

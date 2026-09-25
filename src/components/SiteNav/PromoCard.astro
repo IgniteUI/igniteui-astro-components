@@ -1,0 +1,23 @@
+---
+/**
+ * The dark card that closes a panel's grid — Best Value in Products, "Can't
+ * find it?" in Search. Two coloured glows and the hero waves sit behind the
+ * content; all three are decorative.
+ */
+import heroWaves from './assets/hero-waves.svg';
+
+interface Props {
+  class?: string;
+}
+
+const { class: cls } = Astro.props;
+---
+
+<div class:list={['nv__promo', cls]}>
+  <span class="nv__promo-glow nv__promo-glow--violet" aria-hidden="true"></span>
+  <span class="nv__promo-glow nv__promo-glow--blue" aria-hidden="true"></span>
+  <img class="nv__promo-waves" src={heroWaves.src} alt="" loading="lazy" decoding="async" />
+  <div class="nv__promo-body">
+    <slot />
+  </div>
+</div>
