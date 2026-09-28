@@ -1,0 +1,160 @@
+---
+/**
+ * Renders a side-by-side "Do" / "Don't" pair of component screenshots.
+ *
+ * Usage:
+ *   <DoDont
+ *     doSrc={virtualScrollDo}
+ *     doAlt="Virtual Scroll showing a list of 100,000 employees"
+ *     dontSrc={virtualScrollDoNot}
+ *     dontAlt="Virtual Scroll used for a list of only five employees"
+ *   >
+ *     <Fragment slot="do">Use the Virtual Scroll for a long list.</Fragment>
+ *     <Fragment slot="dont">Render a short list directly with the List.</Fragment>
+ *   </DoDont>
+ *
+ * Each panel is a framed image with a status badge pinned to its top-inline
+ * corner — a green check for the recommended usage, a red clear for the one to
+ * avoid. The frames hug their content and share a subgrid row, so every frame
+ * is as tall as the tallest screenshot in the row and the captions start on a
+ * common baseline. The frame's gray canvas shows in its padding and beside a
+ * screenshot narrower than the frame; screenshots are drawn at full opacity so
+ * their text keeps its contrast.
+ *
+ * The two description slots are optional. When neither is filled the captions
+ * collapse to the "Do" / "Don't" labels alone.
+ *
+ * Accessibility: `doAlt` and `dontAlt` are required and become the inner
+ * <img> `alt`. These images carry the guidance, so describe what each one
+ * shows, not merely which component it is. The badges are decorative — the
+ * labels already name each panel — so they are hidden from assistive tech.
+ */
+import type { ImageMetadata } from 'astro';
+import './DoDont.scss';
+
+interface Props {
+  /**
+   * The recommended-usage image. An `astro:assets` import or a URL. Required.
+   *
+   * Named `doSrc`, not `do`, because Astro merges named slots into props —
+   * a prop sharing a slot's name would be overwritten by that slot.
+   */
+  doSrc: ImageMetadata | string;
+  /**
+   * The recommended-usage image's accessible description. Required — it
+   * becomes the inner <img>'s `alt`. Describe what the screenshot shows.
+   */
+  doAlt: string;
+  /** The usage-to-avoid image. An `astro:assets` import or a URL. Required. */
+  dontSrc: ImageMetadata | string;
+  /**
+   * The usage-to-avoid image's accessible description. Required — it becomes
+   * the inner <img>'s `alt`. Describe what the screenshot shows.
+   */
+  dontAlt: string;
+  /**
+   * Label for the recommended panel.
+   * @default 'Do'
+   */
+  doLabel?: string;
+  /**
+   * Label for the panel to avoid.
+   * @default "Don't"
+   */
+  dontLabel?: string;
+  /** Optional extra class(es) forwarded to the container. */
+  class?: string;
+}
+
+const {
+  doSrc,
+  doAlt,
+  dontSrc,
+  dontAlt,
+  doLabel = 'Do',
+  dontLabel = "Don't",
+  class: className,
+} = Astro.props;
+
+/** Accept both an `astro:assets` import and a plain URL. */
+const toSrc = (image: ImageMetadata | string): string =>
+  typeof image === 'string' ? image : image.src;
+
+/**
+ * Intrinsic dimensions for the <img>, when the source knows them. They give
+ * the browser the aspect ratio up front, so a lazy image cannot collapse its
+ * frame to padding-only height and jump the page when it loads.
+ */
+const toDimensions = (image: ImageMetadata | string): { width?: number; height?: number } =>
+  typeof image === 'string' ? {} : { width: image.width, height: image.height };
+
+const panels = [
+  {
+    key: 'do',
+    image: doSrc,
+    alt: doAlt,
+    label: doLabel,
+    icon: 'check-bold',
+    variant: 'success',
+  },
+  {
+    key: 'dont',
+    image: dontSrc,
+    alt: dontAlt,
+    label: dontLabel,
+    icon: 'clear-bold',
+    variant: 'danger',
+  },
+] as const;
+
+for (const panel of panels) {
+  if (typeof panel.image === 'string' ? !panel.image.trim() : !panel.image?.src) {
+    throw new Error(`<DoDont> requires a \`${panel.key}Src\` image (an import or a URL).`);
+  }
+  // The screenshots carry the guidance, so an absent, empty or whitespace-only
+  // alt would hide that guidance from screen-reader users. Fail loudly in dev.
+  if (!panel.alt?.trim()) {
+    throw new Error(
+      `<DoDont> requires a non-empty \`${panel.key}Alt\` describing the image for screen readers.`,
+    );
+  }
+}
+---
+
+<div class:list={['igd-dodont', className]}>
+  {
+    panels.map((panel) => (
+      <figure class:list={['igd-dodont__panel', `igd-dodont__panel--${panel.key}`]}>
+        <div class="igd-dodont__frame">
+          <img
+            class="igd-dodont__image"
+            src={toSrc(panel.image)}
+            alt={panel.alt}
+            loading="lazy"
+            decoding="async"
+            {...toDimensions(panel.image)}
+          />
+          <igc-badge class="igd-dodont__badge" variant={panel.variant} outlined aria-hidden="true">
+            <igc-icon name={panel.icon} collection="docs" aria-hidden="true" />
+          </igc-badge>
+        </div>
+
+        <figcaption class="igd-dodont__caption">
+          <span class="igd-dodont__label">{panel.label}</span>
+          {Astro.slots.has(panel.key) && (
+            <div class="igd-dodont__description">
+              <slot name={panel.key} />
+            </div>
+          )}
+        </figcaption>
+      </figure>
+    ))
+  }
+</div>
+
+<script>
+  import { defineComponents, IgcBadgeComponent, IgcIconComponent } from 'igniteui-webcomponents';
+  import '../../../scripts/icon-registry';
+
+  defineComponents(IgcBadgeComponent, IgcIconComponent);
+</script>

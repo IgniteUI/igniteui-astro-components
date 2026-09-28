@@ -266,6 +266,7 @@ const sidebar: SidebarEntry[] = [/* … your tree … */];
 | -------------------------------------- | ----------------------------------------------------- | ---------------------------------------------------- |
 | `…/components/mdx/ApiLink.astro`       | Inline link to an API symbol with platform-aware URLs | [README](src/components/mdx/ApiLink/README.md)       |
 | `…/components/mdx/ApiRef.astro`        | Block API reference card                              | [README](src/components/mdx/ApiRef/README.md)        |
+| `…/components/mdx/DoDont.astro`        | Side-by-side Do / Don't image guidance panels         | [README](src/components/mdx/DoDont/README.md)        |
 | `…/components/mdx/PlatformBlock.astro` | Show content only on selected platforms               | [README](src/components/mdx/PlatformBlock/README.md) |
 | `…/components/mdx/Sample.astro`        | Embedded code-view sample widget                      | [README](src/components/mdx/Sample/README.md)        |
 
