@@ -87,9 +87,11 @@
     }
   }
 
+  // Group rows: row inset, then the chevron column (see the layout model in
+  // DocsTree/docs-tree.scss). No flex gap here — the chevron's own margin is
+  // the single source of the icon→label spacing.
   .docs-tree-group {
-    gap: rem(8px);
-    padding: rem(12px) rem(8px);
+    padding: rem(12px) rem(8px) rem(12px) var(--docs-tree-row-inset, #{rem(6px)});
   }
 
   .group-label-text {

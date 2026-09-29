@@ -80,21 +80,22 @@ All structural and per-variant rules are in
 [`docs-tree.css`](./docs-tree.css). The file is imported once by
 `DocsTree.astro`; Astro hoists and dedupes it.
 
-Overridable tokens (set on `igc-tree`):
+Sidebar layout tokens (set on `igc-tree[data-variant="sidebar"]`):
 
 ```
---docs-tree-row-pad-y
---docs-tree-row-pad-x
---docs-tree-row-radius
---docs-tree-row-color
---docs-tree-row-hover-bg
---docs-tree-row-hover-color
---docs-tree-row-active-bg
---docs-tree-row-active-color
---docs-tree-group-color
---docs-tree-nested-rule
---docs-tree-nested-pad-x
+--docs-tree-row-inset         leading space on every row before chevron/label (6px)
+--docs-tree-indent            one indentation step per nesting level (16px)
+--docs-tree-expand-col        width of the leading chevron column (14px)
+--docs-tree-expand-icon-size  chevron glyph size inside the column (14px)
+--docs-tree-expand-gap        gap between the chevron and the group label (8px)
+--docs-tree-leaf-inset        extra inset of a leaf label (6px)
 ```
+
+The chevron is rendered in the label slot _before_ the text; nesting uses
+`igc-tree-item`'s native `indentation` part. Keep the invariant
+`indent + leaf inset == expand column + gap`: it makes a leaf directly under a
+root group line up with that group's label, and puts a nested group's chevron
+in its parent's label column.
 
 ## Adapters
 

@@ -58,7 +58,50 @@ igc-tree {
 //	anchor-name: --selected-tree-item;
 //}
 
+/*
+ * Sidebar layout model (all values overridable):
+ *
+ *   ┌ row (wrapper) ─────────────────────────────────────────────────┐
+ *   │[indent × level][6px][▸ 14px][8px] Group label                   │
+ *   │[indent × level][6px][6px] Leaf label                 [badges]   │
+ *   └─────────────────────────────────────────────────────────────────┘
+ *
+ *   • --docs-tree-row-inset        leading space on every row, before the
+ *                                  chevron / label (6px)
+ *   • --docs-tree-indent           one step per nesting level (16px)
+ *   • --docs-tree-expand-col       width of the chevron column (14px)
+ *   • --docs-tree-expand-icon-size chevron glyph size (14px)
+ *   • --docs-tree-expand-gap       gap between chevron and label (8px)
+ *   • --docs-tree-leaf-inset       extra inset of a leaf label (6px)
+ *
+ * Invariant: indent + leaf inset == chevron column + gap. That makes a leaf
+ * directly under a root group line up with the root group's label, and puts
+ * a nested group's chevron in its parent's label column.
+ */
 igc-tree[data-variant='sidebar'] {
+  --docs-tree-row-inset: #{rem(6px)};
+  --docs-tree-indent: #{rem(16px)};
+  --docs-tree-expand-col: #{rem(14px)};
+  --docs-tree-expand-icon-size: #{rem(14px)};
+  --docs-tree-expand-gap: #{rem(8px)};
+  --docs-tree-leaf-inset: #{rem(6px)};
+
+  igc-tree-item {
+    // Drives the width of igc-tree-item's native `indentation` part
+    // (width = level × size), which precedes the label slot in the row.
+    --igc-tree-indentation-size: var(--docs-tree-indent);
+
+    &::part(wrapper) {
+      border-radius: rem(4px);
+    }
+
+    // The label part is `width: 100%`, which would otherwise make the
+    // indentation flex item shrink and drift the columns by 1–3px per level.
+    &::part(indentation) {
+      flex-shrink: 0;
+    }
+  }
+
   igc-tree-item + igc-tree-item[data-has-children] {
     margin-block-start: rem(4px);
   }
@@ -70,13 +113,10 @@ igc-tree[data-variant='sidebar'] {
     }
   }
 
+  // ── Group rows ──────────────────────────────────────────────────────────
   igc-tree-item[aria-expanded] {
-    &::part(wrapper) {
-      border-radius: rem(4px);
-
-      &:hover {
-        background-color: var(--ig-gray-50);
-      }
+    &::part(wrapper):hover {
+      background-color: var(--ig-gray-50);
     }
 
     .docs-tree-group {
@@ -88,6 +128,29 @@ igc-tree[data-variant='sidebar'] {
     &::part(wrapper) {
       background-color: var(--ig-gray-50);
     }
+  }
+
+  // Only root groups are bold; nested groups read as regular entries.
+  igc-tree-item:not([data-depth='0']) > [slot='label'] .group-label-text {
+    font-weight: 400;
+  }
+
+  // ── Leaf rows ───────────────────────────────────────────────────────────
+  // Hover / active backgrounds live on the wrapper so they span the whole
+  // row (including the indentation) rather than just the label area.
+  igc-tree-item:not([data-has-children]) {
+    &::part(wrapper):hover,
+    &:has(.docs-tree-link:focus)::part(wrapper) {
+      background-color: var(--ig-gray-50);
+    }
+  }
+
+  // Leaves directly under a root group are primary entries (dark text);
+  // deeper leaves inherit the muted default foreground.
+  igc-tree-item[data-depth='1']:not([data-has-children]) {
+    --foreground: light-dark(var(--ig-gray-900), var(--ig-gray-600));
+    --foreground-active: light-dark(var(--ig-gray-900), var(--ig-gray-50));
+    --foreground-hover: light-dark(var(--ig-gray-900), var(--ig-gray-50));
   }
 }
 
@@ -202,13 +265,18 @@ igc-tree-item[data-has-children] {
   }
 }
 
+/* Leading expand/collapse chevron: a fixed-width column with the glyph
+   centred inside it, followed by a gap to the label. */
 .tree-expand-icon {
-  margin-inline-start: auto;
+  --size: var(--docs-tree-expand-icon-size, #{rem(14px)});
+
   flex-shrink: 0;
+  width: var(--docs-tree-expand-col, #{rem(14px)});
+  height: var(--docs-tree-expand-col, #{rem(14px)});
+  margin-inline-end: var(--docs-tree-expand-gap, #{rem(8px)});
   color: inherit;
   transform: rotate(-90deg);
   transition: transform 0.2s ease;
-  margin-inline-end: rem(1px);
 }
 
 igc-tree-item[aria-expanded='false'] > [slot='label'] {
@@ -222,10 +290,6 @@ igc-tree-item[aria-expanded='true'] > [slot='label'] {
     transform: rotate(0deg);
     color: light-dark(var(--ig-gray-800), var(--ig-gray-300));
   }
-}
-
-igc-tree-item[data-has-children][data-depth='0'] {
-  --igc-tree-indentation-size: 0;
 }
 
 igc-tree-item[data-has-children] {
@@ -268,9 +332,10 @@ igc-tree-item:not([data-has-children]):hover .docs-tree-label {
 
 .igd-label-and-badge {
   position: relative;
-  border-radius: rem(4px);
   padding-block: rem(8px);
-  padding-inline-start: rem(12px);
+  padding-inline-start: calc(
+    var(--docs-tree-row-inset, #{rem(6px)}) + var(--docs-tree-leaf-inset, #{rem(6px)})
+  );
   padding-inline-end: rem(8px);
   height: 100%;
   z-index: -1;
@@ -287,37 +352,22 @@ igc-tree-item:not([data-has-children]):hover .docs-tree-label {
   //}
 }
 
-.docs-tree-link {
-  &:hover,
-  &:focus {
-    + .igd-label-and-badge {
-      background-color: var(--ig-gray-50);
+/* Active (current page) leaf. `selected` is also set on every ancestor of
+   the active item (see DocsTree.astro), so restrict to leaves explicitly. */
+igc-tree[data-variant='sidebar'] {
+  igc-tree-item[selected]:not([data-has-children]) {
+    &::part(wrapper),
+    &::part(wrapper):hover {
+      background-color: var(--igd-accent);
     }
-  }
-}
 
-igc-tree-item[selected] {
-  igc-tree-item[selected]:not([aria-expanded]) {
     .igd-label-and-badge {
       color: var(--igd-on-accent);
-      background-color: var(--igd-accent);
-
-      .docs-tree-label {
-        color: var(--igd-on-accent);
-      }
     }
 
-    &:has(.igd-label-and-badge) {
-      &:hover,
-      &:focus {
-        .igd-label-and-badge {
-          background-color: var(--igd-accent);
-
-          .docs-tree-label {
-            color: #fff;
-          }
-        }
-      }
+    .docs-tree-label,
+    &:hover .docs-tree-label {
+      color: var(--igd-on-accent);
     }
 
     .sidebar-premium-icon {

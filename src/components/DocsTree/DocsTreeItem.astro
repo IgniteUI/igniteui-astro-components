@@ -10,12 +10,18 @@
  * Sets `data-tree-id`, `data-depth`, and `data-has-children` (when applicable).
  * Any extra `data-*` attributes come from `node.itemData` (kebab-cased keys).
  *
+ * The expand/collapse chevron is rendered in the label slot *before* the
+ * text (leading position), never in igc-tree-item's native `indicator` part,
+ * which is hidden globally via `::part(indicator)`. Nesting is expressed with
+ * the native `indentation` part (see `--igc-tree-indentation-size` in
+ * docs-tree.scss), so a nested group's chevron sits in its parent's label
+ * column.
+ *
  * The `active` attribute is intentionally NOT set on <igc-tree-item>:
  * setting it triggers IgcTreeItemComponent.activeChange() synchronously
  * during defineComponents(), before the tree is upgraded, crashing on
  * `this.tree?.expandToItem`. Active-row highlight is CSS-driven via
  * `igc-tree-item:has(a[aria-current])` instead.
- * The default expand indicator is hidden globally via `::part(indicator)`.
  */
 import type { TreeNode, TreeVariant } from './types';
 
@@ -60,21 +66,21 @@ if (node.itemData) {
           class="docs-tree-link"
           {...node.linkAttrs}
         />
+        {hasChildren && <igc-icon name="chevron" collection="docs" class="tree-expand-icon" />}
         {RenderLabel ? (
           <RenderLabel node={node} depth={depth} isLeaf={isLeaf} isActive={isActive} />
         ) : (
           <span class="docs-tree-label">{node.label}</span>
         )}
-        {hasChildren && <igc-icon name="chevron" collection="docs" class="tree-expand-icon" />}
       </div>
     ) : (
       <div slot="label" class="docs-tree-group">
+        <igc-icon name="chevron" collection="docs" class="tree-expand-icon" />
         {RenderLabel ? (
           <RenderLabel node={node} depth={depth} isLeaf={isLeaf} isActive={isActive} />
         ) : (
           <span class="docs-tree-label">{node.label}</span>
         )}
-        <igc-icon name="chevron" collection="docs" class="tree-expand-icon" />
       </div>
     )
   }

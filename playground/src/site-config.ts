@@ -28,6 +28,65 @@ export const SIDEBAR: SidebarEntry[] = [
     collapsed: false,
     items: [
       { label: 'Sidebar', slug: 'components/sidebar' },
+      // Preview-only section: exercises nesting depth, chevrons and badges so
+      // indentation / alignment can be checked in the playground. Labels are
+      // deliberately generic — this is a hierarchy demo, not real content.
+      // Every leaf links to the Sidebar page; the hash suffix keeps each slug
+      // unique so only the real "Sidebar" entry is marked as the current page.
+      {
+        label: 'Hierarchy Preview',
+        collapsed: false,
+        items: [
+          {
+            label: 'Level 1 item',
+            slug: 'components/sidebar#preview-l1',
+            badges: [{ text: 'Premium', variant: 'premium' }],
+          },
+          {
+            label: 'Collapsed group',
+            collapsed: true,
+            items: [
+              { label: 'Level 2 item A', slug: 'components/sidebar#preview-l2-a' },
+              { label: 'Level 2 item B', slug: 'components/sidebar#preview-l2-b' },
+            ],
+          },
+          {
+            label: 'Expanded group',
+            collapsed: false,
+            items: [
+              { label: 'Level 2 item', slug: 'components/sidebar#preview-l2-c' },
+              {
+                label: 'Level 2 with badges',
+                slug: 'components/sidebar#preview-l2-d',
+                badges: [
+                  { text: 'Updated', variant: 'updated' },
+                  { text: 'Premium', variant: 'premium' },
+                ],
+              },
+              {
+                label: 'Level 2 item with a long label that wraps onto two lines',
+                slug: 'components/sidebar#preview-l2-e',
+                badges: [{ text: 'Updated', variant: 'updated' }],
+              },
+              {
+                label: 'Nested group',
+                collapsed: true,
+                items: [{ label: 'Level 3 item', slug: 'components/sidebar#preview-l3' }],
+              },
+            ],
+          },
+          {
+            label: 'Level 1 updated item',
+            slug: 'components/sidebar#preview-l1-updated',
+            badges: [{ text: 'Updated', variant: 'updated' }],
+          },
+          {
+            label: 'Level 1 new item',
+            slug: 'components/sidebar#preview-l1-new',
+            badges: [{ text: 'New', variant: 'new' }],
+          },
+        ],
+      },
       { label: 'Nav Bar', slug: 'components/nav-bar' },
       { label: 'DocsSubHeader', slug: 'components/docs-subheader' },
       { label: 'DocsToc', slug: 'components/docs-toc' },
