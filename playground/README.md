@@ -14,16 +14,27 @@ npm run playground:dev
 
 Then open http://localhost:4567.
 
+To see a **Japanese** build - which still renders the legacy chrome fetched
+from `jp.infragistics.com/navigation` until the Japanese version of the new
+design ships - set `NAV_LANG`:
+
+```sh
+NAV_LANG=jp npm run playground:dev
+```
+
+Any other value (or none) renders the compiled `SiteNav` / `SiteFooter` and
+fetches nothing.
+
 ## How it's wired
 
 - `astro.config.mjs` registers a tiny Vite plugin that supplies stub
   implementations of `virtual:docs-template/site-meta` and
   `virtual:docs-template/nav-html` — the two virtual modules normally
   produced by `siteMetaIntegration()`. This lets `DocsLayout`,
-  `GlobalNavBar`, `GlobalFooter`, `DocsSidebar`, `ThemingWidget`, etc.
+  `SiteNav`, `SiteFooter`, `DocsSidebar`, `ThemingWidget`, etc.
   run without booting the full integration (which expects route
   entrypoints and a Starlight compat shim that don't ship with this
-  package yet).
+  package yet). Its `navLang` comes from `NAV_LANG`, default `en`.
 - Components are imported directly via relative paths (`../../../src/...`)
   rather than through the package name, so no npm link / `file:` install
   is required.
@@ -39,7 +50,8 @@ Then open http://localhost:4567.
 | ---------------------------- | ----------------------------------------------------------------- |
 | `/`                          | `DocsLayout`, `DocsSidebar`                                       |
 | `/components/sidebar`        | `DocsSidebar`, `SidebarTree`, `SidebarItem`, `SidebarFilterInput` |
-| `/components/nav-bar`        | `GlobalNavBar`, `GlobalFooter`                                    |
+| `/components/site-nav`       | `SiteNav`                                                         |
+| `/components/site-footer`    | `SiteFooter`                                                      |
 | `/components/api-link`       | `ApiLink`                                                         |
 | `/components/api-ref`        | `ApiRef`                                                          |
 | `/components/badge`          | `Badge`                                                           |

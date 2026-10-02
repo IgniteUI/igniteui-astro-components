@@ -1,55 +1,160 @@
 ---
 /**
- * The Products menu's content — rendered in the desktop panel and again in the
- * drawer, which restyles it (see `.nv__sheet` rules in `nav.css`).
+ * The Products menu's content.
  */
 import { PRODUCTS_PANEL } from './nav-config';
 import PromoCard from './PromoCard.astro';
 import { ext, arrow } from './link';
 
-const { web, desktop, promo, rail } = PRODUCTS_PANEL;
+const { web, desktop, crossPlatform, promo, rail } = PRODUCTS_PANEL;
 ---
 
 <div class="nv__products">
-  <div class="nv__products-main">
-    <section class="nv__group">
-      <h3 class="nv__group-head nv__group-head--web">{web.title}</h3>
-      <a class="nv__lead" href={web.lead.href} {...ext(web.lead)}>{web.lead.label}</a>
+  <section class="nv__box nv__box--web">
+    <h3 class="nv__group-head nv__group-head--web">{web.title}</h3>
+    <div class="nv__box-body">
+      <a class="nv__lead" href={web.lead.href} {...ext(web.lead)}>
+        <img
+          loading="lazy"
+          decoding="async"
+          class="nv__fw-logo nv__fw-logo--lead"
+          src={web.lead.logo}
+          alt=""
+          width="21"
+          height="24"
+        />
+        {web.lead.label}
+        <Fragment set:html={arrow} />
+      </a>
       <ul class="nv__fws" role="list">
         {
           web.frameworks.map((f) => (
             <li class="nv__fw">
               <a class="nv__fw-link" href={f.href} {...ext(f)}>
-                <img class="nv__fw-logo" src={f.logo} alt="" width="18" height="16" />
+                <img
+                  loading="lazy"
+                  decoding="async"
+                  class="nv__fw-logo"
+                  src={f.logo}
+                  alt=""
+                  width="18"
+                  height="16"
+                />
                 {f.label}
+                <Fragment set:html={arrow} />
               </a>
               {f.links?.map((l) => (
                 <a class="nv__sub" href={l.href} {...ext(l)}>
                   {l.label}
                   <span class="ig-sr-only"> for {f.label}</span>
+                  <Fragment set:html={arrow} />
                 </a>
               ))}
             </li>
           ))
         }
       </ul>
-      <a class="nv__lead" href={web.tail.href} {...ext(web.tail)}>{web.tail.label}</a>
-    </section>
+      <a class="nv__lead" href={web.tail.href} {...ext(web.tail)}>
+        <img
+          loading="lazy"
+          decoding="async"
+          class="nv__fw-logo nv__fw-logo--lead-sm"
+          src={web.tail.logo}
+          alt=""
+          width="18"
+          height="18"
+        />
+        {web.tail.label}
+        <Fragment set:html={arrow} />
+      </a>
 
-    <section class="nv__group">
-      <h3 class="nv__group-head nv__group-head--desktop">{desktop.title}</h3>
-      <ul class="nv__fws nv__fws--flat" role="list">
+      <h4 class="nv__eyebrow nv__eyebrow--more">{web.more.title}</h4>
+      <ul class="nv__more" role="list">
         {
-          desktop.frameworks.map((f) => (
-            <li class="nv__fw">
-              <a class="nv__fw-link nv__fw-link--strong" href={f.href} {...ext(f)}>
-                <img class="nv__fw-logo" src={f.logo} alt="" width="18" height="15" />
-                {f.label}
+          web.more.links.map((l) => (
+            <li>
+              <a class="nv__more-link" href={l.href} {...ext(l)}>
+                {l.label}
+                <Fragment set:html={arrow} />
               </a>
             </li>
           ))
         }
       </ul>
+    </div>
+  </section>
+
+  <div class="nv__stack">
+    <section class="nv__box nv__box--desktop">
+      <h3 class="nv__group-head nv__group-head--desktop">{desktop.title}</h3>
+      <div class="nv__box-body">
+        <ul class="nv__fws nv__fws--flat" role="list">
+          {
+            desktop.frameworks.map((f) => (
+              <li class="nv__fw">
+                <a class="nv__fw-link nv__fw-link--strong" href={f.href} {...ext(f)}>
+                  <img
+                    loading="lazy"
+                    decoding="async"
+                    class="nv__fw-logo"
+                    src={f.logo}
+                    alt=""
+                    width="18"
+                    height="15"
+                  />
+                  {f.label}
+                  <Fragment set:html={arrow} />
+                </a>
+              </li>
+            ))
+          }
+          {
+            desktop.comingSoon.map((c) => (
+              <li class="nv__fw">
+                <span class="nv__soon">
+                  {c.logo && (
+                    <img
+                      loading="lazy"
+                      decoding="async"
+                      class="nv__fw-logo nv__fw-logo--square"
+                      src={c.logo}
+                      alt=""
+                      width="18"
+                      height="18"
+                    />
+                  )}
+                  {c.label}
+                  <span class="nv__pill">{c.badge}</span>
+                </span>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </section>
+
+    <section class="nv__box nv__box--cross">
+      <h3 class="nv__group-head nv__group-head--cross">{crossPlatform.title}</h3>
+      <div class="nv__box-body">
+        <ul class="nv__fws nv__fws--flat nv__fws--soon" role="list">
+          {
+            crossPlatform.items.map((c) => (
+              <li class="nv__fw">
+                <span class="nv__soon">
+                  {c.label}
+                  <span class="nv__pill">{c.badge}</span>
+                </span>
+              </li>
+            ))
+          }
+          <li class="nv__fw nv__fw--joined">
+            <span class="nv__soon nv__soon--joined">
+              {crossPlatform.items.map((c) => c.label).join(', ')}
+              <span class="nv__pill">{crossPlatform.items[0].badge}</span>
+            </span>
+          </li>
+        </ul>
+      </div>
     </section>
   </div>
 
@@ -88,6 +193,7 @@ const { web, desktop, promo, rail } = PRODUCTS_PANEL;
                 loading="lazy"
                 decoding="async"
               />
+              <Fragment set:html={arrow} />
             </a>
           </li>
         ))

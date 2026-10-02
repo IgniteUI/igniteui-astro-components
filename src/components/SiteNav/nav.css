@@ -1,37 +1,32 @@
-/*
- * The marketing site sets `box-sizing: border-box` globally in its design
- * system; a package cannot assume a host page does. Scoped to the nav, so a
- * host page's own box model is untouched. See the same note in SiteFooter.
- */
-.nv,
-.nv *,
-.nv *::before,
-.nv *::after {
-  box-sizing: border-box;
-}
-
 /**
- * nav.css — the global header, per "Nav Dropdown - Category Cards v7" and
- * "Nav Mobile v2" (`design/navigation/`).
- *
- * GLOBAL, not scoped: the drawer renders the panel content components a second
- * time and restyles them from `.nv__sheet`, which scoped styles cannot reach.
- * Every selector is namespaced under `nv`, so nothing leaks into the page.
- *
- * Colours come from the design-system tokens (`--ig-*`). The few values below
- * that are the header's own are the canvas's hover fills, and two deliberate
- * departures from it, both for contrast:
- *   · link hover is #0f4fd6, not the canvas's #0084e0 (3.9:1 on white);
- *   · the icon tiles keep the deeper v11 shades, so the white glyphs clear 3:1.
+ * nav.css - the global header
  */
 
 .nv,
 .nv__sheet,
-.nv__scrim,
-.nv__skip {
+.nv__scrim {
   --nv-bar-h: 70px;
-  --nv-gutter: 24px;
+  /* The pinned drawer section button's height. One value for the trigger's
+   * min-height, for what `top` has to cancel, and for the scroll padding that
+   * keeps focused rows out from under it. */
+  --nv-sheet-stick: 60px;
+  --nv-sheet-pad: 8px;
+  /* The canvas's gutter, used for each panel's width and content padding and
+   * the footer strip. A flat 24px left every panel at half the design's inset
+   * on a desktop viewport. */
+  --nv-gutter: clamp(16px, 4vw, 48px);
+  /*
+   * The BAR's gutter, which is not the panels'.
+   */
+  --nv-bar-gutter: 24px;
   --nv-hover: #f5f9ff;
+  /* The panel's footer strip. Close to --ig-surface-sunken (#f7f8fa) but not
+   * it — the canvas uses a slightly bluer grey here. */
+  --nv-foot: #f6f8fb;
+  /* The "Coming Soon" pill. Written here rather than reaching for
+   * --ig-gray-100: that token is declared only in `ig-theme.css`, which no
+   * file imports, so it resolves to nothing and the pill loses its fill. */
+  --nv-pill: #f1f5f9;
   --nv-trigger-hover: #f0f5fb;
   --nv-trigger-on: #e9f1ff;
   --nv-action-hover: #0f4fd6;
@@ -62,45 +57,10 @@
   text-decoration: none;
 }
 
-/* Announce new-tab links, as the canvas does. */
-.nv a[target='_blank']::after,
-.nv__sheet a[target='_blank']::after {
-  content: ' (opens in new tab)';
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip-path: inset(50%);
-  white-space: nowrap;
-}
-
-/* ── skip link ───────────────────────────────────────────────────────── */
-.nv__skip {
-  position: absolute;
-  left: 16px;
-  top: 8px;
-  z-index: 200;
-  display: inline-flex;
-  align-items: center;
-  height: 36px;
-  padding: 0 14px;
-  border-radius: 6px;
-  background: var(--ig-action);
-  color: #fff;
-  font-size: 14px;
-  font-weight: 600;
-  text-decoration: none;
-  transform: translateY(-160%);
-  transition: transform var(--nv-transition);
-}
-.nv__skip:focus-visible {
-  transform: translateY(0);
-}
-
 /* ── the bar ─────────────────────────────────────────────────────────── */
 .nv {
   position: sticky;
-  top: 0;
+  top: var(--ig-hb-h, 0px);
   z-index: 50;
   background: rgba(255, 255, 255, 0.96);
   backdrop-filter: blur(12px);
@@ -112,7 +72,7 @@
 .nv__bar {
   max-width: var(--ig-container);
   margin: 0 auto;
-  padding: 0 var(--nv-gutter);
+  padding: 0 var(--nv-bar-gutter);
   min-height: var(--nv-bar-h);
   display: flex;
   align-items: center;
@@ -252,11 +212,19 @@
   font-weight: 600;
   white-space: nowrap;
   cursor: pointer;
-  transition: background var(--nv-transition);
+  transition:
+    background var(--nv-transition),
+    transform var(--nv-transition);
 }
 .nv__cta:hover {
   background: var(--nv-cta-hover);
   color: #fff;
+  transform: translateY(-1px);
+}
+@media (prefers-reduced-motion: reduce) {
+  .nv__cta:hover {
+    transform: none;
+  }
 }
 .nv__cta--block {
   display: flex;
@@ -292,7 +260,7 @@
   left: 50%;
   top: 100%;
   width: min(calc(100vw - 2 * var(--nv-gutter)), var(--ig-container));
-  max-height: calc(100dvh - var(--nv-bar-h) - 16px);
+  max-height: calc(100dvh - var(--ig-hb-h, 0px) - var(--nv-bar-h) - 16px);
   overflow-y: auto;
   overscroll-behavior: contain;
   transform: translateX(-50%);
@@ -314,9 +282,6 @@
 .nv__panel[hidden] {
   display: none;
 }
-.nv__panel--narrow {
-  width: min(calc(100vw - 2 * var(--nv-gutter)), 1140px);
-}
 
 @keyframes nv-panel-in {
   from {
@@ -334,7 +299,7 @@
   align-items: center;
   gap: 32px;
   padding: 16px var(--nv-gutter) 18px;
-  background: var(--ig-surface-sunken);
+  background: var(--nv-foot);
   border-top: 1px solid var(--ig-border-subtle);
   font-size: 16px;
   font-weight: 600;
@@ -375,17 +340,32 @@
   color: var(--ig-gray-500);
 }
 
-.nv__group {
+.nv__box {
   display: flex;
   flex-direction: column;
   gap: 12px;
   min-width: 0;
+  border: 1px solid var(--ig-border);
+  border-radius: 16px;
+  padding: 20px 20px 20px 24px;
+  overflow: hidden;
+}
+.nv__box-body {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+/* The column holding Desktop above Cross Platform. */
+.nv__stack {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 0;
 }
 
 .nv__group-head {
-  margin: 0 0 0 -12px;
-  padding: 12px;
-  border-radius: 12px;
+  margin: -20px -20px 4px -24px;
+  padding: 16px 20px 14px 24px;
   font-family: var(--ig-font-display);
   font-weight: 800;
   font-size: clamp(17px, 1.5vw, 20px);
@@ -398,6 +378,47 @@
 }
 .nv__group-head--desktop {
   background: var(--ig-blue-50);
+}
+.nv__group-head--cross {
+  background: var(--ig-teal-50);
+}
+
+.nv__soon {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--ig-body);
+}
+
+.nv__fws--soon .nv__fw--joined {
+  display: none;
+}
+.nv__sheet .nv__fws--soon .nv__fw {
+  display: none;
+}
+.nv__sheet .nv__fws--soon .nv__fw--joined {
+  display: flex;
+}
+.nv__soon--joined {
+  flex-wrap: wrap;
+  gap: 6px 10px;
+  font-size: 17px;
+}
+
+.nv__pill {
+  display: inline-flex;
+  padding: 2px 8px;
+  border-radius: var(--ig-radius-pill);
+  background: var(--nv-pill);
+  border: 1px solid var(--ig-border);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ig-body);
+  white-space: nowrap;
 }
 
 .nv__fw-logo {
@@ -425,28 +446,96 @@
   color: var(--ig-action);
 }
 
+:where(.nv__lead, .nv__fw-link, .nv__sub, .nv__more-link, .nv__logo) > .nv__arrow {
+  flex: 0 0 auto;
+  opacity: 0;
+  transform: translateX(-4px);
+  transition:
+    opacity var(--nv-transition),
+    transform var(--nv-transition);
+}
+:where(.nv__lead, .nv__fw-link, .nv__sub, .nv__more-link, .nv__logo):hover > .nv__arrow,
+:where(.nv__lead, .nv__fw-link, .nv__sub, .nv__more-link, .nv__logo):focus-visible > .nv__arrow {
+  opacity: 1;
+  transform: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  :where(.nv__lead, .nv__fw-link, .nv__sub, .nv__more-link, .nv__logo) > .nv__arrow {
+    transition: none;
+  }
+}
+
 /* ── Products ────────────────────────────────────────────────────────── */
 .nv__products {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(320px, 380px);
-  gap: 24px 48px;
-  align-items: start;
+  grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr) minmax(300px, 340px);
+  gap: 20px 24px;
+  align-items: stretch;
   padding: 34px calc(var(--nv-gutter) + 8px) 14px;
-}
-.nv__products-main {
-  display: flex;
-  flex-direction: column;
-  gap: 26px;
-  min-width: 0;
 }
 
 .nv__lead {
+  display: flex;
+  align-items: center;
   align-self: flex-start;
+  gap: 10px;
   padding: 8px 12px;
   margin-left: -12px;
   font-size: 18px;
   font-weight: 600;
   color: var(--ig-ink);
+}
+
+.nv__fw-logo--lead {
+  width: 21px;
+  height: 24px;
+}
+.nv__fw-logo--lead-sm {
+  width: 18px;
+  height: 18px;
+}
+.nv__fw-logo--square {
+  width: 18px;
+  height: 18px;
+}
+
+/* The older web stacks, under their own eyebrow inside the Web card. */
+.nv__eyebrow--more {
+  margin: 14px 0 6px;
+  letter-spacing: 0.16em;
+}
+.nv__more {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 28px;
+}
+.nv__more-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  margin-left: -12px;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--ig-gray-800);
+  transition:
+    background var(--nv-transition),
+    color var(--nv-transition);
+}
+.nv__more-link:hover {
+  background: var(--nv-hover);
+  color: var(--ig-action);
+}
+
+.nv__panel--products .nv__box--web > .nv__box-body {
+  gap: 12px;
+}
+.nv__panel--products .nv__box--web > .nv__box-body > .nv__fws + .nv__lead {
+  margin-top: 12px;
+}
+.nv__panel--products .nv__box--web .nv__eyebrow--more {
+  margin-bottom: -6px;
 }
 
 .nv__fws {
@@ -458,8 +547,10 @@
   border-left: 1px solid var(--ig-border);
 }
 .nv__fws--flat {
-  gap: 4px 28px;
-  margin-top: 0;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0;
+  margin: 0;
+  padding-left: 0 !important;
   border-left: 0;
 }
 
@@ -478,7 +569,6 @@
   margin-left: -12px;
   font-size: 18px;
   font-weight: 500;
-  white-space: nowrap;
   color: var(--ig-gray-800);
 }
 .nv__fw-link--strong {
@@ -487,8 +577,31 @@
   color: var(--ig-ink);
 }
 
+.nv__box--web .nv__fw-link {
+  white-space: nowrap;
+}
+
+.nv__panel--products .nv__box--web .nv__fw {
+  container-type: inline-size;
+}
+@container (width < 218px) {
+  .nv__box--web .nv__fw-link {
+    min-width: max-content;
+  }
+  .nv__box--web .nv__fw-link > .nv__arrow {
+    display: none;
+  }
+}
+@container (width < 180px) {
+  .nv__box--web .nv__fw-link {
+    font-size: 17px;
+  }
+}
+
 .nv__sub {
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: 10px;
   padding: 5px 12px 5px 40px;
   margin: -7px 0 0 -12px;
   font-size: 16px;
@@ -498,9 +611,7 @@
 
 .nv__rail {
   grid-column: 1 / -1;
-  margin-top: 2px;
-  padding-top: 18px;
-  border-top: 1px solid var(--ig-border-subtle);
+  margin-top: 6px;
   display: flex;
   align-items: center;
   flex-wrap: wrap;
@@ -517,10 +628,18 @@
   gap: 4px;
 }
 .nv__logo {
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: 8px;
   padding: 6px 10px;
   border-radius: 10px;
   transition: background var(--nv-transition);
+}
+
+.nv__logo .nv__arrow {
+  width: 16px;
+  height: 16px;
+  color: var(--ig-action);
 }
 .nv__logo:hover {
   background: var(--nv-hover);
@@ -576,6 +695,10 @@
 .nv__promo-body {
   position: relative;
   padding: 20px 18px 16px;
+}
+
+.nv__promo--bundles {
+  align-self: stretch;
 }
 .nv__promo--help .nv__promo-body {
   padding: 20px 22px 22px;
@@ -638,6 +761,10 @@
   display: flex;
   flex-direction: column;
   gap: 7px;
+}
+
+.nv .nv__bundles,
+.nv__sheet .nv__bundles {
   margin-top: 14px;
 }
 .nv__bundle {
@@ -703,15 +830,19 @@
 
 /* ── Docs ────────────────────────────────────────────────────────────── */
 .nv__docs {
-  display: flex;
-  flex-direction: column;
-  gap: 38px;
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+  gap: 24px;
+  align-items: stretch;
   padding: 38px var(--nv-gutter) 34px;
 }
 .nv__docs-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 20px 28px;
+}
+.nv__box--desktop .nv__docs-grid {
+  grid-template-columns: minmax(0, 1fr);
 }
 .nv__doc {
   display: flex;
@@ -747,6 +878,13 @@
   padding-left: 28px;
   font-size: 16px;
   font-weight: 600;
+}
+/* The Web card holds two columns, so its pair stacks; Desktop is a single wide
+ * column and keeps them on one line. */
+.nv__box--web .nv__doc-links {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
 }
 
 .nv__arrow-link {
@@ -925,7 +1063,7 @@
 /* ── the drawer ──────────────────────────────────────────────────────── */
 .nv__sheet {
   position: fixed;
-  inset: var(--nv-bar-h) 0 0;
+  inset: calc(var(--ig-hb-h, 0px) + var(--nv-bar-h)) 0 0;
   z-index: 49;
   display: flex;
   flex-direction: column;
@@ -952,7 +1090,8 @@
   flex: 1 1 auto;
   min-height: 0;
   overflow-y: auto;
-  padding: 8px 0 20px;
+  scroll-padding-top: calc(var(--nv-sheet-stick) + var(--nv-sheet-pad));
+  padding: var(--nv-sheet-pad) 0 20px;
 }
 
 .nv__sheet-sec + .nv__sheet-sec::before,
@@ -965,11 +1104,14 @@
 }
 
 .nv__sheet-trigger {
+  position: sticky;
+  top: calc(-1 * var(--nv-sheet-pad));
+  z-index: 2;
   display: flex;
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  min-height: 60px;
+  min-height: var(--nv-sheet-stick);
   padding: 0 24px;
   background: none;
   border: 0;
@@ -1025,6 +1167,10 @@
 .nv__sheet-action--link {
   color: var(--ig-action);
 }
+.nv__sheet-action--quiet {
+  font-weight: 400;
+  color: var(--ig-body);
+}
 
 .nv__sheet-cta {
   flex: 0 0 auto;
@@ -1054,15 +1200,63 @@
   gap: 14px;
   padding: 0;
 }
-.nv__sheet .nv__products-main {
-  gap: 14px;
+
+.nv__sheet .nv__stack {
+  display: contents;
 }
-.nv__sheet .nv__group {
-  gap: 10px;
+.nv__sheet .nv__box--web {
+  order: 1;
+}
+.nv__sheet .nv__box--desktop {
+  order: 2;
+}
+.nv__sheet .nv__promo--bundles {
+  order: 3;
+}
+.nv__sheet .nv__box--cross {
+  order: 4;
+}
+.nv__sheet .nv__rail {
+  order: 5;
+}
+/* The drawer drops the card border — at this width the tinted band is enough
+ * separation, and a box inside a box reads as clutter. */
+.nv__sheet .nv__box {
+  gap: 0;
+  margin-top: 8px;
+  border: 0;
+  border-radius: 0;
+  padding: 0;
+  overflow: visible;
+}
+.nv__sheet .nv__box-body {
+  padding: 6px 0 0;
 }
 .nv__sheet .nv__group-head {
   margin: 0 -12px;
   padding: 10px 12px;
+  border-radius: 12px;
+  font-size: 17px;
+}
+.nv__sheet .nv__eyebrow--more {
+  margin: 12px 0 2px;
+  font-size: 13px;
+}
+.nv__sheet .nv__more {
+  gap: 0 16px;
+}
+.nv__sheet .nv__more-link {
+  min-height: 44px;
+  padding: 0;
+  margin: 0;
+  font-size: 15px;
+}
+.nv__sheet .nv__more-link:hover {
+  background: none;
+}
+.nv__sheet .nv__soon {
+  min-height: 44px;
+  padding: 0;
   font-size: 17px;
 }
 
@@ -1114,7 +1308,7 @@
 .nv__sheet .nv__sub {
   display: flex;
   align-items: center;
-  min-height: 32px;
+  min-height: 44px;
   font-size: 15px;
 }
 .nv__sheet .nv__fw-link + .nv__sub {
@@ -1168,6 +1362,7 @@
 }
 
 .nv__sheet .nv__docs {
+  grid-template-columns: minmax(0, 1fr);
   gap: 10px;
   padding: 0;
 }
@@ -1188,7 +1383,9 @@
   margin-top: 4px;
   font-size: 15px;
 }
-.nv__sheet .nv__doc-links {
+.nv__sheet .nv__doc-links,
+.nv__sheet .nv__box--web .nv__doc-links {
+  flex-direction: row;
   gap: 0 20px;
   margin-top: 4px;
   font-size: 15px;
@@ -1198,6 +1395,9 @@
   padding: 0;
 }
 .nv__sheet .nv__arrow-link .nv__arrow {
+  display: none;
+}
+.nv__sheet :where(.nv__lead, .nv__fw-link, .nv__sub, .nv__more-link, .nv__logo) > .nv__arrow {
   display: none;
 }
 
@@ -1228,7 +1428,15 @@
   line-height: 1.4;
 }
 
-/* ── breakpoints, per the canvas ─────────────────────────────────────── */
+@media (max-width: 1300px) {
+  .nv__products {
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+  }
+  .nv__products > .nv__promo {
+    grid-column: 1 / -1;
+  }
+}
+
 @media (max-width: 1180px) {
   .nv__account {
     display: none;
@@ -1239,15 +1447,16 @@
   }
 }
 @media (max-width: 1100px) {
-  .nv__products {
-    grid-template-columns: minmax(0, 1fr) minmax(300px, 340px);
-    column-gap: 36px;
-  }
   .nv__fws {
     column-gap: 16px;
   }
   .nv__cards {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 900px) {
+  .nv__docs {
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 

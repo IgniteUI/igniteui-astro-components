@@ -1,9 +1,9 @@
 /**
- * siteHeader.ts — behaviour for the v7 global header.
+ * siteHeader.ts - behaviour for the global header.
  *
- *   1. panels — open on CLICK, one at a time;
- *   2. the drawer — below the breakpoint, an accordion of the same sections;
- *   3. shared dismissal — Escape, outside clicks, focus leaving, and a reset
+ *   1. panels - open on CLICK, one at a time;
+ *   2. the drawer - below the breakpoint, an accordion of the same sections;
+ *   3. shared dismissal - Escape, outside clicks, focus leaving, and a reset
  *      when the viewport crosses the breakpoint.
  *
  * Open state is `aria-expanded` on the trigger + `hidden` on the panel, and
@@ -12,7 +12,7 @@
 
 /**
  * THE breakpoint, and the one value here that must stay in step with
- * `nav.css` — its `@media (max-width: 1040px)` block hides the bar items and
+ * `nav.css` - its `@media (max-width: 1040px)` block hides the bar items and
  * shows the burger. A media query rather than a pixel comparison, so it
  * resolves the viewport exactly the way the CSS does.
  */
@@ -42,7 +42,7 @@ export function initSiteHeader(): void {
 
   const openPanel = (key: string, fromKeyboard: boolean) => {
     /* Below the breakpoint the drawer owns every section except search, which
-     * still opens under the bar — and takes the drawer's place. */
+     * still opens under the bar - and takes the drawer's place. */
     if (mq.matches && key !== 'search') return;
     if (mq.matches) setSheet(false);
     if (openKey) closePanel();
@@ -136,7 +136,7 @@ export function initSiteHeader(): void {
     const target = e.target as Element | null;
     if (!target) return;
 
-    /* A link navigates away, so close behind it — invisible on a real
+    /* A link navigates away, so close behind it - invisible on a real
      * navigation, and it stops a panel hanging over a same-page anchor. */
     if (target.closest('a[href]')) {
       if (header.contains(target)) closePanel();
@@ -149,7 +149,7 @@ export function initSiteHeader(): void {
   });
 
   /**
-   * Focus leaving the open item — its trigger and its panel — closes it, so a
+   * Focus leaving the open item - its trigger and its panel - closes it, so a
    * panel does not hang over the page (or the next trigger) once the user has
    * tabbed past it.
    */

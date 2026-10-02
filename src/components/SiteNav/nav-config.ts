@@ -1,30 +1,16 @@
 /**
- * navigation.ts — the global header's information architecture.
+ * navigation.ts - the global header's information architecture.
  *
- * Transcribed from "Nav Dropdown - Category Cards v7.dc.html" (desktop) and
- * "Nav Mobile v2.dc.html" (the drawer), both under `design/navigation/`.
- *
- * v7 is an IA change, not a restyle of v11: the Components catalogue panel is
- * gone. The bar is Products ▾ · AI · Docs ▾ · Learn & Support ▾ · Pricing, with
- * Search, My Account, GitHub and the trial CTA on the right. AI and Pricing are
- * plain links. The canvas still carries an AI panel and a Demos panel, but
- * neither has a reachable trigger (Demos sits behind a `showDemos` prop that
- * defaults to off), so neither is built.
- *
- * Every section, panel and drawer item is rendered from the data below — the
+ * Every section, panel and drawer item is rendered from the data below - the
  * desktop panels and the mobile drawer read the same objects, so they cannot
  * drift apart.
  *
  * HREFS. Root-relative for anything served on this origin, including the docs,
  * blog, forum and help apps that sit behind it. The canvas hardcodes the
  * production origin and `target="_blank"` on every link; both are dropped.
- * Only genuinely external destinations — appbuilder.dev, revealbi.io,
+ * Only genuinely external destinations - appbuilder.dev, revealbi.io,
  * slingshotapp.io, github.com, youtube.com, the account app — are marked
  * `external` and open in a new tab.
- *
- * Where a canvas link 404s on production, the working equivalent is used
- * instead (checked 2026-09-25), e.g. API references go to the api-docs roots,
- * which redirect to the current version. `npm run nav:links` checks them all.
  */
 
 import fwAngular from './assets/fw-angular.svg';
@@ -32,15 +18,20 @@ import fwBlazor from './assets/fw-blazor.svg';
 import fwReact from './assets/fw-react.svg';
 import fwWebComponents from './assets/fw-webcomponents.svg';
 import fwWindows from './assets/fw-windows.svg';
+import fwWinui from './assets/fw-winui.png';
+import igniteUiMark from './assets/ignite-ui-mark.webp';
+import appBuilderMark from './assets/app-builder-mark.png';
 
 /**
- * The customer portal's origin, which six links below point into.
+ * The customer portal's origin, which the account links below point into, and
+ * the support chatbot inside it.
  *
  * Read from the environment rather than imported, so this file is
  * self-contained and the package needs no `lib/env` of its own. The default is
  * production; a staging build sets `PUBLIC_ACCOUNT_ORIGIN` to the staging
  * portal, which is what stops a tester clicking through into the real customer
- * account app.
+ * account app. `SUPPORT_URL` is derived exactly as the marketing site's
+ * `lib/env` derives it.
  *
  * `import.meta.env` is Vite's, so this resolves at build time in any Astro
  * consumer; `process.env` is the fallback for a plain Node context (the link
@@ -51,7 +42,8 @@ const ACCOUNT_ORIGIN = (
     ?.PUBLIC_ACCOUNT_ORIGIN ??
   process.env.PUBLIC_ACCOUNT_ORIGIN ??
   'https://account.infragistics.com'
-).replace(/\/$/, '');
+).replace(/\/+$/, '');
+const SUPPORT_URL = `${ACCOUNT_ORIGIN}/chatbot`;
 
 export interface NavLink {
   label: string;
@@ -90,22 +82,17 @@ export type NavSection =
 
 export const NAV_SECTIONS: NavSection[] = [
   { label: 'Products', panel: 'products' },
-  { label: 'AI', href: '/ai-assisted-app-development' },
+  { label: 'AI Tools', href: '/ai-assisted-app-development' },
   { label: 'Docs', panel: 'docs' },
   { label: 'Learn & Support', panel: 'resources' },
   { label: 'Pricing', href: '/how-to-buy/product-pricing' },
 ];
 
 /**
- * "My Account" points at the account app, not at a route here.
- *
- * This site has NO SIGN-IN, by decision (confirmed 2026-09-11): no OIDC client,
- * no token in the browser, no `/my-account/*` routes served from this repo.
- * The canvas links `/my-account/keys-and-downloads`; that becomes a plain link
- * out to the account app, as every other would-be signed-in destination does.
+ * "My Account" links out to the account app.
  */
 export const HEADER_ACTIONS = {
-  account: { label: 'My Account', href: `${ACCOUNT_ORIGIN}/downloads`, external: true },
+  account: { label: 'My Account', href: ACCOUNT_ORIGIN, external: true },
   github: { label: 'Ignite UI on GitHub', href: 'https://github.com/IgniteUI', external: true },
   cta: { label: 'Start Free Trial', href: '/free-downloads' },
   contact: { label: 'Contact Us', href: '/about-us/contact-us' },
@@ -120,12 +107,16 @@ export interface NavFramework extends NavLink {
 }
 
 /**
+ * A product announced but not shipped - WinUI, and the three cross-platform
+ */
+export interface NavComingSoon {
+  label: string;
+  badge: string;
+  logo?: string;
+}
+
+/**
  * Bundled, not fetched from `/assets/logos/`.
- *
- * The marketing site serves these out of its own `public/`, so an absolute path
- * resolves there and 404s everywhere else. Importing them makes the asset part
- * of the package: Astro emits and fingerprints each file into the consumer's
- * build, and `.src` is the URL it landed at.
  */
 const LOGO = {
   angular: fwAngular.src,
@@ -133,15 +124,19 @@ const LOGO = {
   wc: fwWebComponents.src,
   blazor: fwBlazor.src,
   windows: fwWindows.src,
+  winui: fwWinui.src,
+  igniteUi: igniteUiMark.src,
+  appBuilder: appBuilderMark.src,
 };
 
 export const PRODUCTS_PANEL = {
   web: {
     title: 'Web',
-    lead: { label: 'Ignite UI', href: '/products/ignite-ui' },
-    /* The canvas sends the Web Components and Blazor "Grid" links into the
-     * docs. Both products have a grid page on this site, like Angular and
-     * React do, so all four land on a product page. */
+    lead: {
+      label: 'Ignite UI',
+      href: '/products/ignite-ui',
+      logo: LOGO.igniteUi,
+    } satisfies NavFramework,
     frameworks: [
       {
         label: 'Angular',
@@ -166,7 +161,10 @@ export const PRODUCTS_PANEL = {
         href: '/products/ignite-ui-web-components',
         logo: LOGO.wc,
         links: [
-          { label: 'Grid', href: '/products/ignite-ui-web-components/grid-table' },
+          {
+            label: 'Grid',
+            href: '/products/ignite-ui-web-components/web-components/components/grids/data-grid',
+          },
           { label: 'Open Source', href: '/products/ignite-ui-web-components/open-source' },
         ],
       },
@@ -175,23 +173,44 @@ export const PRODUCTS_PANEL = {
         href: '/products/ignite-ui-blazor',
         logo: LOGO.blazor,
         links: [
-          { label: 'Grid', href: '/products/ignite-ui-blazor/grid-table' },
+          { label: 'Grid', href: '/products/ignite-ui-blazor/blazor/components/grids/data-grid' },
           { label: 'Open Source', href: '/products/ignite-ui-blazor/open-source' },
         ],
       },
-    ] as NavFramework[],
+    ] satisfies NavFramework[],
     tail: {
       label: 'App Builder',
       href: 'https://www.appbuilder.dev/platform',
+      logo: LOGO.appBuilder,
       external: true,
-    } as NavLink,
+    } satisfies NavFramework,
+    more: {
+      title: 'More Frameworks',
+      links: [
+        { label: 'ASP.NET Core', href: '/products/ignite-ui-aspnet-core' },
+        { label: 'ASP.NET MVC', href: '/products/ignite-ui-aspnet-mvc' },
+        { label: 'jQuery', href: '/products/ignite-ui-jquery' },
+        { label: 'ASP.NET Web Forms', href: '/products/aspnet' },
+      ] satisfies NavLink[],
+    },
   },
   desktop: {
     title: 'Desktop',
     frameworks: [
       { label: 'Windows Forms', href: '/products/windows-forms', logo: LOGO.windows },
       { label: 'WPF', href: '/products/wpf', logo: LOGO.windows },
-    ] as NavFramework[],
+    ] satisfies NavFramework[],
+    comingSoon: [
+      { label: 'WinUI', badge: 'Coming Soon', logo: LOGO.winui },
+    ] satisfies NavComingSoon[],
+  },
+  crossPlatform: {
+    title: 'Cross Platform',
+    items: [
+      { label: 'MAUI', badge: 'Coming Soon' },
+      { label: 'Flutter', badge: 'Coming Soon' },
+      { label: 'React Native', badge: 'Coming Soon' },
+    ] satisfies NavComingSoon[],
   },
   promo: {
     eyebrow: 'Best Value',
@@ -243,7 +262,7 @@ export const PRODUCTS_PANEL = {
 };
 
 /** The tinted band behind a group heading — violet for web, sky for desktop. */
-export type GroupTint = 'web' | 'desktop';
+export type GroupTint = 'web' | 'desktop' | 'cross';
 
 /* ── Docs ───────────────────────────────────────────────────────────────── */
 
@@ -257,10 +276,7 @@ export interface DocsFramework {
 }
 
 /**
- * The web API homes are the api-docs app's per-platform roots; each redirects
- * to the current package version, so no version is hardcoded here. The canvas's
- * `…/general-api-reference` topics do not exist. The desktop products keep
- * their API reference inside their help sites.
+ * The web API references are the api-docs app's `latest` aliases.
  */
 export const DOCS_PANEL = {
   groups: [
@@ -273,14 +289,14 @@ export const DOCS_PANEL = {
           logo: LOGO.angular,
           product: 'Ignite UI for Angular',
           start: '/products/ignite-ui-angular/angular/components/general/getting-started',
-          api: '/api/angular/',
+          api: '/api/angular/igniteui-angular/latest/',
         },
         {
           label: 'React',
           logo: LOGO.react,
           product: 'Ignite UI for React',
           start: '/products/ignite-ui-react/react/components/general-getting-started',
-          api: '/api/react/',
+          api: '/api/react/igniteui-react/latest/',
         },
         {
           label: 'Web Components',
@@ -288,14 +304,14 @@ export const DOCS_PANEL = {
           product: 'Ignite UI for Web Components',
           start:
             '/products/ignite-ui-web-components/web-components/components/general-getting-started',
-          api: '/api/webcomponents/',
+          api: '/api/webcomponents/igniteui-webcomponents/latest/',
         },
         {
           label: 'Blazor',
           logo: LOGO.blazor,
           product: 'Ignite UI for Blazor',
           start: '/products/ignite-ui-blazor/blazor/components/general-getting-started',
-          api: '/api/blazor/',
+          api: '/api/blazor/IgniteUI.Blazor/latest/',
         },
       ] as DocsFramework[],
     },
@@ -375,7 +391,7 @@ export const LEARN_PANEL = {
     {
       label: 'Contact Support',
       desc: 'Reach our support team by chat or ticket',
-      href: `${ACCOUNT_ORIGIN}/chatbot`,
+      href: SUPPORT_URL,
       external: true,
       icon: 'headset',
       tile: 'blue',
@@ -440,11 +456,7 @@ export const SEARCH_PANEL = {
       links: [
         { label: 'Free trials and downloads', href: '/free-downloads' },
         { label: 'Release notes', href: '/support/service-releases' },
-        {
-          label: 'Submit a support request',
-          href: `${ACCOUNT_ORIGIN}/support-cases/new`,
-          external: true,
-        },
+        { label: 'Submit a support request', href: SUPPORT_URL, external: true },
         { label: 'Product life cycle', href: '/support/product-lifecycle' },
       ],
     },

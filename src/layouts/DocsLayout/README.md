@@ -100,6 +100,26 @@ const slug = Astro.params.slug ?? '';
 </DocsLayout>
 ```
 
+## Header and footer
+
+`DocsLayout` renders the Infragistics chrome itself - there is nothing to pass
+or configure:
+
+| Build                           | Header / footer                                                                                                                                    | Network at build                         |
+| ------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------- |
+| any `navLang` except `'jp'`     | [`SiteNav`](../../components/SiteNav/README.md) / [`SiteFooter`](../../components/SiteFooter/README.md), compiled into the package                 | none                                     |
+| `navLang: 'jp'` (**temporary**) | [`GlobalNavBar`](../../components/GlobalNavBar/README.md) / [`GlobalFooter`](../../components/GlobalFooter/README.md) - the legacy Japanese chrome | fetches `jp.infragistics.com/navigation` |
+
+The Japanese row exists only because there is no Japanese version of the new
+design yet. `navLang` comes from `virtual:docs-template/site-meta` (the
+`navLang` option of `createDocsSite()` / `siteMetaIntegration()`), and the
+switch is the `legacyJpChrome` constant in `DocsLayout.astro`. When the
+Japanese design ships, that constant and the legacy components are deleted -
+the steps are in [NAVIGATION-FETCH-REMOVAL.md](../../../NAVIGATION-FETCH-REMOVAL.md#japanese-builds-temporary).
+
+A `navTheme` of `'none'` (the `platform` from `virtual:docs-template/nav-html`,
+or `VITE_NAV_THEME`) renders no header, in either case.
+
 ## Virtual module dependencies
 
 `DocsLayout` imports from two virtual modules. When using `siteMetaIntegration`
@@ -107,7 +127,7 @@ they are provided automatically. When not, supply minimal stubs via a Vite
 plugin (see [playground/astro.config.mjs](../../../playground/astro.config.mjs)
 for a reference implementation):
 
-| Module                            | Used for                                                        | Can be overridden by prop                                                                               |
-| --------------------------------- | --------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
-| `virtual:docs-template/site-meta` | Site title, sidebar tree, product links, extra `<head>` entries | `siteTitle` on `DocsLayout`, `items` on `DocsSidebar`, `productLinks`/`sidebarItems` on `DocsSubHeader` |
-| `virtual:docs-template/nav-html`  | Pre-fetched nav/footer HTML, widget script URL, platform key    | — (not yet prop-overridable)                                                                            |
+| Module                            | Used for                                                                                                      | Can be overridden by prop                                                                               |
+| --------------------------------- | ------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| `virtual:docs-template/site-meta` | Site title, sidebar tree, product links, extra `<head>` entries, `navLang` (`'jp'` selects the legacy chrome) | `siteTitle` on `DocsLayout`, `items` on `DocsSidebar`, `productLinks`/`sidebarItems` on `DocsSubHeader` |
+| `virtual:docs-template/nav-html`  | The platform key (`platform`). No nav HTML — nothing is pre-fetched                                           | — (not yet prop-overridable)                                                                            |

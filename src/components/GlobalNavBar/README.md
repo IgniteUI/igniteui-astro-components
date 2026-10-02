@@ -1,11 +1,14 @@
 # GlobalNavBar
 
-Renders the global navigation bar in the light DOM. Supports IG-family platforms (`angular`, `react`, `blazor`, `web-components`, `slingshot`, `igniteui`).
+Renders the legacy global navigation bar in the light DOM. Supports IG-family platforms (`angular`, `react`, `blazor`, `web-components`, `slingshot`, `igniteui`).
 
 ## Import
 
 ```astro
+---
+// Deprecated — see the note above.
 import GlobalNavBar from 'igniteui-astro-components/components/GlobalNavBar.astro';
+---
 ```
 
 ## Props

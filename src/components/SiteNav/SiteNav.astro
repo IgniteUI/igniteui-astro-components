@@ -1,25 +1,14 @@
 ---
 /**
- * SiteHeader — the global header, per "Nav Dropdown - Category Cards v7" and
- * "Nav Mobile v2" (`design/navigation/`).
- *
- * The bar is Products ▾ · AI · Docs ▾ · Learn & Support ▾ · Pricing, then
- * Search ▾, My Account, GitHub and the trial CTA. The IA and every link live in
- * `src/config/navigation.ts`; this file only lays them out.
- *
- * Each panel is rendered straight after its trigger, inside the same item, so
- * keyboard order is trigger → that panel's links → next trigger — the
- * disclosure-navigation pattern — without any focus management. The panels are
- * still positioned against the sticky `.nv`, so they centre under the whole
- * bar rather than under their trigger.
- *
- * Panels open on CLICK, not hover — see `site-nav.ts`. With scripting absent
- * they stay closed; every destination in them is also reachable from the
+ * SiteHeader component; every destination in them is also reachable from the
  * footer.
  *
- * Styles are in `src/styles/nav.css`, global rather than scoped: the drawer
- * re-uses the panel content components and restyles them from outside.
+ * Styles are in `nav.css`, global rather than scoped: the drawer re-uses the
+ * panel content components and restyles them from outside. They sit on top of
+ * `../chrome/chrome.css`, which supplies the tokens, type and element defaults
+ * the marketing site's own stylesheets give this header there.
  */
+import '../chrome/chrome.css';
 import './nav.css';
 import igLogo from './assets/ig-logo.svg';
 import {
@@ -39,8 +28,6 @@ import { ext, chevron, githubMark } from './link';
 
 const { account, github, cta } = HEADER_ACTIONS;
 ---
-
-<a class="nv__skip" href="#main-content">Skip to main content</a>
 
 <header class="nv" data-nav-root>
   <div class="nv__bar">
@@ -66,22 +53,12 @@ const { account, github, cta } = HEADER_ACTIONS;
                   <Fragment set:html={chevron} />
                 </button>
                 {s.panel === 'products' && (
-                  <NavPanel
-                    id="nav-panel-products"
-                    panel="products"
-                    width="narrow"
-                    footer={PRODUCTS_PANEL.footer}
-                  >
+                  <NavPanel id="nav-panel-products" panel="products" footer={PRODUCTS_PANEL.footer}>
                     <ProductsBody />
                   </NavPanel>
                 )}
                 {s.panel === 'docs' && (
-                  <NavPanel
-                    id="nav-panel-docs"
-                    panel="docs"
-                    width="narrow"
-                    footer={DOCS_PANEL.footer}
-                  >
+                  <NavPanel id="nav-panel-docs" panel="docs" footer={DOCS_PANEL.footer}>
                     <DocsBody />
                   </NavPanel>
                 )}

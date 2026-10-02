@@ -2,11 +2,11 @@
 /**
  * DocsSubHeader
  *
- * A secondary fixed header bar rendered below the GlobalNavBar.
+ * A secondary fixed header bar rendered below the SiteNav header.
  * Contains the search input and cross-product navigation links.
  *
  * Positioning (set in DocsLayout / custom.css):
- *   --docs-global-nav-height   height of the GlobalNavBar above (default 86px)
+ *   --docs-global-nav-height   height of the SiteNav header above (default 86px)
  *   --docs-subheader-height    height of this bar (default 40px)
  *
  * Note: The breadcrumb that previously lived in `.subheader-context` has been
@@ -89,7 +89,7 @@ interface Props {
   /** `localStorage` key for persisting the theme. Defaults to `'docs-theme'`. */
   themeStorageKey?: string;
   /**
-   * Text label shown in the logo area when the GlobalNavBar is visible.
+   * Text label shown in the logo area when the SiteNav header is visible.
    * Fades out and is replaced by the SVG logo once the subheader becomes sticky.
    * Defaults to `'IgniteUI'`.
    */

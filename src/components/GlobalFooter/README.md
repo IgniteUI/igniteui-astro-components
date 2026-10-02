@@ -1,11 +1,14 @@
 # GlobalFooter
 
-Renders the global footer in the light DOM.
+Renders the legacy global footer in the light DOM.
 
 ## Import
 
 ```astro
+---
+// Deprecated - see the note above.
 import GlobalFooter from 'igniteui-astro-components/components/GlobalFooter.astro';
+---
 ```
 
 ## Props

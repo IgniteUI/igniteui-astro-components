@@ -554,11 +554,12 @@ export interface CreateDocsSiteOptions {
     exclude?: RegExp[];
   };
   /**
-   * Platform identifier. Drives CDN styles/scripts injected into `<head>`
-   * and the build-time nav prefetch endpoint.
+   * Platform identifier. Drives the CDN styles/scripts injected into `<head>`.
    */
   platform?: PlatformKey | null;
-  /** Locale for the nav prefetch URL. */
+  /**
+   * The site's locale. Exposed as `navLang` on `virtual:docs-template/site-meta`.
+   */
   navLang?: NavLang;
   /**
    * Extra `<head>` entries appended after the platform entries.

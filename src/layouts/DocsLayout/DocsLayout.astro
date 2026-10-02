@@ -2,9 +2,9 @@
 import { ClientRouter } from 'astro:transitions';
 import '@fontsource-variable/jetbrains-mono/wght.css';
 import '@fontsource-variable/jetbrains-mono/wght-italic.css';
+import SiteNav from '../../components/SiteNav/SiteNav.astro';
 import GlobalNavBar from '../../components/GlobalNavBar/GlobalNavBar.astro';
 import GlobalFooter from '../../components/GlobalFooter/GlobalFooter.astro';
-import SiteNav from '../../components/SiteNav/SiteNav.astro';
 import SiteFooter from '../../components/SiteFooter/SiteFooter.astro';
 import DocsSubHeader from '../../components/DocsSubHeader/DocsSubHeader.astro';
 import DocsBreadcrumb from '../../components/DocsBreadcrumb/DocsBreadcrumb.astro';
@@ -79,21 +79,19 @@ const navTheme = (virtualPlatform ?? import.meta.env.VITE_NAV_THEME ?? 'igniteui
 const showGlobalNav = navTheme !== 'none';
 
 /**
- * IG_CHROME=v2 swaps the fetched chrome for the components shipped in this
- * package: `GlobalNavBar`/`GlobalFooter` -> `SiteNav`/`SiteFooter`.
+ * TEMPORARY — Japanese builds keep the fetched legacy chrome.
  *
- * Why a flag and not a straight replacement: the two routes fail differently
- * (see "Two ways to get the Infragistics chrome" in the README), and a docs
- * site should be able to move between them in one env var rather than a
- * refactor. Default stays on the fetch, which is what every consumer builds
- * with today.
+ * `SiteNav` / `SiteFooter` carry the English IA only, and there is no Japanese
+ * version of the new design yet. Until there is, a `navLang: 'jp'` build
+ * renders `GlobalNavBar` / `GlobalFooter`, which fetch the legacy Japanese
+ * chrome from `jp.infragistics.com/navigation` at build time; every other build
+ * renders the compiled chrome and fetches nothing.
  *
- * `SiteNav` is English-only, so a jp/kr build should stay on the fetch until
- * the package carries the localised nav data.
+ * Remove when the Japanese design ships: this constant, the two components,
+ * `lib/nav-helpers.ts` and `LEGACY_CHROME_*` in `platform.ts`.
  */
-const chromeV2 =
-  ((import.meta as unknown as { env?: Record<string, string | undefined> }).env?.PUBLIC_IG_CHROME ??
-    process.env.IG_CHROME) === 'v2';
+const legacyJpChrome = navLang === 'jp';
+
 const pageTitle = title ? `${title} | ${resolvedSiteTitle}` : resolvedSiteTitle;
 
 type HeadEntry = {
@@ -200,8 +198,7 @@ type HeadEntry = {
       function navChildEl() {
         var root = document.querySelector('[data-astro-transition-persist="global-nav-bar"]');
         if (!root) return null;
-        // `SiteNav` renders a skip link before the bar, so *:first-child would
-        // measure 36px of skip link instead of a 70px header.
+        // The compiled header, or the fetched legacy one on a Japanese build.
         return root.querySelector('header.nv') || root.firstElementChild;
       }
 
@@ -287,16 +284,18 @@ type HeadEntry = {
   <body>
     <!-- INFRAGISTICS HEADER/NAVIGATION -->
     {
+      /* The Infragistics chrome is compiled in - `SiteNav` and `SiteFooter` are the
+         single source of it; nothing is fetched. `.nv` is `position: sticky`, so
+         the wrapper has to be sticky too, or the nav would stop at the bottom of a
+         wrapper exactly its own height. Japanese builds are the temporary
+         exception - see `legacyJpChrome`. */
       showGlobalNav &&
-        (chromeV2 ? (
-          /* The height script measures `[data-astro-transition-persist=...] > *:first-child`,
-             and `.nv` is `position: sticky` — so the wrapper has to be sticky too, or the
-             nav would stop at the bottom of a wrapper exactly its own height. */
+        (legacyJpChrome ? (
+          <GlobalNavBar lang="jp" />
+        ) : (
           <div transition:persist="global-nav-bar" style="position: sticky; top: 0; z-index: 50">
             <SiteNav />
           </div>
-        ) : (
-          <GlobalNavBar lang={navLang} />
         ))
     }
 
@@ -357,15 +356,17 @@ type HeadEntry = {
       <!-- Footer is inside the grid so the sidebar's sticky containing block extends through it.
              The JS initSidebarHeights() clamps sidebar max-height to prevent visual overlap. -->
       {
-        chromeV2 ? (
-          /* `.igd-page-layout` is a grid; GlobalFooter's wrapper spans it with
-             `grid-column: 1 / -1`. Without the same span the footer is placed
-             beside the content instead of below it and stretches to its height. */
-          <div style="grid-column: 1 / -1">
+        /* `.igd-page-layout` is a grid: without the full-width span the footer is
+           placed beside the content instead of below it and stretches to its height.
+           `data-igd-footer` is what initSidebarHeights() finds the footer by. */
+      }
+      {
+        legacyJpChrome ? (
+          <GlobalFooter lang="jp" />
+        ) : (
+          <div style="grid-column: 1 / -1" data-igd-footer>
             <SiteFooter />
           </div>
-        ) : (
-          <GlobalFooter lang={navLang} />
         )
       }
     </div>

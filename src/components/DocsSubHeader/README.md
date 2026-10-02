@@ -1,6 +1,6 @@
 # DocsSubHeader
 
-Secondary fixed header bar rendered below the `GlobalNavBar`. Contains the Pagefind search button and platform product-switch links.
+Secondary fixed header bar rendered below the `SiteNav` header. Contains the Pagefind search button and platform product-switch links.
 
 > **Note:** The breadcrumb trail was extracted into the standalone [`DocsBreadcrumb`](../DocsBreadcrumb/README.md) component and is now rendered inside the main content frame, above the page body — not in this bar.
 
@@ -36,7 +36,7 @@ import DocsSubHeader from 'igniteui-astro-components/components/DocsSubHeader.as
 - Product links from the virtual module are shown; the currently active platform link is hidden.
 - The search button opens the Pagefind dialog (see `Search` component).
 - CSS custom properties used for positioning:
-  - `--docs-global-nav-height` (default `4.7rem`) — height of the `GlobalNavBar` above
+  - `--docs-global-nav-height` (default `4.7rem`) — height of the `SiteNav` header above
   - `--docs-subheader-height` (default `2.5rem`) — height of this bar
 
 ## Example

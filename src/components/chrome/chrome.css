@@ -1,0 +1,205 @@
+/**
+ * chrome.css — what SiteNav and SiteFooter inherit from the marketing site's
+ * page, made explicit so they render the same on a page that is not that site.
+ *
+ * On the marketing site neither component carries its own design tokens, type
+ * or element defaults: `nav.css` and the footer's styles read `--ig-*` tokens
+ * from `design-system/tokens.css`, and lean on `design-system/base.css` for the
+ * body type, heading face, link colour, button font, focus ring and the
+ * screen-reader utility. A docs site has none of that, so without this file the
+ * tokens resolve to nothing and the chrome silently falls back to the host's
+ * fonts, colours and widths.
+ *
+ * Everything is SCOPED to the three chrome roots — the header, the drawer
+ * (which sits outside the header) and the footer — so nothing here reaches the
+ * host page. Scoping also shields the chrome from the host: Ignite UI themes
+ * declare their own `--ig-gray-500` and friends on `:root`, and a declaration
+ * on the root element wins over that inherited value.
+ *
+ * Values are copied verbatim from the marketing repo. Keep them in step with
+ * `src/styles/design-system/tokens.css` and `base.css` there.
+ */
+
+/*
+ * ── type ────────────────────────────────────────────────────────────────────
+ *
+ * The weights the marketing site requests from Google Fonts in BaseLayout —
+ * Plus Jakarta Sans 500–800 (it asks for 900 too, but the family has no 900)
+ * and DM Sans 400–700 — self-hosted instead, as DocsLayout self-hosts its own
+ * faces: no request to a third-party CDN.
+ *
+ * The static `@fontsource` builds, not `@fontsource-variable`: they mirror the
+ * Google files and register the same family names, so the font stacks below
+ * stay byte-for-byte what tokens.css has. Vite inlines these at build time, so
+ * they are not runtime `@import`s and their position in the bundle is moot.
+ */
+@import '@fontsource/plus-jakarta-sans/500.css';
+@import '@fontsource/plus-jakarta-sans/600.css';
+@import '@fontsource/plus-jakarta-sans/700.css';
+@import '@fontsource/plus-jakarta-sans/800.css';
+@import '@fontsource/dm-sans/400.css';
+@import '@fontsource/dm-sans/500.css';
+@import '@fontsource/dm-sans/600.css';
+@import '@fontsource/dm-sans/700.css';
+
+/* ── tokens (design-system/tokens.css) ───────────────────────────────────── */
+
+.nv,
+.nv__sheet,
+.nv__scrim,
+.ftr {
+  --ig-blue-50: #ebf6ff;
+  --ig-violet-50: #faf0ff;
+  --ig-teal-50: #eefbf8;
+  --ig-action: #155dfc;
+
+  --ig-ink: #0f172a;
+  --ig-gray-800: #1f2937;
+  --ig-body: #4a5565;
+  --ig-gray-500: #6b7280;
+  --ig-gray-450: #57606a;
+  --ig-border: #e5e7eb;
+  --ig-border-subtle: #eef0f4;
+
+  --ig-font-display: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --ig-font-body:
+    'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+  --ig-fs-body: 16px;
+  --ig-lh-body: 1.6;
+  --ig-fw-semibold: 600;
+  --ig-fw-bold: 700;
+  --ig-fw-xbold: 800;
+
+  --ig-container: 1280px;
+  --ig-section-x: clamp(20px, 4vw, 48px);
+  --ig-radius-tile: 12px;
+  --ig-radius-pill: 9999px;
+
+  --ig-ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --ig-dur-fast: 140ms;
+  --ig-dur: 160ms;
+}
+
+/* ── body defaults the chrome inherits on the marketing site (base.css) ──── */
+
+/*
+ * Specificity: every element rule here is `html :where(.nv, …) a` — two
+ * elements, no class.
+ *
+ *   · Below one class, so every class rule in nav.css and the footer beats it
+ *     whatever order the bundler emits the files in — which is how they beat
+ *     base.css on the marketing site. Never raise these to a class: a
+ *     class-weight default ties with the components' own rules and then wins
+ *     or loses on CSS order, which Vite does not guarantee across components.
+ *     (In a docs build it emitted this file after nav.css, and the panels lost
+ *     their heading margins, link colours and button sizes to it.)
+ *   · Above one element, so a host page's bare `a { … }` or reset library —
+ *     the docs sites load a Bootstrap-style one — cannot restyle the chrome,
+ *     again whatever the order. base.css needs no such margin because nothing
+ *     on the marketing site competes with it.
+ */
+:where(.nv, .nv__sheet, .ftr) {
+  color: var(--ig-gray-800);
+  font-family: var(--ig-font-body);
+  font-size: var(--ig-fs-body);
+  line-height: var(--ig-lh-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── element defaults (base.css), scoped ─────────────────────────────────── */
+
+:where(.nv, .nv__sheet, .ftr),
+:where(.nv, .nv__sheet, .ftr) *,
+:where(.nv, .nv__sheet, .ftr) *::before,
+:where(.nv, .nv__sheet, .ftr) *::after {
+  box-sizing: border-box;
+}
+
+html :where(.nv, .nv__sheet, .ftr) :is(h1, h2, h3, h4, h5, h6) {
+  font-family: var(--ig-font-display);
+  color: var(--ig-ink);
+  margin: 0;
+  font-weight: var(--ig-fw-bold);
+  letter-spacing: -0.2px;
+}
+
+html :where(.nv, .nv__sheet, .ftr) p {
+  margin: 0;
+}
+
+html :where(.nv, .nv__sheet, .ftr) a {
+  color: var(--ig-action);
+  text-decoration: none;
+  transition: color var(--ig-dur-fast) var(--ig-ease);
+}
+:where(.nv, .nv__sheet, .ftr) a:hover {
+  color: #0b4ede;
+}
+
+:where(.nv, .nv__sheet, .ftr) :focus-visible {
+  outline: 2px solid var(--ig-action);
+  outline-offset: 3px;
+  border-radius: 3px;
+}
+
+html :where(.nv, .nv__sheet, .ftr) :is(img, svg) {
+  max-width: 100%;
+}
+html :where(.nv, .nv__sheet, .ftr) img {
+  height: auto;
+}
+
+html :where(.nv, .nv__sheet, .ftr) button {
+  font: inherit;
+  color: inherit;
+}
+
+/*
+ * Host-reset guards. Not in base.css, because the marketing site has nothing to
+ * guard against: each restores the browser default that a common reset library
+ * overrides, found by diffing the chrome on a docs page against staging.
+ *
+ *   · `input { line-height: inherit }` (normalize/Bootstrap) — the search field
+ *     grows from the UA's `normal` to the inherited 28.5px.
+ *   · `kbd { box-shadow: inset … }` (Bootstrap 3) — puts a bevel on the search
+ *     field's "/" hint.
+ */
+html :where(.nv, .nv__sheet, .ftr) :is(input, select, textarea) {
+  line-height: normal;
+}
+html :where(.nv, .nv__sheet, .ftr) kbd {
+  box-shadow: none;
+}
+
+/*
+ * Screen-reader-only text. The marketing site's one copy, scoped. `!important`
+ * as there: a utility whose whole job is to win has to be able to.
+ */
+:where(.nv, .nv__sheet, .ftr) .ig-sr-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  clip-path: inset(50%) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+/* Announce a link that opens in a new tab. */
+:where(.nv, .nv__sheet, .ftr__list) a[target='_blank']::after {
+  content: ' (opens in new tab)';
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}

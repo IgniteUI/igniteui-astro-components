@@ -1,17 +1,8 @@
 ---
 /**
- * The drawer, per "Nav Mobile v2.dc.html": the same sections as the bar, each
- * panel section expanding inline, with the trial CTA pinned to the bottom of
- * the sheet (inline instead, on short screens, so it cannot eat the list).
- *
- * It renders the SAME content components as the desktop panels. Below the
- * drawer breakpoint the desktop nav is `display: none`, so only one copy is
- * ever in the accessibility tree.
- *
- * Outside <header> so the fixed overlay is not trapped by the sticky header's
- * stacking context.
+ * Nav Mobile Sheet Component
  */
-import { NAV_SECTIONS, HEADER_ACTIONS, DOCS_PANEL } from './nav-config';
+import { NAV_SECTIONS, HEADER_ACTIONS, DOCS_PANEL, PRODUCTS_PANEL } from './nav-config';
 import ProductsBody from './ProductsBody.astro';
 import DocsBody from './DocsBody.astro';
 import LearnBody from './LearnBody.astro';
@@ -19,6 +10,7 @@ import { ext, chevron, githubMark } from './link';
 
 const { account, github, contact, cta } = HEADER_ACTIONS;
 const docsFoot = DOCS_PANEL.footer.link!;
+const a11y = PRODUCTS_PANEL.footer.link!;
 ---
 
 <div class="nv__sheet" id="nav-mobile-sheet" data-mobile-sheet hidden>
@@ -69,6 +61,9 @@ const docsFoot = DOCS_PANEL.footer.link!;
         {github.label}
       </a>
       <a class="nv__sheet-action nv__sheet-action--link" href={contact.href}>{contact.label}</a>
+      <a class="nv__sheet-action nv__sheet-action--quiet" href={a11y.href} {...ext(a11y)}
+        >{a11y.label}</a
+      >
       <a class="nv__cta nv__cta--block nv__sheet-cta-inline" href={cta.href}>{cta.label}</a>
     </div>
   </nav>

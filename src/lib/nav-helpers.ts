@@ -1,13 +1,16 @@
 /**
  * nav-helpers.ts
  *
- * Shared build-time utilities for fetching and sanitising the Infragistics
+ * Build-time utilities for fetching and sanitising the legacy Infragistics
  * global nav / footer HTML.
  *
- * Used by:
- *   - integration.ts (siteMetaIntegration virtual-module pipeline)
- *   - components/GlobalNavBar/GlobalNavBar.astro
- *   - components/GlobalFooter/GlobalFooter.astro
+ * TEMPORARY - Japanese builds only. Every other build renders the compiled
+ * SiteNav / SiteFooter and fetches nothing. A `navLang: 'jp'` build keeps the
+ * legacy chrome fetched from jp.infragistics.com/navigation until the Japanese
+ * version of the new design ships; then delete this together with
+ * GlobalNavBar, GlobalFooter and `LEGACY_CHROME_*` in platform.ts.
+ *
+ * Used by components/GlobalNavBar and components/GlobalFooter.
  */
 
 import { createRequire } from 'node:module';

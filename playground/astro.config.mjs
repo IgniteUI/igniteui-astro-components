@@ -12,9 +12,9 @@
  * DocsSidebar / DocsSubHeader — demonstrating prop-driven usage.
  *
  * The two virtual module stubs below satisfy the Vite module resolver (the
- * components import from them at the top level). Nav HTML is not fetched here
- * — GlobalNavBar and GlobalFooter self-fetch via fetchIgNav() at build time
- * and fall back to static minimal markup when the fetch fails.
+ * components import from them at the top level). The Infragistics header and
+ * footer are compiled into the package (SiteNav / SiteFooter), so nothing is
+ * fetched at build time.
  */
 
 import { defineConfig } from 'astro/config';
@@ -35,7 +35,9 @@ process.env.DOCS_ENV ??= 'development';
 process.env.BASE_URL ??= 'http://localhost:4567';
 
 // Platform head entries (IG CSS + JS) injected into <head> by DocsLayout.
-const platformHeadEntries = getPlatformHead('angular', 'en');
+/** `NAV_LANG=jp` builds the playground as a Japanese site (legacy fetched chrome). */
+const navLang = process.env.NAV_LANG || 'en';
+const platformHeadEntries = getPlatformHead('angular', navLang);
 
 /**
  * Dev-only Vite plugin: handles POST /api/icons/replace
@@ -103,11 +105,6 @@ function iconUploadPlugin() {
  * Vite plugin that supplies stub implementations of the two virtual modules
  * normally provided by `siteMetaIntegration`. This lets the components run
  * standalone in the playground.
- *
- * Nav HTML is intentionally NOT fetched here — GlobalNavBar and GlobalFooter
- * self-fetch via fetchIgNav() at build time (cached per locale, graceful
- * offline fallback). The virtual module stub only needs to satisfy the
- * resolver; the real HTML comes from the components themselves.
  */
 function virtualDocsModules() {
   const siteMetaId = 'virtual:docs-template/site-meta';
@@ -128,8 +125,7 @@ function virtualDocsModules() {
       if (id === resolved(siteMetaId)) {
         // Intentionally minimal — sidebar, title, and productLinks are
         // supplied via component props from src/site-config.ts instead.
-        // Platform head entries (IG CSS/JS) are included so the nav bar
-        // renders with the correct styles.
+        // Platform head entries (IG CSS) are included as a docs site gets them.
         return `
 export const title = '';
 export const sidebar = [];
@@ -138,25 +134,11 @@ export const headEntries = ${JSON.stringify(platformHeadEntries)};
 export const trailingSlash = 'ignore';
 export const packages = [];
 export const selectedPackage = null;
-export const navLang = 'en';
+export const navLang = ${JSON.stringify(navLang)};
         `;
       }
       if (id === resolved(navHtmlId)) {
-        // Minimal stub — nav HTML is fetched by GlobalNavBarIg / GlobalFooterIg directly.
-        return `
-export const platform = 'angular';
-export const navLang = 'en';
-export const prefetched = false;
-export const headerHtml = '';
-export const uiFooterHtml = '';
-export const footerHtml = '';
-export const abPrefetched = false;
-export const abHeaderHtml = '';
-export const abFooterHtml = '';
-export const abFooterUtilsHtml = '';
-export const abFooterCopyrightHtml = '';
-export const abContactSalesHtml = '';
-        `;
+        return `export const platform = 'angular';`;
       }
       return null;
     },

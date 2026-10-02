@@ -239,10 +239,10 @@ const sidebar: SidebarEntry[] = [/* … your tree … */];
 
 | Export                                   | Purpose                                                                | Docs                                                   |
 | ---------------------------------------- | ---------------------------------------------------------------------- | ------------------------------------------------------ |
-| `…/components/GlobalNavBar.astro`        | IG global navigation bar                                               | [README](src/components/GlobalNavBar/README.md)        |
-| `…/components/GlobalFooter.astro`        | IG global footer                                                       | [README](src/components/GlobalFooter/README.md)        |
-| `…/components/SiteNav.astro`             | IG site navigation, compiled in — no build-time fetch                  | [README](src/components/SiteNav/README.md)             |
-| `…/components/SiteFooter.astro`          | IG site footer, compiled in — opt-in newsletter panel                  | [README](src/components/SiteFooter/README.md)          |
+| `…/components/GlobalNavBar.astro`        | **Deprecated** — legacy fetched header; Japanese builds only, for now  | [README](src/components/GlobalNavBar/README.md)        |
+| `…/components/GlobalFooter.astro`        | **Deprecated** — legacy fetched footer; Japanese builds only, for now  | [README](src/components/GlobalFooter/README.md)        |
+| `…/components/SiteNav.astro`             | IG site navigation — the single source of the header                   | [README](src/components/SiteNav/README.md)             |
+| `…/components/SiteFooter.astro`          | IG site footer — the single source of the footer                       | [README](src/components/SiteFooter/README.md)          |
 | `…/components/DocsSubHeader.astro`       | Secondary fixed bar — site title + breadcrumb + product links + search | [README](src/components/DocsSubHeader/README.md)       |
 | `…/components/Search.astro`              | Pagefind-powered full-text search modal                                | [README](src/components/Search/README.md)              |
 | `…/components/ThemingWidget.astro`       | Theming widget                                                         | [README](src/components/ThemingWidget/README.md)       |
@@ -292,74 +292,40 @@ const sidebar: SidebarEntry[] = [/* … your tree … */];
 
 ---
 
-## Two ways to get the Infragistics chrome
+## The Infragistics chrome
 
-The header and footer can reach a consuming site by either of two routes. They
-produce the same chrome; they fail in different ways, and the difference is
-worth a minute before you pick.
+The header and footer live in this package as ordinary Astro components —
+`SiteNav` and `SiteFooter` — with their own data, stylesheets and behaviour
+modules. **They are the single source of the chrome:** `DocsLayout` renders
+them on every page, and nothing is fetched from `{origin}/navigation` at build
+time. [NAVIGATION-FETCH-REMOVAL.md](./NAVIGATION-FETCH-REMOVAL.md) records what
+dropping the fetch gains and costs.
 
-### Option 1 — fetch it (`GlobalNavBar` / `GlobalFooter`)
+**One temporary exception: Japanese builds.** There is no Japanese version of
+the new design yet, so a `navLang: 'jp'` build keeps the legacy chrome fetched
+from `jp.infragistics.com/navigation` (`GlobalNavBar` / `GlobalFooter` — still
+exported, but deprecated), with the legacy CSS and scripts
+that chrome needs. When the Japanese design ships, that fallback is deleted and
+Japanese builds move to `SiteNav` / `SiteFooter` like every other build.
 
-`fetchIgNav()` requests `{origin}/navigation` at build time, extracts the header
-and footer out of the response and inlines them. This is how the docs sites have
-always worked, and it is what the marketing site's
-`docs/NAVIGATION-EMBEDDING.md` documents.
-
-- **Always current.** A nav change on the marketing site reaches every consumer
-  on its next build, with no release anywhere.
-- **Single source of truth.** There is only ever one implementation of the nav.
-- **Needs the network at build**, and fails soft — an offline or sandboxed CI
-  produces a site with no chrome rather than a failed build. Set
-  `IG_NAV_REQUIRED=1` to make that a hard failure instead.
-- **Couples you to someone else's HTML.** The extraction matches on
-  `<header class="nv">` and `<footer class="ftr">`. Those are a contract that
-  nothing enforces: when the marketing site restructures, consumers render
-  nothing and no build goes red.
-
-### Option 2 — compile it in (`SiteNav` / `SiteFooter`)
-
-The header and the footer live in this package as ordinary Astro components with
-their own data, stylesheets and behaviour modules. Nothing is fetched.
-
-- **Deterministic.** Same input, same output, offline, forever.
+- **Deterministic.** Same input, same output, offline, forever. No build-time
+  network, and no failure mode where a site ships with no chrome.
+- **Renders like www on any host.** On the marketing site the chrome leans on
+  that site's design tokens, fonts and element defaults; here
+  `components/chrome/chrome.css` supplies them, scoped to the chrome, with
+  both faces self-hosted. Checked element by element against
+  astro-staging.infragistics.com inside a `DocsLayout` page.
 - **Typed and importable.** `nav-config.ts` is plain data a consumer can read.
 - **Versioned.** A nav change is a package release, reviewable in a diff.
-- **It is a copy, and copies drift.** This is the one that matters.
+- **English only.** `SiteNav` carries the English IA. A `kr` site renders it
+  too (the old fetch gave Korean sites the English www chrome as well); a `jp`
+  site uses the temporary fallback above.
 
-### Turning Option 2 on in a `DocsLayout` site
-
-`DocsLayout` renders either pair, chosen by one environment variable:
-
-```
-IG_CHROME=v2 npm run dev     # SiteNav + SiteFooter
-npm run dev                  # GlobalNavBar + GlobalFooter (default)
-```
-
-Nothing else in the layout changes. The default stays on the fetch, because
-that is what every consumer builds with today.
-
-`SiteNav` carries English nav data only — leave a `jp` or `kr` build on the
-fetch until the package ships the localised copy.
-
-### Which to use
-
-The drift in Option 2 is only acceptable **if the marketing site renders the
-same component.** While it keeps its own chrome and this package keeps a copy,
-the two diverge silently — no error, no red build, just a docs header that
-slowly stops matching www.
-
-So, today:
-
-| Situation                                       | Use                                  |
-| ----------------------------------------------- | ------------------------------------ |
-| Build must not depend on the network            | `SiteNav`                            |
-| Nav must track the marketing site automatically | `GlobalNavBar`                       |
-| Marketing site consumes this package            | `SiteNav` everywhere — the end state |
-
-Reaching that end state means moving `src/components/chrome/` and
-`src/config/navigation.ts` out of Marketing-Infragistics and having it import
-them back from here. That is a cross-repo change rather than a flag, and it is
-the only version in which Option 2 is strictly better than Option 1.
+**Keeping it in step with www.** Until the marketing site imports these
+components back from this package, they are a port of its
+`src/components/chrome/`, `src/config/navigation.ts` and
+`src/config/footer.ts`, and a change there must be ported here. The end state
+is the marketing site consuming this package, which makes it the one copy.
 
 ### The footer, and its one genuinely shared piece
 
@@ -369,18 +335,21 @@ cannot be copied across origins. It posts to the IS Cloud API, and that API
 answers only origins on an allow-list, so a package that rendered the form
 unconditionally would hand half its consumers a form that fails silently.
 
-So the panel is a prop, and omitting it omits the panel:
+So the card is a prop, and omitting it omits the card. The legal bar's
+"Cookie Settings" button is opt-in for the same reason: it only works where a
+consent banner is bound to `[data-consent-open]`.
 
 ```astro
 <SiteFooter />
-<!-- no newsletter -->
-<SiteFooter newsletter={{ config }} />
-<!-- you own the config and the client -->
+<!-- no newsletter, no Cookie Settings -->
+<SiteFooter newsletter={{ config }} cookieSettings />
+<!-- you own the config, the client and the consent banner -->
 ```
 
-The links, the legal row, the social icons and the year are props too, each
-defaulting to the shipped set. `SiteFooter/README.md` has the shapes, the lead
-source number and the field names the client depends on.
+The link columns, the "More Infragistics Products" strip, the legal row, the
+social icons and the year are props too, each defaulting to the shipped set.
+`SiteFooter/README.md` has the shapes, the lead source number and the field
+names the client depends on.
 
 ---
 

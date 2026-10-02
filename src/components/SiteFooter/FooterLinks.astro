@@ -1,0 +1,136 @@
+---
+/**
+ * FooterLinks
+ */
+import type { FooterLink } from './footer-config';
+
+interface Props {
+  links: FooterLink[];
+  /** 0 is a group's own list; anything deeper is an indented sub-list. */
+  depth?: number;
+}
+
+const { links, depth = 0 } = Astro.props;
+
+/* A group whose top level holds branches needs the roomier rhythm the canvas
+ * gives the Products column; a flat list of plain links stays tight. */
+const gap = depth > 0 ? 7 : links.some((l) => l.children) ? 16 : 11;
+---
+
+<ul
+  role="list"
+  class:list={['ftr__list', depth > 0 && 'ftr__list--sub']}
+  style={`--ftr-gap:${gap}px`}
+>
+  {
+    links.map((link) => (
+      <li class:list={['ftr__item', link.children && depth === 0 && 'ftr__item--block']}>
+        {link.href ? (
+          <a
+            href={link.href}
+            class:list={['ftr__link', link.children && depth === 0 && 'ftr__link--lead']}
+            {...(link.external ? { rel: 'noopener', target: '_blank' } : {})}
+          >
+            {link.label}
+            {link.srSuffix && <span class="ig-sr-only">{link.srSuffix}</span>}
+            {/* The hover arrow. `margin-right` cancels its own width so it can
+             * fade in without nudging the label, which is why it is inside the
+             * link rather than a sibling. */}
+            <svg
+              class="ftr__arrow"
+              width="13"
+              height="13"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.3"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M5 12h14M13 6l6 6-6 6" />
+            </svg>
+          </a>
+        ) : (
+          <span class="ftr__lead">{link.label}</span>
+        )}
+        {link.children && <Astro.self links={link.children} depth={depth + 1} />}
+      </li>
+    ))
+  }
+</ul>
+
+<style>
+  .ftr__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ftr-gap);
+    font-size: 15px;
+    line-height: 1.4;
+  }
+  /* The indent rule that reads as "these belong to the line above". */
+  .ftr__list--sub {
+    padding-left: 12px;
+    border-left: 1px solid rgb(255 255 255 / 0.12);
+  }
+  /* Top level: label above its list. Deeper: the list hangs off the link. */
+  .ftr__item--block {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .ftr__item:not(.ftr__item--block) > .ftr__list--sub {
+    margin-top: 7px;
+  }
+
+  .ftr__link {
+    color: #d5dbe5;
+    font-size: 15px;
+    line-height: 1.4;
+    text-decoration: none;
+    transition: color 160ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .ftr__link:hover {
+    color: #fff;
+  }
+  /* "Web", "Desktop", "AI-Assisted App Dev" — the head of a sub-tree, whether
+   * it happens to be a link or not. */
+  .ftr__lead,
+  .ftr__link--lead {
+    font-size: 15px;
+    font-weight: 600;
+    color: #f1f5f9;
+  }
+
+  .ftr__arrow {
+    display: inline-block;
+    vertical-align: -1px;
+    margin-left: 6px;
+    margin-right: -19px;
+    opacity: 0;
+    transform: translateX(-4px);
+    transition:
+      opacity 160ms cubic-bezier(0.4, 0, 0.2, 1),
+      transform 160ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .ftr__link:hover .ftr__arrow,
+  .ftr__link:focus-visible .ftr__arrow {
+    opacity: 1;
+    transform: none;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .ftr__arrow {
+      transition: none;
+      transform: none;
+    }
+  }
+
+  .ftr__link:focus-visible {
+    outline: 3px solid #7dd3fc;
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+</style>
