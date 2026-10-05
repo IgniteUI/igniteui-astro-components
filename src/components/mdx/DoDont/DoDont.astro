@@ -21,15 +21,40 @@
  * screenshot narrower than the frame; screenshots are drawn at full opacity so
  * their text keeps its contrast.
  *
- * The two description slots are optional. When neither is filled the captions
- * collapse to the "Do" / "Don't" labels alone.
+ * Both description slots are required: a screenshot is never self-explanatory,
+ * so each panel must say in real text why it is the one to follow or avoid.
+ * A missing or empty slot throws at build time, like a missing `alt`.
+ *
+ * Images: an `astro:assets` import is rendered through Astro's <Image>, which
+ * converts the format, emits a `srcset` for 1x/2x/3x displays and writes the
+ * intrinsic `width`/`height` so the frame holds its size before the file
+ * arrives. A plain URL string is rendered as a bare <img> — Astro cannot
+ * inspect it, so it gets no `srcset` and no dimensions, and the frame grows
+ * when the image lands. Prefer imports for anything that ships in the docs.
+ *
+ * Loading: a small client script marks a frame whose image is still pending
+ * (`data-loading`) and the stylesheet shimmers its canvas until the image
+ * loads or fails. A failed image leaves `data-error` on the frame and
+ * the script drops a broken-image icon and a short
+ * "could not be loaded" notice into it. The notice is `aria-hidden`: it only
+ * explains the empty box to a sighted reader, and the <img> keeps carrying
+ * the alt for assistive tech. Without JavaScript nothing is marked and the frame
+ * stays static.
  *
  * Accessibility: `doAlt` and `dontAlt` are required and become the inner
  * <img> `alt`. These images carry the guidance, so describe what each one
  * shows, not merely which component it is. The badges are decorative — the
  * labels already name each panel — so they are hidden from assistive tech.
+ * A visually hidden colon separates each label from its description so a
+ * screen reader hears "Do: use…" rather than one run-on phrase.
+ *
+ * Localization: the default labels follow the site language. The docs
+ * integration sets `LANG_CODE` at build time; `Astro.currentLocale` covers
+ * sites that use Astro's own i18n routing. Pass `doLabel` / `dontLabel` to
+ * override either way.
  */
 import type { ImageMetadata } from 'astro';
+import { Image } from 'astro:assets';
 import './DoDont.scss';
 
 interface Props {
@@ -54,39 +79,76 @@ interface Props {
   dontAlt: string;
   /**
    * Label for the recommended panel.
-   * @default 'Do'
+   * @default 'Do' (localized: 推奨 for jp, 권장 for kr)
    */
   doLabel?: string;
   /**
    * Label for the panel to avoid.
-   * @default "Don't"
+   * @default "Don't" (localized: 非推奨 for jp, 비권장 for kr)
    */
   dontLabel?: string;
+  /**
+   * Image loading strategy. Keep the default for a block further down a topic;
+   * pass `'eager'` when the block is the first thing on the page, so the
+   * largest contentful paint is not delayed. Eager images are also fetched at
+   * high priority.
+   * @default 'lazy'
+   */
+  loading?: 'lazy' | 'eager';
+  /**
+   * Notice shown inside a frame whose image failed to load. Hidden from
+   * assistive tech, which still gets the image's `alt`.
+   * @default 'Sorry, this image could not be loaded.' (localized for jp / kr)
+   */
+  errorText?: string;
   /** Optional extra class(es) forwarded to the container. */
   class?: string;
 }
+
+/**
+ * Default labels per site language. `LANG_CODE` is set by the docs
+ * integration from its `navLang`; `Astro.currentLocale` is set when a site
+ * uses Astro's i18n routing. Anything unrecognized falls back to English.
+ */
+const DEFAULT_LABELS: Record<string, { do: string; dont: string; error: string }> = {
+  en: { do: 'Do', dont: "Don't", error: 'Sorry, this image could not be loaded.' },
+  jp: { do: '推奨', dont: '非推奨', error: '申し訳ありません。この画像を読み込めませんでした。' },
+  ja: { do: '推奨', dont: '非推奨', error: '申し訳ありません。この画像を読み込めませんでした。' },
+  kr: { do: '권장', dont: '비권장', error: '죄송합니다. 이 이미지를 불러올 수 없습니다.' },
+  ko: { do: '권장', dont: '비권장', error: '죄송합니다. 이 이미지를 불러올 수 없습니다.' },
+};
+
+const lang = (process.env.LANG_CODE ?? Astro.currentLocale ?? 'en').toLowerCase();
+const defaults = DEFAULT_LABELS[lang] ?? DEFAULT_LABELS.en;
 
 const {
   doSrc,
   doAlt,
   dontSrc,
   dontAlt,
-  doLabel = 'Do',
-  dontLabel = "Don't",
+  doLabel = defaults.do,
+  dontLabel = defaults.dont,
+  loading = 'lazy',
+  errorText = defaults.error,
   class: className,
 } = Astro.props;
 
-/** Accept both an `astro:assets` import and a plain URL. */
-const toSrc = (image: ImageMetadata | string): string =>
-  typeof image === 'string' ? image : image.src;
-
 /**
- * Intrinsic dimensions for the <img>, when the source knows them. They give
- * the browser the aspect ratio up front, so a lazy image cannot collapse its
- * frame to padding-only height and jump the page when it loads.
+ * The width the stylesheet lays a screenshot out at (`--igd-dodont-image-width`)
+ * and the frame's minimum inline padding (`--igd-dodont-padding-inline`). They
+ * size the `srcset` candidates and the `sizes` hint, so keep them in step with
+ * DoDont.scss. A topic that retunes the token still gets correct pixels — the
+ * browser picks the closest candidate — just not the perfectly matched one.
  */
-const toDimensions = (image: ImageMetadata | string): { width?: number; height?: number } =>
-  typeof image === 'string' ? {} : { width: image.width, height: image.height };
+const IMAGE_WIDTH = 360;
+const PADDING_INLINE = 20;
+const widths = [IMAGE_WIDTH, IMAGE_WIDTH * 2, IMAGE_WIDTH * 3];
+// Below the stacking point the panel is the full container, so the image is
+// roughly viewport-wide; above it the image sits at its design width.
+const sizes = `(max-width: ${IMAGE_WIDTH + 2 * PADDING_INLINE}px) 100vw, ${IMAGE_WIDTH}px`;
+
+const isImport = (image: ImageMetadata | string): image is ImageMetadata =>
+  typeof image !== 'string';
 
 const panels = [
   {
@@ -119,33 +181,70 @@ for (const panel of panels) {
     );
   }
 }
+
+/**
+ * The descriptions are rendered up front so they can be validated. The slots
+ * carry the guidance in real, indexable text — a screenshot alone would leave
+ * search engines, translators and screen-reader users with only the alt — so
+ * an absent, empty or whitespace-only slot is a build error, like a missing
+ * alt. The rendered HTML is reused below instead of rendering the slot twice.
+ */
+const descriptions: Record<(typeof panels)[number]['key'], string> = {
+  do: Astro.slots.has('do') ? await Astro.slots.render('do') : '',
+  dont: Astro.slots.has('dont') ? await Astro.slots.render('dont') : '',
+};
+
+for (const panel of panels) {
+  const text = descriptions[panel.key].replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ');
+  if (!text.trim()) {
+    throw new Error(
+      `<DoDont> requires a non-empty "${panel.key}" slot explaining why that panel is the one to ${
+        panel.key === 'do' ? 'follow' : 'avoid'
+      }. An image is not guidance on its own.`,
+    );
+  }
+}
+
+const fetchpriority = loading === 'eager' ? 'high' : undefined;
 ---
 
 <div class:list={['igd-dodont', className]}>
   {
     panels.map((panel) => (
       <figure class:list={['igd-dodont__panel', `igd-dodont__panel--${panel.key}`]}>
-        <div class="igd-dodont__frame">
-          <img
-            class="igd-dodont__image"
-            src={toSrc(panel.image)}
-            alt={panel.alt}
-            loading="lazy"
-            decoding="async"
-            {...toDimensions(panel.image)}
-          />
+        <div class="igd-dodont__frame" data-error-text={errorText}>
+          {isImport(panel.image) ? (
+            <Image
+              class="igd-dodont__image"
+              src={panel.image}
+              alt={panel.alt}
+              widths={widths}
+              sizes={sizes}
+              loading={loading}
+              decoding="async"
+              fetchpriority={fetchpriority}
+            />
+          ) : (
+            <img
+              class="igd-dodont__image"
+              src={panel.image}
+              alt={panel.alt}
+              loading={loading}
+              decoding="async"
+              fetchpriority={fetchpriority}
+            />
+          )}
           <igc-badge class="igd-dodont__badge" variant={panel.variant} outlined aria-hidden="true">
             <igc-icon name={panel.icon} collection="docs" aria-hidden="true" />
           </igc-badge>
         </div>
 
         <figcaption class="igd-dodont__caption">
-          <span class="igd-dodont__label">{panel.label}</span>
-          {Astro.slots.has(panel.key) && (
-            <div class="igd-dodont__description">
-              <slot name={panel.key} />
-            </div>
-          )}
+          {/* Kept on one line: Astro preserves template whitespace, and a text-node
+              space between the label and the separator would be announced as "Do : …". */}
+          {/* prettier-ignore */}
+          <span class="igd-dodont__label">{panel.label}<span class="igd-dodont__sr-only">: </span></span>
+          <div class="igd-dodont__description" set:html={descriptions[panel.key]} />
         </figcaption>
       </figure>
     ))
@@ -157,4 +256,79 @@ for (const panel of panels) {
   import '../../../scripts/icon-registry';
 
   defineComponents(IgcBadgeComponent, IgcIconComponent);
+
+  /**
+   * Mark every frame whose image has not arrived yet; the stylesheet shimmers
+   * a marked frame's canvas. The mark is added here, not server-side, so a
+   * page without JavaScript never shows a shimmer it cannot clear.
+   *
+   * `complete` is false for a lazy image the browser has not started fetching,
+   * so an off-screen frame shimmers until it scrolls into view and loads —
+   * which is exactly when a reader would look at it.
+   */
+  /** A torn picture frame: two halves of a rectangle split by a zigzag. */
+  const BROKEN_IMAGE_SVG =
+    '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">' +
+    '<path d="M4 11 4 5h16v6l-4-4-4 4-4-4Zm0 3 4-4 4 4 4-4 4 4v5H4Z" ' +
+    'stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+  /**
+   * Flag a frame whose image failed and show a broken-image icon with the
+   * frame's notice in its place. The notice is aria-hidden: it only tells a
+   * sighted reader why the box is empty, and the <img> still exposes the alt.
+   */
+  function markBroken(frame: HTMLElement): void {
+    if (frame.dataset.error !== undefined) return;
+    frame.dataset.error = '';
+
+    const fallback = document.createElement('span');
+    fallback.className = 'igd-dodont__fallback';
+    fallback.setAttribute('aria-hidden', 'true');
+
+    // Inline SVG rather than <igc-icon>: the fallback must not depend on the
+    // icon registry having loaded (or, in dev, on a glob that was evaluated
+    // before the icon file existed). Static markup, no user input.
+    const icon = document.createElement('span');
+    icon.className = 'igd-dodont__fallback-icon';
+    icon.innerHTML = BROKEN_IMAGE_SVG;
+
+    const text = document.createElement('span');
+    text.className = 'igd-dodont__fallback-text';
+    text.textContent = frame.dataset.errorText ?? '';
+
+    fallback.append(icon, text);
+    frame.append(fallback);
+  }
+
+  function markPendingFrames(): void {
+    const frames = document.querySelectorAll<HTMLElement>('.igd-dodont__frame');
+    for (const frame of frames) {
+      const img = frame.querySelector<HTMLImageElement>('.igd-dodont__image');
+      if (!img) continue;
+      if (img.complete) {
+        // Already settled before this ran. A broken image reports complete
+        // with no natural size.
+        if (img.naturalWidth === 0) markBroken(frame);
+        continue;
+      }
+
+      frame.dataset.loading = '';
+      const settle = () => {
+        delete frame.dataset.loading;
+      };
+      img.addEventListener('load', settle, { once: true });
+      img.addEventListener(
+        'error',
+        () => {
+          settle();
+          markBroken(frame);
+        },
+        { once: true },
+      );
+    }
+  }
+
+  // astro:page-load fires on the initial load and after every client-router
+  // navigation, so it covers both without double-initialization.
+  document.addEventListener('astro:page-load', markPendingFrames);
 </script>
