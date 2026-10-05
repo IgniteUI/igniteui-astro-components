@@ -1,4 +1,5 @@
 @use 'igniteui-theming/sass/typography' as *;
+@use '../../styles/global/breakpoints' as *;
 
 /*
  * if we need to modify the toc or the sidebar in any way we can use:
@@ -356,8 +357,12 @@ igc-tree-item:not([data-has-children]):hover .docs-tree-label {
    the active item (see DocsTree.astro), so restrict to leaves explicitly. */
 igc-tree[data-variant='sidebar'] {
   igc-tree-item[selected]:not([data-has-children]) {
+    // Listed explicitly (not just via inheritance from the base rule) because
+    // the leaf hover/focus rule above has higher specificity (`:has()`)
+    // and would otherwise paint the focused selected row gray.
     &::part(wrapper),
-    &::part(wrapper):hover {
+    &::part(wrapper):hover,
+    &:has(.docs-tree-link:focus)::part(wrapper) {
       background-color: var(--igd-accent);
     }
 
@@ -434,6 +439,18 @@ igc-tree[data-variant='toc'] {
   /* No expand/collapse icons in the TOC — all items are links */
   .tree-expand-icon {
     display: none;
+  }
+}
+
+/* Mobile + tablet (< 1280px): the sidebar is a slide-in overlay on touch-first
+   devices, so labels show in full instead of clamping. This also disables the
+   full-text tooltip, which only opens when a label measures as overflowing
+   (see DocsSidebar/sidebar-tooltip.ts). */
+@media (max-width: #{$bp-tablet-max}) {
+  igc-tree[data-variant='sidebar'] .docs-tree-label {
+    display: block;
+    -webkit-line-clamp: unset;
+    overflow: visible;
   }
 }
 

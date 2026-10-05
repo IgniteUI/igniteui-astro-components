@@ -1,4 +1,5 @@
 @use 'igniteui-theming/sass/typography' as *;
+@use '../../styles/global/breakpoints' as *;
 
 @layer components {
   // Desktop base. On tablet/mobile DocsLayout.scss turns this into a slide-in overlay.
@@ -122,6 +123,32 @@
 
     igc-badge::part(base) {
       max-height: 20px;
+    }
+  }
+
+  // Full-text tooltip for truncated labels (see sidebar-tooltip.ts).
+  .igd-sidebar-tooltip {
+    --ig-tooltip-background: light-dark(var(--ig-gray-800), var(--ig-gray-200));
+    --ig-tooltip-text-color: light-dark(var(--ig-gray-50), var(--ig-gray-900));
+    --ig-tooltip-border-radius: #{rem(4px)};
+
+    &::part(base) {
+      @include type-style('body-2') {
+        margin-block: 0;
+        line-height: rem(20px);
+      }
+
+      max-width: rem(320px);
+      padding: rem(6px) rem(10px);
+      font-family: var(--igd-font-sans);
+      white-space: normal;
+      word-break: break-word;
+    }
+
+    // Labels are not clamped on mobile/tablet (see DocsTree/docs-tree.scss),
+    // and hover tooltips make no sense on touch — keep it out of the overlay.
+    @media (max-width: #{$bp-tablet-max}) {
+      display: none;
     }
   }
 }

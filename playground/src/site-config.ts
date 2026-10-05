@@ -69,6 +69,11 @@ export const SIDEBAR: SidebarEntry[] = [
                 badges: [{ text: 'Updated', variant: 'updated' }],
               },
               {
+                label:
+                  'Level 2 item with an even longer label that is clamped after two lines and shows a tooltip with the full text',
+                slug: 'components/sidebar#preview-l2-f',
+              },
+              {
                 label: 'Nested group',
                 collapsed: true,
                 items: [{ label: 'Level 3 item', slug: 'components/sidebar#preview-l3' }],
