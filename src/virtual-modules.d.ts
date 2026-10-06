@@ -1,6 +1,13 @@
 import type { PlatformContext } from './lib/types.ts';
 
 declare global {
+  /**
+   * The synced marketing chrome, defined at build time by the igChrome()
+   * integration (src/chrome/integration.ts). Undeclared when it isn't
+   * registered: read it as `typeof __IG_CHROME__ !== 'undefined'`.
+   */
+  const __IG_CHROME__: import('./chrome/integration').IgChromeData;
+
   namespace App {
     interface Locals {
       platformContext?: PlatformContext;

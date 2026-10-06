@@ -381,22 +381,45 @@ export const IGDOCS_PLATFORMS: Record<string, PlatformMeta> = {
 };
 
 /**
+ * The legacy fetched chrome's own CSS and JS: navigation.css, footer.css,
+ * jQuery 3.1, plugins.nav.js and navigation.js. Only needed where that chrome
+ * renders: a site without igChrome(), or a Japanese build.
+ */
+const LEGACY_CHROME_ASSET =
+  /\/css\/(?:navigation|footer)\.css$|\/scripts\/(?:plugins\.nav|navigation)\.js$|\/jquery-3\.1\.0\.js$/;
+
+export interface PlatformHeadOptions {
+  /**
+   * Include the legacy fetched chrome's CSS/JS. Default `true`. Pass `false`
+   * when the build renders the synced chrome (igChrome) instead.
+   */
+  legacyChrome?: boolean;
+}
+
+/**
  * Returns an array of head entries for the given platform.
  * Pass the result to `createDocsSite({ head: getPlatformHead(...) })`.
  *
  * @param platform - Platform identifier.
  * @param lang - Locale — not currently used but kept for API completeness.
+ * @param options - See PlatformHeadOptions.
  */
-export function getPlatformHead(platform: string, _lang = 'en'): HeadEntry[] {
+export function getPlatformHead(
+  platform: string,
+  _lang = 'en',
+  { legacyChrome = true }: PlatformHeadOptions = {},
+): HeadEntry[] {
   const def = PLATFORM_DEFS[platform as PlatformKey];
   if (!def) {
     console.warn(`[docs-template] Unknown platform "${platform}" — no head entries injected.`);
     return [];
   }
+  const keep = (entry: HeadEntry) =>
+    legacyChrome || !LEGACY_CHROME_ASSET.test(String(entry.attrs?.href ?? entry.attrs?.src ?? ''));
   return [
     { tag: 'meta', attrs: { property: 'docs:platform', content: platform } },
-    ...def.styles,
-    ...def.scripts,
+    ...def.styles.filter(keep),
+    ...def.scripts.filter(keep),
   ];
 }
 
