@@ -5,7 +5,7 @@
  * Receives `{ node, depth, isLeaf, isActive }` from DocsTreeItem.
  * Branches on isLeaf:
  *   • leaf  → label text + optional badge (from node.meta.badge)
- *   • group → label text only (the caret lives in the native indicator slot of igc-tree-item)
+ *   • group → label text only (DocsTreeItem renders the leading chevron before it)
  *
  * The outer container is the `<a class="docs-tree-link">` (leaves) or
  * `<div class="docs-tree-group">` (groups) provided by DocsTreeItem.
