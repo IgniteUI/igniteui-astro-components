@@ -29,7 +29,7 @@ declare module 'virtual:docs-template/site-meta' {
   export const trailingSlash: 'always' | 'never' | 'ignore';
   /** Optional package switcher entries. */
   export const packages:
-    Array<string | { label: string; value?: string; href?: string }> | undefined;
+    Array<string | { label: string; value?: string; href?: string; base?: string }> | undefined;
   /** Currently selected package. */
   export const selectedPackage: string | undefined;
 }

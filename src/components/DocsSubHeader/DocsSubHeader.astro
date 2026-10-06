@@ -72,8 +72,11 @@ interface Props {
    * Items for the package/platform selector dropdown. When omitted the selector is hidden.
    * Each entry is either a plain string label, or an object with a `label`, optional `value`
    * (defaults to `label`), and optional `href` to navigate to when selected.
+   * Set `base` to the root URL of the entry's docs site to keep the reader on the current
+   * topic: the current page path is tried under `base` first and `href` is the fallback when
+   * that page does not exist.
    */
-  packages?: Array<string | { label: string; value?: string; href?: string }>;
+  packages?: Array<string | { label: string; value?: string; href?: string; base?: string }>;
   /** Currently selected package value (must match one of `packages`). */
   selectedPackage?: string;
   /** Label rendered before the package selector. Defaults to `'Package'`. */
@@ -116,12 +119,12 @@ const resolvedSiteTitle = siteTitleProp ?? siteTitle;
 const currentPlatform = virtualPlatform ?? null;
 const resolvedLinks = (productLinksProp ?? productLinks) as ProductLink[];
 const filteredLinks = resolvedLinks.filter((l: ProductLink) => l.platform !== currentPlatform);
-type PackageEntry = string | { label: string; value?: string; href?: string };
+type PackageEntry = string | { label: string; value?: string; href?: string; base?: string };
 const rawPackages = packagesProp ?? (virtualPackages?.length > 0 ? virtualPackages : undefined);
 const packages = (rawPackages as PackageEntry[] | undefined)?.map((p: PackageEntry) =>
   typeof p === 'string'
-    ? { label: p, value: p, href: undefined }
-    : { label: p.label, value: p.value ?? p.label, href: p.href },
+    ? { label: p, value: p, href: undefined, base: undefined }
+    : { label: p.label, value: p.value ?? p.label, href: p.href, base: p.base },
 );
 const selectedPackage =
   selectedPackageProp ?? (virtualSelectedPackage || undefined) ?? packages?.[0]?.value;
@@ -185,7 +188,7 @@ const platformLabel = currentPlatform ? (PLATFORM_LABELS[currentPlatform] ?? nul
             {packages.map((p) => {
               const icon = getPlatformIcon(p.value ?? '') ?? getPlatformIcon(p.label ?? '');
               return (
-                <igc-select-item value={p.value} data-href={p.href}>
+                <igc-select-item value={p.value} data-href={p.href} data-base={p.base}>
                   {icon && (
                     <igc-icon slot="prefix" name={icon} collection="docs" aria-hidden="true" />
                   )}
@@ -240,6 +243,30 @@ const platformLabel = currentPlatform ? (PLATFORM_LABELS[currentPlatform] ?? nul
 </docs-subheader-menu>
 
 <script>
+  /**
+   * Where selecting a package entry should navigate. With a `base` (root URL of the entry's
+   * docs site) the current topic is kept when it exists there - this page's path with the
+   * site's own base swapped for the entry's - otherwise the entry's `href` is the fallback.
+   */
+  async function resolvePackageHref({ href, base }: DOMStringMap): Promise<string | undefined> {
+    const fallback = href ?? base;
+    const currentBase = import.meta.env.BASE_URL.replace(/\/$/, '');
+    const { pathname, hash } = window.location;
+    if (!base || !pathname.startsWith(currentBase)) return fallback;
+
+    try {
+      const topicUrl = new URL(
+        `${base.replace(/\/$/, '')}${pathname.slice(currentBase.length)}${hash}`,
+        window.location.href,
+      );
+      const res = await fetch(topicUrl, { method: 'HEAD', signal: AbortSignal.timeout(3000) });
+      if (res.ok) return topicUrl.href;
+    } catch {
+      // Unreachable, timed out, or cross-origin without CORS - use the fallback.
+    }
+    return fallback;
+  }
+
   if (!customElements.get('docs-subheader-menu')) {
     class DocsSubHeaderMenu extends HTMLElement {
       connectedCallback() {
@@ -283,8 +310,11 @@ const platformLabel = currentPlatform ? (PLATFORM_LABELS[currentPlatform] ?? nul
             const item = packageSelect.querySelector<HTMLElement>(
               `igc-select-item[value="${val}"]`,
             );
-            const href = item?.dataset?.href;
-            if (href) window.location.href = href;
+            if (item) {
+              resolvePackageHref(item.dataset).then((href) => {
+                if (href) window.location.href = href;
+              });
+            }
             // Sync tooltip content with the new selection label
             if (packageTooltip) {
               packageTooltip.textContent = item?.textContent?.trim() ?? val;
@@ -394,12 +424,10 @@ const platformLabel = currentPlatform ? (PLATFORM_LABELS[currentPlatform] ?? nul
   function initSelectors() {
     const packageSelect = document.querySelector('#package-select');
     if (packageSelect) {
+      // Navigation on change is handled by <docs-subheader-menu>.
       packageSelect.addEventListener('igcChange', (e: Event) => {
         const val = (e as CustomEvent).detail?.value ?? (packageSelect as any).value;
-        const item = packageSelect.querySelector<HTMLElement>(`igc-select-item[value="${val}"]`);
         syncTriggerIcon(packageSelect, val);
-        const href = item?.dataset?.href;
-        if (href) window.location.href = href;
       });
     }
   }
