@@ -53,8 +53,12 @@ export function parseFragment(html) {
     footer: part(text, 'footer'),
   };
 
+  // Not tied to ASSET_TOKEN: this also validates the RAW marketing fragment
   if (!fragment.head.includes('chrome.css')) {
     throw new Error("The fragment's head part does not load chrome.css.");
+  }
+  if (!fragment.head.includes('chrome.js')) {
+    throw new Error("The fragment's head part does not load chrome.js.");
   }
   if (!fragment.header.includes('data-ig-chrome="header"')) {
     throw new Error('The fragment\'s header part has no [data-ig-chrome="header"] root.');

@@ -101,6 +101,11 @@ export function igChrome(options: IgChromeOptions): AstroIntegration {
           );
         }
         for (const file of ['chrome.css', 'chrome.js']) {
+          if (!parsed.head.includes(`${ASSET_TOKEN}/${file}`)) {
+            throw new Error(
+              `[igniteui:chrome] the snapshot at ${snapshotDir} does not load ${ASSET_TOKEN}/${file}. Re-run the repo's chrome sync script.`,
+            );
+          }
           if (!fs.existsSync(path.join(assetsDir, file))) {
             throw new Error(
               `[igniteui:chrome] the snapshot at ${snapshotDir} has no assets/${file}.`,
@@ -136,7 +141,16 @@ export function igChrome(options: IgChromeOptions): AstroIntegration {
                     const match = prefixes.find((p) => url.startsWith(p));
                     if (!match) return next();
                     const file = path.join(assetsDir, decodeURIComponent(url.slice(match.length)));
-                    if (!file.startsWith(assetsDir) || !fs.existsSync(file)) return next();
+                    const relative = path.relative(assetsDir, file);
+                    if (
+                      !relative ||
+                      relative === '..' ||
+                      relative.startsWith(`..${path.sep}`) ||
+                      path.isAbsolute(relative) ||
+                      !fs.statSync(file, { throwIfNoEntry: false })?.isFile()
+                    ) {
+                      return next();
+                    }
                     res.setHeader(
                       'Content-Type',
                       MIME[path.extname(file).toLowerCase()] ?? 'application/octet-stream',
