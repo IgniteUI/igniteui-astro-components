@@ -1,0 +1,31 @@
+<svg xmlns='http://www.w3.org/2000/svg' width='360' height='342' viewBox='0 0 360 342' role='img' aria-label='Mock employee list'>
+  <rect width='360' height='342' fill='#ffffff'/>
+  <text x='14' y='32' font-family='Segoe UI, sans-serif' font-size='11' letter-spacing='1' fill='#d1246c'>EMPLOYEES (5)</text>
+  
+  <circle cx='30' cy='71' r='16' fill='#c9ccd2'/>
+  <text x='30' y='76' font-family='Segoe UI, sans-serif' font-size='12' fill='#4a4d55' text-anchor='middle'>AS</text>
+  <text x='56' y='67' font-family='Segoe UI, sans-serif' font-size='13' fill='#1a1c20'>Alice Smith</text>
+  <text x='56' y='83' font-family='Segoe UI, sans-serif' font-size='11' fill='#83868e'>alice.smith1@example.com</text>
+  <path d='M338 65 l7 6 -7 6' fill='none' stroke='#83868e' stroke-width='1.5'/>
+  <circle cx='30' cy='127' r='16' fill='#c9ccd2'/>
+  <text x='30' y='132' font-family='Segoe UI, sans-serif' font-size='12' fill='#4a4d55' text-anchor='middle'>BS</text>
+  <text x='56' y='123' font-family='Segoe UI, sans-serif' font-size='13' fill='#1a1c20'>Bob Smith</text>
+  <text x='56' y='139' font-family='Segoe UI, sans-serif' font-size='11' fill='#83868e'>bob.smith2@example.com</text>
+  <path d='M338 121 l7 6 -7 6' fill='none' stroke='#83868e' stroke-width='1.5'/>
+  <circle cx='30' cy='183' r='16' fill='#c9ccd2'/>
+  <text x='30' y='188' font-family='Segoe UI, sans-serif' font-size='12' fill='#4a4d55' text-anchor='middle'>CS</text>
+  <text x='56' y='179' font-family='Segoe UI, sans-serif' font-size='13' fill='#1a1c20'>Carol Smith</text>
+  <text x='56' y='195' font-family='Segoe UI, sans-serif' font-size='11' fill='#83868e'>carol.smith3@example.com</text>
+  <path d='M338 177 l7 6 -7 6' fill='none' stroke='#83868e' stroke-width='1.5'/>
+  <circle cx='30' cy='239' r='16' fill='#c9ccd2'/>
+  <text x='30' y='244' font-family='Segoe UI, sans-serif' font-size='12' fill='#4a4d55' text-anchor='middle'>DS</text>
+  <text x='56' y='235' font-family='Segoe UI, sans-serif' font-size='13' fill='#1a1c20'>David Smith</text>
+  <text x='56' y='251' font-family='Segoe UI, sans-serif' font-size='11' fill='#83868e'>david.smith4@example.com</text>
+  <path d='M338 233 l7 6 -7 6' fill='none' stroke='#83868e' stroke-width='1.5'/>
+  <circle cx='30' cy='295' r='16' fill='#c9ccd2'/>
+  <text x='30' y='300' font-family='Segoe UI, sans-serif' font-size='12' fill='#4a4d55' text-anchor='middle'>ES</text>
+  <text x='56' y='291' font-family='Segoe UI, sans-serif' font-size='13' fill='#1a1c20'>Eve Smith</text>
+  <text x='56' y='307' font-family='Segoe UI, sans-serif' font-size='11' fill='#83868e'>eve.smith5@example.com</text>
+  <path d='M338 289 l7 6 -7 6' fill='none' stroke='#83868e' stroke-width='1.5'/>
+  
+</svg>

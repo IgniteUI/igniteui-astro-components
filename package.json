@@ -64,6 +64,7 @@
     "./components/mdx/ApiRef.astro": "./src/components/mdx/ApiRef/ApiRef.astro",
     "./components/mdx/ApiLink.astro": "./src/components/mdx/ApiLink/ApiLink.astro",
     "./components/mdx/DocsAside.astro": "./src/components/mdx/DocsAside/DocsAside.astro",
+    "./components/mdx/DoDont.astro": "./src/components/mdx/DoDont/DoDont.astro",
     "./components/mdx/Badge.astro": "./src/components/mdx/Badge/Badge.astro",
     "./components/mdx/Faq.astro": "./src/components/mdx/Faq/Faq.astro",
     "./components/mdx/FaqItem.astro": "./src/components/mdx/Faq/FaqItem.astro",
