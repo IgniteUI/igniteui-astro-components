@@ -60,6 +60,18 @@ export interface NavConfig {
   navUrl: string | null;
 }
 
+/** The legacy fetched chrome's own CSS. Kept last in IG_STYLES, as before. */
+const IG_LEGACY_CHROME_STYLES: HeadEntry[] = [
+  {
+    tag: 'link',
+    attrs: { rel: 'stylesheet', href: 'https://www.infragistics.com/css/navigation.css' },
+  },
+  {
+    tag: 'link',
+    attrs: { rel: 'stylesheet', href: 'https://www.infragistics.com/css/footer.css' },
+  },
+];
+
 // ---------------------------------------------------------------------------
 // Shared IG styles — used by: angular, react, blazor, web-components, slingshot
 // ---------------------------------------------------------------------------
@@ -95,18 +107,12 @@ const IG_STYLES: HeadEntry[] = [
     tag: 'link',
     attrs: { rel: 'stylesheet', href: 'https://fonts.googleapis.com/icon?family=Material+Icons' },
   },
-  {
-    tag: 'link',
-    attrs: { rel: 'stylesheet', href: 'https://www.infragistics.com/css/navigation.css' },
-  },
-  {
-    tag: 'link',
-    attrs: { rel: 'stylesheet', href: 'https://www.infragistics.com/css/footer.css' },
-  },
+  ...IG_LEGACY_CHROME_STYLES,
 ];
 
 // ---------------------------------------------------------------------------
 // Shared IG scripts — used by: angular, react, blazor, web-components, slingshot
+// All three belong to the legacy fetched chrome.
 // ---------------------------------------------------------------------------
 const IG_SCRIPTS: HeadEntry[] = [
   {
@@ -383,10 +389,10 @@ export const IGDOCS_PLATFORMS: Record<string, PlatformMeta> = {
 /**
  * The legacy fetched chrome's own CSS and JS: navigation.css, footer.css,
  * jQuery 3.1, plugins.nav.js and navigation.js. Only needed where that chrome
- * renders: a site without igChrome(), or a Japanese build.
+ * renders: a site without igChrome(), or a Japanese build. Matched by entry,
+ * not by URL, so a changed URL or a cache-busting query cannot slip past it.
  */
-const LEGACY_CHROME_ASSET =
-  /\/css\/(?:navigation|footer)\.css$|\/scripts\/(?:plugins\.nav|navigation)\.js$|\/jquery-3\.1\.0\.js$/;
+const LEGACY_CHROME = new Set<HeadEntry>([...IG_LEGACY_CHROME_STYLES, ...IG_SCRIPTS]);
 
 export interface PlatformHeadOptions {
   /**
@@ -414,8 +420,7 @@ export function getPlatformHead(
     console.warn(`[docs-template] Unknown platform "${platform}" — no head entries injected.`);
     return [];
   }
-  const keep = (entry: HeadEntry) =>
-    legacyChrome || !LEGACY_CHROME_ASSET.test(String(entry.attrs?.href ?? entry.attrs?.src ?? ''));
+  const keep = (entry: HeadEntry) => legacyChrome || !LEGACY_CHROME.has(entry);
   return [
     { tag: 'meta', attrs: { property: 'docs:platform', content: platform } },
     ...def.styles.filter(keep),

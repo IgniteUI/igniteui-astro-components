@@ -38,7 +38,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import type { AstroIntegration } from 'astro';
-import { parseFragment, ASSET_TOKEN } from './contract.mjs';
+import { parseFragment, ASSET_TOKEN, type ParsedFragment } from './contract.mjs';
 
 export interface IgChromeOptions {
   /**
@@ -48,14 +48,8 @@ export interface IgChromeOptions {
   snapshot: string | URL;
 }
 
-/** What DocsLayout reads, via `__IG_CHROME__`. */
-export interface IgChromeData {
-  contract: string;
-  build: string;
-  head: string;
-  header: string;
-  footer: string;
-}
+/** What DocsLayout reads, via `__IG_CHROME__`: the parsed snapshot, asset URLs resolved. */
+export type IgChromeData = ParsedFragment;
 
 const MIME: Record<string, string> = {
   '.css': 'text/css; charset=utf-8',
@@ -71,7 +65,6 @@ const MIME: Record<string, string> = {
 };
 
 export function igChrome(options: IgChromeOptions): AstroIntegration {
-  let snapshotDir = '';
   let assetsDir = '';
   let build = '';
 
@@ -80,7 +73,7 @@ export function igChrome(options: IgChromeOptions): AstroIntegration {
     hooks: {
       'astro:config:setup'({ config, updateConfig, logger }) {
         const root = fileURLToPath(config.root);
-        snapshotDir =
+        const snapshotDir =
           options.snapshot instanceof URL
             ? fileURLToPath(options.snapshot)
             : path.resolve(root, options.snapshot);
@@ -118,8 +111,7 @@ export function igChrome(options: IgChromeOptions): AstroIntegration {
         const prefix = `${base}/_ig-chrome/${build}`;
         const resolve = (text: string) => text.split(ASSET_TOKEN).join(prefix);
         const data: IgChromeData = {
-          contract: parsed.contract,
-          build,
+          ...parsed,
           head: resolve(parsed.head),
           header: resolve(parsed.header),
           footer: resolve(parsed.footer),
@@ -127,11 +119,16 @@ export function igChrome(options: IgChromeOptions): AstroIntegration {
 
         updateConfig({
           vite: {
-            define: { __IG_CHROME__: JSON.stringify(data) },
             plugins: [
               {
                 /* `astro dev`: serve the snapshot's assets at the URLs the build emits. */
                 name: 'igniteui:chrome-dev-assets',
+                /* Server environments only: only DocsLayout's frontmatter reads it.
+                 * A global `define` is also written into the client's /@vite/env,
+                 * which would ship the whole ~100 KB snapshot to every dev page. */
+                configEnvironment(name) {
+                  if (name !== 'client') return { define: { __IG_CHROME__: JSON.stringify(data) } };
+                },
                 configureServer(server) {
                   // Astro may strip the base from req.url before this runs (it does
                   // when the dev server itself runs under a base), so accept both.
