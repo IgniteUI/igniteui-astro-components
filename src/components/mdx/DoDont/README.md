@@ -122,10 +122,13 @@ The component declares its tokens locally on `.igd-dodont` (and its theme tokens
 | `--igd-dodont-badge-inset`     | Distance of the badge from the frame's top and inline-start edges (30px) |
 | `--igd-dodont-caption-gap`     | Space between a label and its description (16px)                         |
 | `--igd-dodont-stack-extra`     | Added between panels when they stack, so the 26px gap becomes 46px       |
-| `--igd-dodont-bg`              | Frame canvas, visible in the padding and beside a narrower screenshot    |
+| `--igd-dodont-bg`              | Frame canvas, drawn by an `::after` at 0.7 opacity behind the content    |
+| `--igd-dodont-border-width`    | Frame border (1px)                                                       |
+| `--igd-dodont-accent-width`    | Top accent border (2px), colored like the panel's badge                  |
+| `--igd-dodont-frame-accent`    | Top accent color — `success-500` on Do, `error-500` on Don't             |
 | `--igd-dodont-border-color`    | Frame border color                                                       |
 | `--igd-dodont-accent`          | Label color — success tokens on the Do panel, error tokens on Don't      |
 
 The stylesheet is deliberately **unlayered**. `.igd-main-content__markdown img` and `figure` live in `@layer components` and set a block margin and a corner radius on every image; unlayered rules beat all layers, so the panel's own `margin: 0` and the frame-owned radius win.
 
-Images are drawn at full opacity. In the light theme the frame canvas is solid `gray-100` with a `gray-300` border, as the design specifies; fading a documentation screenshot would cost its text real contrast.
+Images are drawn at full opacity. The frame canvas is an `::after` pseudo-element (`gray-100` in the light theme, `surface-500` in the dark) at 0.7 opacity behind the content, inside a `gray-300` border whose top edge is a 2px accent in the panel's badge color. The borders are subtracted from the padding and badge inset, so the spec distances are measured from the frame's outer edge.

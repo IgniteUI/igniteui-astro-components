@@ -1,5 +1,4 @@
 @use 'igniteui-theming/sass/typography' as *;
-@use 'igniteui-theming/sass/color' as *;
 
 // Unlayered on purpose: the markdown layer styles every `img` and `figure`,
 // and these rules must win over it (same as Anatomy.scss).
@@ -12,6 +11,8 @@
   --igd-dodont-image-width: #{rem(360px)};
   --igd-dodont-badge-size: #{rem(26px)};
   --igd-dodont-badge-inset: #{rem(20px)};
+  --igd-dodont-border-width: #{rem(1px)};
+  --igd-dodont-accent-width: #{rem(2px)};
   --igd-dodont-stack-extra: #{rem(20px)};
   --igd-dodont-caption-gap: #{rem(16px)};
   --igd-dodont-min-panel-width: calc(
@@ -19,7 +20,6 @@
   );
 
   display: grid;
-  // `min(…, 100%)` lets a single column shrink below the panel minimum.
   grid-template-columns: repeat(
     auto-fit,
     minmax(min(var(--igd-dodont-min-panel-width), 100%), 1fr)
@@ -43,8 +43,6 @@
   min-inline-size: 0;
 }
 
-// Stacked: 46px between panels instead of the 26px grid gap.
-// 826 = 2 × (360 + 2 × 20) + 26; container queries cannot read custom properties.
 @container (width < 826px) {
   .igd-dodont__panel + .igd-dodont__panel {
     margin-block-start: var(--igd-dodont-stack-extra);
@@ -53,11 +51,15 @@
 
 .igd-dodont__frame {
   position: relative;
+  isolation: isolate;
   overflow: hidden;
   border-radius: var(--igd-dodont-radius);
   display: grid;
   place-items: center;
-  padding: var(--igd-dodont-padding-block) var(--igd-dodont-padding-inline);
+  // Borders are subtracted so the spec distances hold from the outer edge.
+  padding: calc(var(--igd-dodont-padding-block) - var(--igd-dodont-accent-width))
+    calc(var(--igd-dodont-padding-inline) - var(--igd-dodont-border-width))
+    calc(var(--igd-dodont-padding-block) - var(--igd-dodont-border-width));
   min-block-size: 0;
 }
 
@@ -74,8 +76,8 @@
 
 .igd-dodont__badge {
   position: absolute;
-  inset-block-start: var(--igd-dodont-badge-inset);
-  inset-inline-start: var(--igd-dodont-badge-inset);
+  inset-block-start: calc(var(--igd-dodont-badge-inset) - var(--igd-dodont-accent-width));
+  inset-inline-start: calc(var(--igd-dodont-badge-inset) - var(--igd-dodont-border-width));
   z-index: 1;
 }
 
@@ -89,25 +91,25 @@
 }
 
 // THEME
-
 .igd-dodont__frame {
-  --igd-dodont-bg: light-dark(
-    var(--ig-gray-100),
-    #{color($color: surface, $variant: 500, $opacity: 0.7)}
-  );
+  --igd-dodont-bg: light-dark(var(--ig-gray-100), var(--ig-surface-500));
   --igd-dodont-border-color: light-dark(var(--ig-gray-300), var(--ig-surface-700));
 
-  background-color: var(--igd-dodont-bg);
-  // Inset shadow, not border: a border would shift the badge inset.
-  box-shadow: inset 0 0 0 #{rem(1px)} var(--igd-dodont-border-color);
+  border: var(--igd-dodont-border-width) solid var(--igd-dodont-border-color);
+  border-block-start: var(--igd-dodont-accent-width) solid var(--igd-dodont-frame-accent);
 
-  @media (forced-colors: active) {
-    outline: #{rem(1px)} solid CanvasText;
-    outline-offset: #{rem(-1px)};
+  // Canvas at 0.7 opacity behind the content; the borders sit outside it.
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: var(--igd-dodont-bg);
+    opacity: 0.7;
+    pointer-events: none;
   }
 }
 
-// Loading: the script sets `data-loading` until the image loads or fails.
 .igd-dodont__frame[data-loading] {
   --igd-dodont-shimmer: light-dark(rgb(0 0 0 / 0.05), rgb(255 255 255 / 0.07));
 
@@ -141,8 +143,6 @@
   }
 }
 
-// Error: the script sets `data-error` and appends `.igd-dodont__fallback`.
-// The image keeps its alt for assistive tech, so it is faded, not hidden.
 .igd-dodont__frame[data-error] {
   .igd-dodont__image,
   .igd-dodont__fallback {
@@ -207,11 +207,15 @@
 
 .igd-dodont__panel--do {
   --igd-dodont-accent: light-dark(var(--ig-success-700), var(--ig-success-100));
+  // Same token the success badge is filled with.
+  --igd-dodont-frame-accent: var(--ig-success-500);
 }
 
 .igd-dodont__panel--dont {
   // error-800: error-700 is 4.1:1 on white and fails AA for 14px text.
   --igd-dodont-accent: light-dark(var(--ig-error-800), var(--ig-error-300));
+  // Same token the danger badge is filled with.
+  --igd-dodont-frame-accent: var(--ig-error-500);
 }
 
 // TYPOGRAPHY
