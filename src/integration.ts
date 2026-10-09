@@ -74,6 +74,8 @@ import { rehypeHeadingAnchors } from './plugins/rehype-heading-anchors';
 export { rehypeHeadingAnchors } from './plugins/rehype-heading-anchors';
 import { rehypePagefindIgnore } from './plugins/rehype-pagefind-ignore';
 export { rehypePagefindIgnore } from './plugins/rehype-pagefind-ignore';
+import { igChrome, type IgChromeOptions } from './chrome/integration';
+export { igChrome, type IgChromeOptions } from './chrome/integration';
 import { remarkMdLinks } from './plugins/remark-md-links';
 import { remarkHtmlTransforms } from './plugins/remark-html-transforms';
 
@@ -558,6 +560,12 @@ export interface CreateDocsSiteOptions {
    * and the build-time nav prefetch endpoint.
    */
   platform?: PlatformKey | null;
+  /**
+   * Render the header and footer from a snapshot of the marketing site's
+   * exported chrome instead of the legacy fetched one. See
+   * src/chrome/integration.ts. Japanese builds keep the legacy chrome.
+   */
+  chrome?: IgChromeOptions;
   /** Locale for the nav prefetch URL. */
   navLang?: NavLang;
   /**
@@ -621,6 +629,7 @@ export function createDocsSite(
     head = [],
     llmsSets = [] as LlmsSet[],
     integrations: extraIntegrations = [],
+    chrome,
     ...astroExtra
   } = options;
 
@@ -645,7 +654,10 @@ export function createDocsSite(
   }
 
   // Platform CDN entries come first so site-specific `head` entries can override.
-  const platformHead = platform ? getPlatformHead(platform, navLang) : [];
+  // The legacy chrome's own CSS/JS only where that chrome renders.
+  const platformHead = platform
+    ? getPlatformHead(platform, navLang, { legacyChrome: !chrome || navLang === 'jp' })
+    : [];
 
   // highlight.js for code-tab syntax highlighting inside code-view widgets.
   const codeViewHead: HeadEntry[] = [
@@ -755,6 +767,7 @@ export function createDocsSite(
         head: [...platformHead, ...codeViewHead, ...head],
       }),
       mdx(),
+      ...(chrome ? [igChrome(chrome)] : []),
       ...(source.imagesDir ? [staticImagesIntegration(source.imagesDir)] : []),
       ...(base ? [createBasePrependIntegration(base)] : []),
       ...extraIntegrations,

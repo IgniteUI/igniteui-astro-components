@@ -239,8 +239,10 @@ const sidebar: SidebarEntry[] = [/* … your tree … */];
 
 | Export                                   | Purpose                                                                | Docs                                                   |
 | ---------------------------------------- | ---------------------------------------------------------------------- | ------------------------------------------------------ |
-| `…/components/GlobalNavBar.astro`        | IG global navigation bar                                               | [README](src/components/GlobalNavBar/README.md)        |
-| `…/components/GlobalFooter.astro`        | IG global footer                                                       | [README](src/components/GlobalFooter/README.md)        |
+| `…/components/GlobalNavBar.astro`        | IG global navigation bar — legacy, fetched from `/navigation`          | [README](src/components/GlobalNavBar/README.md)        |
+| `…/components/GlobalFooter.astro`        | IG global footer — legacy, fetched from `/navigation`                  | [README](src/components/GlobalFooter/README.md)        |
+| `…/chrome`                               | `igChrome()` — render the header/footer from a synced snapshot         | [below](#the-infragistics-header-and-footer)           |
+| `…/chrome/contract`                      | `parseFragment()` — the `ig-chrome` contract checks, for sync scripts  | [below](#the-infragistics-header-and-footer)           |
 | `…/components/DocsSubHeader.astro`       | Secondary fixed bar — site title + breadcrumb + product links + search | [README](src/components/DocsSubHeader/README.md)       |
 | `…/components/Search.astro`              | Pagefind-powered full-text search modal                                | [README](src/components/Search/README.md)              |
 | `…/components/ThemingWidget.astro`       | Theming widget                                                         | [README](src/components/ThemingWidget/README.md)       |
@@ -289,6 +291,114 @@ const sidebar: SidebarEntry[] = [/* … your tree … */];
 | `…/styles/ig-theme.scss` | IG color palette mapped to design tokens |
 
 ---
+
+## The Infragistics header and footer
+
+The marketing site (Marketing-Infragistics) is the single source of the
+Infragistics header and footer. It publishes them at
+`/assets/chrome/fragment.html`: one versioned fragment (`ig-chrome v1`) with
+scoped CSS and one classic script. tripwire renders it server-side; a site built
+on this package keeps a **snapshot** of it in its own repo and renders it from
+there.
+
+### Which header and footer a page gets
+
+`DocsLayout` decides per build:
+
+| Build                                       | Renders                                                      | Source                                                          |
+| ------------------------------------------- | ------------------------------------------------------------ | --------------------------------------------------------------- |
+| the site registers `igChrome({ snapshot })` | the **marketing site's exported chrome**                     | the site's snapshot folder; nothing fetched at build or runtime |
+| `navLang: 'jp'`                             | the legacy Japanese chrome (`GlobalNavBar` / `GlobalFooter`) | fetched from `jp.infragistics.com/navigation` at build          |
+| the site does not register `igChrome`       | the legacy chrome (`GlobalNavBar` / `GlobalFooter`)          | fetched from `www.infragistics.com/navigation` at build         |
+
+Japanese builds stay on the legacy chrome even with `igChrome`, until a
+Japanese fragment is published.
+
+### Using the snapshot
+
+**1. Keep a snapshot in the repo.** One folder, shared by every Astro project in
+the repo, with one subfolder per source:
+
+```
+ig-chrome/
+  staging/       from https://astro-staging.infragistics.com/assets/chrome/fragment.html
+  production/    from https://www.infragistics.com/assets/chrome/fragment.html
+    manifest.json      contract, build hash, source, sync time
+    fragment.html      asset URLs written as %IG_CHROME_ASSETS%/…
+    assets/chrome.css
+    assets/chrome.js
+    assets/media/*     every image the chrome loads from the marketing host
+```
+
+Each consumer repo owns the script that writes it (`scripts/chrome-sync.mjs` in
+docs-template and api-docs). It validates the fragment with this package's
+`igniteui-astro-components/chrome/contract`, the same checks the build and
+tripwire apply, and writes nothing when the build hash is unchanged.
+
+The **marketing site's deploy runs it**: after each deploy, its `sync-chrome` job
+(Marketing-Infragistics, `.github/workflows/deploy.yml`) hands each docs repo the
+export it just deployed, runs that repo's script, and opens a PR when the chrome
+changed. Nothing in a docs repo has to reach the marketing site's hosts. To
+sync by hand, run the script locally (see the docs repo's README).
+
+**2. Register the integration**, with the snapshot for the build's environment:
+
+```ts
+import { igChrome } from 'igniteui-astro-components/chrome';
+
+integrations: [
+  igChrome({ snapshot: isProduction ? './ig-chrome/production' : './ig-chrome/staging' }),
+];
+```
+
+or `createDocsSite({ chrome: { snapshot } })`, which also drops the legacy
+chrome's `navigation.css`, `footer.css`, jQuery, `plugins.nav.js` and
+`navigation.js` from `<head>` (`getPlatformHead(platform, lang, { legacyChrome: false })`).
+
+Per build, `igChrome`:
+
+- validates the snapshot against the contract. A missing, broken or
+  incompatible snapshot **fails the build**, naming the folder;
+- has `DocsLayout` render its head, header and footer parts;
+- serves the CSS, JS and images from the site's own build, under its base path:
+  `{base}/_ig-chrome/{build}/…`. Every deployment is self-contained: nothing is
+  loaded from the marketing host at runtime except the Google Fonts stylesheet
+  the fragment links. Pages carry `<meta name="ig-chrome" content="v1 build=…">`.
+
+### How a nav change reaches a site
+
+```
+Marketing-Infragistics: push to staging / main
+        │
+        ├─ deploy job ──► build ──► S3  (publishes /assets/chrome/fragment.html, build=abc123)
+        │                   └──► uploads the export as an artifact
+        │
+        └─ sync-chrome job, for each docs repo (igniteui-documentation, api-docs)
+                │  checks out the repo, runs ITS scripts/chrome-sync.mjs on the export
+                │
+                ├─ same build hash ──► nothing to do
+                └─ new build ────────► PR in the docs repo:
+                                       ig-chrome/staging     (deploys from staging)
+                                       ig-chrome/production  (deploys from main)
+                                       │
+                                       review, merge ──► the next docs build renders it
+```
+
+A sync changes only the snapshot folder. No release of this package is needed
+when the marketing site changes its navigation. The `sync-chrome` job needs a
+GitHub App with write access to the docs repos; until it is configured the job
+is skipped and a sync is run locally.
+
+### Why the legacy chrome is still here
+
+`GlobalNavBar` / `GlobalFooter` and their `/navigation` fetch stay for now:
+
+- **Japanese** has no fragment yet, so Japanese builds use them.
+- **Sites that haven't adopted `igChrome`** keep exactly the behaviour they had,
+  so adopting the snapshot is a per-site change, not a breaking release.
+
+Once a Japanese fragment exists and every site using `DocsLayout` has a
+snapshot, the legacy chrome and its fetch can be removed.
 
 ## Subpath exports
 
