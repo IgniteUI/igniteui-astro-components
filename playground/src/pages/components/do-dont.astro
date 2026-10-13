@@ -1,0 +1,501 @@
+---
+import { Code } from 'astro:components';
+import DocsLayout from '../../../../src/layouts/DocsLayout/DocsLayout.astro';
+import DocsSidebar from '../../../../src/components/DocsSidebar/DocsSidebar.astro';
+import DocsToc from '../../../../src/components/DocsToc/DocsToc.astro';
+import DocsAside from '../../../../src/components/mdx/DocsAside/DocsAside.astro';
+import DoDont from '../../../../src/components/mdx/DoDont/DoDont.astro';
+import longList from '../../assets/do-dont/long-list.svg';
+import shortList from '../../assets/do-dont/short-list.svg';
+import { SITE_TITLE, SIDEBAR } from '../../site-config';
+
+const slug = 'components/do-dont';
+
+// API reference
+// One row per prop, kept in sync with the Props interface in
+// src/components/mdx/DoDont/DoDont.astro.
+
+interface PropRow {
+  name: string;
+  type: string;
+  def: string;
+  /** Description (HTML). */
+  description: string;
+}
+
+const propRows: PropRow[] = [
+  {
+    name: 'doSrc',
+    type: 'ImageMetadata | string',
+    def: '— (required)',
+    description: `The recommended-usage image. Either an <code>astro:assets</code>
+            import or a URL.`,
+  },
+  {
+    name: 'doAlt',
+    type: 'string',
+    def: '— (required)',
+    description: `The recommended-usage image's accessible description. Propagates to
+            the inner <code>&lt;img&gt;</code>'s <code>alt</code>. Describe what the
+            screenshot shows (see <a href="#accessibility">Accessibility</a>). Passing an
+            empty or whitespace-only value throws at build time.`,
+  },
+  {
+    name: 'dontSrc',
+    type: 'ImageMetadata | string',
+    def: '— (required)',
+    description: `The usage-to-avoid image. Either an <code>astro:assets</code> import
+            or a URL.`,
+  },
+  {
+    name: 'dontAlt',
+    type: 'string',
+    def: '— (required)',
+    description: `The usage-to-avoid image's accessible description. Same rules as
+            <code>doAlt</code>.`,
+  },
+  {
+    name: 'doLabel',
+    type: 'string',
+    def: "'Do'",
+    description: `Label for the recommended panel. The default follows the site language
+            (see <a href="#localization">Localization</a>).`,
+  },
+  {
+    name: 'dontLabel',
+    type: 'string',
+    def: '"Don\'t"',
+    description: `Label for the panel to avoid. The default follows the site language.`,
+  },
+  {
+    name: 'loading',
+    type: "'lazy' | 'eager'",
+    def: "'lazy'",
+    description: `Image loading strategy. Pass <code>'eager'</code> when the block is the
+            first content on the page so it does not delay the largest contentful paint;
+            eager images are also fetched with <code>fetchpriority="high"</code>.`,
+  },
+  {
+    name: 'errorText',
+    type: 'string',
+    def: '— (localized)',
+    description: `Notice shown with a broken-image icon inside a frame whose image failed to load. Hidden from assistive tech, which still gets the image's <code>alt</code>. Defaults to
+            "Sorry, this image could not be loaded." in the site language.`,
+  },
+  {
+    name: 'class',
+    type: 'string',
+    def: '—',
+    description: `Optional extra class(es) forwarded to the container — for one-off
+            overrides such as a custom <code>--igd-dodont-image-width</code> or <code>--igd-dodont-gap</code>.`,
+  },
+];
+
+interface SlotRow {
+  name: string;
+  description: string;
+}
+
+const slotRows: SlotRow[] = [
+  {
+    name: 'do',
+    description:
+      '<strong>Required.</strong> Why the recommended panel is the one to follow. A missing or empty slot throws at build time.',
+  },
+  {
+    name: 'dont',
+    description: '<strong>Required.</strong> Why the other panel is the one to avoid. Same rule.',
+  },
+];
+
+const headings = [
+  { depth: 2, slug: 'quick-start', text: 'Quick start' },
+  { depth: 2, slug: 'props', text: 'Props (API reference)' },
+  { depth: 2, slug: 'slots', text: 'Slots' },
+  { depth: 2, slug: 'default', text: 'Default' },
+  { depth: 2, slug: 'labels', text: 'Custom labels' },
+  { depth: 2, slug: 'imports', text: 'Imports vs. URLs' },
+  { depth: 2, slug: 'loading', text: 'Loading' },
+  { depth: 2, slug: 'broken', text: 'Broken image' },
+  { depth: 2, slug: 'localization', text: 'Localization' },
+  { depth: 2, slug: 'accessibility', text: 'Accessibility' },
+  { depth: 2, slug: 'best-practices', text: 'Best practices' },
+];
+
+// ─ Snippets ────────────────────────────────────────────────────────────────────
+
+// The `---` fences are interpolated (not written literally at line-start) so the
+// Astro-aware linter doesn't mistake them for the end of this file's frontmatter.
+const usageQuickStart = `${'---'}
+import DoDont from 'igniteui-astro-components/components/mdx/DoDont.astro';
+import listLong from '@xplat-images/virtual-scroll/virtual-scroll-do.png';
+import listShort from '@xplat-images/virtual-scroll/virtual-scroll-do-not.png';
+${'---'}
+
+<DoDont
+  doSrc={listLong}
+  doAlt="Virtual Scroll showing a list of 100,000 employees"
+  dontSrc={listShort}
+  dontAlt="Virtual Scroll used for a list of only five employees"
+>
+  <Fragment slot="do">
+    Use the Virtual Scroll for a long list that is too large to render at once.
+  </Fragment>
+  <Fragment slot="dont">
+    Render a short list directly with the List component.
+  </Fragment>
+</DoDont>`;
+
+const usageDefault = `<DoDont
+  doSrc="/mock-do-dont/long-list.svg"
+  doAlt="Virtual Scroll showing a list of 100,000 employees"
+  dontSrc="/mock-do-dont/short-list.svg"
+  dontAlt="Virtual Scroll used for a list of only five employees"
+>
+  <Fragment slot="do">
+    Use the Virtual Scroll for a long list that is too large to render at once.
+  </Fragment>
+  <Fragment slot="dont">
+    Render a short list directly with the List component.
+  </Fragment>
+</DoDont>`;
+
+const usageLabels = `<DoDont
+  doSrc="/mock-do-dont/long-list.svg"
+  doAlt="Virtual Scroll showing a list of 100,000 employees"
+  dontSrc="/mock-do-dont/short-list.svg"
+  dontAlt="Virtual Scroll used for a list of only five employees"
+  doLabel="Recommended"
+  dontLabel="Avoid"
+>
+  <Fragment slot="do">…</Fragment>
+  <Fragment slot="dont">…</Fragment>
+</DoDont>`;
+
+const usageBroken = `<DoDont
+  doSrc="/mock-do-dont/long-list.svg"
+  doAlt="Virtual Scroll showing a list of 100,000 employees"
+  dontSrc="/mock-do-dont/does-not-exist.png"
+  dontAlt="Virtual Scroll used for a list of only five employees"
+>
+  <Fragment slot="do">…</Fragment>
+  <Fragment slot="dont">…</Fragment>
+</DoDont>`;
+
+const usageImports = `${'---'}
+import longList from '../assets/do-dont/long-list.svg';
+import shortList from '../assets/do-dont/short-list.svg';
+${'---'}
+
+<DoDont
+  doSrc={longList}
+  doAlt="Virtual Scroll showing a list of 100,000 employees"
+  dontSrc={shortList}
+  dontAlt="Virtual Scroll used for a list of only five employees"
+  loading="eager"
+>
+  <Fragment slot="do">…</Fragment>
+  <Fragment slot="dont">…</Fragment>
+</DoDont>`;
+---
+
+<DocsLayout title="DoDont" siteTitle={SITE_TITLE} hasSidebar currentSlug={slug}>
+  <DocsSidebar slot="sidebar" items={SIDEBAR} currentSlug={slug} />
+  <DocsToc slot="toc" headings={headings} offsetTarget=".docs-subheader" />
+
+  <h1>DoDont</h1>
+  <p>
+    <code>DoDont</code> is a <strong>side-by-side guidance block</strong> — the paired screenshots that
+    show the recommended use of a component next to the one to avoid. Each panel is a framed image with
+    a status badge pinned to its top-inline corner: a green check on the <em>Do</em> side, a red clear
+    on the <em>Don't</em> side.
+  </p>
+  <p>
+    The frame supplies the padding around each screenshot, so the source images stay bare crops with
+    no baked-in margin. Panels share a subgrid, so every frame is as tall as the tallest screenshot
+    in the row and the captions start on a common baseline. Screenshots are laid out at
+    <code>--igd-dodont-image-width</code> rather than at their own size, so a @2x and a @1x export of
+    the same design render identically, and they are drawn at <strong>full opacity</strong> so their text
+    keeps its contrast.
+  </p>
+
+  <h2 id="quick-start">Quick start</h2>
+  <p>
+    Import the component and point <code>doSrc</code> and <code>dontSrc</code> at your two images. Both
+    accept an <code>astro:assets</code> import or a plain URL, and both need a descriptive <code
+      >alt</code
+    >:
+  </p>
+  <Code code={usageQuickStart} lang="astro" theme="dark-plus" wrap />
+  <DocsAside type="info">
+    All four of <code>doSrc</code>, <code>doAlt</code>, <code>dontSrc</code> and <code>dontAlt</code
+    > are required, and so are both description slots — an image without an explanation does not build.
+    The <code>alt</code> values should describe what each screenshot shows, not just name the component
+    — see <a href="#accessibility">Accessibility</a>.
+  </DocsAside>
+
+  <h2 id="props">Props (API reference)</h2>
+  <div class="igd-table-wrapper" role="region" aria-labelledby="props-table-caption" tabindex="0">
+    <table>
+      <caption id="props-table-caption" class="visually-hidden">DoDont component props</caption>
+      <thead>
+        <tr><th>Prop</th><th>Type</th><th>Default</th><th>Description</th></tr>
+      </thead>
+      <tbody>
+        {
+          propRows.map((row) => (
+            <tr>
+              <td>
+                <code>{row.name}</code>
+              </td>
+              <td>
+                <code>{row.type}</code>
+              </td>
+              <td>{row.def}</td>
+              <td set:html={row.description} />
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <h2 id="slots">Slots</h2>
+  <div class="igd-table-wrapper" role="region" aria-labelledby="slots-table-caption" tabindex="0">
+    <table>
+      <caption id="slots-table-caption" class="visually-hidden">DoDont component slots</caption>
+      <thead>
+        <tr><th>Slot</th><th>Description</th></tr>
+      </thead>
+      <tbody>
+        {
+          slotRows.map((row) => (
+            <tr>
+              <td>
+                <code>{row.name}</code>
+              </td>
+              <td>{row.description}</td>
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <h2 id="default">Default</h2>
+  <p>
+    Each caption is the panel's label followed by its description. The <code>do</code> and
+    <code>dont</code> slots take rich content, so links and inline code work as they do anywhere else
+    in a topic. The panels sit in a two-column grid that collapses to one column as soon as the container
+    can no longer fit two panels at <code>--igd-dodont-min-panel-width</code> (400px by default) — it
+    responds to the space it is given, not to the viewport.
+  </p>
+  <Code code={usageDefault} lang="astro" theme="dark-plus" wrap />
+  <DoDont
+    doSrc="/mock-do-dont/long-list.svg"
+    doAlt="Virtual Scroll showing a list of 100,000 employees"
+    dontSrc="/mock-do-dont/short-list.svg"
+    dontAlt="Virtual Scroll used for a list of only five employees"
+  >
+    <Fragment slot="do">
+      Use the Virtual Scroll for a long list that is too large to render at once.
+    </Fragment>
+    <Fragment slot="dont">Render a short list directly with the List component.</Fragment>
+  </DoDont>
+
+  <h2 id="labels">Custom labels</h2>
+  <p>
+    <code>doLabel</code> and <code>dontLabel</code> override the default <em>Do</em> / <em>Don't</em
+    > wording — useful for topics that phrase their guidance differently. The badge colors stay tied to
+    the panel, not to the wording.
+  </p>
+  <Code code={usageLabels} lang="astro" theme="dark-plus" wrap />
+  <DoDont
+    doSrc="/mock-do-dont/long-list.svg"
+    doAlt="Virtual Scroll showing a list of 100,000 employees"
+    dontSrc="/mock-do-dont/short-list.svg"
+    dontAlt="Virtual Scroll used for a list of only five employees"
+    doLabel="Recommended"
+    dontLabel="Avoid"
+  >
+    <Fragment slot="do">
+      Use the Virtual Scroll for a long list that is too large to render at once.
+    </Fragment>
+    <Fragment slot="dont">Render a short list directly with the List component.</Fragment>
+  </DoDont>
+
+  <h2 id="imports">Imports vs. URLs</h2>
+  <p>
+    Pass an <code>astro:assets</code> import whenever you can. An import goes through Astro's
+    <code>&lt;Image&gt;</code>: the format is converted, a <code>srcset</code> with 1x/2x/3x candidates
+    is emitted (clamped to the source size, never upscaled), and the intrinsic <code>width</code> and
+    <code>height</code> are written so the frame holds its final size before the file arrives.
+  </p>
+  <p>
+    A plain URL string, as in the examples above, is rendered as a bare <code>&lt;img&gt;</code>.
+    Astro cannot inspect a URL at build time, so it gets no <code>srcset</code> and <strong
+      >no dimensions</strong
+    >; the frame grows when the image loads, which is a layout shift. Reserve URLs for assets that
+    live outside the build.
+  </p>
+  <Code code={usageImports} lang="astro" theme="dark-plus" wrap />
+  <DoDont
+    doSrc={longList}
+    doAlt="Virtual Scroll showing a list of 100,000 employees"
+    dontSrc={shortList}
+    dontAlt="Virtual Scroll used for a list of only five employees"
+    loading="eager"
+  >
+    <Fragment slot="do">
+      Use the Virtual Scroll for a long list that is too large to render at once.
+    </Fragment>
+    <Fragment slot="dont">Render a short list directly with the List component.</Fragment>
+  </DoDont>
+  <DocsAside type="info">
+    The playground disables Astro's image service, so the example above keeps its SVG source and
+    shows only the <code>width</code>/<code>height</code> half of the behaviour. In a docs build the same
+    markup also produces a WebP <code>srcset</code>.
+  </DocsAside>
+
+  <h2 id="loading">Loading</h2>
+  <p>
+    The default <code>loading="lazy"</code> is right for a block somewhere down a topic. When the block
+    is the first thing on the page, pass <code>loading="eager"</code>: a lazy image above the fold
+    delays the largest contentful paint. Eager images are also fetched with <code
+      >fetchpriority="high"</code
+    >.
+  </p>
+  <p>
+    While an image is pending, a soft shimmer sweeps the frame's canvas so the empty frame reads as
+    loading rather than broken. A small client script marks a frame whose image has not loaded yet
+    and clears the mark on load or error. Without JavaScript nothing is marked and the frame is
+    simply static; under <code>prefers-reduced-motion</code> the sweep is disabled.
+  </p>
+
+  <h2 id="broken">Broken image</h2>
+  <p>
+    When a screenshot fails to load — a moved file, a typo in a URL, an asset that never shipped —
+    the client script marks the frame with <code>data-error</code>. The shimmer stops and the image
+    box shows a broken-image icon with a short notice. The notice is <code>aria-hidden</code>: it
+    only tells a sighted reader why the box is empty, while the <code>&lt;img&gt;</code> keeps exposing
+    its
+    <code>alt</code> to assistive tech. Override the wording with <code>errorText</code>. The label
+    and description are untouched: the guidance itself never depended on the picture loading.
+  </p>
+  <Code code={usageBroken} lang="astro" theme="dark-plus" wrap />
+  <DoDont
+    doSrc="/mock-do-dont/long-list.svg"
+    doAlt="Virtual Scroll showing a list of 100,000 employees"
+    dontSrc="/mock-do-dont/does-not-exist.png"
+    dontAlt="Virtual Scroll used for a list of only five employees"
+  >
+    <Fragment slot="do">
+      Use the Virtual Scroll for a long list that is too large to render at once.
+    </Fragment>
+    <Fragment slot="dont">Render a short list directly with the List component.</Fragment>
+  </DoDont>
+  <DocsAside type="info">
+    A URL cannot be checked at build time, which is one more reason to prefer an
+    <code>astro:assets</code> import: a missing imported file fails the build instead of the page.
+  </DocsAside>
+
+  <h2 id="localization">Localization</h2>
+  <p>
+    The default labels follow the site language, so a Japanese topic does not ship with English
+    <em>Do</em> / <em>Don't</em> baked in. The language is read from <code>LANG_CODE</code>, which
+    the docs integration sets at build time from its <code>navLang</code>, then from
+    <code>Astro.currentLocale</code>, then falls back to English. <code>doLabel</code> and
+    <code>dontLabel</code> override it on any page.
+  </p>
+  <div class="igd-table-wrapper" role="region" aria-labelledby="locale-table-caption" tabindex="0">
+    <table>
+      <caption id="locale-table-caption" class="visually-hidden"
+        >Default labels per language</caption
+      >
+      <thead>
+        <tr><th>Language</th><th><code>doLabel</code></th><th><code>dontLabel</code></th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>en</code> (default)</td><td>Do</td><td>Don't</td></tr>
+        <tr><td><code>jp</code> / <code>ja</code></td><td>推奨</td><td>非推奨</td></tr>
+        <tr><td><code>kr</code> / <code>ko</code></td><td>권장</td><td>비권장</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2 id="accessibility">Accessibility</h2>
+  <p>
+    Guidance screenshots are <strong>informative</strong> images: the difference between the two panels
+    is the whole point of the block. That difference has to reach screen-reader users too.
+  </p>
+  <ul>
+    <li>
+      <strong>Describe what each screenshot shows.</strong>
+      <code>doAlt="Virtual Scroll showing a list of 100,000 employees"</code> conveys why the panel is
+      the recommended one;
+      <code>doAlt="Virtual Scroll"</code> conveys nothing.
+    </li>
+    <li>
+      <strong>Never leave an <code>alt</code> empty.</strong> The component throws at build time if either
+      is missing, empty, or contains only whitespace, so this can't ship by accident.
+    </li>
+    <li>
+      <strong>Always explain the panel in text.</strong> The <code>do</code> and <code>dont</code> slots
+      are required and validated the same way. The <code>alt</code> says what the picture shows; the slot
+      says <em>why</em> it is right or wrong, and a reader who cannot see the image needs both.
+    </li>
+    <li>
+      <strong>Don't rely on color alone.</strong> The green and red badges are
+      <code>aria-hidden</code> decoration — the <em>Do</em> / <em>Don't</em> labels carry the meaning
+      in text, so the block still reads correctly in monochrome and for color-blind readers.
+    </li>
+    <li>
+      <strong>Each panel is a <code>&lt;figure&gt;</code>.</strong> The image and its caption are grouped
+      as one self-contained figure, which is the right semantic for an illustrative graphic sitting alongside
+      prose. A screen reader announces it as, e.g., "figure, Do: Use the Virtual Scroll for a long list…"
+      and then the image's <code>alt</code>. The colon is a visually hidden separator, so the label
+      and description do not run together.
+    </li>
+    <li>
+      <strong>Label colors meet WCAG AA in both themes.</strong> The <em>Don't</em> accent uses
+      <code>--ig-error-800</code> in the light theme rather than the design's <code
+        >--ig-error-700</code
+      >, which measures 4.1:1 on white and fails the 4.5:1 minimum for 14px text. In forced-colors
+      mode the frame keeps an outline, since box-shadow is dropped there.
+    </li>
+  </ul>
+  <DocsAside type="warning">
+    Text baked <em>into</em> the screenshots is not selectable, searchable or translatable. That is why
+    the <code>do</code> and <code>dont</code> slots are mandatory: the guidance itself has to live in
+    real text, not only in the pictures.
+  </DocsAside>
+
+  <h2 id="best-practices">Best practices</h2>
+  <ul>
+    <li>
+      <strong>Export both images at the same scale.</strong> They are laid out at a set width, so a @2x
+      and a @1x export of the same design render at the same size — but the @1x one is upscaled and looks
+      softer. Export the pair at one scale, ideally <code>@2x</code>, and crop them bare: the frame
+      supplies the margin.
+    </li>
+    <li>
+      <strong>Say why, not what.</strong> The <code>alt</code> already describes the screenshot; use the
+      slot to give the reason — the condition under which the pattern is right or wrong. The slot text
+      is searchable, translatable, and readable by assistive technology; the screenshots are none of those.
+    </li>
+    <li>
+      <strong>Keep the pair comparable.</strong> The two panels should differ in the one thing the guidance
+      is about — same component, same theme, same zoom — so the contrast reads at a glance.
+    </li>
+    <li>
+      <strong>Retune tokens rather than wrapping the component.</strong> The container exposes
+      <code>--igd-dodont-gap</code>, <code>--igd-dodont-min-panel-width</code>,
+      <code>--igd-dodont-padding-block</code>, <code>--igd-dodont-padding-inline</code>,
+      <code>--igd-dodont-image-width</code>,
+      <code>--igd-dodont-radius</code>,
+      <code>--igd-dodont-badge-size</code>, <code>--igd-dodont-badge-inset</code>,
+      <code>--igd-dodont-caption-gap</code> and <code>--igd-dodont-stack-extra</code> — override them
+      from an ancestor or via <code>class</code>.
+    </li>
+  </ul>
+</DocsLayout>
