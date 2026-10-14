@@ -131,6 +131,9 @@ igc-tab::part(tab-header) {
   --igd-sample-bg-dark: #0a0b10;
 
   display: grid;
+  // The iframe frame takes all the space left over; anything after it (the
+  // fullscreen bar in iframeOnly mode) keeps its own height.
+  grid-template-rows: minmax(0, 1fr);
   position: relative;
   border: rem(1px) solid var(--ig-gray-300);
   overflow: hidden;
