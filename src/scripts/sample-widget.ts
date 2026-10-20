@@ -832,7 +832,7 @@ function wireResizable(container: HTMLElement): void {
       const startW = frame.getBoundingClientRect().width;
       // A centered frame grows from both sides, so the handle covers half
       // the width change per pixel moved.
-      const factor = getComputedStyle(container).justifyContent === 'center' ? 2 : 1;
+      const factor = getComputedStyle(frame).justifySelf === 'center' ? 2 : 1;
 
       const onMove = (ev: PointerEvent) => setWidth(startW + (ev.clientX - startX) * factor);
       const onUp = (ev: PointerEvent) => {
