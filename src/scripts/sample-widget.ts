@@ -79,6 +79,8 @@ declare const __IGD_SAMPLE_CODE_THEME__: string | undefined;
 interface SampleFile {
   fileExtension: string;
   fileHeader: string;
+  /** Original file name for platforms exposing multiple markup/source files. */
+  fileName?: string;
   content: string;
   isMain: boolean;
   path?: string;
@@ -101,6 +103,7 @@ interface WidgetContext {
  */
 function normalizePlatform(raw: string): string {
   if (raw === 'webcomponents' || raw === 'web-components') return 'wc';
+  if (raw === 'uno-platform') return 'uno';
   return raw;
 }
 
@@ -174,6 +177,7 @@ const SHIKI_LANGS = [
   'css',
   'scss',
   'csharp',
+  'json',
   'razor',
 ] as const;
 
@@ -224,11 +228,11 @@ function normalizeCodeLang(lang: string | undefined): string {
 
 // ─── Code Tab Rendering ───────────────────────────────────────────────────────
 
-function addCodeTab(igcTabs: HTMLElement, file: SampleFile): void {
+function addCodeTab(igcTabs: HTMLElement, file: SampleFile, useFileName = false): void {
   const lang = normalizeCodeLang(file.fileExtension);
 
   const tab = document.createElement('igc-tab');
-  tab.setAttribute('label', file.fileHeader.toUpperCase());
+  tab.setAttribute('label', (useFileName && file.fileName) || file.fileHeader.toUpperCase());
 
   const wrapper = document.createElement('div');
   wrapper.className = 'code-wrapper';
@@ -503,11 +507,18 @@ class XplatCodeService {
 
       (data.sampleFiles || ([] as SampleFile[]))
         .filter((f: SampleFile) => f.isMain)
-        .sort(
-          (a: SampleFile, b: SampleFile) =>
-            this.samplesOrder.indexOf(a.fileHeader) - this.samplesOrder.indexOf(b.fileHeader),
-        )
-        .forEach((file: SampleFile) => addCodeTab(igcTabs, file));
+        .sort((a: SampleFile, b: SampleFile) => {
+          const rank = (file: SampleFile) => {
+            const index = this.samplesOrder.indexOf(file.fileHeader);
+            return index < 0 && (this.platform === 'winui' || this.platform === 'uno')
+              ? Number.MAX_SAFE_INTEGER
+              : index;
+          };
+          return rank(a) - rank(b);
+        })
+        .forEach((file: SampleFile) =>
+          addCodeTab(igcTabs, file, this.platform === 'winui' || this.platform === 'uno'),
+        );
 
       // Use sdk.openProject() to avoid the StackBlitz GitHub clone freeze bug.
       addFooter(
