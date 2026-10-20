@@ -25,7 +25,7 @@ export type HeadEntry = {
 };
 
 export type PlatformKey =
-  'angular' | 'react' | 'blazor' | 'web-components' | 'slingshot' | 'appbuilder';
+  'angular' | 'react' | 'blazor' | 'web-components' | 'winui' | 'uno' | 'slingshot' | 'appbuilder';
 
 /** Locale code for nav/API requests and UI string lookups. */
 export type NavLang = 'en' | 'jp' | 'kr';
@@ -61,7 +61,7 @@ export interface NavConfig {
 }
 
 // ---------------------------------------------------------------------------
-// Shared IG styles — used by: angular, react, blazor, web-components, slingshot
+// Shared IG styles — used by: angular, react, blazor, web-components, winui, uno, slingshot
 // ---------------------------------------------------------------------------
 const IG_STYLES: HeadEntry[] = [
   // Bootstrap is wrapped in a CSS cascade layer so its global resets do not
@@ -106,7 +106,7 @@ const IG_STYLES: HeadEntry[] = [
 ];
 
 // ---------------------------------------------------------------------------
-// Shared IG scripts — used by: angular, react, blazor, web-components, slingshot
+// Shared IG scripts — used by: angular, react, blazor, web-components, winui, uno, slingshot
 // ---------------------------------------------------------------------------
 const IG_SCRIPTS: HeadEntry[] = [
   {
@@ -291,6 +291,8 @@ export const PLATFORM_DEFS: Record<PlatformKey, PlatformDef> = {
   react: { navType: 'infragistics', styles: IG_STYLES, scripts: IG_SCRIPTS },
   blazor: { navType: 'infragistics', styles: IG_STYLES, scripts: IG_SCRIPTS },
   'web-components': { navType: 'infragistics', styles: IG_STYLES, scripts: IG_SCRIPTS },
+  winui: { navType: 'infragistics', styles: IG_STYLES, scripts: IG_SCRIPTS },
+  uno: { navType: 'infragistics', styles: IG_STYLES, scripts: IG_SCRIPTS },
   slingshot: { navType: 'infragistics', styles: IG_STYLES, scripts: IG_SCRIPTS },
   appbuilder: { navType: 'appbuilder', styles: APPBUILDER_STYLES, scripts: APPBUILDER_SCRIPTS },
 };

@@ -152,7 +152,13 @@ function replaceRelativeAssetUrls(files: SampleFile[], demosBaseUrl: string): vo
 
 // ─── Code Highlighting ────────────────────────────────────────────────────────
 
-const LANG_MAP: Record<string, string> = { js: 'javascript', ts: 'typescript', cs: 'csharp' };
+// Shiki has no XAML grammar; XAML is XML, so WinUI/Uno markup highlights as that.
+const LANG_MAP: Record<string, string> = {
+  js: 'javascript',
+  ts: 'typescript',
+  cs: 'csharp',
+  xaml: 'xml',
+};
 
 const SHIKI_LANGS = [
   'text',
@@ -160,6 +166,7 @@ const SHIKI_LANGS = [
   'tsx',
   'javascript',
   'html',
+  'xml',
   'css',
   'scss',
   'csharp',

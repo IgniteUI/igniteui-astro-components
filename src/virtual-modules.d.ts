@@ -41,6 +41,8 @@ declare module 'virtual:docs-template/nav-html' {
     | 'react'
     | 'blazor'
     | 'web-components'
+    | 'winui'
+    | 'uno'
     | 'slingshot'
     | 'appbuilder'
     | null;
