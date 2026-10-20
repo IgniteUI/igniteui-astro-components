@@ -57,8 +57,7 @@ const {
   items: itemsProp,
   showFilter = true,
   trailingSlash = useTrailingSlash,
-  logoText =
-    virtualPlatform === 'winui' || virtualPlatform === 'uno' ? 'Ultimate UI' : 'Ignite UI',
+  logoText = virtualPlatform === 'winui' || virtualPlatform === 'uno' ? 'Ultimate UI' : 'Ignite UI',
   platformLabel = virtualPlatform ? (PLATFORM_LABELS[virtualPlatform] ?? null) : null,
 } = Astro.props;
 const items = (itemsProp ?? sidebarData) as SidebarEntry[];
@@ -72,9 +71,7 @@ const activeId = normalizeSlug(currentSlug);
     <span class="igd-logo-text">{logoText}</span>
     {platformLabel && <span class="igd-logo__platform">for {platformLabel}</span>}
   </div>
-  <div class="sidebar-gutter">
-    {showFilter && <SidebarFilterInput />}
-  </div>
+  <div class="sidebar-gutter">{showFilter && <SidebarFilterInput />}</div>
   <div class="sidebar-scroll" data-sidebar-scroll>
     <DocsTree
       nodes={nodes}
@@ -85,6 +82,17 @@ const activeId = normalizeSlug(currentSlug);
       renderLabel={SidebarLabel}
     />
   </div>
+  {/* Shared tooltip showing the full text of a truncated (line-clamped) label.
+      Anchored at runtime to the hovered/focused row by sidebar-tooltip.ts, which
+      also owns show/hide — hence the empty trigger lists. */}
+  <igc-tooltip
+    data-sidebar-tooltip
+    class="igd-sidebar-tooltip"
+    placement="right"
+    show-triggers=""
+    hide-triggers=""
+    with-arrow
+  ></igc-tooltip>
 </sidebar-filter>
 <div class="docs-sidebar-backdrop" id="docs-sidebar-backdrop" aria-hidden="true"></div>
 
@@ -99,15 +107,23 @@ const activeId = normalizeSlug(currentSlug);
     IgcInputComponent,
     IgcButtonComponent,
     IgcIconComponent,
+    IgcTooltipComponent,
   } from 'igniteui-webcomponents';
 
-  defineComponents(IgcBadgeComponent, IgcInputComponent, IgcButtonComponent, IgcIconComponent);
+  defineComponents(
+    IgcBadgeComponent,
+    IgcInputComponent,
+    IgcButtonComponent,
+    IgcIconComponent,
+    IgcTooltipComponent,
+  );
 
   // Icons (sidebar-filter-search, sidebar-filter-clear) are registered via
   // the icon registry which picks up all SVGs from src/assets/icons/.
   import '../../scripts/icon-registry';
 
   import './sidebar-filter';
+  import './sidebar-tooltip';
 
   // Close the sidebar overlay when the backdrop is clicked.
   document.addEventListener('click', (e) => {

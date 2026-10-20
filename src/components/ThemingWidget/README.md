@@ -1,12 +1,12 @@
 # ThemingWidget
 
-A compact theme picker dropdown for sample viewers. The trigger shows the active
-theme (a multi-dot color swatch + theme name + muted mode label). Opening it
-reveals an optional **MODE** toggle (Light / Dark / System) and the list of
-selectable themes, with the active one checked.
+A compact theme picker dropdown for sample viewers. An `igc-select` shows the
+active theme with its multi-dot swatch. Its menu includes an optional **MODE**
+row with Light and Dark icon buttons, followed by selectable theme options.
 
-Self-contained: icons are inlined SVGs and behavior is wired by a small client
-script — no `igniteui-webcomponents` registration required.
+The widget uses `igniteui-webcomponents`: `igc-select`, `igc-select-item`,
+`igc-select-header`, `igc-icon-button`, and `igc-icon`. A small client script
+synchronizes widget state and publishes changes to sample iframes.
 
 ## Usage
 
@@ -29,32 +29,14 @@ page load.
 
 ## Color mode
 
-The MODE row offers **Light**, **Dark** and **System**. `system` is not passed
-on as-is: it is resolved against the OS `prefers-color-scheme` before it leaves
-the widget, so `mode` in the event — and the `data-igd-mode` written onto
-`target` — is always a concrete `light` or `dark` and consumers need no
-media-query handling of their own. The raw selection stays available as
-`modePreference` (and as `data-mode` on the widget root, with the resolved value
-mirrored on `data-resolved-mode`) for anything that mirrors the UI state.
-
-The trigger's muted mode label names the resolved mode, so a `system` selection
-reads as "Light" or "Dark" there — which mode is actually selected stays visible
-through the pressed state of the MODE buttons.
-
-While `system` is selected the widget follows the OS live: flipping the system
-appearance re-reflects `data-igd-mode`, updates that label and re-emits
-`igd-theme-change` without any interaction.
+The MODE row exposes **Light** and **Dark** controls. A `system` value remains
+accepted as an initial prop for compatibility; it resolves against
+`prefers-color-scheme` before it is emitted or reflected onto `target`.
 
 ## Panel placement
 
-The panel is promoted to a native [popover](https://developer.mozilla.org/docs/Web/API/Popover_API)
-when the browser supports it, so it renders in the top layer and is never
-clipped by a scrolling or `overflow: hidden` ancestor (the sample container is
-one). It is placed below the trigger, flips above it when the space below is too
-small, and gets a `max-height` (with a scrolling list) when neither side fits —
-so it always stays inside the viewport. The position is recomputed while the
-panel is open on scroll and resize. Browsers without the Popover API keep the
-absolutely positioned panel, which still flips.
+`igc-select` owns the popup. Its built-in `igc-popover` anchors the menu to the
+input, flips it when necessary, and keeps the menu aligned with the select.
 
 ```js
 document.addEventListener('igd-theme-change', (e) => {
@@ -70,9 +52,9 @@ document.addEventListener('igd-theme-change', (e) => {
 | `themes`        | `ThemeOption[]`                 | Material, Fluent, Bootstrap, Indigo | Selectable themes. Each has `name`, optional `label`, and a `swatch` array.                 |
 | `selectedTheme` | `string`                        | env, then first theme               | Active theme `name`. See [Ambient defaults](#ambient-defaults).                             |
 | `mode`          | `'light' \| 'dark' \| 'system'` | env, then `'light'`                 | Active color mode. See [Color mode](#color-mode) and [Ambient defaults](#ambient-defaults). |
-| `showMode`      | `boolean`                       | `true`                              | Show the MODE (Light / Dark / System) toggle row.                                           |
+| `showMode`      | `boolean`                       | `true`                              | Show the MODE (Light / Dark) control row.                                                   |
 | `target`        | `string`                        | —                                   | CSS selector to reflect `data-igd-theme` / `data-igd-mode` onto.                            |
-| `label`         | `string`                        | `'Select theme'`                    | Accessible label for the trigger.                                                           |
+| `label`         | `string`                        | `'Select theme'`                    | Accessible label for the select.                                                            |
 | `id`            | `string`                        | auto                                | Root element id.                                                                            |
 | `class`         | `string`                        | —                                   | Extra class(es) forwarded to the root.                                                      |
 

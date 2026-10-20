@@ -14,7 +14,9 @@
  * The two virtual module stubs below satisfy the Vite module resolver (the
  * components import from them at the top level). Nav HTML is not fetched here
  * — GlobalNavBar and GlobalFooter self-fetch via fetchIgNav() at build time
- * and fall back to static minimal markup when the fetch fails.
+ * and fall back to static minimal markup when the fetch fails. Set
+ * `IG_CHROME_SNAPSHOT=<folder>` to render the marketing site's exported chrome
+ * from a snapshot instead (see igChrome below).
  */
 
 import { defineConfig } from 'astro/config';
@@ -25,6 +27,7 @@ import fs from 'node:fs';
 import mdx from '@astrojs/mdx';
 import { satteri } from '@astrojs/markdown-satteri';
 import { getPlatformHead } from '../src/platform.ts';
+import { igChrome } from '../src/chrome/integration.ts';
 import { rehypeHeadingAnchors } from '../src/plugins/rehype-heading-anchors.ts';
 import { rehypeTableWrapper } from '../src/plugins/rehype-table-wrapper.ts';
 
@@ -35,7 +38,10 @@ process.env.DOCS_ENV ??= 'development';
 process.env.BASE_URL ??= 'http://localhost:4567';
 
 // Platform head entries (IG CSS + JS) injected into <head> by DocsLayout.
-const platformHeadEntries = getPlatformHead('angular', 'en');
+// The legacy chrome's CSS/JS only when the legacy chrome renders (no snapshot).
+const platformHeadEntries = getPlatformHead('angular', 'en', {
+  legacyChrome: !process.env.IG_CHROME_SNAPSHOT,
+});
 
 /**
  * Dev-only Vite plugin: handles POST /api/icons/replace
@@ -201,7 +207,14 @@ export default defineConfig({
   outDir: './dist',
   // Disable image optimization — playground pages just use plain <img>.
   image: { service: { entrypoint: 'astro/assets/services/noop' } },
-  integrations: [mdx()],
+  /* `IG_CHROME_SNAPSHOT=<folder>` renders the header/footer from a snapshot of
+   * the marketing site's exported chrome instead of the legacy fetched one. */
+  integrations: [
+    mdx(),
+    ...(process.env.IG_CHROME_SNAPSHOT
+      ? [igChrome({ snapshot: process.env.IG_CHROME_SNAPSHOT })]
+      : []),
+  ],
   markdown: {
     shikiConfig: markdownShikiConfig,
     processor: satteri({
