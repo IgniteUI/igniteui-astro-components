@@ -69,6 +69,8 @@ The base URLs are resolved from `environment.json` at build time via `siteMetaIn
 | `crmDemoBaseUrl`  | CRM demos                      |
 | `wcDemosBaseUrl`  | `wc` samples, on any platform  |
 
+Outside the Web Components site, a `wc` sample needs `wcDemosBaseUrl`: without it the sample falls back to `demosBaseUrl`, the page's own platform browser, and the build logs a warning. Leave unused keys out rather than setting them to `""`: an empty string doesn't fall back, it produces a relative URL.
+
 ## Code highlighting
 
 Code tabs are syntax-highlighted client-side using [Shiki](https://shiki.style/) (lazy-loaded via dynamic import and pre-warmed at widget init). Supported languages: `typescript`, `tsx`, `javascript`, `html`, `css`, `scss`, `csharp`, `razor`.

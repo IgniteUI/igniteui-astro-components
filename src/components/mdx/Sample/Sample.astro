@@ -144,10 +144,13 @@ const env = Astro.locals.envVars ?? {};
 // still override it for a whole site via `defaultSampleTheme`. This is not
 // cosmetic — the picker's current selection is posted into the iframe on every
 // load (sample-widget.ts), so a wrong default actively re-themes the demo.
+// A `wc` sample comes from the Web Components browser whatever the page's
+// platform, so it takes that browser's default.
 const PLATFORM_DEFAULT_THEME: Partial<Record<PlatformContext['name'], string>> = {
   Angular: 'material',
 };
-const defaultTheme = env.defaultSampleTheme ?? PLATFORM_DEFAULT_THEME[name] ?? 'bootstrap';
+const defaultTheme =
+  env.defaultSampleTheme ?? PLATFORM_DEFAULT_THEME[wc ? 'WebComponents' : name] ?? 'bootstrap';
 
 // ─ Layout options (spacing / position / resize) ────────────────────────────────
 const spacingVal = ['none', 'sm', 'md', 'lg'].includes(spacing) ? spacing : 'none';
@@ -192,6 +195,14 @@ const baseUrl = wc
       : isDv
         ? (env.dvDemosBaseUrl ?? env.demosBaseUrl ?? '').replace(/\/$/, '')
         : (env.demosBaseUrl ?? '').replace(/\/$/, '');
+
+// Outside the Web Components site, `demosBaseUrl` is the page's own platform
+// browser, so a `wc` sample without `wcDemosBaseUrl` silently loads the wrong one.
+if (wc && !env.wcDemosBaseUrl && name !== 'WebComponents') {
+  console.warn(
+    `[Sample] ${src}: wc is set but wcDemosBaseUrl is not configured, so this sample won't load from the Web Components samples browser.`,
+  );
+}
 
 const iframeSrc = `${baseUrl}${src}`;
 const githubSrc = srcNoSlash;
