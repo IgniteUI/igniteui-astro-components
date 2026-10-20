@@ -629,7 +629,7 @@ function setFitSize(iframe: HTMLIFrameElement, size: { height?: number; width?: 
     iframe.style.width = `${Math.ceil(size.width)}px`;
     // The frame defaults to full width (see Sample.scss); once the iframe
     // has a definite px width, let the frame shrink-wrap it so the host's
-    // flex alignment (position) can move the content-sized box around.
+    // alignment (position) can move the content-sized box around.
     const frame = iframe.closest<HTMLElement>('.igd-sample-frame');
     if (frame) frame.style.width = 'auto';
   }
@@ -641,7 +641,7 @@ function setFitSize(iframe: HTMLIFrameElement, size: { height?: number; width?: 
  * block-level demo content stretches to the viewport width, so instead we take
  * the right-most element box. Demos with intrinsically sized content (a lone
  * avatar, a button…) shrink the iframe to that content, letting the host's
- * flex alignment actually center/end-align it. Full-width demos measure the
+ * alignment actually center/end-align it. Full-width demos measure the
  * viewport width and are left as-is.
  *
  * Resizable containers are excluded entirely: there the user's drag owns the
