@@ -75,6 +75,19 @@ const resolvedSiteTitle = siteTitleProp ?? siteTitle;
 const licenseType = license === 'commercial' ? 'premium' : license === 'MIT' ? 'opensource' : false;
 const navTheme = (virtualPlatform ?? import.meta.env.VITE_NAV_THEME ?? 'igniteui') as string;
 const showGlobalNav = navTheme !== 'none';
+
+/**
+ * The Infragistics header and footer, chosen per build:
+ *
+ *   1. `navLang: 'jp'` — the legacy chrome fetched from jp.infragistics.com
+ *      (GlobalNavBar / GlobalFooter), until a Japanese fragment is published;
+ *   2. the site registers igChrome({ snapshot }) — the marketing site's own
+ *      exported chrome, from the site's snapshot (src/chrome/integration.ts).
+ *      Nothing is fetched at build or at runtime;
+ *   3. otherwise — the legacy fetched chrome, unchanged.
+ */
+const chromeSnapshot =
+  navLang !== 'jp' && typeof __IG_CHROME__ !== 'undefined' ? __IG_CHROME__ : null;
 const pageTitle = title ? `${title} | ${resolvedSiteTitle}` : resolvedSiteTitle;
 
 type HeadEntry = {
@@ -103,6 +116,15 @@ type HeadEntry = {
         content ? <Tag {...attrs} set:html={content} /> : <Tag {...attrs} />,
       )
     }
+    {
+      chromeSnapshot && (
+        <meta
+          name="ig-chrome"
+          content={`${chromeSnapshot.contract} build=${chromeSnapshot.build}`}
+        />
+      )
+    }
+    {chromeSnapshot && <Fragment set:html={chromeSnapshot.head} />}
     <slot name="head" />
     <ClientRouter />
     <script is:inline>
@@ -178,10 +200,16 @@ type HeadEntry = {
         });
       });
 
+      function navChildEl() {
+        var root = document.querySelector('[data-astro-transition-persist="global-nav-bar"]');
+        if (!root) return null;
+        // The synced header sits in a display:contents wrapper with no box of
+        // its own, so measure the header element itself.
+        return root.querySelector('header.nv') || root.firstElementChild;
+      }
+
       function updateNavHeight() {
-        var navChild = document.querySelector(
-          '[data-astro-transition-persist="global-nav-bar"] > *:first-child',
-        );
+        var navChild = navChildEl();
         if (!navChild) return;
         var h = navChild.getBoundingClientRect().height;
         if (h > 0) {
@@ -193,9 +221,7 @@ type HeadEntry = {
       document.addEventListener('astro:page-load', updateNavHeight);
       window.addEventListener('resize', updateNavHeight);
       updateNavHeight();
-      var _navChild = document.querySelector(
-        '[data-astro-transition-persist="global-nav-bar"] > *:first-child',
-      );
+      var _navChild = navChildEl();
       if (_navChild) new ResizeObserver(updateNavHeight).observe(_navChild);
 
       // Clamp sidebar height so it never overlaps the footer.
@@ -263,7 +289,18 @@ type HeadEntry = {
   </head>
   <body>
     <!-- INFRAGISTICS HEADER/NAVIGATION -->
-    {showGlobalNav && <GlobalNavBar lang={navLang} />}
+    {
+      showGlobalNav &&
+        (chromeSnapshot ? (
+          /* `.nv` is `position: sticky`, so the wrapper has to be sticky too, or the
+             nav would stop at the bottom of a wrapper exactly its own height. */
+          <div transition:persist="global-nav-bar" style="position: sticky; top: 0; z-index: 50">
+            <Fragment set:html={chromeSnapshot.header} />
+          </div>
+        ) : (
+          <GlobalNavBar lang={navLang} />
+        ))
+    }
 
     <!-- MAIN PAGE GRID LAYOUT -->
     <!-- We don't set the CSS grid directly to the body -->
@@ -321,7 +358,18 @@ type HeadEntry = {
 
       <!-- Footer is inside the grid so the sidebar's sticky containing block extends through it.
              The JS initSidebarHeights() clamps sidebar max-height to prevent visual overlap. -->
-      <GlobalFooter lang={navLang} />
+      {
+        chromeSnapshot ? (
+          /* Full width of the grid, found by initSidebarHeights() through
+             data-igd-footer, and persisted across navigations: the exported
+             script wires the footer's accordion once, on first load. */
+          <div style="grid-column: 1 / -1" data-igd-footer transition:persist="global-footer">
+            <Fragment set:html={chromeSnapshot.footer} />
+          </div>
+        ) : (
+          <GlobalFooter lang={navLang} />
+        )
+      }
     </div>
   </body>
 </html>

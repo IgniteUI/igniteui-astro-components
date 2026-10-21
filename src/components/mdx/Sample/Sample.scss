@@ -131,6 +131,9 @@ igc-tab::part(tab-header) {
   --igd-sample-bg-dark: #0a0b10;
 
   display: grid;
+  // The iframe frame takes all the space left over; anything after it (the
+  // fullscreen bar in iframeOnly mode) keeps its own height.
+  grid-template-rows: minmax(0, 1fr);
   position: relative;
   border: rem(1px) solid var(--ig-gray-300);
   overflow: hidden;
@@ -234,21 +237,18 @@ igc-tab::part(tab-header) {
     }
   }
 
-  // Wrapper around the iframe. In the default (block) layout it is transparent
-  // (fills the container just like the bare iframe did); when the container
-  // opts into flex layout it becomes the positioned/resizable element.
+  // Wrapper around the iframe; the element `position` aligns and the drag resizes.
   .igd-sample-frame {
     position: relative;
     width: 100%;
     height: 100%;
     max-width: 100%;
-    flex: 0 0 auto;
     overflow: auto;
     z-index: 1;
   }
 
   // In fit-content mode the frame hugs the JS-sized iframe instead of filling
-  // the container, so flex alignment (position) can move the content-sized box
+  // the container, so alignment (position) can move the content-sized box
   // around. Must come after the base .igd-sample-frame rule — same specificity,
   // order decides.
   &--fit-content .igd-sample-frame {
@@ -257,7 +257,7 @@ igc-tab::part(tab-header) {
     // indefinite and collapse it to the 300px intrinsic default — inner
     // horizontal scrollbars on every unmeasured/cross-origin demo. When a
     // real content width is measured/reported, sample-widget.ts switches
-    // the frame to `width: auto` inline so flex alignment can center it.
+    // the frame to `width: auto` inline so alignment can center it.
     height: auto;
   }
 
@@ -274,8 +274,9 @@ igc-tab::part(tab-header) {
     padding: var(--igd-sample-spacing-sm, #{rem(8px)});
 
     .igd-code-view__header-actions {
-      margin-inline: calc(var(--igd-sample-spacing-sm, #{rem(8px)}) * -1);
-      margin-block-end: calc(var(--igd-sample-spacing-sm, #{rem(8px)}) * -1);
+      margin: var(--igd-sample-spacing-sm, #{rem(8px)})
+        calc(var(--igd-sample-spacing-sm, #{rem(8px)}) * -1)
+        calc(var(--igd-sample-spacing-sm, #{rem(8px)}) * -1);
     }
   }
 
@@ -283,8 +284,9 @@ igc-tab::part(tab-header) {
     padding: var(--igd-sample-spacing-md, #{rem(16px)});
 
     .igd-code-view__header-actions {
-      margin-inline: calc(var(--igd-sample-spacing-md, #{rem(16px)}) * -1);
-      margin-block-end: calc(var(--igd-sample-spacing-md, #{rem(16px)}) * -1);
+      margin: var(--igd-sample-spacing-md, #{rem(16px)})
+        calc(var(--igd-sample-spacing-md, #{rem(16px)}) * -1)
+        calc(var(--igd-sample-spacing-md, #{rem(16px)}) * -1);
     }
   }
 
@@ -292,58 +294,41 @@ igc-tab::part(tab-header) {
     padding: var(--igd-sample-spacing-lg, #{rem(32px)});
 
     .igd-code-view__header-actions {
-      margin-inline: calc(var(--igd-sample-spacing-lg, #{rem(32px)}) * -1);
-      margin-block-end: calc(var(--igd-sample-spacing-lg, #{rem(32px)}) * -1);
+      margin: var(--igd-sample-spacing-lg, #{rem(32px)})
+        calc(var(--igd-sample-spacing-lg, #{rem(32px)}) * -1)
+        calc(var(--igd-sample-spacing-lg, #{rem(32px)}) * -1);
     }
   }
 
-  // Flex layout — only enabled when position/resize needs it. The `position`
-  // prop is emitted as data-justify / data-valign attributes.
-  &--flex {
-    display: flex;
-    justify-content: flex-start;
-    align-items: stretch;
+  // `position`, emitted as data-justify / data-valign.
+  &[data-justify='start'] > .igd-sample-frame {
+    justify-self: start;
+  }
+  &[data-justify='center'] > .igd-sample-frame {
+    justify-self: center;
+  }
+  &[data-justify='end'] > .igd-sample-frame {
+    justify-self: end;
+  }
+  &[data-valign='top'] > .igd-sample-frame {
+    align-self: start;
+  }
+  &[data-valign='center'] > .igd-sample-frame {
+    align-self: center;
+  }
+  &[data-valign='bottom'] > .igd-sample-frame {
+    align-self: end;
+  }
 
-    &[data-justify='start'] {
-      justify-content: flex-start;
-    }
-    &[data-justify='center'] {
-      justify-content: center;
-    }
-    &[data-justify='end'] {
-      justify-content: flex-end;
-    }
-
-    &[data-valign='top'] {
-      align-items: flex-start;
-    }
-    &[data-valign='center'] {
-      align-items: center;
-    }
-    &[data-valign='bottom'] {
-      align-items: flex-end;
-    }
-
-    // A frame that fills the container has nothing to align, so give it slack
-    // on any axis that has an explicit (non-start/stretch) alignment. `start`
-    // keeps full width — it looks identical to the default. Resizing overrides
-    // the width inline, so this is only the initial state. Fit-content frames
-    // are excluded: there the measured content defines the frame size.
-    &[data-justify='center']:not([data-fit-content]) .igd-sample-frame,
-    &[data-justify='end']:not([data-fit-content]) .igd-sample-frame {
-      width: 65%;
-    }
-    &[data-valign]:not([data-fit-content]) .igd-sample-frame {
-      height: 65%;
-    }
-
-    // Keep the fullscreen bar pinned to the bottom instead of becoming a
-    // flex sibling of the iframe frame.
-    > .igd-code-view__header-actions {
-      position: absolute;
-      inset-inline: 0;
-      inset-block-end: 0;
-    }
+  // A frame that fills the container has nothing to align, so give it slack
+  // on any axis with a non-start alignment. Resizing overrides the width
+  // inline; fit-content frames are sized by their content instead.
+  &[data-justify='center']:not([data-fit-content]) > .igd-sample-frame,
+  &[data-justify='end']:not([data-fit-content]) > .igd-sample-frame {
+    width: 65%;
+  }
+  &[data-valign]:not([data-fit-content]) > .igd-sample-frame {
+    height: 65%;
   }
 
   // Resizable mode: a drag handle on the right edge resizes the iframe's width

@@ -100,6 +100,23 @@ const slug = Astro.params.slug ?? '';
 </DocsLayout>
 ```
 
+## Header and footer
+
+`DocsLayout` renders the Infragistics header and footer itself; which one
+depends on the build:
+
+| Build                                       | Header / footer                                                  |
+| ------------------------------------------- | ---------------------------------------------------------------- |
+| the site registers `igChrome({ snapshot })` | the marketing site's exported chrome, from the site's snapshot   |
+| `navLang: 'jp'`                             | the legacy chrome fetched from `jp.infragistics.com/navigation`  |
+| otherwise                                   | the legacy chrome fetched from `www.infragistics.com/navigation` |
+
+With a snapshot, the head part goes into `<head>` (with
+`<meta name="ig-chrome" content="v1 build=…">`), the header into the sticky,
+persisted `global-nav-bar` wrapper, and the footer into a full-width grid cell
+with `data-igd-footer`, persisted across navigations. See
+[The Infragistics header and footer](../../../README.md#the-infragistics-header-and-footer).
+
 ## Virtual module dependencies
 
 `DocsLayout` imports from two virtual modules. When using `siteMetaIntegration`

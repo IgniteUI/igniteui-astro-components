@@ -93,7 +93,8 @@ defaults.
 
 `Sample.astro` adds one step on top: when it renders the widget it derives the
 theme from the current platform — Angular → Material, React / Web Components /
-Blazor → Bootstrap — unless `defaultSampleTheme` is set. That default is
+Blazor → Bootstrap, with a `wc` sample taking the Web Components default on
+any platform — unless `defaultSampleTheme` is set. That default is
 functional, not cosmetic: the picker's selection is posted into the sample
 iframe on every load, so it decides how the demo actually renders.
 

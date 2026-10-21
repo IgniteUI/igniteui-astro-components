@@ -60,6 +60,18 @@ export interface NavConfig {
   navUrl: string | null;
 }
 
+/** The legacy fetched chrome's own CSS. Kept last in IG_STYLES, as before. */
+const IG_LEGACY_CHROME_STYLES: HeadEntry[] = [
+  {
+    tag: 'link',
+    attrs: { rel: 'stylesheet', href: 'https://www.infragistics.com/css/navigation.css' },
+  },
+  {
+    tag: 'link',
+    attrs: { rel: 'stylesheet', href: 'https://www.infragistics.com/css/footer.css' },
+  },
+];
+
 // ---------------------------------------------------------------------------
 // Shared IG styles — used by: angular, react, blazor, web-components, slingshot
 // ---------------------------------------------------------------------------
@@ -95,18 +107,12 @@ const IG_STYLES: HeadEntry[] = [
     tag: 'link',
     attrs: { rel: 'stylesheet', href: 'https://fonts.googleapis.com/icon?family=Material+Icons' },
   },
-  {
-    tag: 'link',
-    attrs: { rel: 'stylesheet', href: 'https://www.infragistics.com/css/navigation.css' },
-  },
-  {
-    tag: 'link',
-    attrs: { rel: 'stylesheet', href: 'https://www.infragistics.com/css/footer.css' },
-  },
+  ...IG_LEGACY_CHROME_STYLES,
 ];
 
 // ---------------------------------------------------------------------------
 // Shared IG scripts — used by: angular, react, blazor, web-components, slingshot
+// All three belong to the legacy fetched chrome.
 // ---------------------------------------------------------------------------
 const IG_SCRIPTS: HeadEntry[] = [
   {
@@ -381,22 +387,44 @@ export const IGDOCS_PLATFORMS: Record<string, PlatformMeta> = {
 };
 
 /**
+ * The legacy fetched chrome's own CSS and JS: navigation.css, footer.css,
+ * jQuery 3.1, plugins.nav.js and navigation.js. Only needed where that chrome
+ * renders: a site without igChrome(), or a Japanese build. Matched by entry,
+ * not by URL, so a changed URL or a cache-busting query cannot slip past it.
+ */
+const LEGACY_CHROME = new Set<HeadEntry>([...IG_LEGACY_CHROME_STYLES, ...IG_SCRIPTS]);
+
+export interface PlatformHeadOptions {
+  /**
+   * Include the legacy fetched chrome's CSS/JS. Default `true`. Pass `false`
+   * when the build renders the synced chrome (igChrome) instead.
+   */
+  legacyChrome?: boolean;
+}
+
+/**
  * Returns an array of head entries for the given platform.
  * Pass the result to `createDocsSite({ head: getPlatformHead(...) })`.
  *
  * @param platform - Platform identifier.
  * @param lang - Locale — not currently used but kept for API completeness.
+ * @param options - See PlatformHeadOptions.
  */
-export function getPlatformHead(platform: string, _lang = 'en'): HeadEntry[] {
+export function getPlatformHead(
+  platform: string,
+  _lang = 'en',
+  { legacyChrome = true }: PlatformHeadOptions = {},
+): HeadEntry[] {
   const def = PLATFORM_DEFS[platform as PlatformKey];
   if (!def) {
     console.warn(`[docs-template] Unknown platform "${platform}" — no head entries injected.`);
     return [];
   }
+  const keep = (entry: HeadEntry) => legacyChrome || !LEGACY_CHROME.has(entry);
   return [
     { tag: 'meta', attrs: { property: 'docs:platform', content: platform } },
-    ...def.styles,
-    ...def.scripts,
+    ...def.styles.filter(keep),
+    ...def.scripts.filter(keep),
   ];
 }
 

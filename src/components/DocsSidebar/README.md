@@ -9,6 +9,7 @@ The sidebar is composed of four focused components and a custom element:
 | `SidebarTree.astro`        | `…/components/sidebar/SidebarTree.astro`        | Recursive `<ul>` renderer                   |
 | `SidebarItem.astro`        | `…/components/sidebar/SidebarItem.astro`        | Single link or `<details>` group            |
 | `sidebar-filter.ts`        | `…/components/sidebar/sidebar-filter`           | `<sidebar-filter>` custom element           |
+| `sidebar-tooltip.ts`       | `…/components/sidebar/sidebar-tooltip`          | Full-text tooltip for truncated labels      |
 
 ---
 
@@ -153,6 +154,17 @@ The `<sidebar-filter>` custom element handles live filtering:
 - Items that match get `data-filter-match`; non-matching items are hidden via CSS.
 - "No results" text is set via `data-no-results` on the host element.
 - Filter state persists across Astro View Transitions navigations via `sessionStorage`.
+
+### Truncated labels
+
+Leaf labels are clamped to two lines. When a label overflows the clamp, hovering
+or focusing its row shows the full text in a shared `<igc-tooltip>` (one per
+sidebar, re-anchored to the current row by `sidebar-tooltip.ts`). Rows whose
+label fits never show a tooltip; truncation is measured on each interaction, so
+it stays correct after the sidebar is resized. Style it via
+`.igd-sidebar-tooltip` and the `--ig-tooltip-*` variables. Below the tablet
+breakpoint (< 1280px, where the sidebar is a slide-in overlay) labels are not
+clamped and the tooltip is not shown.
 
 ---
 
