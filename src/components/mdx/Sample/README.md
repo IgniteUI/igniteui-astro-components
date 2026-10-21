@@ -18,6 +18,7 @@ import Sample from 'igniteui-astro-components/components/mdx/Sample.astro';
 | `lob`             | `boolean`                        | `false`                      | Use `lobDemosBaseUrl` instead of `demosBaseUrl` (LOB/grid-dynamic demos).                                                                                                                                                                                                                                          |
 | `dv`              | `boolean`                        | `false`                      | Force use of `dvDemosBaseUrl` (data-viz demos). Auto-detected for paths starting with `charts/`, `gauges/`, `maps/`, `excel/`.                                                                                                                                                                                     |
 | `crm`             | `boolean`                        | `false`                      | Use `crmDemoBaseUrl` (CRM demo samples).                                                                                                                                                                                                                                                                           |
+| `wc`              | `boolean`                        | `false`                      | Load the sample from the Web Components samples browser (`wcDemosBaseUrl`) on every platform's docs, for demos the platforms share. Falls back to `demosBaseUrl`. Code tabs and live editing follow it.                                                                                                            |
 | `iframeOnly`      | `boolean`                        | `false`                      | Render only the iframe — no navbar, no code tabs, no live-edit footer.                                                                                                                                                                                                                                             |
 | `fullscreenBtn`   | `boolean`                        | `false`                      | When `iframeOnly={true}`, also renders a "View in full screen" button below the iframe.                                                                                                                                                                                                                            |
 | `hideCode`        | `boolean`                        | `false`                      | Keep the widget's frame but drop its code viewer: no tabs header, no code fetch, no live-edit or full-screen buttons. The footer carries only the theme picker (`showThemePicker`); without it there is no footer. For demos whose code is not a usage example, e.g. ones that fake interaction states.            |
@@ -44,6 +45,10 @@ import Sample from 'igniteui-astro-components/components/mdx/Sample.astro';
 
 <Sample src="/grid/grid/filtering" lob />
 
+{/* Web Components sample shared by every platform's docs */}
+
+<Sample src="/themes/palettes/scales" wc fitContent iframeOnly />
+
 {/* Bare iframe for embedding */}
 
 <Sample src="/charts/bar-chart/overview" iframeOnly height={300} />
@@ -67,6 +72,9 @@ The base URLs are resolved from `environment.json` at build time via `siteMetaIn
 | `dvDemosBaseUrl`  | Charts / gauges / maps / excel |
 | `lobDemosBaseUrl` | LOB / grids                    |
 | `crmDemoBaseUrl`  | CRM demos                      |
+| `wcDemosBaseUrl`  | `wc` samples, on any platform  |
+
+Outside the Web Components site, a `wc` sample needs `wcDemosBaseUrl`: without it the sample falls back to `demosBaseUrl`, the page's own platform browser, and the build logs a warning. Leave unused keys out rather than setting them to `""`: an empty string doesn't fall back, it produces a relative URL.
 
 ## Code highlighting
 
