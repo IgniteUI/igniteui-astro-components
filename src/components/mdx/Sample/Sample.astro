@@ -32,6 +32,13 @@ interface Props {
   dv?: boolean;
   /** Use crmDemoBaseUrl (for CRM demo samples). */
   crm?: boolean;
+  /**
+   * Load the sample from the Web Components samples browser (`wcDemosBaseUrl`)
+   * whatever the platform of the page, for demos that every platform's docs
+   * share. Falls back to `demosBaseUrl`, which is already the Web Components
+   * browser on the Web Components site. Code tabs and live editing follow it.
+   */
+  wc?: boolean;
   /** Render only the iframe — no navbar, no code tabs, no live-edit footer. */
   iframeOnly?: boolean;
   /** When used with iframeOnly, also render a "View in full screen" button below. */
@@ -106,6 +113,7 @@ const {
   lob = false,
   dv = false,
   crm = false,
+  wc = false,
   iframeOnly = false,
   fullscreenBtn = false,
   showThemePicker = false,
@@ -136,10 +144,13 @@ const env = Astro.locals.envVars ?? {};
 // still override it for a whole site via `defaultSampleTheme`. This is not
 // cosmetic — the picker's current selection is posted into the iframe on every
 // load (sample-widget.ts), so a wrong default actively re-themes the demo.
+// A `wc` sample comes from the Web Components browser whatever the page's
+// platform, so it takes that browser's default.
 const PLATFORM_DEFAULT_THEME: Partial<Record<PlatformContext['name'], string>> = {
   Angular: 'material',
 };
-const defaultTheme = env.defaultSampleTheme ?? PLATFORM_DEFAULT_THEME[name] ?? 'bootstrap';
+const defaultTheme =
+  env.defaultSampleTheme ?? PLATFORM_DEFAULT_THEME[wc ? 'WebComponents' : name] ?? 'bootstrap';
 
 // ─ Layout options (spacing / position / resize) ────────────────────────────────
 const spacingVal = ['none', 'sm', 'md', 'lg'].includes(spacing) ? spacing : 'none';
@@ -177,13 +188,23 @@ const isResizable = resizable;
 const DV_PREFIXES = ['gauges/', 'maps/', 'excel/', 'charts/'];
 const srcNoSlash = src.replace(/^\//, '');
 const isDv = dv || DV_PREFIXES.some((p) => srcNoSlash.startsWith(p));
-const baseUrl = lob
-  ? (env.lobDemosBaseUrl ?? env.demosBaseUrl ?? '').replace(/\/$/, '')
-  : crm
-    ? (env.crmDemoBaseUrl ?? env.demosBaseUrl ?? '').replace(/\/$/, '')
-    : isDv
-      ? (env.dvDemosBaseUrl ?? env.demosBaseUrl ?? '').replace(/\/$/, '')
-      : (env.demosBaseUrl ?? '').replace(/\/$/, '');
+const baseUrl = wc
+  ? (env.wcDemosBaseUrl ?? env.demosBaseUrl ?? '').replace(/\/$/, '')
+  : lob
+    ? (env.lobDemosBaseUrl ?? env.demosBaseUrl ?? '').replace(/\/$/, '')
+    : crm
+      ? (env.crmDemoBaseUrl ?? env.demosBaseUrl ?? '').replace(/\/$/, '')
+      : isDv
+        ? (env.dvDemosBaseUrl ?? env.demosBaseUrl ?? '').replace(/\/$/, '')
+        : (env.demosBaseUrl ?? '').replace(/\/$/, '');
+
+// Outside the Web Components site, `demosBaseUrl` is the page's own platform
+// browser, so a `wc` sample without `wcDemosBaseUrl` silently loads the wrong one.
+if (wc && !env.wcDemosBaseUrl && name !== 'WebComponents') {
+  console.warn(
+    `[Sample] ${src}: wc is set but wcDemosBaseUrl is not configured, so this sample won't load from the Web Components samples browser.`,
+  );
+}
 
 const iframeSrc = `${baseUrl}${src}`;
 const githubSrc = srcNoSlash;
@@ -250,7 +271,7 @@ const exampleTabId = `${widgetId}-example`;
       data-iframe-src={iframeSrc}
       data-demos-base-url={baseUrl}
       data-github-src={githubSrc}
-      data-platform={lower}
+      data-platform={wc ? 'wc' : lower}
     >
       <div class="igd-code-view__inner">
         <igc-tabs id={`${widgetId}-tabs`} alignment="start">
