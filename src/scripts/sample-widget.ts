@@ -300,8 +300,7 @@ function addFooter(
     fsBtn.setAttribute('aria-label', 'Open in full screen');
     fsBtn.className = 'igd-full-screen-btn igd-edit-in-btn';
     if (iframeSrc) {
-      const fullscreenSrc = iframeSrc + (iframeSrc.includes('?') ? '&' : '?') + 'nav=0';
-      fsBtn.setAttribute('href', fullscreenSrc);
+      fsBtn.setAttribute('href', iframeSrc);
       fsBtn.setAttribute('target', '_blank');
     }
     actions.appendChild(fsBtn);
