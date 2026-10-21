@@ -21,6 +21,7 @@ import Sample from 'igniteui-astro-components/components/mdx/Sample.astro';
 | `wc`              | `boolean`                        | `false`                      | Load the sample from the Web Components samples browser (`wcDemosBaseUrl`) on every platform's docs, for demos the platforms share. Falls back to `demosBaseUrl`. Code tabs and live editing follow it.                                                                                                            |
 | `iframeOnly`      | `boolean`                        | `false`                      | Render only the iframe — no navbar, no code tabs, no live-edit footer.                                                                                                                                                                                                                                             |
 | `fullscreenBtn`   | `boolean`                        | `false`                      | When `iframeOnly={true}`, also renders a "View in full screen" button below the iframe.                                                                                                                                                                                                                            |
+| `hideCode`        | `boolean`                        | `false`                      | Keep the widget's frame but drop its code viewer: no tabs header, no code fetch, no live-edit or full-screen buttons. The footer carries only the theme picker (`showThemePicker`); without it there is no footer. For demos whose code is not a usage example, e.g. ones that fake interaction states.            |
 | `fitContent`      | `boolean`                        | `false`                      | Size the iframe to fit its content — the embedded page dictates the size. Same-origin demos are measured directly; cross-origin demos must report via `postMessage`. Demos with ink overflow (shadows, glows, focus rings) must reserve room for it in their own layout, since an iframe clips at its edge.        |
 | `spacing`         | `'none' \| 'sm' \| 'md' \| 'lg'` | `'none'`                     | Padding around the iframe inside the container: `none` = 0, `sm` = 8px, `md` = 16px, `lg` = 32px. Applied by the host container, never inside the embedded page.                                                                                                                                                   |
 | `position`        | `string`                         | —                            | Where the iframe sits inside the container when it doesn't fill it. Accepts a horizontal token (`start`, `center`, `end`) and/or a vertical token (`top`, `center`, `bottom`), space-separated in any order — e.g. `"center"`, `"start top"`, `"end bottom"`.                                                      |
@@ -55,6 +56,10 @@ import Sample from 'igniteui-astro-components/components/mdx/Sample.astro';
 {/* Bare iframe + fullscreen link */}
 
 <Sample src="/charts/bar-chart/overview" iframeOnly fullscreenBtn height={300} />
+
+{/* Demo only, with the theme picker: no code tabs or live-edit buttons */}
+
+<Sample src="/inputs/radio/interaction-state" hideCode showThemePicker height={400} />
 ```
 
 ## Environment configuration
