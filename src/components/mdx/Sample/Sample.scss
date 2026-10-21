@@ -122,6 +122,22 @@ igc-tab::part(tab-header) {
   display: flex;
 }
 
+// `hideCode`: no tabs header, so the demo pane sits directly in the widget's
+// own frame, which already draws the border, and takes its top corners.
+.igd-code-view--hide-code {
+  .igd-sample-container {
+    flex: 1 1 0;
+    min-width: 0;
+    border: none;
+    border-radius: rem(4px) rem(4px) 0 0;
+  }
+
+  // Without a theme picker there is no footer, so the pane takes all four corners.
+  &:not(:has(.igd-code-view__footer-actions)) .igd-sample-container {
+    border-radius: rem(4px);
+  }
+}
+
 .igd-sample-container {
   --sample-container-header-height: #{rem(66px)};
   // Two selectable backgrounds: the site's own light/dark surface (default),
