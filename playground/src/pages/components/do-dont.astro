@@ -408,10 +408,10 @@ ${'---'}
   <h2 id="localization">Localization</h2>
   <p>
     The default labels follow the site language, so a Japanese topic does not ship with English
-    <em>Do</em> / <em>Don't</em> baked in. The language is read from <code>LANG_CODE</code>, which
-    the docs integration sets at build time from its <code>navLang</code>, then from
-    <code>Astro.currentLocale</code>, then falls back to English. <code>doLabel</code> and
-    <code>dontLabel</code> override it on any page.
+    <em>Do</em> / <em>Don't</em> baked in. The language is the docs integration's
+    <code>navLang</code>, read from <code>virtual:docs-template/site-meta</code> — the same value
+    <code>DocsLayout</code> passes to the nav bar and footer — then <code>Astro.currentLocale</code>
+    and finally English. <code>doLabel</code> and <code>dontLabel</code> override it on any page.
   </p>
   <div class="igd-table-wrapper" role="region" aria-labelledby="locale-table-caption" tabindex="0">
     <table>

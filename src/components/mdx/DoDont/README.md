@@ -94,7 +94,7 @@ The default labels follow the site language, so a Japanese topic does not ship w
 
 The broken-image notice (`errorText`) is localized the same way.
 
-The language is read from `LANG_CODE`, which the docs integration sets at build time from its `navLang`, falling back to `Astro.currentLocale` for sites that use Astro's i18n routing, then to English. Pass `doLabel` / `dontLabel` to override on any page.
+The language is the docs integration's `navLang`, read from `virtual:docs-template/site-meta` — the same value `DocsLayout` passes to the nav bar and footer — then `Astro.currentLocale`, then English. Pass `doLabel` / `dontLabel` to override on any page.
 
 ## Accessibility
 
@@ -108,7 +108,7 @@ The label colors meet WCAG AA for normal-size text in both themes. The "Don't" a
 
 ## Styling
 
-The component declares its tokens locally on `.igd-dodont` (and its theme tokens on `.igd-dodont__frame` / `.igd-dodont__badge`), so any ancestor can retune them:
+The component reads these tokens but never sets them — its defaults are fallbacks — so a value set on any ancestor, or on the block itself through `class`, reaches every element that uses it. `--igd-dodont-accent` and `--igd-dodont-frame-accent` default per panel: set on the block they recolor both panels, set on `.igd-dodont__panel--do` or `.igd-dodont__panel--dont` just one.
 
 | Property                       | Purpose                                                                  |
 | ------------------------------ | ------------------------------------------------------------------------ |
