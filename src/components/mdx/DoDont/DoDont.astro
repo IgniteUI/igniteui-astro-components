@@ -209,46 +209,44 @@ const fetchpriority = loading === 'eager' ? 'high' : undefined;
 ---
 
 <div class:list={['igd-dodont', className]}>
-  {
-    panels.map((panel) => (
-      <figure class:list={['igd-dodont__panel', `igd-dodont__panel--${panel.key}`]}>
-        <div class="igd-dodont__frame" data-error-text={errorText}>
-          {isImport(panel.image) ? (
-            <Image
-              class="igd-dodont__image"
-              src={panel.image}
-              alt={panel.alt}
-              widths={widths}
-              sizes={sizes}
-              loading={loading}
-              decoding="async"
-              fetchpriority={fetchpriority}
-            />
-          ) : (
-            <img
-              class="igd-dodont__image"
-              src={panel.image}
-              alt={panel.alt}
-              loading={loading}
-              decoding="async"
-              fetchpriority={fetchpriority}
-            />
-          )}
-          <igc-badge class="igd-dodont__badge" variant={panel.variant} outlined aria-hidden="true">
-            <igc-icon name={panel.icon} collection="docs" aria-hidden="true" />
-          </igc-badge>
-        </div>
+  {panels.map((panel) => (
+    <figure class:list={['igd-dodont__panel', `igd-dodont__panel--${panel.key}`]}>
+      <div class="igd-dodont__frame" data-error-text={errorText}>
+        {isImport(panel.image) ? (
+          <Image
+            class="igd-dodont__image"
+            src={panel.image}
+            alt={panel.alt}
+            widths={widths}
+            sizes={sizes}
+            loading={loading}
+            decoding="async"
+            fetchpriority={fetchpriority}
+          />
+        ) : (
+          <img
+            class="igd-dodont__image"
+            src={panel.image}
+            alt={panel.alt}
+            loading={loading}
+            decoding="async"
+            fetchpriority={fetchpriority}
+          />
+        )}
+        <igc-badge class="igd-dodont__badge" variant={panel.variant} outlined aria-hidden="true">
+          <igc-icon name={panel.icon} collection="docs" aria-hidden="true" />
+        </igc-badge>
+      </div>
 
-        <figcaption class="igd-dodont__caption">
-          {/* Kept on one line: Astro preserves template whitespace, and a text-node
+      <figcaption class="igd-dodont__caption">
+        {/* Kept on one line: Astro preserves template whitespace, and a text-node
               space between the label and the separator would be announced as "Do : …". */}
-          {/* prettier-ignore */}
-          <span class="igd-dodont__label">{panel.label}<span class="igd-dodont__sr-only">: </span></span>
-          <div class="igd-dodont__description" set:html={descriptions[panel.key]} />
-        </figcaption>
-      </figure>
-    ))
-  }
+        {/* prettier-ignore */}
+        <span class="igd-dodont__label">{panel.label}<span class="igd-dodont__sr-only">: </span></span>
+        <div class="igd-dodont__description" set:html={descriptions[panel.key]} />
+      </figcaption>
+    </figure>
+  ))}
 </div>
 
 <script>
