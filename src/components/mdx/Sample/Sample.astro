@@ -18,7 +18,19 @@ import type { PlatformContext } from '../../../lib/types.ts';
 import ThemingWidget from '../../ThemingWidget/ThemingWidget.astro';
 import './Sample.scss';
 
-interface Props {
+/**
+ * What the widget draws around the demo:
+ * - `widget`: the EXAMPLE and code tabs, and a footer with the live-edit and
+ *   full-screen buttons (and the theme picker, with `showThemePicker`).
+ * - `demo`: the widget's frame and the demo, without the tabs and the code
+ *   viewer. The footer carries only the theme picker, and without one there is
+ *   no footer. For demos whose code is not a usage example, e.g. ones that fake
+ *   interaction states for display.
+ * - `bare`: the iframe in a plain container (see `fullscreenBtn`).
+ */
+type SampleChrome = 'widget' | 'demo' | 'bare';
+
+interface BaseProps {
   src: string;
   /**
    * Iframe height in px. Default 150. With `fitContent` it is only the
@@ -39,23 +51,6 @@ interface Props {
    * browser on the Web Components site. Code tabs and live editing follow it.
    */
   wc?: boolean;
-  /** Render only the iframe — no navbar, no code tabs, no live-edit footer. */
-  iframeOnly?: boolean;
-  /** When used with iframeOnly, also render a "View in full screen" button below. */
-  fullscreenBtn?: boolean;
-  /**
-   * Keep the widget's frame but drop its code viewer: no tabs header, no code
-   * fetch, and no live-edit or full-screen buttons. The footer then carries
-   * only the theme picker (see `showThemePicker`), and without one there is
-   * no footer at all. For demos whose code is not a usage example, e.g. ones
-   * that fake interaction states for display.
-   */
-  hideCode?: boolean;
-  /**
-   * Opt in to the in-sample theme picker for this sample. Its initial theme is
-   * resolved from the site (see `defaultTheme` below), not passed per usage.
-   */
-  showThemePicker?: boolean;
   /**
    * Size the iframe to fit its content: the embedded page dictates the
    * iframe's size. `height` serves only as the placeholder/fallback — shown
@@ -99,10 +94,11 @@ interface Props {
    * container is fully transparent, so a demo without a background of its own
    * sits directly on the page.
    *
-   * Defaults to `false` when `showThemePicker` is on: a sample whose theme —
-   * and mode — the reader can switch needs a surface of its own to switch
-   * against, otherwise a dark-mode demo would sit on the page's own light
-   * background. An explicit value always wins.
+   * Defaults to `false` when a theme picker renders (`showThemePicker` with the
+   * `widget` or `demo` chrome): a sample whose theme — and mode — the reader
+   * can switch needs a surface of its own to switch against, otherwise a
+   * dark-mode demo would sit on the page's own light background. An explicit
+   * value always wins.
    */
   noBackground?: boolean;
   /**
@@ -115,6 +111,30 @@ interface Props {
   whiteBackground?: boolean;
 }
 
+/** The chrome values the theme picker can render in, the ones with a footer. */
+interface FooterChromeProps {
+  /** What the widget draws around the demo. Defaults to `widget`. */
+  chrome?: 'widget' | 'demo';
+  /**
+   * Opt in to the in-sample theme picker for this sample. Its initial theme is
+   * resolved from the site (see `defaultTheme` below), not passed per usage.
+   */
+  showThemePicker?: boolean;
+  /** Only with `chrome="bare"`: the widget footer already has full screen. */
+  fullscreenBtn?: never;
+}
+
+interface BareChromeProps {
+  /** Render the iframe in a plain container: no tabs, no code, no footer. */
+  chrome: 'bare';
+  /** Render a "View in full screen" button below the iframe. */
+  fullscreenBtn?: boolean;
+  /** No footer renders, so there is nowhere to put the picker. */
+  showThemePicker?: never;
+}
+
+type Props = BaseProps & (FooterChromeProps | BareChromeProps);
+
 const {
   src,
   alt = '',
@@ -122,9 +142,7 @@ const {
   dv = false,
   crm = false,
   wc = false,
-  iframeOnly = false,
   fullscreenBtn = false,
-  hideCode = false,
   showThemePicker = false,
   fitContent = false,
   spacing = 'none',
@@ -134,9 +152,54 @@ const {
   whiteBackground = false,
 } = Astro.props;
 
-// The theme picker implies a painted backdrop (see the prop's doc), so its
-// default flips with `showThemePicker`. An explicitly passed value still wins.
-const noBackground = Astro.props.noBackground ?? !showThemePicker;
+// `iframeOnly` and `hideCode` were replaced by `chrome` in 2.0.0. Astro passes
+// unknown props through without a word, so a leftover one would quietly render
+// the full widget. Fail the build instead, with the replacement to use.
+const REMOVED_PROPS: Record<string, string> = {
+  iframeOnly: 'chrome="bare"',
+  hideCode: 'chrome="demo"',
+};
+for (const [prop, replacement] of Object.entries(REMOVED_PROPS)) {
+  if (prop in Astro.props) {
+    throw new Error(
+      `[Sample] ${src}: ${prop} was removed in igniteui-astro-components 2.0.0. Use ${replacement} instead.`,
+    );
+  }
+}
+
+const CHROMES: SampleChrome[] = ['widget', 'demo', 'bare'];
+const requestedChrome = Astro.props.chrome ?? 'widget';
+const chrome: SampleChrome = CHROMES.includes(requestedChrome) ? requestedChrome : 'widget';
+if (chrome !== requestedChrome) {
+  console.warn(
+    `[Sample] ${src}: chrome="${requestedChrome}" is not one of ${CHROMES.join(', ')}, so the widget renders.`,
+  );
+}
+const isBare = chrome === 'bare';
+const isDemo = chrome === 'demo';
+
+// A modifier that doesn't apply to the chosen chrome would do nothing without a
+// word, so say so at build time.
+if (showThemePicker && isBare) {
+  console.warn(
+    `[Sample] ${src}: showThemePicker has no effect with chrome="bare", which renders no footer for the picker.`,
+  );
+}
+if (fullscreenBtn && !isBare) {
+  console.warn(
+    `[Sample] ${src}: fullscreenBtn only applies to chrome="bare". ${
+      isDemo
+        ? 'chrome="demo" leaves full screen out on purpose.'
+        : 'The widget footer already has a full-screen button.'
+    }`,
+  );
+}
+const hasThemePicker = showThemePicker && !isBare;
+const hasFullscreenBtn = fullscreenBtn && isBare;
+
+// The theme picker implies a painted backdrop (see the prop's doc), so the
+// default flips when a picker renders. An explicitly passed value still wins.
+const noBackground = Astro.props.noBackground ?? !hasThemePicker;
 
 // Fixed samples default to 150px. In fitContent mode `height` is only the
 // loading placeholder, so an unspecified one defaults lower (50px) to avoid
@@ -170,8 +233,8 @@ const spacingVal = ['none', 'sm', 'md', 'lg'].includes(spacing) ? spacing : 'non
 const containerStyle = fitContent ? undefined : `height: ${height}px`;
 // The fullscreen bar sits inside the container, so it is added on top of
 // `height` — the iframe keeps the height it was given.
-const iframeOnlyContainerStyle =
-  fitContent || !fullscreenBtn
+const bareContainerStyle =
+  fitContent || !hasFullscreenBtn
     ? containerStyle
     : `height: calc(${height}px + var(--sample-container-header-height))`;
 const iframeStyle = fitContent ? `width: 100%; height: ${height}px;` : 'width: 100%; height: 100%;';
@@ -222,8 +285,8 @@ const githubSrc = srcNoSlash;
 const widgetId = 'cw' + src.replace(/[^a-z0-9]/gi, '-');
 const exampleTabId = `${widgetId}-example`;
 
-// The full widget's demo pane, shared by its two layouts: inside the EXAMPLE
-// tab, or on its own when `hideCode` drops the tabs.
+// The widget's demo pane, shared by its two chromes: inside the EXAMPLE tab
+// (`widget`), or on its own without the tabs (`demo`).
 const samplePaneClass = [
   'igd-sample-container',
   'loading',
@@ -258,7 +321,7 @@ const sampleIframeAttrs = {
 };
 ---
 
-{iframeOnly ? (
+{isBare ? (
   <>
     <div
       class:list={[
@@ -280,7 +343,7 @@ const sampleIframeAttrs = {
       aria-label={
         isResizable ? 'Resizable sample — use the left and right arrow keys to resize' : undefined
       }
-      style={iframeOnlyContainerStyle}
+      style={bareContainerStyle}
     >
       <div class="igd-sample-frame">
         <iframe
@@ -292,7 +355,7 @@ const sampleIframeAttrs = {
         />
         {isResizable && <div class="igd-sample-resize-handle" aria-hidden="true" />}
       </div>
-      {fullscreenBtn && (
+      {hasFullscreenBtn && (
         <div class="igd-code-view__header-actions">
           <igc-icon-button
             name="open-link-blank"
@@ -310,16 +373,16 @@ const sampleIframeAttrs = {
 ) : (
   <>
     <div
-      class:list={['igd-code-view', { 'igd-code-view--hide-code': hideCode }]}
+      class:list={['igd-code-view', { 'igd-code-view--demo': isDemo }]}
       id={widgetId}
       data-iframe-src={iframeSrc}
       data-demos-base-url={baseUrl}
       data-github-src={githubSrc}
       data-platform={wc ? 'wc' : lower}
-      data-hide-code={hideCode ? 'true' : undefined}
+      data-chrome={chrome}
     >
       <div class="igd-code-view__inner">
-        {hideCode ? (
+        {isDemo ? (
           <div class:list={samplePaneClass} {...samplePaneAttrs}>
             <igc-circular-progress
               indeterminate
@@ -349,7 +412,7 @@ const sampleIframeAttrs = {
           </igc-tabs>
         )}
       </div>
-      {showThemePicker && (
+      {hasThemePicker && (
         <div class="igd-sample-theming" hidden>
           <ThemingWidget selectedTheme={defaultTheme} />
         </div>
@@ -363,8 +426,8 @@ const sampleIframeAttrs = {
   // astro:page-load fires after every client-router navigation AND on the initial
   // page load, so using it as the sole trigger handles both cases without
   // double-initialization.
-  // Placed outside the iframeOnly conditional so components and icons are always
-  // registered (needed for igc-icon-button even in iframeOnly + fullscreenBtn mode).
+  // Placed outside the chrome conditional so components and icons are always
+  // registered (needed for igc-icon-button even with chrome="bare" + fullscreenBtn).
   import { initSampleWidgets } from '../../../scripts/sample-widget';
   document.addEventListener('astro:page-load', initSampleWidgets);
 </script>

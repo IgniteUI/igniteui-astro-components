@@ -312,7 +312,7 @@ function addFooter(
     footer.appendChild(themingBar);
   }
 
-  // Nothing to show (e.g. a `hideCode` sample without a theme picker): no footer.
+  // Nothing to show (e.g. a `chrome="demo"` sample without a theme picker): no footer.
   if (footer.childElementCount) widget.appendChild(footer);
 }
 
@@ -776,7 +776,7 @@ function wireFitContent(iframe: HTMLIFrameElement): void {
     }, 3000);
   };
 
-  // iframeOnly renders `src` directly, so the iframe may already be loaded —
+  // chrome="bare" renders `src` directly, so the iframe may already be loaded —
   // and a cross-origin iframe gives no way to detect that (contentDocument is
   // null whether it's loaded or not). Run the handler once at wire time as
   // well: on a not-yet-loaded iframe the enable message is simply lost and
@@ -877,7 +877,7 @@ function initResizableSamples(): void {
  * `.ig-code-view` elements managed by code-view.js.
  */
 export function initSampleWidgets(): void {
-  // Wire fit-content iframes (both full widgets and iframeOnly samples) up front
+  // Wire fit-content iframes (widgets and chrome="bare" samples alike) up front
   // so they start measuring as soon as their content loads.
   initFitContentIframes();
 
@@ -927,8 +927,8 @@ export function initSampleWidgets(): void {
       const demosBaseUrl = widget.dataset.demosBaseUrl || '';
       const githubSrc = widget.dataset.githubSrc || '';
       const platform = normalizePlatform(widget.dataset.platform || 'angular');
-      // `hideCode` samples render no tabs: only the demo and the theme picker.
-      const hideCode = widget.dataset.hideCode === 'true';
+      // `chrome="demo"` samples render no tabs: only the demo and the theme picker.
+      const isDemo = widget.dataset.chrome === 'demo';
 
       if (!iframeSrc) return;
 
@@ -936,7 +936,7 @@ export function initSampleWidgets(): void {
       const samplePane = widget.querySelector<HTMLElement>('.igd-sample-container');
       const iframe = widget.querySelector<HTMLIFrameElement>('iframe');
 
-      if (!igcTabs && !hideCode) return;
+      if (!igcTabs && !isDemo) return;
 
       const exampleTabId = `${widget.id}-example`;
 
@@ -1040,7 +1040,7 @@ export function initSampleWidgets(): void {
 
       // No code to fetch and nothing to live-edit or open in full screen: the
       // footer carries only the theme picker, right away.
-      if (hideCode || !igcTabs) {
+      if (isDemo || !igcTabs) {
         addFooter(widget, iframeSrc, null, null, null, false);
         return;
       }

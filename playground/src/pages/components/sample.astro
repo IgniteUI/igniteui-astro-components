@@ -60,29 +60,35 @@ const propRows: PropRow[] = [
             <code>excel/</code>.`,
   },
   {
-    name: 'iframeOnly',
+    name: 'chrome',
+    type: "'widget' | 'demo' | 'bare'",
+    def: "'widget'",
+    description: `What the widget draws around the demo.
+            <code>widget</code>: the EXAMPLE and code tabs, and a footer with the
+            live-edit and full-screen buttons (see <a href="#full-widget">Default</a>).
+            <code>demo</code>: the widget's frame without the tabs and the code
+            viewer; the footer carries only the theme picker, and without one there
+            is no footer. For demos whose code is not a usage example (see
+            <a href="#chrome-demo">Without the code viewer</a>). <code>bare</code>:
+            just the embedded demo, usually paired with <code>fitContent</code> and
+            <code>noBorder</code> for demos that sit inline in the text (see
+            <a href="#chrome-bare">Bare iframe</a>).`,
+  },
+  {
+    name: 'showThemePicker',
     type: 'boolean',
     def: 'false',
-    description: `Render just the embedded demo — no EXAMPLE/code tabs, no
-            live-edit footer. Usually paired with <code>fitContent</code> and
-            <code>noBorder</code> for demos that sit inline in the text.`,
+    description: `Adds the in-sample theme picker to the footer. Only with the
+            <code>widget</code> and <code>demo</code> chromes: <code>bare</code> has
+            no footer to put it in.`,
   },
   {
     name: 'fullscreenBtn',
     type: 'boolean',
     def: 'false',
-    description: `Only with <code>iframeOnly</code>: adds a "View in full screen"
-            button that opens the demo in a new tab.`,
-  },
-  {
-    name: 'hideCode',
-    type: 'boolean',
-    def: 'false',
-    description: `Keep the widget's frame but drop its code viewer: no tabs header,
-            no code fetch, no live-edit or full-screen buttons. The footer carries
-            only the theme picker (<code>showThemePicker</code>); without it there
-            is no footer. For demos whose code is not a usage example (see
-            <a href="#hide-code">Without the code viewer</a>).`,
+    description: `Only with <code>chrome="bare"</code>: adds a "View in full screen"
+            button that opens the demo in a new tab. The widget footer already has
+            one, and <code>chrome="demo"</code> leaves full screen out on purpose.`,
   },
   {
     name: 'fitContent',
@@ -101,7 +107,7 @@ const propRows: PropRow[] = [
             0 / 8px / 16px / 32px. Each size reads a CSS variable
             (<code>--igd-sample-spacing-sm/md/lg</code>) you can override from any
             ancestor. The default <code>none</code> suits the borderless inline form
-            (<code>iframeOnly fitContent noBorder</code>); add a size whenever a border
+            (<code>chrome="bare" fitContent noBorder</code>); add a size whenever a border
             or backdrop is visible. Demos never set their own outer padding.`,
   },
   {
@@ -130,19 +136,21 @@ const propRows: PropRow[] = [
     def: 'true',
     description: `Drop the 1px border around the iframe — on by default. Pass
             <code>noBorder={false}</code> to draw it, which is what you want whenever
-            chrome is visible (the widget's tabs or <code>fullscreenBtn</code>): the
-            border is what ties that chrome to the demo.`,
+            chrome is visible (the widget's tabs and footer, or
+            <code>fullscreenBtn</code>): the border is what ties that chrome to the
+            demo.`,
   },
   {
     name: 'noBackground',
     type: 'boolean',
-    def: 'true (false with showThemePicker)',
+    def: 'true (false with a theme picker)',
     description: `Hide the grid-pattern backdrop drawn behind the iframe — on by
             default, so the container is transparent and a demo with no background of
             its own sits directly on the page. Pass
             <code>noBackground={false}</code> to show the grid (see
-            <a href="#no-background">No background</a>). With
-            <code>showThemePicker</code> the default flips to <code>false</code>: a
+            <a href="#no-background">No background</a>). When a theme picker renders
+            (<code>showThemePicker</code> with the <code>widget</code> or
+            <code>demo</code> chrome), the default flips to <code>false</code>: a
             reader-switchable theme (and mode) needs a surface of its own to switch
             against.`,
   },
@@ -204,24 +212,24 @@ const spacingDemo: Example = {
     src: '/mock-demo-tall',
     height: 220,
     alt: 'Spacing Example',
-    iframeOnly: true,
+    chrome: 'bare',
     spacing: 'md',
   },
 };
 
 const sections: Section[] = [
   {
-    slug: 'iframe-only',
-    title: 'iframe only',
+    slug: 'chrome-bare',
+    title: 'Bare iframe',
     description: `<p>Sometimes you just want the running demo inline in the text, without
-            the tabs and the live-edit footer. Add <code>iframeOnly</code> and only
+            the tabs and the live-edit footer. Set <code>chrome="bare"</code> and only
             the embedded demo is rendered:</p>`,
     examples: [
       {
-        props: { src: '/mock-demo', alt: 'Grid Example', iframeOnly: true },
+        props: { src: '/mock-demo', alt: 'Grid Example', chrome: 'bare' },
       },
       {
-        intro: `In practice <code>iframeOnly</code> usually goes hand in hand with
+        intro: `In practice <code>chrome="bare"</code> usually goes hand in hand with
                     <a href="#fit-content"><code>fitContent</code></a> and
                     <code>noBorder</code>: an inline demo reads best when it takes
                     exactly the space its content needs and blends into the page like a
@@ -233,7 +241,7 @@ const sections: Section[] = [
         props: {
           src: '/mock-demo-tall',
           alt: 'Inline Example',
-          iframeOnly: true,
+          chrome: 'bare',
           fitContent: true,
           noBorder: true,
           spacing: 'none',
@@ -243,35 +251,36 @@ const sections: Section[] = [
   },
   {
     slug: 'fullscreen-btn',
-    title: 'iframe + fullscreen button',
-    description: `<p>An <code>iframeOnly</code> sample can still give readers an escape
+    title: 'Bare iframe + fullscreen button',
+    description: `<p>A <code>chrome="bare"</code> sample can still give readers an escape
             hatch: <code>fullscreenBtn</code> adds a "View in full screen" button that
-            opens the demo in a new tab. It only works together with
-            <code>iframeOnly</code> — the full widget already has its own
-            full-screen action in the footer.</p>`,
+            opens the demo in a new tab. It only applies to <code>chrome="bare"</code>
+            — the full widget already has its own full-screen action in the footer,
+            and <code>chrome="demo"</code> leaves it out on purpose. Anywhere else the
+            build ignores it with a warning.</p>`,
     examples: [
       {
         props: {
           src: '/mock-demo',
           alt: 'Grid Example',
           fitContent: true,
-          iframeOnly: true,
+          chrome: 'bare',
           fullscreenBtn: true,
         },
       },
     ],
   },
   {
-    slug: 'hide-code',
+    slug: 'chrome-demo',
     title: 'Without the code viewer',
     description: `<p>Some demos are not usage examples: an interaction-states demo, for
             instance, fakes hover and focus with CSS overrides only to display them.
-            Its code would mislead a reader who copies it. <code>hideCode</code> keeps
-            the widget's frame but drops the code viewer: no tabs header, no code
-            fetch, and no StackBlitz or full-screen buttons. The footer carries only
-            the theme picker, so readers can still switch the demo's theme and mode;
-            without <code>showThemePicker</code> there is no footer at all.</p>
-            <p>Unlike <code>iframeOnly</code>, it keeps the theme picker.</p>`,
+            Its code would mislead a reader who copies it. <code>chrome="demo"</code>
+            keeps the widget's frame but drops the code viewer: no tabs header, no
+            code fetch, and no StackBlitz or full-screen buttons. The footer carries
+            only the theme picker, so readers can still switch the demo's theme and
+            mode; without <code>showThemePicker</code> there is no footer at all.</p>
+            <p>Unlike <code>chrome="bare"</code>, it keeps the theme picker.</p>`,
     examples: [
       {
         note: ['The demo and the theme picker only: no code tabs, no live-edit buttons.'],
@@ -279,7 +288,7 @@ const sections: Section[] = [
           src: '/mock-demo',
           height: 240,
           alt: 'States Example',
-          hideCode: true,
+          chrome: 'demo',
           showThemePicker: true,
           noBorder: false,
           spacing: 'md',
@@ -324,7 +333,7 @@ const sections: Section[] = [
         props: {
           src: '/mock-demo-tall',
           alt: 'Fit-content Example',
-          iframeOnly: true,
+          chrome: 'bare',
           fitContent: true,
         },
       },
@@ -344,15 +353,16 @@ const sections: Section[] = [
         props: {
           src: '/mock-demo-avatar',
           alt: 'Avatar Example',
-          iframeOnly: true,
+          chrome: 'bare',
           fitContent: true,
           noBorder: true,
           position: 'center',
         },
       },
       {
-        intro: `The same avatar inside the full widget: drop <code>iframeOnly</code>
-                    and the tabs header and live-edit footer stay, while
+        intro: `The same avatar inside the full widget: leave out
+                    <code>chrome="bare"</code> and the tabs header and live-edit footer
+                    stay, while
                     <code>fitContent</code> still sizes the example area to the avatar.
                     Note the border is kept here — with the widget chrome around the
                     demo, <code>noBorder</code> would leave the tabs and footer floating
@@ -387,7 +397,7 @@ const sections: Section[] = [
         intro: `<code>spacing="none"</code> removes the padding entirely. That only
                     reads well when there is no box for the content to press against —
                     which is why it is encouraged together with the inline trio
-                    (<code>iframeOnly</code>, <code>fitContent</code>,
+                    (<code>chrome="bare"</code>, <code>fitContent</code>,
                     <code>noBorder</code>): the demo blends straight into the page and
                     the page's own rhythm provides the breathing room. Inside a visible
                     border, keep some spacing so the demo doesn't touch the frame:`,
@@ -398,7 +408,7 @@ const sections: Section[] = [
           src: '/mock-demo-tall',
           alt: 'Spacing none Example',
           noBackground: true,
-          iframeOnly: true,
+          chrome: 'bare',
           fitContent: true,
           noBorder: true,
           spacing: 'none',
@@ -426,7 +436,7 @@ const sections: Section[] = [
         props: {
           src: '/mock-demo-avatar',
           alt: 'Position start Example',
-          iframeOnly: true,
+          chrome: 'bare',
           fitContent: true,
           noBorder: true,
           position: 'start',
@@ -438,7 +448,7 @@ const sections: Section[] = [
         props: {
           src: '/mock-demo-avatar',
           alt: 'Position center Example',
-          iframeOnly: true,
+          chrome: 'bare',
           fitContent: true,
           noBorder: true,
           position: 'center',
@@ -450,7 +460,7 @@ const sections: Section[] = [
         props: {
           src: '/mock-demo-avatar',
           alt: 'Position end Example',
-          iframeOnly: true,
+          chrome: 'bare',
           fitContent: true,
           noBorder: true,
           position: 'end',
@@ -481,7 +491,7 @@ const sections: Section[] = [
         props: {
           src: '/mock-demo-responsive',
           alt: 'Resizable Example',
-          iframeOnly: true,
+          chrome: 'bare',
           resizable: true,
           fitContent: true,
         },
@@ -494,19 +504,19 @@ const sections: Section[] = [
     description: `<p>The iframe is borderless by default (<code>noBorder</code> is
             <code>true</code>) — the demo blends into the page. Pass
             <code>noBorder={false}</code> to draw the 1px border back.</p>
-            <p>The borderless default suits <code>iframeOnly</code> samples
+            <p>The borderless default suits <code>chrome="bare"</code> samples
             <em>without</em> the fullscreen button. Once any chrome is visible — the
             widget's tabs or a "View in full screen" button below — the border is what
             visually ties that chrome to the demo, and leaving it off leaves the
             controls floating next to unframed content. If you want a borderless demo,
-            drop the chrome too.</p>`,
+            drop the chrome too, with <code>chrome="bare"</code>.</p>`,
     examples: [
       {
         props: {
           src: '/mock-demo-tall',
           height: 260,
           alt: 'No-border Example',
-          iframeOnly: true,
+          chrome: 'bare',
           noBorder: true,
         },
       },
@@ -524,7 +534,7 @@ const sections: Section[] = [
             <p>Compare with the avatar samples in
             <a href="#fit-content">Fit to content</a>, where the grid shows through the
             transparent demo page. It pairs naturally with the inline form
-            (<code>iframeOnly fitContent noBorder spacing="none"</code>) when the demo
+            (<code>chrome="bare" fitContent noBorder spacing="none"</code>) when the demo
             should blend into the page completely:</p>`,
     examples: [
       {
@@ -532,7 +542,7 @@ const sections: Section[] = [
         props: {
           src: '/mock-demo-avatar',
           alt: 'No-background Example',
-          iframeOnly: true,
+          chrome: 'bare',
           fitContent: true,
           noBorder: true,
           spacing: 'none',
@@ -561,7 +571,7 @@ const sections: Section[] = [
         props: {
           src: '/mock-demo-avatar',
           alt: 'White-background Example',
-          iframeOnly: true,
+          chrome: 'bare',
           fitContent: true,
           noBorder: true,
           spacing: 'md',
@@ -620,10 +630,12 @@ const usageServers = `<!-- Load from the LOB demos server instead of the default
   <h1>Sample</h1>
   <p>
     <code>Sample</code> embeds a <strong>live, running demo</strong> in a docs page. By default it
-    renders the full widget: an EXAMPLE tab with the demo in an iframe, source-code tabs for the
-    demo's files, and a footer with live-edit buttons (StackBlitz / CodeSandbox) and a full-screen
-    action. The shell is rendered server-side by Astro; tab switching, copy buttons, and iframe
-    lazy-loading are handled by <code>sample-widget.ts</code> on the client.
+    renders the full widget, <code>chrome="widget"</code>: an EXAMPLE tab with the demo in an
+    iframe, source-code tabs for the demo's files, and a footer with live-edit buttons (StackBlitz /
+    CodeSandbox) and a full-screen action. <code>chrome="demo"</code> and
+    <code>chrome="bare"</code> strip that down, as shown below. The shell is rendered server-side by
+    Astro; tab switching, copy buttons, and iframe lazy-loading are handled by{' '}
+    <code>sample-widget.ts</code> on the client.
   </p>
   <p>
     Every example on this page shows the <em>exact</em> markup that renders it — copy the snippet
@@ -673,20 +685,20 @@ const usageServers = `<!-- Load from the LOB demos server instead of the default
         <tr>
           <td>Embed only the running demo inline in the text</td>
           <td>
-            <code>iframeOnly fitContent noBorder spacing="none"</code> — the usual form for inline
-            demos
+            <code>chrome="bare" fitContent noBorder spacing="none"</code> — the usual form for
+            inline demos
           </td>
         </tr>
         <tr>
           <td>…and still let readers open it in a new tab</td>
           <td>
-            <code>iframeOnly fullscreenBtn</code>
+            <code>chrome="bare" fullscreenBtn</code>
           </td>
         </tr>
         <tr>
           <td>Show a demo whose code is not a usage example, keeping the theme picker</td>
           <td>
-            <code>hideCode showThemePicker</code>
+            <code>chrome="demo" showThemePicker</code>
           </td>
         </tr>
         <tr>
@@ -705,7 +717,7 @@ const usageServers = `<!-- Load from the LOB demos server instead of the default
         <tr>
           <td>Blend a small demo into the page (badge, avatar, button…)</td>
           <td>
-            <code>iframeOnly fitContent noBorder position="center"</code>
+            <code>chrome="bare" fitContent noBorder position="center"</code>
           </td>
         </tr>
       </tbody>
@@ -850,7 +862,7 @@ const usageServers = `<!-- Load from the LOB demos server instead of the default
     </li>
     <li>
       <strong>
-        <code>iframeOnly</code>, <code>fitContent</code>,<code>noBorder</code>, and{' '}
+        <code>chrome="bare"</code>, <code>fitContent</code>, <code>noBorder</code>, and{' '}
         <code>spacing="none"</code> travel together.
       </strong>{' '}
       An inline demo reads best when it takes exactly its content's space and blends into the page
@@ -860,13 +872,14 @@ const usageServers = `<!-- Load from the LOB demos server instead of the default
     </li>
     <li>
       <strong>
-        <code>fullscreenBtn</code> needs <code>iframeOnly</code>.
+        <code>fullscreenBtn</code> needs <code>chrome="bare"</code>.
       </strong>
-      The full widget already has a full-screen action in its footer.
+      The full widget already has a full-screen action in its footer, and <code>chrome="demo"</code>{' '}
+      leaves it out on purpose.
     </li>
     <li>
       <strong>Prefer the full widget when the source matters.</strong> Use
-      <code>iframeOnly</code> for quick inline illustrations; keep the tabs and live-edit footer
+      <code>chrome="bare"</code> for quick inline illustrations; keep the tabs and live-edit footer
       when readers are expected to copy or fork the demo's code.
     </li>
   </ul>
