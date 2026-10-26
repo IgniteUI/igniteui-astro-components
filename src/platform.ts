@@ -349,6 +349,25 @@ export const IGDOCS_PLATFORMS: Record<string, PlatformMeta> = {
     title: 'Ignite UI for Blazor',
     description: 'Component documentation for Ignite UI for Blazor.',
   },
+  // XAML platforms ship under the Ultimate UI brand, hence `ultimate-ui-*` URL slugs.
+  WinUI: {
+    lang: 'en',
+    label: 'WinUI',
+    key: 'winui',
+    devPort: 4335,
+    base: '/products/ultimate-ui-winui/winui/components',
+    title: 'Infragistics Ultimate UI for WinUI',
+    description: 'Component documentation for Infragistics Ultimate UI for WinUI.',
+  },
+  Uno: {
+    lang: 'en',
+    label: 'Uno Platform',
+    key: 'uno',
+    devPort: 4336,
+    base: '/products/ultimate-ui-uno-platform/uno-platform/components',
+    title: 'Infragistics Ultimate UI for Uno Platform',
+    description: 'Component documentation for Infragistics Ultimate UI for Uno Platform.',
+  },
   // Japanese
   AngularJP: {
     lang: 'jp',
@@ -385,6 +404,25 @@ export const IGDOCS_PLATFORMS: Record<string, PlatformMeta> = {
     base: '/docs-blazor-new',
     title: 'Ignite UI for Blazor',
     description: 'Component documentation for Ignite UI for Blazor.',
+  },
+  // XAML platforms ship under the Ultimate UI brand, hence `ultimate-ui-*` URL slugs.
+  WinUIJP: {
+    lang: 'jp',
+    label: 'WinUI',
+    key: 'winui',
+    devPort: 4345,
+    base: '/products/ultimate-ui-winui/winui/components',
+    title: 'Infragistics Ultimate UI for WinUI',
+    description: 'Component documentation for Infragistics Ultimate UI for WinUI.',
+  },
+  UnoJP: {
+    lang: 'jp',
+    label: 'Uno Platform',
+    key: 'uno',
+    devPort: 4346,
+    base: '/products/ultimate-ui-uno-platform/uno-platform/components',
+    title: 'Infragistics Ultimate UI for Uno Platform',
+    description: 'Component documentation for Infragistics Ultimate UI for Uno Platform.',
   },
 };
 
