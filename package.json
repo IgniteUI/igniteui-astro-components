@@ -10,7 +10,7 @@
   "author": "Infragistics",
   "repository": {
     "type": "git",
-    "url": "https://github.com/IgniteUI/igniteui-astro-components"
+    "url": "git+https://github.com/IgniteUI/igniteui-astro-components.git"
   },
   "keywords": [
     "astro",
