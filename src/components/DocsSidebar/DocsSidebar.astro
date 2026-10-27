@@ -40,6 +40,12 @@ interface Props {
   logoText?: string;
   /** Platform label shown below logoText (e.g. 'Angular'). Auto-detected from virtual module when omitted. */
   platformLabel?: string | null;
+  /**
+   * Keep one branch of the tree open at a time: only the current page's
+   * groups are open on load, and expanding a group collapses the others.
+   * The filter still opens every group with a match. Defaults to true.
+   */
+  singleBranchExpand?: boolean;
 }
 
 const PLATFORM_LABELS: Record<string, string> = {
@@ -57,21 +63,25 @@ const {
   trailingSlash = useTrailingSlash,
   logoText = 'Ignite UI',
   platformLabel = virtualPlatform ? (PLATFORM_LABELS[virtualPlatform] ?? null) : null,
+  singleBranchExpand = true,
 } = Astro.props;
 const items = (itemsProp ?? sidebarData) as SidebarEntry[];
-const nodes = toTreeNodes(items, currentSlug, { trailingSlash });
+const nodes = toTreeNodes(items, currentSlug, { trailingSlash, singleBranch: singleBranchExpand });
 const activeId = normalizeSlug(currentSlug);
 ---
 
-<sidebar-filter class="docs-sidebar" id="docs-sidebar" data-no-results="No topics match">
+<sidebar-filter
+  class="docs-sidebar"
+  id="docs-sidebar"
+  data-no-results="No topics match"
+  data-single-branch-expand={singleBranchExpand ? '' : undefined}
+>
   <div class="igd-sidebar-logo">
     {/* Keep as <span>, not <h1> — avoids competing with the page <h1> in search. */}
     <span class="igd-logo-text">{logoText}</span>
     {platformLabel && <span class="igd-logo__platform">for {platformLabel}</span>}
   </div>
-  <div class="sidebar-gutter">
-    {showFilter && <SidebarFilterInput />}
-  </div>
+  <div class="sidebar-gutter">{showFilter && <SidebarFilterInput />}</div>
   <div class="sidebar-scroll" data-sidebar-scroll>
     <DocsTree
       nodes={nodes}
@@ -82,18 +92,17 @@ const activeId = normalizeSlug(currentSlug);
       renderLabel={SidebarLabel}
     />
   </div>
-  {
-    /* Shared tooltip showing the full text of a truncated (line-clamped) label.
+  {/* Shared tooltip showing the full text of a truncated (line-clamped) label.
       Anchored at runtime to the hovered/focused row by sidebar-tooltip.ts, which
-      also owns show/hide — hence the empty trigger lists. */
-  }
+      also owns show/hide — hence the empty trigger lists. */}
   <igc-tooltip
     data-sidebar-tooltip
     class="igd-sidebar-tooltip"
     placement="right"
     show-triggers=""
     hide-triggers=""
-    with-arrow></igc-tooltip>
+    with-arrow
+  ></igc-tooltip>
 </sidebar-filter>
 <div class="docs-sidebar-backdrop" id="docs-sidebar-backdrop" aria-hidden="true"></div>
 
