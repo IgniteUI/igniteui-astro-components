@@ -94,7 +94,7 @@ for (const platform of ['winui', 'uno', 'uno-platform']) {
       );
       assert.equal(
         dom.window.document.querySelector('.igd-full-screen-btn').getAttribute('href'),
-        `${base}/${route}?nav=0`,
+        `${base}/${route}`,
       );
       assert.ok(dom.window.document.querySelector('.igd-code-view__footer-actions'));
     } finally {
