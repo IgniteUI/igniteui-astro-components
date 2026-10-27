@@ -484,6 +484,8 @@ export function getNavConfig(platform: string | null, lang = 'en'): NavConfig {
     case 'react':
     case 'blazor':
     case 'web-components':
+    case 'uno':
+    case 'winui':
     case 'slingshot':
       return { navType: 'infragistics', navUrl: `${igBase}/navigation` };
     default:
