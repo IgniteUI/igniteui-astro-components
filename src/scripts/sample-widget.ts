@@ -282,6 +282,7 @@ function addFooter(
   explicitEditor: string | null,
   onStackblitz: (() => void) | null,
   _onCodeSandbox: (() => void) | null,
+  showFullscreen = true,
 ): void {
   // A footer may already be server-rendered (e.g. the playground's MockSample);
   // don't append a second one.
@@ -321,26 +322,28 @@ function addFooter(
   //     footer.appendChild(btn);
   // }
 
-  const fsBtn = document.createElement('igc-icon-button') as HTMLElement;
-  fsBtn.setAttribute('name', 'open-external');
-  fsBtn.setAttribute('collection', FOOTER_ICON_COLLECTION);
-  fsBtn.setAttribute('variant', 'flat');
-  fsBtn.setAttribute('aria-label', 'Open in full screen');
-  fsBtn.className = 'igd-full-screen-btn igd-edit-in-btn';
-  if (iframeSrc) {
-    const fullscreenSrc = iframeSrc + (iframeSrc.includes('?') ? '&' : '?') + 'nav=0';
-    fsBtn.setAttribute('href', fullscreenSrc);
-    fsBtn.setAttribute('target', '_blank');
+  if (showFullscreen) {
+    const fsBtn = document.createElement('igc-icon-button') as HTMLElement;
+    fsBtn.setAttribute('name', 'open-external');
+    fsBtn.setAttribute('collection', FOOTER_ICON_COLLECTION);
+    fsBtn.setAttribute('variant', 'flat');
+    fsBtn.setAttribute('aria-label', 'Open in full screen');
+    fsBtn.className = 'igd-full-screen-btn igd-edit-in-btn';
+    if (iframeSrc) {
+      fsBtn.setAttribute('href', iframeSrc);
+      fsBtn.setAttribute('target', '_blank');
+    }
+    actions.appendChild(fsBtn);
   }
-  actions.appendChild(fsBtn);
-  footer.appendChild(actions);
+  if (actions.childElementCount) footer.appendChild(actions);
 
   if (themingBar) {
     themingBar.hidden = false;
     footer.appendChild(themingBar);
   }
 
-  widget.appendChild(footer);
+  // Nothing to show (e.g. a `hideCode` sample without a theme picker): no footer.
+  if (footer.childElementCount) widget.appendChild(footer);
 }
 
 // ─── Angular Code Service ─────────────────────────────────────────────────────
@@ -664,7 +667,7 @@ function setFitSize(iframe: HTMLIFrameElement, size: { height?: number; width?: 
     iframe.style.width = `${Math.ceil(size.width)}px`;
     // The frame defaults to full width (see Sample.scss); once the iframe
     // has a definite px width, let the frame shrink-wrap it so the host's
-    // flex alignment (position) can move the content-sized box around.
+    // alignment (position) can move the content-sized box around.
     const frame = iframe.closest<HTMLElement>('.igd-sample-frame');
     if (frame) frame.style.width = 'auto';
   }
@@ -676,7 +679,7 @@ function setFitSize(iframe: HTMLIFrameElement, size: { height?: number; width?: 
  * block-level demo content stretches to the viewport width, so instead we take
  * the right-most element box. Demos with intrinsically sized content (a lone
  * avatar, a button…) shrink the iframe to that content, letting the host's
- * flex alignment actually center/end-align it. Full-width demos measure the
+ * alignment actually center/end-align it. Full-width demos measure the
  * viewport width and are left as-is.
  *
  * Resizable containers are excluded entirely: there the user's drag owns the
@@ -867,7 +870,7 @@ function wireResizable(container: HTMLElement): void {
       const startW = frame.getBoundingClientRect().width;
       // A centered frame grows from both sides, so the handle covers half
       // the width change per pixel moved.
-      const factor = getComputedStyle(container).justifyContent === 'center' ? 2 : 1;
+      const factor = getComputedStyle(frame).justifySelf === 'center' ? 2 : 1;
 
       const onMove = (ev: PointerEvent) => setWidth(startW + (ev.clientX - startX) * factor);
       const onUp = (ev: PointerEvent) => {
@@ -959,6 +962,8 @@ export function initSampleWidgets(): void {
       const demosBaseUrl = widget.dataset.demosBaseUrl || '';
       const githubSrc = widget.dataset.githubSrc || '';
       const platform = normalizePlatform(widget.dataset.platform || 'angular');
+      // `hideCode` samples render no tabs: only the demo and the theme picker.
+      const hideCode = widget.dataset.hideCode === 'true';
 
       if (!iframeSrc) return;
 
@@ -966,7 +971,7 @@ export function initSampleWidgets(): void {
       const samplePane = widget.querySelector<HTMLElement>('.igd-sample-container');
       const iframe = widget.querySelector<HTMLIFrameElement>('iframe');
 
-      if (!igcTabs) return;
+      if (!igcTabs && !hideCode) return;
 
       const exampleTabId = `${widget.id}-example`;
 
@@ -1023,7 +1028,7 @@ export function initSampleWidgets(): void {
       }
 
       // Toggle fullscreen button visibility based on active tab.
-      igcTabs.addEventListener('igcChange', (e: Event) => {
+      igcTabs?.addEventListener('igcChange', (e: Event) => {
         const detail = (e as CustomEvent<HTMLElement>).detail;
         const btn = widget.querySelector<HTMLElement>('.igd-full-screen-btn');
         if (btn) {
@@ -1066,6 +1071,13 @@ export function initSampleWidgets(): void {
           });
           visObs.observe(samplePane);
         }
+      }
+
+      // No code to fetch and nothing to live-edit or open in full screen: the
+      // footer carries only the theme picker, right away.
+      if (hideCode || !igcTabs) {
+        addFooter(widget, iframeSrc, null, null, null, false);
+        return;
       }
 
       if (!demosBaseUrl && !isXplatPlatform(platform)) return;
