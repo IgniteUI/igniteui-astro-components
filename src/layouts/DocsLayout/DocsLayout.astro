@@ -10,11 +10,12 @@ import LicenseIndicator from '../../components/LicenseIndicator/LicenseIndicator
 import igLogoRaw from '../../assets/ig-logo.svg?raw';
 import CopyCode from '../../components/CopyCode/CopyCode.astro';
 import { platform as virtualPlatform } from 'virtual:docs-template/nav-html';
+import { ULTIMATE_UI_PLATFORMS } from '../../platform';
 import { title as siteTitle, headEntries, navLang } from 'virtual:docs-template/site-meta';
 import '../../styles/theme.scss';
 import './DocsLayout.scss';
 
-const showIgniteUiPageLogo = virtualPlatform !== 'winui' && virtualPlatform !== 'uno';
+const showIgniteUiPageLogo = !ULTIMATE_UI_PLATFORMS.has(virtualPlatform ?? '');
 
 export interface Props {
   title?: string;

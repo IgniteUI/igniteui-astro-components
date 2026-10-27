@@ -7,10 +7,17 @@ import ts from 'typescript';
 
 // Exercise the real widget in a DOM, replacing only browser component registration
 // and the asynchronous syntax highlighter. No sample iframe or CDN is loaded.
-const script = ts.transpileModule(
-  readFileSync(new URL('../src/scripts/sample-widget.ts', import.meta.url), 'utf8'),
-  { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 } },
-).outputText;
+const transpile = (file) =>
+  ts.transpileModule(readFileSync(new URL(file, import.meta.url), 'utf8'), {
+    compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 },
+  }).outputText;
+const script = transpile('../src/scripts/sample-widget.ts');
+// The widget's one source import, which has only a type import of its own.
+const platformsModule = { exports: {} };
+new Function('module', 'exports', transpile('../src/lib/ultimate-ui-platforms.ts'))(
+  platformsModule,
+  platformsModule.exports,
+);
 
 for (const platform of ['winui', 'uno', 'uno-platform']) {
   test(`${platform} loads Uno source JSON and preserves named supporting tabs`, async () => {
@@ -46,22 +53,32 @@ for (const platform of ['winui', 'uno', 'uno-platform']) {
     );
     try {
       const requests = [];
+      const eagerLangs = [];
+      const lazyLoads = [];
       const context = dom.getInternalVMContext();
       context.exports = {};
       context.require = (name) => {
         if (name === 'igniteui-webcomponents') return new Proxy({}, { get: () => () => {} });
         if (name === './icon-registry' || name.endsWith('?raw')) return {};
+        if (name === '../lib/ultimate-ui-platforms') return platformsModule.exports;
         if (name === 'shiki')
           return {
-            createHighlighter: async () => ({
-              codeToHtml: (text) => {
-                const pre = dom.window.document.createElement('pre');
-                const code = dom.window.document.createElement('code');
-                code.textContent = text;
-                pre.append(code);
-                return pre.outerHTML;
-              },
-            }),
+            createHighlighter: async ({ langs }) => {
+              eagerLangs.push(...langs);
+              return {
+                getLoadedLanguages: () => [...langs, ...lazyLoads],
+                loadLanguage: async (lang) => {
+                  lazyLoads.push(lang);
+                },
+                codeToHtml: (text) => {
+                  const pre = dom.window.document.createElement('pre');
+                  const code = dom.window.document.createElement('code');
+                  code.textContent = text;
+                  pre.append(code);
+                  return pre.outerHTML;
+                },
+              };
+            },
           };
         throw new Error(`Unexpected dependency: ${name}`);
       };
@@ -97,6 +114,12 @@ for (const platform of ['winui', 'uno', 'uno-platform']) {
         `${base}/${route}`,
       );
       assert.ok(dom.window.document.querySelector('.igd-code-view__footer-actions'));
+      // XAML highlights as XML, and both grammars only load once a tab needs them.
+      assert.deepEqual(
+        eagerLangs.filter((lang) => ['xml', 'json'].includes(lang)),
+        [],
+      );
+      assert.deepEqual([...lazyLoads].sort(), ['json', 'xml']);
     } finally {
       dom.window.close();
     }

@@ -12,6 +12,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import matter from 'gray-matter';
+import { IGDOCS_PLATFORMS } from './platform';
 
 // ---------------------------------------------------------------------------
 // Public types
@@ -155,22 +156,15 @@ export const IGDOCS_BROAD_SECTIONS = [
   'Deprecated Components',
 ] as const;
 
-/** Platforms that use the Ignite UI doc broad sections. */
-const IGDOCS_PLATFORMS = new Set<string>([
-  'angular',
-  'react',
-  'blazor',
-  'web-components',
-  'winui',
-  'uno',
-]);
+/** Platforms that use the Ignite UI doc broad sections: every platform IGDOCS_PLATFORMS lists. */
+const IGDOCS_PLATFORM_KEYS = new Set<string>(Object.values(IGDOCS_PLATFORMS).map((p) => p.key));
 
 /**
  * Returns the set of broad-section labels for the given platform.
  * Returns an empty set for platforms with no defined broad sections (appbuilder, slingshot).
  */
 export function getBroadSectionsForPlatform(platform: string | null): ReadonlySet<string> {
-  if (platform !== null && IGDOCS_PLATFORMS.has(platform)) {
+  if (platform !== null && IGDOCS_PLATFORM_KEYS.has(platform)) {
     return new Set(IGDOCS_BROAD_SECTIONS);
   }
   return new Set();

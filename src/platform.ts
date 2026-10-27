@@ -27,6 +27,8 @@ export type HeadEntry = {
 export type PlatformKey =
   'angular' | 'react' | 'blazor' | 'web-components' | 'winui' | 'uno' | 'slingshot' | 'appbuilder';
 
+export { ULTIMATE_UI_PLATFORMS } from './lib/ultimate-ui-platforms';
+
 /** Locale code for nav/API requests and UI string lookups. */
 export type NavLang = 'en' | 'jp' | 'kr';
 
@@ -440,6 +442,14 @@ export interface PlatformHeadOptions {
    * when the build renders the synced chrome (igChrome) instead.
    */
   legacyChrome?: boolean;
+}
+
+/**
+ * The display label for a platform key ('winui' → 'WinUI'), from IGDOCS_PLATFORMS, or `null` for
+ * a platform it does not list.
+ */
+export function platformLabelFor(platform: string | null | undefined): string | null {
+  return Object.values(IGDOCS_PLATFORMS).find((p) => p.key === platform)?.label ?? null;
 }
 
 /**

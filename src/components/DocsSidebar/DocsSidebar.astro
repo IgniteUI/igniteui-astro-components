@@ -13,6 +13,7 @@ import {
   trailingSlash as configuredTrailingSlash,
 } from 'virtual:docs-template/site-meta';
 import { platform as virtualPlatform } from 'virtual:docs-template/nav-html';
+import { ULTIMATE_UI_PLATFORMS, platformLabelFor } from '../../platform';
 import SidebarFilterInput from './SidebarFilterInput.astro';
 import './DocsSidebar.scss';
 import SidebarLabel from './SidebarLabel.astro';
@@ -42,23 +43,14 @@ interface Props {
   platformLabel?: string | null;
 }
 
-const PLATFORM_LABELS: Record<string, string> = {
-  angular: 'Angular',
-  react: 'React',
-  blazor: 'Blazor',
-  'web-components': 'Web Components',
-  winui: 'WinUI',
-  uno: 'Uno Platform',
-};
-
 const useTrailingSlash = configuredTrailingSlash !== 'never';
 const {
   currentSlug = '',
   items: itemsProp,
   showFilter = true,
   trailingSlash = useTrailingSlash,
-  logoText = virtualPlatform === 'winui' || virtualPlatform === 'uno' ? 'Ultimate UI' : 'Ignite UI',
-  platformLabel = virtualPlatform ? (PLATFORM_LABELS[virtualPlatform] ?? null) : null,
+  logoText = ULTIMATE_UI_PLATFORMS.has(virtualPlatform ?? '') ? 'Ultimate UI' : 'Ignite UI',
+  platformLabel = platformLabelFor(virtualPlatform),
 } = Astro.props;
 const items = (itemsProp ?? sidebarData) as SidebarEntry[];
 const nodes = toTreeNodes(items, currentSlug, { trailingSlash });

@@ -31,7 +31,8 @@ defineComponents(
 );
 
 import './icon-registry';
-import type { Highlighter } from 'shiki';
+import type { BundledLanguage, Highlighter } from 'shiki';
+import { ULTIMATE_UI_PLATFORMS } from '../lib/ultimate-ui-platforms';
 import footerStackblitzIcon from '../components/mdx/Sample/assets/stackblitz.svg?raw';
 import footerOpenExternalIcon from '../components/mdx/Sample/assets/open-external.svg?raw';
 
@@ -173,13 +174,16 @@ const SHIKI_LANGS = [
   'tsx',
   'javascript',
   'html',
-  'xml',
   'css',
   'scss',
   'csharp',
-  'json',
   'razor',
 ] as const;
+
+// Only the WinUI/Uno samples show these (XAML markup and data files), so they load on first use
+// rather than on every sample page.
+const SHIKI_LAZY_LANGS = ['xml', 'json'] as const;
+const HIGHLIGHT_LANGS: ReadonlySet<string> = new Set([...SHIKI_LANGS, ...SHIKI_LAZY_LANGS]);
 
 let _highlighterPromise: Promise<Highlighter> | null = null;
 
@@ -204,9 +208,12 @@ function getHighlighter(): Promise<Highlighter> {
 }
 
 function highlightCode(codeEl: HTMLElement, lang: string): void {
-  const safeLang = (SHIKI_LANGS as readonly string[]).includes(lang) ? lang : 'text';
+  const safeLang = HIGHLIGHT_LANGS.has(lang) ? lang : 'text';
   getHighlighter()
-    .then((h) => {
+    .then(async (h) => {
+      if (!h.getLoadedLanguages().includes(safeLang)) {
+        await h.loadLanguage(safeLang as BundledLanguage);
+      }
       const tmp = document.createElement('div');
       tmp.innerHTML = h.codeToHtml(codeEl.textContent ?? '', {
         lang: safeLang,
@@ -513,14 +520,14 @@ class XplatCodeService {
         .sort((a: SampleFile, b: SampleFile) => {
           const rank = (file: SampleFile) => {
             const index = this.samplesOrder.indexOf(file.fileHeader);
-            return index < 0 && (this.platform === 'winui' || this.platform === 'uno')
+            return index < 0 && ULTIMATE_UI_PLATFORMS.has(this.platform)
               ? Number.MAX_SAFE_INTEGER
               : index;
           };
           return rank(a) - rank(b);
         })
         .forEach((file: SampleFile) =>
-          addCodeTab(igcTabs, file, this.platform === 'winui' || this.platform === 'uno'),
+          addCodeTab(igcTabs, file, ULTIMATE_UI_PLATFORMS.has(this.platform)),
         );
 
       // Use sdk.openProject() to avoid the StackBlitz GitHub clone freeze bug.
