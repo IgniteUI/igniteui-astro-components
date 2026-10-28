@@ -9,8 +9,10 @@
   defineComponents(IgcIconButtonComponent, IgcIconComponent);
 
   function initCopyButtons(): void {
-    document.querySelectorAll<HTMLPreElement>('pre.astro-code, pre.shiki').forEach((pre) => {
-      if (pre.closest('.copy-code-wrapper')) return;
+    // Fenced blocks and <Code> only (Astro emits `astro-code`). Sample code
+    // tabs (`pre.igd-code` inside `.code-wrapper`) bring their own button.
+    document.querySelectorAll<HTMLPreElement>('pre.astro-code').forEach((pre) => {
+      if (pre.closest('.copy-code-wrapper, .code-wrapper')) return;
 
       const wrapper = document.createElement('div');
       wrapper.className = 'copy-code-wrapper';

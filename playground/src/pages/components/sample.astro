@@ -1,5 +1,6 @@
 ---
 import { Code } from 'astro:components';
+import { igShikiThemes } from '../../../../src/code-theme';
 import DocsLayout from '../../../../src/layouts/DocsLayout/DocsLayout.astro';
 import DocsSidebar from '../../../../src/components/DocsSidebar/DocsSidebar.astro';
 import DocsToc from '../../../../src/components/DocsToc/DocsToc.astro';
@@ -639,7 +640,7 @@ const usageServers = `<!-- Load from the LOB demos server instead of the default
     comes from the docs environment config, so
     <code>src</code> is always relative:
   </p>
-  <Code code={usageQuickStart} lang="astro" theme="dark-plus" wrap />
+  <Code code={usageQuickStart} lang="astro" themes={igShikiThemes} defaultColor={false} wrap />
   <DocsAside type="info">
     Always pass <code>alt</code> (the iframe's accessible title). Prefer
     <a href="#fit-content">
@@ -751,7 +752,7 @@ const usageServers = `<!-- Load from the LOB demos server instead of the default
     component. Click any tab to switch; hover a code pane to reveal the COPY CODE button. The footer
     opens the demo in StackBlitz, CodeSandbox, or full screen.
   </p>
-  <Code code={usageFull} lang="astro" theme="dark-plus" wrap />
+  <Code code={usageFull} lang="astro" themes={igShikiThemes} defaultColor={false} wrap />
   <MockSample id="mock-sample-1" src="/mock-demo" alt="React Grid Example" showThemePicker />
 
   <h2 id="fixed-height">Fixed height</h2>
@@ -764,7 +765,7 @@ const usageServers = `<!-- Load from the LOB demos server instead of the default
     <code>fitContent</code> the default drops to <code>50</code>, where it only serves as the
     loading placeholder). Here the same demo gets an explicit 240px instead:
   </p>
-  <Code code={usageFixedHeight} lang="astro" theme="dark-plus" wrap />
+  <Code code={usageFixedHeight} lang="astro" themes={igShikiThemes} defaultColor={false} wrap />
   <MockSample id="mock-sample-fixed-height" src="/mock-demo" height={240} alt="Grid Example" />
 
   {sections.map((section) => (
@@ -778,7 +779,13 @@ const usageServers = `<!-- Load from the LOB demos server instead of the default
       )}
       {section.slug === 'spacing' && (
         <>
-          <Code code={snippetFor(spacingDemo)} lang="astro" theme="dark-plus" wrap />
+          <Code
+            code={snippetFor(spacingDemo)}
+            lang="astro"
+            themes={igShikiThemes}
+            defaultColor={false}
+            wrap
+          />
           <div id="spacing-demo">
             <igc-button-group selection="single-required" aria-label="Sample spacing">
               <igc-toggle-button value="sm">sm</igc-toggle-button>
@@ -794,7 +801,13 @@ const usageServers = `<!-- Load from the LOB demos server instead of the default
       {section.examples.map((ex) => (
         <>
           {ex.intro && <p set:html={ex.intro} />}
-          <Code code={snippetFor(ex)} lang="astro" theme="dark-plus" wrap />
+          <Code
+            code={snippetFor(ex)}
+            lang="astro"
+            themes={igShikiThemes}
+            defaultColor={false}
+            wrap
+          />
           <SampleWidget {...(ex.props as any)} />
         </>
       ))}
@@ -808,7 +821,7 @@ const usageServers = `<!-- Load from the LOB demos server instead of the default
     itself never contains a host. There is no live example here because the playground has no demo
     servers configured; in real docs these render exactly like the samples above.
   </p>
-  <Code code={usageServers} lang="astro" theme="dark-plus" wrap />
+  <Code code={usageServers} lang="astro" themes={igShikiThemes} defaultColor={false} wrap />
 
   <h2 id="best-practices">Best practices</h2>
   <ul>

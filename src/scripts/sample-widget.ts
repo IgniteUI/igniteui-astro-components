@@ -57,9 +57,6 @@ const XPLAT_CODE_BASE: Record<string, string> = {
 
 const DV_PATHS = ['gauges/', 'maps/', 'excel/', 'charts/'];
 const ASSETS_RE = /([.]{0,2}\/)*assets\//g;
-const DEFAULT_CODE_THEME = 'dark-plus';
-
-declare const __IGD_SAMPLE_CODE_THEME__: string | undefined;
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -153,17 +150,13 @@ const SHIKI_LANGS = [
 
 let _highlighterPromise: Promise<Highlighter> | null = null;
 
-function getCodeTheme(): string {
-  return typeof __IGD_SAMPLE_CODE_THEME__ === 'string' && __IGD_SAMPLE_CODE_THEME__.trim()
-    ? __IGD_SAMPLE_CODE_THEME__
-    : DEFAULT_CODE_THEME;
-}
-
+// Shiki and the brand themes load together, lazily, in one chunk: neither is
+// needed until a code tab exists (see the pre-warm in initSampleWidgets).
 function getHighlighter(): Promise<Highlighter> {
   if (!_highlighterPromise) {
-    _highlighterPromise = import('shiki')
-      .then(({ createHighlighter }) =>
-        createHighlighter({ themes: [getCodeTheme()], langs: [...SHIKI_LANGS] }),
+    _highlighterPromise = Promise.all([import('shiki'), import('../code-theme')])
+      .then(([{ createHighlighter }, { igShikiThemes }]) =>
+        createHighlighter({ themes: Object.values(igShikiThemes), langs: [...SHIKI_LANGS] }),
       )
       .catch((err) => {
         _highlighterPromise = null;
@@ -173,20 +166,31 @@ function getHighlighter(): Promise<Highlighter> {
   return _highlighterPromise;
 }
 
+/**
+ * Highlight a code tab with the same dual (light/dark) brand theme the page's
+ * fenced blocks use. Shiki emits only `--shiki-light` / `--shiki-dark` custom
+ * properties; the shared `pre.igd-code` CSS resolves them with `light-dark()`,
+ * so the tab follows the site theme without re-highlighting.
+ */
 function highlightCode(codeEl: HTMLElement, lang: string): void {
   const safeLang = (SHIKI_LANGS as readonly string[]).includes(lang) ? lang : 'text';
-  getHighlighter()
-    .then((h) => {
+  Promise.all([getHighlighter(), import('../code-theme')])
+    .then(([h, { IG_CODE_THEME_LIGHT, IG_CODE_THEME_DARK }]) => {
       const tmp = document.createElement('div');
       tmp.innerHTML = h.codeToHtml(codeEl.textContent ?? '', {
         lang: safeLang,
-        theme: getCodeTheme(),
+        themes: { light: IG_CODE_THEME_LIGHT, dark: IG_CODE_THEME_DARK },
+        defaultColor: false,
       });
       const shikiPre = tmp.firstElementChild as HTMLElement | null;
       const shikiCode = shikiPre?.querySelector('code');
       if (!shikiPre || !shikiCode) return;
       const parentPre = codeEl.parentElement;
-      if (parentPre) parentPre.style.cssText = shikiPre.style.cssText;
+      if (parentPre) {
+        // Carries the `--shiki-*` variables; no inline colours with defaultColor: false.
+        parentPre.style.cssText = shikiPre.style.cssText;
+        parentPre.classList.add('igd-code');
+      }
       codeEl.innerHTML = shikiCode.innerHTML;
     })
     .catch(console.warn);
@@ -208,6 +212,7 @@ function addCodeTab(igcTabs: HTMLElement, file: SampleFile): void {
   wrapper.className = 'code-wrapper';
 
   const pre = document.createElement('pre');
+  pre.className = 'igd-code';
   const code = document.createElement('code');
   code.className = `language-${lang}`;
   code.textContent = file.content;

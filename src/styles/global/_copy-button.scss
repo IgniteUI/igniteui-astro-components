@@ -1,32 +1,28 @@
-/// Explicit palette for copy-code icon buttons (igc-icon-button).
+/// Palette for the copy-code icon buttons (igc-icon-button) that sit on top
+/// of a code snippet — the page-level CopyCode button and the Sample code-tab
+/// button share it so both affordances look identical.
 ///
-/// Code panes always render the dark Shiki theme, while the icon-button's
-/// default colors follow the site theme — in light mode that leaves the icon
-/// near-invisible on the dark background until a hover state recolors it.
-/// Pinning the full state palette keeps the button legible in both themes.
+/// The code surface has its own colours (`--igd-code-bg`, light or dark via
+/// `light-dark()`), so the button's colours are pinned to the matching
+/// `--igd-code-copy-*` tokens instead of the site theme's button defaults.
 /// The success palette kicks in while the icon shows the post-copy check.
 @mixin copy-button-colors {
-  --foreground: var(--ig-primary-600-contrast);
-  --hover-foreground: var(--ig-primary-600-contrast);
-  --focus-foreground: var(--ig-primary-600-contrast);
-  --active-foreground: var(--ig-primary-600-contrast);
-  --background: var(--ig-primary-500);
-  --hover-background: var(--ig-primary-500);
-  --focus-background: var(--ig-primary-500);
-  --active-background: var(--ig-primary-500);
+  --foreground: var(--igd-code-copy-color);
+  --hover-foreground: var(--igd-code-copy-hover-color);
+  --focus-foreground: var(--igd-code-copy-hover-color);
+  --active-foreground: var(--igd-code-copy-hover-color);
+  --background: transparent;
+  --hover-background: var(--igd-code-copy-hover-bg);
+  --focus-background: var(--igd-code-copy-hover-bg);
+  --active-background: var(--igd-code-copy-hover-bg);
   --border-color: transparent;
   --border-color-hover: transparent;
-  --border-color-focus: transparent;
+  --border-color-focus: var(--igd-code-copy-hover-color);
 
   &:has([name='check']) {
-    --foreground: var(--ig-success-300-contrast);
-    --hover-foreground: var(--ig-success-300-contrast);
-    --focus-foreground: var(--ig-success-300-contrast);
-    --active-foreground: var(--ig-success-300-contrast);
-
-    --background: var(--ig-success-300);
-    --hover-background: var(--ig-success-300);
-    --focus-background: var(--ig-success-300);
-    --active-background: var(--ig-success-300);
+    --foreground: var(--igd-code-copy-success-color);
+    --hover-foreground: var(--igd-code-copy-success-color);
+    --focus-foreground: var(--igd-code-copy-success-color);
+    --active-foreground: var(--igd-code-copy-success-color);
   }
 }

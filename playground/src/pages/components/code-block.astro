@@ -1,0 +1,402 @@
+---
+import { Code } from 'astro:components';
+import DocsLayout from '../../../../src/layouts/DocsLayout/DocsLayout.astro';
+import DocsSidebar from '../../../../src/components/DocsSidebar/DocsSidebar.astro';
+import DocsToc from '../../../../src/components/DocsToc/DocsToc.astro';
+import DocsSubHeader from '../../../../src/components/DocsSubHeader/DocsSubHeader.astro';
+import SearchAdvanced from '../../../../src/components/SearchAdvanced/SearchAdvanced.astro';
+import DocsAside from '../../../../src/components/mdx/DocsAside/DocsAside.astro';
+import {
+  igShikiThemes,
+  IG_CODE_DARK,
+  IG_CODE_LIGHT,
+  type RosePineSlot,
+} from '../../../../src/code-theme';
+import CodeFences from '../../components/CodeFences.mdx';
+import MockSample from '../../components/MockSample.astro';
+import {
+  SITE_TITLE,
+  SIDEBAR,
+  PRODUCT_LINKS,
+  SEARCH_TABS,
+  PACKAGES,
+  VERSIONS,
+} from '../../site-config';
+
+const slug = 'components/code-block';
+
+const headings = [
+  { depth: 2, slug: 'quick-start', text: 'Quick start' },
+  { depth: 2, slug: 'fenced-blocks', text: 'Fenced blocks' },
+  { depth: 2, slug: 'code-component', text: 'The <Code> component' },
+  { depth: 2, slug: 'light-dark', text: 'Light and dark' },
+  { depth: 2, slug: 'sample-tabs', text: 'Sample code tabs' },
+  { depth: 2, slug: 'copy-button', text: 'Copy button' },
+  { depth: 2, slug: 'tokens', text: 'Tokens (API reference)' },
+  { depth: 2, slug: 'palette', text: 'Palette' },
+  { depth: 2, slug: 'best-practices', text: 'Best practices' },
+];
+
+// ─ Snippets ────────────────────────────────────────────────────────────────────
+
+const usageConfig = `// astro.config.mjs — sites built with createDocsSite() already have this
+import { defineConfig } from 'astro';
+import { igShikiConfig } from 'igniteui-astro-components/code-theme';
+
+export default defineConfig({
+  markdown: { shikiConfig: igShikiConfig },
+});`;
+
+const usageCode = `${'---'}
+import { Code } from 'astro:components';
+import { igShikiThemes } from 'igniteui-astro-components/code-theme';
+
+const snippet = \`const grid = document.querySelector('igc-grid');\`;
+${'---'}
+
+<Code code={snippet} lang="ts" themes={igShikiThemes} defaultColor={false} wrap />`;
+
+const usageHighlighter = `import { createHighlighter } from 'shiki';
+import { igShikiThemes, IG_CODE_THEME_LIGHT, IG_CODE_THEME_DARK } from 'igniteui-astro-components/code-theme';
+
+const highlighter = await createHighlighter({ themes: Object.values(igShikiThemes), langs: ['ts'] });
+const html = highlighter.codeToHtml(code, {
+  lang: 'ts',
+  themes: { light: IG_CODE_THEME_LIGHT, dark: IG_CODE_THEME_DARK },
+  defaultColor: false,
+});`;
+
+const usageTokens = `/* Any stylesheet loaded after theme.scss */
+:root {
+  --igd-code-padding: 20px;
+  --igd-code-line-height: 20px;
+  --igd-code-copy-hover-color: var(--ig-secondary-500);
+}`;
+
+const longLine = `export const columns = [{ field: 'ID', header: 'Identifier', width: '80px', sortable: true, filterable: true, resizable: true, pinned: false, hidden: false, dataType: 'number' }];`;
+
+// ─ Tokens table ────────────────────────────────────────────────────────────────
+
+interface TokenRow {
+  name: string;
+  def: string;
+  description: string;
+}
+
+const tokenRows: TokenRow[] = [
+  { name: '--igd-code-bg', def: '#f3f6fa / #00142b', description: 'Snippet background.' },
+  { name: '--igd-code-border-color', def: '#e5ebf3 / #002b5c', description: 'Border colour.' },
+  {
+    name: '--igd-code-border',
+    def: '1px solid var(--igd-code-border-color)',
+    description: 'Full border shorthand.',
+  },
+  {
+    name: '--igd-code-fg',
+    def: '#7d91ab / #d2dbe8',
+    description: 'Text colour for content Shiki does not colour (plain text, whitespace).',
+  },
+  { name: '--igd-code-radius', def: 'var(--igd-border-radius)', description: 'Corner radius.' },
+  {
+    name: '--igd-code-padding',
+    def: '36px (20px below 768px)',
+    description: 'Inner padding on every side.',
+  },
+  { name: '--igd-code-font-family', def: 'var(--font-mono)', description: 'JetBrains Mono.' },
+  { name: '--igd-code-font-size', def: '14px', description: 'Font size.' },
+  { name: '--igd-code-line-height', def: '24px', description: 'Line height.' },
+  { name: '--igd-code-margin-bottom', def: '26px', description: 'Space after the block.' },
+  { name: '--igd-code-copy-color', def: '#344b65 / #d2dbe8', description: 'Copy icon.' },
+  {
+    name: '--igd-code-copy-hover-color',
+    def: '#0176ff',
+    description: 'Copy icon on hover / focus.',
+  },
+  {
+    name: '--igd-code-copy-hover-bg',
+    def: '#e5ebf3 / #002b5c',
+    description: 'Copy button background on hover / focus.',
+  },
+  {
+    name: '--igd-code-copy-success-color',
+    def: 'var(--ig-success-500)',
+    description: 'Check icon shown after a successful copy.',
+  },
+  {
+    name: '--igd-code-copy-inset',
+    def: '12px',
+    description: 'Copy button offset from the top-right corner.',
+  },
+];
+
+// ─ Palette table ───────────────────────────────────────────────────────────────
+
+const SLOT_ROLES: Record<RosePineSlot, string> = {
+  pine: 'keywords, import / export, operators',
+  gold: 'strings',
+  foam: 'types, tags, namespaces, CSS property names',
+  rose: 'numbers, booleans, function and class names',
+  iris: 'attribute names, parameters, inherited classes',
+  love: 'invalid code, built-in functions',
+  text: 'identifiers, braces',
+  subtle: 'punctuation',
+  muted: 'comments (italic)',
+};
+const slots = Object.keys(SLOT_ROLES) as RosePineSlot[];
+---
+
+<DocsLayout title="Code snippets" siteTitle={SITE_TITLE} hasSidebar currentSlug={slug}>
+  <DocsSubHeader
+    slot="subheader"
+    pageTitle="Code snippets"
+    currentSlug={slug}
+    siteTitle={SITE_TITLE}
+    productLinks={PRODUCT_LINKS}
+    showThemeToggle={true}
+    packages={[...PACKAGES]}
+    selectedPackage={PACKAGES[0].value}
+    versions={[...VERSIONS]}
+    selectedVersion={VERSIONS[0]}
+  >
+    <SearchAdvanced slot="search" tabs={SEARCH_TABS} showScope={true} />
+  </DocsSubHeader>
+  <DocsSidebar slot="sidebar" items={SIDEBAR} currentSlug={slug} />
+  <DocsToc slot="toc" headings={headings} offsetTarget=".docs-subheader" />
+
+  <h1>Code snippets</h1>
+  <p>
+    Every code snippet on a docs site — a fenced block in Markdown or MDX, Astro's
+    <code>&lt;Code&gt;</code> component, and the code tabs of a{' '}
+    <a href="/components/sample">Sample</a>— renders with{' '}
+    <strong>one brand theme in light and dark</strong>. The theme is Shiki's
+    <em>Rosé Pine Moon</em> (dark) and <em>Rosé Pine Dawn</em> (light) with their nine colour slots
+    swapped for brand colours, as in the API Docs design, and the surface around the code
+    (background, border, padding, font, copy button) is a set of <code>--igd-code-*</code> tokens.
+  </p>
+  <p>
+    There is no component to import for a fenced block: write the Markdown and the look comes from
+    the package. The exports live in <code>igniteui-astro-components/code-theme</code>.
+  </p>
+
+  <h2 id="quick-start">Quick start</h2>
+  <p>
+    A site built with <code>createDocsSite()</code> needs <strong>nothing</strong>: the config
+    applies <code>igShikiConfig</code> to <code>markdown.shikiConfig</code> and{' '}
+    <code>DocsLayout</code> loads the styles. Any other Astro site adds the config and the package
+    stylesheet:
+  </p>
+  <Code code={usageConfig} lang="js" themes={igShikiThemes} defaultColor={false} wrap />
+  <DocsAside type="info">
+    <code>igShikiConfig</code> renders <em>both</em> themes with <code>defaultColor: false</code>,
+    so Shiki writes only <code>--shiki-light</code> / <code>--shiki-dark</code> custom properties
+    and the stylesheet picks one with <code>light-dark()</code>. Without the stylesheet the code is
+    monochrome — import <code>igniteui-astro-components/styles/theme.scss</code>.
+  </DocsAside>
+
+  <h2 id="fenced-blocks">Fenced blocks</h2>
+  <p>
+    The blocks below are real Markdown fences rendered through the playground's pipeline —
+    TypeScript, HTML, SCSS, C#, Razor and JSON. Long lines wrap (<code>wrap: true</code>); a snippet
+    never adds a horizontal scrollbar to the page.
+  </p>
+  <CodeFences />
+
+  <h2 id="code-component">
+    The <code>&lt;Code&gt;</code> component
+  </h2>
+  <p>
+    For code built at render time (this page's own snippets, a generated signature), pass the theme
+    map to Astro's component. <code>defaultColor={'{false}'}</code> is required — without it Astro
+    inlines the light colours and the dark theme never shows.
+  </p>
+  <Code code={usageCode} lang="astro" themes={igShikiThemes} defaultColor={false} wrap />
+  <p>Outside Astro's Markdown pipeline, server or client, use Shiki directly:</p>
+  <Code code={usageHighlighter} lang="ts" themes={igShikiThemes} defaultColor={false} wrap />
+  <p>
+    This is what the Sample widget does in the browser, and what an API reference site does for
+    TypeDoc signatures. A very long line, for the wrapping behaviour:
+  </p>
+  <Code code={longLine} lang="ts" themes={igShikiThemes} defaultColor={false} wrap />
+
+  <h2 id="light-dark">Light and dark</h2>
+  <p>
+    Switch the theme with the toggle in the sub-header: every snippet on the page changes instantly,
+    no re-render. Both palettes are in the HTML; the page's <code>color-scheme</code> (set by{' '}
+    <code>[data-theme]</code>) decides which one <code>light-dark()</code> resolves. The same
+    mechanism drives the <code>--igd-code-*</code> surface tokens, so background, border and copy
+    button follow too.
+  </p>
+  <DocsAside type="warning">
+    The light palette uses the Figma values as delivered. Its base text (<code>#7d91ab</code>) and
+    property-key blue (<code>#66adff</code>) sit below WCAG AA contrast on the <code>#f3f6fa</code>{' '}
+    background. They are one table in <code>src/code-theme/palette.ts</code> — retune there once
+    design signs off on darker shades.
+  </DocsAside>
+
+  <h2 id="sample-tabs">Sample code tabs</h2>
+  <p>
+    The Sample component highlights its code tabs in the browser with the same two themes, and the
+    tab's <code>&lt;pre&gt;</code> carries the same styles, so a tab and a fenced block on one page
+    are indistinguishable. Open a tab:
+  </p>
+  <MockSample id="code-block-sample" src="/mock-demo" alt="React Grid Example" />
+
+  <h2 id="copy-button">Copy button</h2>
+  <p>
+    <code>CopyCode</code> (rendered by <code>DocsLayout</code>) adds an icon button to every fenced
+    block and <code>&lt;Code&gt;</code>; the Sample widget adds the same button to its tabs. It is
+    revealed on hover or keyboard focus — and always visible on touch devices, which cannot hover.
+    After a copy the icon turns into a check in <code>--igd-code-copy-success-color</code> for 1.5
+    s; the button's <code>aria-label</code> announces "Copied!" to screen readers.
+  </p>
+
+  <h2 id="tokens">Tokens (API reference)</h2>
+  <p>
+    Defined on <code>:root</code> in <code>src/styles/global/_variables.scss</code>. Colour tokens
+    are <code>light-dark()</code> pairs, shown here as <em>light / dark</em>. Override any of them
+    from a stylesheet loaded after the theme — no selector juggling, no <code>!important</code>.
+  </p>
+  <div class="igd-table-wrapper" role="region" aria-labelledby="tokens-table-caption" tabindex="0">
+    <table>
+      <caption id="tokens-table-caption" class="visually-hidden">
+        Code snippet CSS custom properties
+      </caption>
+      <thead>
+        <tr>
+          <th>Token</th>
+          <th>Default</th>
+          <th>Purpose</th>
+        </tr>
+      </thead>
+      <tbody>
+        {tokenRows.map((row) => (
+          <tr>
+            <td>
+              <code>{row.name}</code>
+            </td>
+            <td>
+              <code>{row.def}</code>
+            </td>
+            <td>{row.description}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+  <Code code={usageTokens} lang="css" themes={igShikiThemes} defaultColor={false} wrap />
+
+  <h2 id="palette">Palette</h2>
+  <p>
+    The syntax colours are not CSS tokens — Shiki bakes them into the HTML — but they come from one
+    table, <code>src/code-theme/palette.ts</code>: a background, a default foreground, one brand
+    colour per Rosé Pine slot and the property-key colour. Rosé Pine's decisions about{' '}
+    <em>which scope gets which slot</em> are inherited, so recolouring keywords is changing{' '}
+    <code>pine</code>, nothing else. The swatches below are read from that table.
+  </p>
+  <div class="igd-table-wrapper" role="region" aria-labelledby="palette-table-caption" tabindex="0">
+    <table>
+      <caption id="palette-table-caption" class="visually-hidden">
+        Rosé Pine slots and their brand colours
+      </caption>
+      <thead>
+        <tr>
+          <th>Slot</th>
+          <th>Recolours</th>
+          <th>Dark</th>
+          <th>Light</th>
+        </tr>
+      </thead>
+      <tbody>
+        {slots.map((slot) => (
+          <tr>
+            <td>
+              <code>{slot}</code>
+            </td>
+            <td>{SLOT_ROLES[slot]}</td>
+            <td>
+              <span
+                class="igd-swatch"
+                style={`--swatch: ${IG_CODE_DARK.slots[slot]}; --on: ${IG_CODE_DARK.background}`}
+              ></span>
+              <code>{IG_CODE_DARK.slots[slot]}</code>
+            </td>
+            <td>
+              <span
+                class="igd-swatch"
+                style={`--swatch: ${IG_CODE_LIGHT.slots[slot]}; --on: ${IG_CODE_LIGHT.background}`}
+              ></span>
+              <code>{IG_CODE_LIGHT.slots[slot]}</code>
+            </td>
+          </tr>
+        ))}
+        <tr>
+          <td>—</td>
+          <td>
+            object / JSON / YAML keys (<code>propertyKey</code>)
+          </td>
+          <td>
+            <span
+              class="igd-swatch"
+              style={`--swatch: ${IG_CODE_DARK.propertyKey}; --on: ${IG_CODE_DARK.background}`}
+            ></span>
+            <code>{IG_CODE_DARK.propertyKey}</code>
+          </td>
+          <td>
+            <span
+              class="igd-swatch"
+              style={`--swatch: ${IG_CODE_LIGHT.propertyKey}; --on: ${IG_CODE_LIGHT.background}`}
+            ></span>
+            <code>{IG_CODE_LIGHT.propertyKey}</code>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <p>
+    Need a third variant (high contrast, a print theme)? <code>remapTheme()</code> is exported — see
+    the{' '}
+    <a href="https://github.com/IgniteUI/igniteui-astro-components/blob/master/src/code-theme/README.md">
+      code-theme README
+    </a>
+    .
+  </p>
+
+  <h2 id="best-practices">Best practices</h2>
+  <ul>
+    <li>
+      <strong>Always give a fence a language.</strong> <code>```ts</code>, <code>```html</code>,{' '}
+      <code>```razor</code>… An unlabelled fence renders as plain text in <code>--igd-code-fg</code>
+      . Case does not matter — the package normalises it.
+    </li>
+    <li>
+      <strong>Retune tokens, not selectors.</strong> Padding, radius, colours and the copy button
+      are all <code>--igd-code-*</code> properties; a site that needs a denser snippet sets two of
+      them on <code>:root</code>.
+    </li>
+    <li>
+      <strong>Keep the two colour sources in sync.</strong> <code>palette.ts</code> (Shiki) and the{' '}
+      <code>--igd-code-bg</code> / <code>--igd-code-fg</code> tokens (CSS) describe the same
+      surface. If the background changes, change it in both.
+    </li>
+    <li>
+      <strong>
+        Don't pass a single <code>theme</code>.
+      </strong>{' '}
+      It works — Shiki then inlines its colours and they win — but that snippet stops following the
+      light/dark switch.
+    </li>
+  </ul>
+</DocsLayout>
+
+<style>
+  .igd-swatch {
+    display: inline-block;
+    inline-size: 1.25rem;
+    block-size: 1.25rem;
+    margin-inline-end: 0.5rem;
+    border-radius: 0.25rem;
+    vertical-align: middle;
+    background: var(--swatch);
+    box-shadow: 0 0 0 0.25rem var(--on);
+  }
+</style>

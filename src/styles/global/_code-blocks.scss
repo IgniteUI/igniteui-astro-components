@@ -1,55 +1,104 @@
-@use 'igniteui-theming' as *;
 @use 'copy-button' as *;
 
 /* ============================================================
-   Code Blocks (Shiki dual-theme)
-   Shiki emits CSS variables per span:
-     --shiki-light / --shiki-light-bg  (default, inline style)
-     --shiki-dark  / --shiki-dark-bg   (need CSS to activate)
+   Code snippets — one look for every snippet on a page:
+     • markdown / MDX fenced blocks and <Code> from `astro:components`
+       (Astro rewrites Shiki's `shiki` class to `astro-code`)
+     • Sample code tabs (sample-widget.ts adds `igd-code` to the <pre>)
+
+   Colours come from the brand dual theme (src/code-theme, applied by
+   `createDocsSite()` via `igShikiConfig`, `defaultColor: false`): Shiki
+   writes `--shiki-light` / `--shiki-dark` on every token and nothing
+   inline, and `light-dark()` resolves them from the page `color-scheme`
+   (`[data-theme]` sets it in _palette.scss) — no theme-specific selectors,
+   no `!important`, and the switch needs no reload.
+
+   A consumer that renders a single Shiki theme instead gets inline
+   colours from Shiki, which win over these rules — nothing breaks, the
+   snippet just uses that theme.
+
+   Surface tokens (`--igd-code-*`) live in _variables.scss.
    ============================================================ */
 
-.shiki {
-  border: 1px solid var(--ig-gray-200);
-  margin-bottom: rem(26px);
-}
-
-pre.shiki {
-  overflow-x: auto;
+pre.astro-code,
+pre.igd-code {
+  background-color: var(--igd-code-bg);
+  border: var(--igd-code-border);
+  border-radius: var(--igd-code-radius);
+  color: var(--igd-code-fg);
+  padding: var(--igd-code-padding);
+  margin-block: 0 var(--igd-code-margin-bottom);
+  font-family: var(--igd-code-font-family);
+  font-size: var(--igd-code-font-size);
+  line-height: var(--igd-code-line-height);
+  font-weight: 400;
+  tab-size: 2;
   max-width: 100%;
-  word-wrap: break-word;
+  overflow-x: auto;
+  // Long lines wrap (igShikiConfig sets `wrap: true` for the same reason);
+  // the pre never forces a horizontal scrollbar on the page.
   white-space: pre-wrap;
-  border-radius: var(--igd-border-radius);
-  padding: rem(32px);
-}
-
-pre.shiki code {
-  white-space: pre-wrap;
+  overflow-wrap: anywhere;
   word-break: break-word;
+
+  code {
+    display: block;
+    font: inherit;
+    white-space: inherit;
+    overflow-wrap: inherit;
+    word-break: inherit;
+    background: none;
+    border: 0;
+    padding: 0;
+    margin: 0;
+  }
+
+  // Dual-theme activation. A span with no `--shiki-*` (whitespace, plain
+  // text) makes the declaration invalid at computed-value time and falls
+  // back to the pre's `--igd-code-fg`, which is the intended default.
+  // `light-dark()` only takes colours; font styles are read from the light
+  // variables because both brand themes derive from Rosé Pine and share
+  // the same italic/bold decisions, so the two sets are always identical.
+  span {
+    color: light-dark(var(--shiki-light), var(--shiki-dark));
+    background-color: light-dark(var(--shiki-light-bg), var(--shiki-dark-bg));
+    font-style: var(--shiki-light-font-style);
+    font-weight: var(--shiki-light-font-weight);
+    text-decoration: var(--shiki-light-text-decoration);
+  }
 }
 
-/* ── Always use the dark theme ──────────────────────────────
-   Single dark theme — Shiki outputs colors directly, no CSS
-   variable switching required.                               */
-pre.shiki {
-  background-color: var(--shiki-color-background) !important;
-}
+/* ── Copy button (added by CopyCode.astro around every pre.astro-code) ── */
 
 .copy-code-wrapper {
   position: relative;
   z-index: 0;
+  margin-block-end: var(--igd-code-margin-bottom);
+
+  > pre {
+    margin-block-end: 0;
+  }
+
+  > .copy-btn {
+    position: absolute;
+    inset-block-start: var(--igd-code-copy-inset);
+    inset-inline-end: var(--igd-code-copy-inset);
+    z-index: 1;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+
+    @include copy-button-colors;
+  }
+
+  &:hover > .copy-btn,
+  &:focus-within > .copy-btn {
+    opacity: 1;
+  }
 }
 
-.copy-code-wrapper > .copy-btn {
-  position: absolute;
-  inset-block-start: rem(8px);
-  inset-inline-end: rem(8px);
-  opacity: 0;
-  z-index: 1;
-
-  @include copy-button-colors;
-}
-
-.copy-code-wrapper:hover > .copy-btn,
-.copy-code-wrapper:focus-within > .copy-btn {
-  opacity: 1;
+// No hover on touch devices — keep the button visible there.
+@media (hover: none) {
+  .copy-code-wrapper > .copy-btn {
+    opacity: 1;
+  }
 }

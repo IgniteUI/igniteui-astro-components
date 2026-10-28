@@ -78,6 +78,7 @@ import { igChrome, type IgChromeOptions } from './chrome/integration';
 export { igChrome, type IgChromeOptions } from './chrome/integration';
 import { remarkMdLinks } from './plugins/remark-md-links';
 import { remarkHtmlTransforms } from './plugins/remark-html-transforms';
+import { igShikiConfig } from './code-theme';
 
 /** Build / deployment mode. Drives env-var `DOCS_BUILD_MODE`. */
 export type DocsMode = 'development' | 'staging' | 'production';
@@ -212,8 +213,8 @@ export const navLang = ${JSON.stringify(navLang)};
           prerender: true,
         });
 
-        // Configure Sass loadPaths so bare `highlight.js/scss/vs2015`
-        // imports in the platform theme files resolve from node_modules.
+        // Configure Sass loadPaths so bare package imports in the platform
+        // theme files resolve from node_modules.
         updateConfig({
           vite: {
             css: {
@@ -659,24 +660,6 @@ export function createDocsSite(
     ? getPlatformHead(platform, navLang, { legacyChrome: !chrome || navLang === 'jp' })
     : [];
 
-  // highlight.js for code-tab syntax highlighting inside code-view widgets.
-  const codeViewHead: HeadEntry[] = [
-    {
-      tag: 'link',
-      attrs: {
-        rel: 'stylesheet',
-        href: 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/vs2015.min.css',
-      },
-    },
-    {
-      tag: 'script',
-      attrs: {
-        src: 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js',
-        defer: true,
-      },
-    },
-  ];
-
   // Auto-configure a Vite dev-server proxy so sample-widget.ts can fetch
   // /code-viewer/*.json from the local demos server without CORS issues.
   const devProxy: Record<string, object> = {};
@@ -734,6 +717,9 @@ export function createDocsSite(
       },
     },
     markdown: {
+      // Brand dual (light/dark) Shiki theme for fenced code blocks. A consumer
+      // can still pass its own `markdown.shikiConfig` — it replaces this one.
+      shikiConfig: igShikiConfig,
       ...(astroExtra as any).markdown,
       // Astro 7 renders Markdown/MDX with Sätteri instead of remark/rehype.
       // MDAST plugins run before HAST plugins, matching the old
@@ -764,7 +750,7 @@ export function createDocsSite(
         mode,
         llmsSets,
         productLinks,
-        head: [...platformHead, ...codeViewHead, ...head],
+        head: [...platformHead, ...head],
       }),
       mdx(),
       ...(chrome ? [igChrome(chrome)] : []),

@@ -30,6 +30,7 @@ import { getPlatformHead } from '../src/platform.ts';
 import { igChrome } from '../src/chrome/integration.ts';
 import { rehypeHeadingAnchors } from '../src/plugins/rehype-heading-anchors.ts';
 import { rehypeTableWrapper } from '../src/plugins/rehype-table-wrapper.ts';
+import { igShikiConfig } from '../src/code-theme/index.ts';
 
 // Default the platform context used by ApiLink / ApiRef / PlatformBlock.
 process.env.PLATFORM ??= 'React';
@@ -195,11 +196,6 @@ function createThemingSassImporter() {
   };
 }
 
-/** @type {import('astro').ShikiConfig} */
-const markdownShikiConfig = {
-  theme: 'dark-plus',
-  wrap: true,
-};
 export default defineConfig({
   root: repoRoot,
   srcDir: './src',
@@ -216,15 +212,14 @@ export default defineConfig({
       : []),
   ],
   markdown: {
-    shikiConfig: markdownShikiConfig,
+    // Brand dual (light/dark) code theme — the same object createDocsSite()
+    // applies for consumers. Fenced blocks, <Code> and Sample tabs all use it.
+    shikiConfig: igShikiConfig,
     processor: satteri({
       hastPlugins: [rehypeHeadingAnchors, rehypeTableWrapper],
     }),
   },
   vite: {
-    define: {
-      __IGD_SAMPLE_CODE_THEME__: JSON.stringify(markdownShikiConfig.theme),
-    },
     plugins: [iconUploadPlugin(), virtualDocsModules()],
     css: {
       preprocessorOptions: {

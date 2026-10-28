@@ -1,5 +1,6 @@
 ---
 import { Code } from 'astro:components';
+import { igShikiThemes } from '../../../../src/code-theme';
 import DocsLayout from '../../../../src/layouts/DocsLayout/DocsLayout.astro';
 import DocsSidebar from '../../../../src/components/DocsSidebar/DocsSidebar.astro';
 import DocsToc from '../../../../src/components/DocsToc/DocsToc.astro';
@@ -225,7 +226,7 @@ ${'---'}
     Both accept an <code>astro:assets</code> import or a plain URL, and both need a descriptive{' '}
     <code>alt</code>:
   </p>
-  <Code code={usageQuickStart} lang="astro" theme="dark-plus" wrap />
+  <Code code={usageQuickStart} lang="astro" themes={igShikiThemes} defaultColor={false} wrap />
   <DocsAside type="info">
     All four of <code>doSrc</code>, <code>doAlt</code>, <code>dontSrc</code> and{' '}
     <code>dontAlt</code> are required, and so are both description slots — an image without an
@@ -297,7 +298,7 @@ ${'---'}
     container can no longer fit two panels at <code>--igd-dodont-min-panel-width</code> (400px by
     default) — it responds to the space it is given, not to the viewport.
   </p>
-  <Code code={usageDefault} lang="astro" theme="dark-plus" wrap />
+  <Code code={usageDefault} lang="astro" themes={igShikiThemes} defaultColor={false} wrap />
   <DoDont
     doSrc="/mock-do-dont/long-list.svg"
     doAlt="Virtual Scroll showing a list of 100,000 employees"
@@ -316,7 +317,7 @@ ${'---'}
     <em>Don't</em> wording — useful for topics that phrase their guidance differently. The badge
     colors stay tied to the panel, not to the wording.
   </p>
-  <Code code={usageLabels} lang="astro" theme="dark-plus" wrap />
+  <Code code={usageLabels} lang="astro" themes={igShikiThemes} defaultColor={false} wrap />
   <DoDont
     doSrc="/mock-do-dont/long-list.svg"
     doAlt="Virtual Scroll showing a list of 100,000 employees"
@@ -345,7 +346,7 @@ ${'---'}
     <strong>no dimensions</strong>; the frame grows when the image loads, which is a layout shift.
     Reserve URLs for assets that live outside the build.
   </p>
-  <Code code={usageImports} lang="astro" theme="dark-plus" wrap />
+  <Code code={usageImports} lang="astro" themes={igShikiThemes} defaultColor={false} wrap />
   <DoDont
     doSrc={longList}
     doAlt="Virtual Scroll showing a list of 100,000 employees"
@@ -388,7 +389,7 @@ ${'---'}
     <code>alt</code> to assistive tech. Override the wording with <code>errorText</code>. The label
     and description are untouched: the guidance itself never depended on the picture loading.
   </p>
-  <Code code={usageBroken} lang="astro" theme="dark-plus" wrap />
+  <Code code={usageBroken} lang="astro" themes={igShikiThemes} defaultColor={false} wrap />
   <DoDont
     doSrc="/mock-do-dont/long-list.svg"
     doAlt="Virtual Scroll showing a list of 100,000 employees"

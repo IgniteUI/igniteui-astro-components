@@ -19,6 +19,9 @@
 // Astro integration helpers
 export * from './integration';
 
+// Brand Shiki code themes + Astro shikiConfig
+export * from './code-theme';
+
 // Sidebar build-time helpers
 export * from './sidebar';
 

@@ -1,5 +1,6 @@
 @use 'igniteui-theming/sass/typography' as *;
 @use 'palette' as *;
+@use 'breakpoints' as *;
 
 /* ============================================================
    CSS Custom Properties
@@ -146,4 +147,37 @@
 
   --igd-table-header-bg: var(--igd-layout-sections-bg);
   --igd-table-header-fg: light-dark(var(--ig-gray-900), var(--ig-gray-700));
+}
+
+/* ============================================================
+   CODE SNIPPETS (fenced blocks, <Code>, Sample code tabs)
+   Figma: API Docs › api-snippet (mode=dark / mode=light).
+   The hex values mirror src/code-theme/palette.ts — the Shiki theme
+   and these tokens describe the same surface and must stay in sync.
+   Override any of them from a consumer stylesheet to retune the look.
+   ============================================================ */
+:root {
+  --igd-code-bg: light-dark(#f3f6fa, #00142b);
+  --igd-code-border-color: light-dark(#e5ebf3, #002b5c);
+  --igd-code-border: #{rem(1px)} solid var(--igd-code-border-color);
+  --igd-code-fg: light-dark(#7d91ab, #d2dbe8);
+  --igd-code-radius: var(--igd-border-radius);
+  --igd-code-padding: #{rem(36px)};
+  --igd-code-font-family: var(--font-mono, var(--igd-font-mono));
+  --igd-code-font-size: #{rem(14px)};
+  --igd-code-line-height: #{rem(24px)};
+  --igd-code-margin-bottom: #{rem(26px)};
+
+  // Copy button (igc-icon-button) — revealed on hover / focus-within.
+  --igd-code-copy-color: light-dark(#344b65, #d2dbe8);
+  --igd-code-copy-hover-color: #0176ff;
+  --igd-code-copy-hover-bg: light-dark(#e5ebf3, #002b5c);
+  --igd-code-copy-success-color: var(--ig-success-500);
+  --igd-code-copy-inset: #{rem(12px)};
+}
+
+@media (max-width: #{$bp-mobile-max}) {
+  :root {
+    --igd-code-padding: #{rem(20px)};
+  }
 }

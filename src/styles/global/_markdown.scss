@@ -103,11 +103,6 @@
       margin-block-end: rem(26px);
     }
 
-    pre.astro-code {
-      padding: rem(24px);
-      border-radius: rem(8px);
-    }
-
     kbd {
       @include type-style('code', false) {
         margin: 0;
@@ -163,7 +158,8 @@
           color: var(--ig-primary-500);
         }
 
-        > .shiki {
+        > .astro-code,
+        > .copy-code-wrapper {
           margin-top: rem(8px);
         }
 
