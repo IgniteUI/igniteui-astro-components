@@ -1,0 +1,74 @@
+name: ✨ Feature request
+description: Propose a new component, option, token or integration capability.
+title: '[Feature]: '
+labels: [':screwdriver: enhancement']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Two fields are required: the problem and what you propose. The rest is optional.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What can a docs site not do today, and who needs it? Link the docs page or design where it shows up.
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: The API you have in mind — component name, props, tokens, config keys. A rough sketch is fine.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      description: Optional.
+      options:
+        - New component
+        - Existing component (new prop, slot, variant)
+        - Layout / chrome
+        - Code snippets / code theme
+        - Styles / theming / tokens
+        - Integration (createDocsSite, plugins, llms, sidebar helpers)
+        - Playground / developer experience
+
+  - type: input
+    id: design
+    attributes:
+      label: Design reference
+      description: Optional. Figma link or design doc, if one exists.
+      placeholder: https://www.figma.com/design/…
+
+  - type: dropdown
+    id: consumers
+    attributes:
+      label: Which sites need it?
+      description: Optional.
+      multiple: true
+      options:
+        - All docs sites
+        - Angular docs
+        - React docs
+        - Web Components docs
+        - Blazor docs
+        - API docs
+        - Blog
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Optional. Workarounds you tried and why they are not enough.
+
+  - type: checkboxes
+    id: contribution
+    attributes:
+      label: Contribution
+      options:
+        - label: I am willing to open a PR for this.

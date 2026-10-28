@@ -1,0 +1,10 @@
+# Disables the "Open a blank issue" link so every issue goes through a form
+# with required fields.
+blank_issues_enabled: false
+contact_links:
+  - name: Question or usage help
+    url: https://github.com/IgniteUI/igniteui-astro-components/discussions
+    about: Ask how to use a component or integration. Bugs and feature requests go through the forms below.
+  - name: Ignite UI documentation site issues
+    url: https://github.com/IgniteUI/igniteui-documentation/issues/new/choose
+    about: Problems with the content of a docs site (not with the shared components) belong in the docs repository.

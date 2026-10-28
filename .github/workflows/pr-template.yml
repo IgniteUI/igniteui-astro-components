@@ -1,0 +1,56 @@
+# Keeps the pull request template honest without getting in the way: only a
+# non-empty "Summary", a "Related issue" line (issue reference or "No issue")
+# and at least one ticked "Type of change" box are required. "Consumer impact"
+# becomes required only when "Breaking change" is ticked. Everything else in
+# the template is optional. Re-runs whenever the description is edited.
+name: PR template
+
+on:
+  pull_request:
+    types: [opened, edited, reopened, synchronize]
+
+permissions:
+  pull-requests: read
+
+jobs:
+  check:
+    name: PR template
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate pull request body
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const body = (context.payload.pull_request.body || '').replace(/<!--[\s\S]*?-->/g, '');
+            const errors = [];
+
+            // Split the body into "## Heading" sections.
+            const sections = {};
+            let current = null;
+            for (const line of body.split('\n')) {
+              const m = /^##\s+(.+?)\s*$/.exec(line);
+              if (m) { current = m[1].trim(); sections[current] = ''; continue; }
+              if (current) sections[current] += line + '\n';
+            }
+            const text = (name) => (sections[name] || '').trim();
+            const filled = (name) => text(name).length > 0 && !/^(n\/?a|none|-|tbd)\.?$/i.test(text(name));
+            const ticked = (name) => (sections[name] || '').match(/^\s*-\s*\[[xX]\]\s*(.*)$/gm) || [];
+
+            if (!filled('Summary')) errors.push('Write one or two sentences under "## Summary".');
+
+            const issue = text('Related issue');
+            const hasRef = /#\d+|https:\/\/github\.com\/\S+\/(issues|pull)\/\d+/i.test(issue);
+            const noIssue = /\bno issue\b/i.test(issue);
+            if (!hasRef && !noIssue) errors.push('Under "## Related issue" add "Closes #123" (or "Part of #123"), or write "No issue".');
+
+            const types = ticked('Type of change');
+            if (types.length === 0) errors.push('Tick at least one box under "## Type of change".');
+
+            const breaking = types.some((l) => /breaking change/i.test(l));
+            if (breaking && !filled('Consumer impact')) errors.push('"Breaking change" is ticked: describe under "## Consumer impact" what consumer sites must change.');
+
+            if (errors.length) {
+              core.setFailed(`The PR description needs a little more:\n- ${errors.join('\n- ')}\n\nEdit the description (not a comment) and this check re-runs. Everything else in the template is optional.`);
+            } else {
+              core.info('PR template complete.');
+            }
