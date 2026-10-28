@@ -1,0 +1,63 @@
+# Fails the PR when the pull request template is not filled in: every
+# required section must be present and non-empty, the related-issue line must
+# reference an issue or justify its absence, at least one "Type of change" box
+# and every "Checklist" box must be ticked. Make this check required in the
+# repository ruleset so it blocks merging.
+name: PR template
+
+on:
+  pull_request:
+    types: [opened, edited, reopened, synchronize]
+
+permissions:
+  pull-requests: read
+
+jobs:
+  check:
+    name: PR template
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate pull request body
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const body = (context.payload.pull_request.body || '').replace(/<!--[\s\S]*?-->/g, '');
+            const errors = [];
+
+            // Split the body into "## Heading" sections.
+            const sections = {};
+            let current = null;
+            for (const line of body.split('\n')) {
+              const m = /^##\s+(.+?)\s*$/.exec(line);
+              if (m) { current = m[1].trim(); sections[current] = ''; continue; }
+              if (current) sections[current] += line + '\n';
+            }
+            const text = (name) => (sections[name] || '').trim();
+            const ticked = (name) => (sections[name] || '').match(/^\s*-\s*\[[xX]\]/gm) || [];
+            const unticked = (name) => (sections[name] || '').match(/^\s*-\s*\[\s\]\s*(.*)$/gm) || [];
+
+            const required = ['Summary', 'Related issue', 'Type of change', 'What changed', 'How to test', 'Consumer impact', 'Screenshots', 'Checklist'];
+            for (const name of required) {
+              if (!(name in sections)) errors.push(`Missing section "## ${name}".`);
+            }
+            for (const name of ['Summary', 'What changed', 'How to test', 'Consumer impact', 'Screenshots']) {
+              if (name in sections && text(name).length < 10) errors.push(`Section "## ${name}" is empty.`);
+            }
+
+            const issue = text('Related issue');
+            if ('Related issue' in sections) {
+              const refs = /(close[sd]?|fix(e[sd])?|resolve[sd]?|part of|relates to|see)\s*:?\s*(#\d+|https:\/\/github\.com\/\S+\/(issues|pull)\/\d+)/i.test(issue);
+              const justified = /no issue\s*:\s*\S.{5,}/i.test(issue);
+              if (!refs && !justified) errors.push('"## Related issue" must reference an issue (e.g. "Closes #123") or say "No issue: <justification>".');
+            }
+
+            if ('Type of change' in sections && ticked('Type of change').length === 0) errors.push('Tick at least one box under "## Type of change".');
+
+            const open = unticked('Checklist');
+            if (open.length) errors.push(`Untick${open.length === 1 ? 'ed box' : 'ed boxes'} under "## Checklist":\n${open.map((l) => '  ' + l.trim()).join('\n')}`);
+
+            if (errors.length) {
+              core.setFailed(`The pull request body does not follow the template:\n- ${errors.join('\n- ')}\n\nEdit the PR description (not a comment) and the check re-runs.`);
+            } else {
+              core.info('PR template complete.');
+            }

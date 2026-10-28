@@ -1,0 +1,159 @@
+name: 🐛 Bug report
+description: Something in a component, style, integration or the playground does not behave as documented.
+title: '[Bug]: '
+labels: [':bug: bug']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the report. Fields marked with an asterisk are required; the form cannot be submitted without them.
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before you start
+      options:
+        - label: I searched the existing issues and this is not a duplicate.
+          required: true
+        - label: I reproduced it on the latest published `igniteui-astro-components` (or on `master`).
+          required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      description: Which part of the package is affected?
+      options:
+        - Component (Sample, DoDont, Anatomy, Faq, ApiRef, DocsAside, …)
+        - Layout / chrome (DocsLayout, sidebar, TOC, sub-header, footer, search)
+        - Code snippets / code theme
+        - Styles / theming / tokens
+        - Integration (createDocsSite, plugins, llms, sidebar helpers)
+        - Playground
+        - Build / release / tooling
+    validations:
+      required: true
+
+  - type: dropdown
+    id: component
+    attributes:
+      label: Component
+      description: Pick the component involved (names match the `Component:` labels). Choose "Not a component" for styles, integration or tooling.
+      options:
+        - Not a component
+        - Anatomy
+        - ApiLink
+        - ApiRef
+        - Badge
+        - CopyCode
+        - DocsAside
+        - DocsBreadcrumb
+        - DocsLayout
+        - DocsSidebar
+        - DocsSubHeader
+        - DocsToc
+        - DocsTree
+        - DoDont
+        - Faq
+        - GlobalFooter
+        - GlobalNavBar
+        - LicenseIndicator
+        - MobileSidebarToggle
+        - MobileTocToggle
+        - PlatformBlock
+        - Sample
+        - Search
+        - SearchAdvanced
+        - ThemingWidget
+    validations:
+      required: true
+
+  - type: input
+    id: file
+    attributes:
+      label: File or export
+      description: Optional. The export or file involved, e.g. `components/mdx/Sample.astro` or `src/styles/global/_code-blocks.scss`.
+      placeholder: components/mdx/Sample.astro
+
+  - type: input
+    id: version
+    attributes:
+      label: Package version
+      description: Output of `npm ls igniteui-astro-components`, or the commit SHA if you use a checkout.
+      placeholder: '1.6.0'
+    validations:
+      required: true
+
+  - type: dropdown
+    id: site
+    attributes:
+      label: Where did you see it?
+      multiple: true
+      options:
+        - Playground (this repo)
+        - Angular docs
+        - React docs
+        - Web Components docs
+        - Blazor docs
+        - API docs
+        - Blog
+        - Other consumer (say which in the description)
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+      description: What you did, what you saw, and what you expected instead. Screenshots or a short recording help a lot.
+      placeholder: |
+        Opening the TSX tab of a Sample on a touch device, the copy button never appears…
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: Numbered steps on a page we can open. A playground page or a docs URL is ideal.
+      placeholder: |
+        1. `npm run playground`
+        2. Open http://localhost:4567/components/sample/
+        3. …
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behaviour
+    validations:
+      required: true
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Browser and OS, page theme (light/dark), viewport or device if it matters. Node and Astro versions for build issues.
+      placeholder: |
+        Chrome 141 / macOS 26, dark theme, 600px viewport
+        Node 24.17, Astro 7.3.5
+    validations:
+      required: true
+
+  - type: dropdown
+    id: regression
+    attributes:
+      label: Is this a regression?
+      options:
+        - Not sure
+        - 'No, it never worked'
+        - 'Yes, it worked in a previous version (say which below)'
+    validations:
+      required: true
+
+  - type: textarea
+    id: extra
+    attributes:
+      label: Anything else?
+      description: Related issues, consumer repo PRs, workarounds, the version it last worked in.
