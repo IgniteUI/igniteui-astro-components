@@ -1,5 +1,15 @@
 @use 'copy-button' as *;
 
+/// Colour scheme of code snippets, independent of the page theme.
+///
+///   'auto' — follow the page: light snippet on a light page, dark on dark
+///   'dark' — always the dark snippet, on both page themes
+///
+/// Product decision (Oct 2026): dark snippets everywhere. The light theme is
+/// still rendered into the HTML (`igShikiConfig` emits both), so restoring the
+/// light/dark behaviour is flipping this flag — nothing else changes.
+$igd-code-scheme: 'dark' !default;
+
 /* ============================================================
    Code snippets — one look for every snippet on a page:
      • markdown / MDX fenced blocks and <Code> from `astro:components`
@@ -19,6 +29,19 @@
 
    Surface tokens (`--igd-code-*`) live in _variables.scss.
    ============================================================ */
+
+// Forced scheme: `color-scheme: dark` on the snippet and on the containers
+// that hold the copy buttons makes every `light-dark()` below — the Shiki
+// token colours and the `--igd-code-*` surface tokens alike — resolve to its
+// dark value, whatever the page theme is.
+@if $igd-code-scheme == 'dark' {
+  pre.astro-code,
+  pre.igd-code,
+  .copy-code-wrapper,
+  igc-tab .code-wrapper {
+    color-scheme: dark;
+  }
+}
 
 pre.astro-code,
 pre.igd-code {

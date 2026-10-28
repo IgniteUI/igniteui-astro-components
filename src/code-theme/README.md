@@ -100,6 +100,22 @@ border, padding, font) comes from the `--igd-code-*` tokens below.
 If a consumer passes a single theme instead (`shikiConfig: { theme: 'nord' }`),
 Shiki emits inline colours that win over the package CSS; nothing breaks.
 
+### Dark snippets on both page themes
+
+The current product decision is to show the **dark snippet everywhere**, on
+light pages too. This is one Sass flag at the top of
+`src/styles/global/_code-blocks.scss`:
+
+```scss
+$igd-code-scheme: 'dark' !default; // 'auto' = follow the page theme
+```
+
+With `'dark'` the snippet and its copy-button containers get
+`color-scheme: dark`, so every `light-dark()` they contain — Shiki's token
+colours and the `--igd-code-*` surface tokens — resolves to the dark value.
+The light theme is still rendered into the HTML, so flipping the flag to
+`'auto'` restores the light/dark behaviour with no other change.
+
 ## Surface tokens
 
 Defined in `src/styles/global/_variables.scss`; override them from any

@@ -220,12 +220,18 @@ const slots = Object.keys(SLOT_ROLES) as RosePineSlot[];
 
   <h2 id="light-dark">Light and dark</h2>
   <p>
-    Switch the theme with the toggle in the sub-header: every snippet on the page changes instantly,
-    no re-render. Both palettes are in the HTML; the page's <code>color-scheme</code> (set by{' '}
-    <code>[data-theme]</code>) decides which one <code>light-dark()</code> resolves. The same
-    mechanism drives the <code>--igd-code-*</code> surface tokens, so background, border and copy
-    button follow too.
+    Both palettes are in the HTML: the element's <code>color-scheme</code> decides which one{' '}
+    <code>light-dark()</code> resolves, for Shiki's token colours and the <code>--igd-code-*</code>{' '}
+    surface tokens alike, with no re-render.
   </p>
+  <DocsAside type="note">
+    <strong>Current decision: dark snippets on both page themes.</strong> Toggle the theme in the
+    sub-header — the page switches, the snippets stay dark. This is the{' '}
+    <code>$igd-code-scheme: 'dark'</code> flag at the top of{' '}
+    <code>src/styles/global/_code-blocks.scss</code>, which sets <code>color-scheme: dark</code> on
+    the snippet and its copy-button containers. Set it to <code>'auto'</code> and snippets follow
+    the page theme again; nothing else changes.
+  </DocsAside>
   <DocsAside type="warning">
     The light palette uses the Figma values as delivered. Its base text (<code>#7d91ab</code>) and
     property-key blue (<code>#66adff</code>) sit below WCAG AA contrast on the <code>#f3f6fa</code>{' '}
