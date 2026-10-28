@@ -85,6 +85,15 @@ igc-tab {
       opacity: 1;
       pointer-events: auto;
     }
+
+    // No hover on touch devices — keep the button visible and clickable there
+    // (mirrors the page-level `.copy-btn` rule in _code-blocks.scss).
+    @media (hover: none) {
+      .cv-hljs-code-copy {
+        opacity: 1;
+        pointer-events: auto;
+      }
+    }
   }
 }
 

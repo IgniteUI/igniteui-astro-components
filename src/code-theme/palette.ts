@@ -74,7 +74,11 @@ export const IG_CODE_DARK: CodePalette = {
     text: '#a9b8cc', // Figma — identifiers (ApplicationConfig, appConfig, …)
     subtle: '#d2dbe8', // Figma — punctuation reads as base text
     muted: '#7d91ab', // comments
-    pine: '#0176ff', // Figma — keywords (import, from, export const)
+    // Figma gives #0176ff, which is 4.43:1 on #00142b — just under WCAG AA
+    // (4.5:1) for 14px text. One step lighter reaches 4.62:1 and is visually
+    // indistinguishable; the icon token `--igd-code-copy-hover-color` keeps the
+    // exact Figma value (icons only need 3:1).
+    pine: '#0a7aff', // Figma #0176ff, nudged for AA — keywords (import, from, export const)
     gold: '#f95924', // Figma — strings
     rose: '#ffa685', // numbers / booleans / declared names (secondary-300)
     foam: '#66adff', // Figma — property-key blue, also tags/types
@@ -87,10 +91,13 @@ export const IG_CODE_DARK: CodePalette = {
 /**
  * Light snippet — Figma `api-snippet / mode=light`.
  *
- * ⚠ Contrast: the Figma values for `text`/`subtle` (#7d91ab ≈ 3.3:1) and
- * `foam`/`propertyKey` (#66adff ≈ 2.4:1) on #f3f6fa are below WCAG AA (4.5:1)
- * for 14px text. They are kept as designed on purpose; retune here once the
- * design team signs off on darker shades (e.g. text #536781, foam #0a5bc4).
+ * ⚠ Contrast: on the #f3f6fa background every syntax colour below is under
+ * WCAG AA (4.5:1) for 14px text — measured: `pine` 3.84:1, `rose` 3.65:1,
+ * `gold` 2.98:1, `text`/`subtle` 2.97:1, `foam`/`propertyKey` 2.15:1,
+ * `muted` (comments) 1.86:1; only `love` passes (4.54:1). They are the Figma
+ * values as delivered and are kept on purpose (the dark snippet is what ships
+ * on both page themes, see `$igd-code-scheme`); retune here once the design
+ * team signs off on darker shades (e.g. text #536781, foam #0a5bc4).
  */
 export const IG_CODE_LIGHT: CodePalette = {
   background: '#f3f6fa', // Figma

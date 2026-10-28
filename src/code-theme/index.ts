@@ -65,6 +65,12 @@ function buildTheme(
 ): ThemeRegistrationRaw {
   const extraTokenColors: RawThemeSetting[] = [
     { scope: PROPERTY_KEY_SCOPES, settings: { foreground: palette.propertyKey } },
+    // Rosé Pine colours the `//` / `/* */` of a comment as punctuation
+    // (`subtle`), brighter than the comment text; keep the whole comment muted.
+    {
+      scope: ['punctuation.definition.comment'],
+      settings: { foreground: palette.slots.muted, fontStyle: 'italic' },
+    },
   ];
   return remapTheme(base, {
     name,

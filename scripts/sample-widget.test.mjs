@@ -60,6 +60,8 @@ for (const platform of ['winui', 'uno', 'uno-platform']) {
       context.require = (name) => {
         if (name === 'igniteui-webcomponents') return new Proxy({}, { get: () => () => {} });
         if (name === './icon-registry' || name.endsWith('?raw')) return {};
+        // Live-region announcer for the copy buttons; nothing to observe here.
+        if (name === './copy-status') return { announceCopyStatus() {}, clearCopyStatus() {} };
         if (name === '../lib/ultimate-ui-platforms') return platformsModule.exports;
         // The brand dual theme (src/code-theme): the widget only needs the theme
         // objects to register and the two ids to pass to codeToHtml.

@@ -97,9 +97,15 @@
       margin-block-end: rem(26px);
     }
 
-    pre,
     code {
       font-family: var(--font-mono) !important;
+      margin-block-end: rem(26px);
+    }
+
+    // Snippets read the `--igd-code-font-family` token so a consumer can retune
+    // them; `!important` is still needed to beat the theming typography.
+    pre {
+      font-family: var(--igd-code-font-family, var(--font-mono)) !important;
       margin-block-end: rem(26px);
     }
 

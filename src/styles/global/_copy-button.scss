@@ -17,7 +17,10 @@
   --active-background: var(--igd-code-copy-hover-bg);
   --border-color: transparent;
   --border-color-hover: transparent;
-  --border-color-focus: var(--igd-code-copy-hover-color);
+  // Keyboard focus ring: the component's own ring colour comes from the page
+  // theme and nearly vanishes on the dark snippet, so pin it to the brand blue.
+  --focus-border-color: var(--igd-code-copy-hover-color);
+  --focus-visible-border-color: var(--igd-code-copy-hover-color);
 
   &:has([name='check']) {
     --foreground: var(--igd-code-copy-success-color);

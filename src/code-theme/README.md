@@ -89,7 +89,7 @@ With `defaultColor: false` Shiki writes **no inline colours**. Every token gets
 two custom properties instead:
 
 ```html
-<pre class="astro-code" style="--shiki-light:#7d91ab;--shiki-dark:#d2dbe8;…">></pre>
+<pre class="astro-code" style="--shiki-light:#7d91ab;--shiki-dark:#d2dbe8;…"></pre>
 ```
 
 The package CSS (`src/styles/global/_code-blocks.scss`) resolves them with
@@ -121,23 +121,23 @@ The light theme is still rendered into the HTML, so flipping the flag to
 Defined in `src/styles/global/_variables.scss`; override them from any
 stylesheet to retune the look without touching the theme.
 
-| Token                           | Default (light / dark)      | Purpose                                      |
-| ------------------------------- | --------------------------- | -------------------------------------------- |
-| `--igd-code-bg`                 | `#f3f6fa` / `#00142b`       | Snippet background                           |
-| `--igd-code-border-color`       | `#e5ebf3` / `#002b5c`       | Border colour                                |
-| `--igd-code-border`             | `1px solid <border-color>`  | Full border shorthand                        |
-| `--igd-code-fg`                 | `#7d91ab` / `#d2dbe8`       | Text colour for unhighlighted content        |
-| `--igd-code-radius`             | `var(--igd-border-radius)`  | Corner radius                                |
-| `--igd-code-padding`            | `36px` (`20px` below 768px) | Inner padding                                |
-| `--igd-code-font-family`        | `var(--font-mono)`          | JetBrains Mono Variable                      |
-| `--igd-code-font-size`          | `14px`                      | Font size                                    |
-| `--igd-code-line-height`        | `24px`                      | Line height                                  |
-| `--igd-code-margin-bottom`      | `26px`                      | Space after the block                        |
-| `--igd-code-copy-color`         | `#344b65` / `#d2dbe8`       | Copy icon                                    |
-| `--igd-code-copy-hover-color`   | `#0176ff`                   | Copy icon on hover / focus                   |
-| `--igd-code-copy-hover-bg`      | `#e5ebf3` / `#002b5c`       | Copy button background on hover / focus      |
-| `--igd-code-copy-success-color` | `var(--ig-success-500)`     | Check icon after a successful copy           |
-| `--igd-code-copy-inset`         | `12px`                      | Copy button offset from the top-right corner |
+| Token                           | Default (light / dark)                   | Purpose                                      |
+| ------------------------------- | ---------------------------------------- | -------------------------------------------- |
+| `--igd-code-bg`                 | `#f3f6fa` / `#00142b`                    | Snippet background                           |
+| `--igd-code-border-color`       | `#e5ebf3` / `#002b5c`                    | Border colour                                |
+| `--igd-code-border`             | `1px solid <border-color>`               | Full border shorthand                        |
+| `--igd-code-fg`                 | `#7d91ab` / `#d2dbe8`                    | Text colour for unhighlighted content        |
+| `--igd-code-radius`             | `var(--igd-border-radius)`               | Corner radius                                |
+| `--igd-code-padding`            | `36px` (`20px` below 768px)              | Inner padding                                |
+| `--igd-code-font-family`        | `var(--font-mono, var(--igd-font-mono))` | JetBrains Mono Variable                      |
+| `--igd-code-font-size`          | `14px`                                   | Font size                                    |
+| `--igd-code-line-height`        | `24px`                                   | Line height                                  |
+| `--igd-code-margin-bottom`      | `26px`                                   | Space after the block                        |
+| `--igd-code-copy-color`         | `#344b65` / `#d2dbe8`                    | Copy icon                                    |
+| `--igd-code-copy-hover-color`   | `#0176ff`                                | Copy icon on hover / focus                   |
+| `--igd-code-copy-hover-bg`      | `#e5ebf3` / `#002b5c`                    | Copy button background on hover / focus      |
+| `--igd-code-copy-success-color` | `var(--ig-success-500)`                  | Check icon after a successful copy           |
+| `--igd-code-copy-inset`         | `12px`                                   | Copy button offset from the top-right corner |
 
 ```css
 /* example: tighter snippets on a dense page */
@@ -149,13 +149,15 @@ stylesheet to retune the look without touching the theme.
 
 ## Tuning the colours
 
-`src/code-theme/palette.ts` is the only file with colour values. Each theme is
-a background, a default foreground, one brand colour per Rosé Pine slot, and
-the property-key colour:
+`src/code-theme/palette.ts` is the only place the **syntax** colours live (the
+surface colours are mirrored by the `--igd-code-*` tokens above, which must
+stay in sync with `background` / `foreground`). Each theme is a background, a
+default foreground, one brand colour per Rosé Pine slot, and the property-key
+colour:
 
 | Slot     | Recolours                                      | Dark      | Light     |
 | -------- | ---------------------------------------------- | --------- | --------- |
-| `pine`   | keywords, `import` / `export`, operators       | `#0176ff` | `#0176ff` |
+| `pine`   | keywords, `import` / `export`, operators       | `#0a7aff` | `#0176ff` |
 | `gold`   | strings                                        | `#f95924` | `#f95924` |
 | `foam`   | types, tags, namespaces, CSS property names    | `#66adff` | `#66adff` |
 | `rose`   | numbers, booleans, function / class names      | `#ffa685` | `#e04f1f` |
@@ -170,10 +172,16 @@ Change a value, reload — the Shiki theme is rebuilt from the table at import
 time. The `background` of each palette must match `--igd-code-bg` in
 `_variables.scss` (it is what a consumer without the package CSS sees).
 
-> **Contrast.** The light values marked in `palette.ts` are the Figma design as
-> delivered and fall below WCAG AA on `#f3f6fa` (`text`/`subtle` ≈ 3.3:1,
-> `foam`/`propertyKey` ≈ 2.4:1). Retune there once the design team signs off on
+> **Contrast.** The dark `pine` is one step lighter than the Figma `#0176ff`
+> (4.43:1 on `#00142b`) so keywords reach WCAG AA at 14px (4.62:1); every other
+> dark colour is above 5.5:1. The light values are the Figma design as delivered
+> and all sit below AA on `#f3f6fa` — measured `pine` 3.84:1, `rose` 3.65:1,
+> `gold` 2.98:1, `text`/`subtle` 2.97:1, `foam`/`propertyKey` 2.15:1, `muted`
+> (comments) 1.86:1. Retune in `palette.ts` once the design team signs off on
 > darker shades.
+>
+> Comments, including their `//` / `/* */` punctuation, always use `muted`
+> (an extra rule on top of Rosé Pine, which colours the punctuation as `subtle`).
 
 ### Deriving another variant
 

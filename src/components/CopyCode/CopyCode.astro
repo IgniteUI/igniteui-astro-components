@@ -1,5 +1,6 @@
 <script>
   import '../../scripts/icon-registry';
+  import { announceCopyStatus, clearCopyStatus } from '../../scripts/copy-status';
   import {
     defineComponents,
     IgcIconButtonComponent,
@@ -36,16 +37,19 @@
         const resetState = () => {
           icon.setAttribute('name', 'copy');
           btn.setAttribute('aria-label', 'Copy code');
+          clearCopyStatus(wrapper);
         };
 
         const showCopied = () => {
           icon.setAttribute('name', 'check');
           btn.setAttribute('aria-label', 'Copied!');
+          announceCopyStatus(wrapper, 'Code copied to clipboard');
           setTimeout(resetState, 1500);
         };
 
         const showFailed = () => {
           btn.setAttribute('aria-label', 'Copy failed');
+          announceCopyStatus(wrapper, 'Copy failed');
           setTimeout(resetState, 1500);
         };
 

@@ -102,7 +102,11 @@ const tokenRows: TokenRow[] = [
     def: '36px (20px below 768px)',
     description: 'Inner padding on every side.',
   },
-  { name: '--igd-code-font-family', def: 'var(--font-mono)', description: 'JetBrains Mono.' },
+  {
+    name: '--igd-code-font-family',
+    def: 'var(--font-mono, var(--igd-font-mono))',
+    description: 'JetBrains Mono.',
+  },
   { name: '--igd-code-font-size', def: '14px', description: 'Font size.' },
   { name: '--igd-code-line-height', def: '24px', description: 'Line height.' },
   { name: '--igd-code-margin-bottom', def: '26px', description: 'Space after the block.' },
@@ -233,10 +237,12 @@ const slots = Object.keys(SLOT_ROLES) as RosePineSlot[];
     the page theme again; nothing else changes.
   </DocsAside>
   <DocsAside type="warning">
-    The light palette uses the Figma values as delivered. Its base text (<code>#7d91ab</code>) and
-    property-key blue (<code>#66adff</code>) sit below WCAG AA contrast on the <code>#f3f6fa</code>{' '}
-    background. They are one table in <code>src/code-theme/palette.ts</code> — retune there once
-    design signs off on darker shades.
+    The light palette uses the Figma values as delivered, and every syntax colour in it sits below
+    WCAG AA contrast on the <code>#f3f6fa</code> background (base text <code>#7d91ab</code> 2.97:1,
+    property-key blue <code>#66adff</code> 2.15:1, comments 1.86:1). They are one table in{' '}
+    <code>src/code-theme/palette.ts</code> — retune there once design signs off on darker shades.
+    The dark keyword blue is <code>#0a7aff</code>, one step lighter than Figma's{' '}
+    <code>#0176ff</code>, so keywords reach AA (4.62:1) on <code>#00142b</code>.
   </DocsAside>
 
   <h2 id="sample-tabs">Sample code tabs</h2>
@@ -253,7 +259,10 @@ const slots = Object.keys(SLOT_ROLES) as RosePineSlot[];
     block and <code>&lt;Code&gt;</code>; the Sample widget adds the same button to its tabs. It is
     revealed on hover or keyboard focus — and always visible on touch devices, which cannot hover.
     After a copy the icon turns into a check in <code>--igd-code-copy-success-color</code> for 1.5
-    s; the button's <code>aria-label</code> announces "Copied!" to screen readers.
+    s, the button's <code>aria-label</code> becomes "Copied!" and a visually hidden{' '}
+    <code>role="status"</code> live region next to the button announces "Code copied to clipboard"
+    (or "Copy failed") to screen readers. Keyboard focus draws a ring in{' '}
+    <code>--igd-code-copy-hover-color</code>.
   </p>
 
   <h2 id="tokens">Tokens (API reference)</h2>

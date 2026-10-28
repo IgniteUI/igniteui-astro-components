@@ -59,9 +59,11 @@ pre.igd-code {
   max-width: 100%;
   overflow-x: auto;
   // Long lines wrap (igShikiConfig sets `wrap: true` for the same reason);
-  // the pre never forces a horizontal scrollbar on the page.
+  // the pre never forces a horizontal scrollbar on the page. `break-word`
+  // (not `anywhere`) matches the inline `word-wrap: break-word` Astro writes
+  // on fenced blocks, so a Sample tab computes exactly like a fence.
   white-space: pre-wrap;
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
   word-break: break-word;
 
   code {
