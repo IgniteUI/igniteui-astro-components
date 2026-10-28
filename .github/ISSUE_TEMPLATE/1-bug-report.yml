@@ -6,31 +6,44 @@ body:
   - type: markdown
     attributes:
       value: |
-        Thanks for the report. Fields marked with an asterisk are required; the form cannot be submitted without them.
+        Three fields are required: what happened, how to reproduce it, and where you saw it. The rest helps us fix it faster but is optional.
 
-  - type: checkboxes
-    id: checks
+  - type: textarea
+    id: description
     attributes:
-      label: Before you start
-      options:
-        - label: I searched the existing issues and this is not a duplicate.
-          required: true
-        - label: I reproduced it on the latest published `igniteui-astro-components` (or on `master`).
-          required: true
+      label: What happened?
+      description: What you did, what you saw, and what you expected instead. A screenshot or short recording is worth a lot here.
+      placeholder: |
+        Opening the TSX tab of a Sample on a phone, the copy button never appears. I expected it to be visible like on desktop hover.
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: A page we can open plus the steps. A playground page or a docs URL is ideal.
+      placeholder: |
+        1. `npm run playground`
+        2. Open http://localhost:4567/components/sample/
+        3. …
+    validations:
+      required: true
 
   - type: dropdown
-    id: area
+    id: site
     attributes:
-      label: Area
-      description: Which part of the package is affected?
+      label: Where did you see it?
+      multiple: true
       options:
-        - Component (Sample, DoDont, Anatomy, Faq, ApiRef, DocsAside, …)
-        - Layout / chrome (DocsLayout, sidebar, TOC, sub-header, footer, search)
-        - Code snippets / code theme
-        - Styles / theming / tokens
-        - Integration (createDocsSite, plugins, llms, sidebar helpers)
-        - Playground
-        - Build / release / tooling
+        - Playground (this repo)
+        - Angular docs
+        - React docs
+        - Web Components docs
+        - Blazor docs
+        - API docs
+        - Blog
+        - Other consumer (say which above)
     validations:
       required: true
 
@@ -38,9 +51,9 @@ body:
     id: component
     attributes:
       label: Component
-      description: Pick the component involved (names match the `Component:` labels). Choose "Not a component" for styles, integration or tooling.
+      description: Optional. Names match the `Component:` labels.
       options:
-        - Not a component
+        - Not a component / don't know
         - Anatomy
         - ApiLink
         - ApiRef
@@ -65,95 +78,33 @@ body:
         - Search
         - SearchAdvanced
         - ThemingWidget
-    validations:
-      required: true
-
-  - type: input
-    id: file
-    attributes:
-      label: File or export
-      description: Optional. The export or file involved, e.g. `components/mdx/Sample.astro` or `src/styles/global/_code-blocks.scss`.
-      placeholder: components/mdx/Sample.astro
 
   - type: input
     id: version
     attributes:
       label: Package version
-      description: Output of `npm ls igniteui-astro-components`, or the commit SHA if you use a checkout.
+      description: Optional. Output of `npm ls igniteui-astro-components`, or a commit SHA.
       placeholder: '1.6.0'
-    validations:
-      required: true
-
-  - type: dropdown
-    id: site
-    attributes:
-      label: Where did you see it?
-      multiple: true
-      options:
-        - Playground (this repo)
-        - Angular docs
-        - React docs
-        - Web Components docs
-        - Blazor docs
-        - API docs
-        - Blog
-        - Other consumer (say which in the description)
-    validations:
-      required: true
-
-  - type: textarea
-    id: description
-    attributes:
-      label: What happened?
-      description: What you did, what you saw, and what you expected instead. Screenshots or a short recording help a lot.
-      placeholder: |
-        Opening the TSX tab of a Sample on a touch device, the copy button never appears…
-    validations:
-      required: true
-
-  - type: textarea
-    id: steps
-    attributes:
-      label: Steps to reproduce
-      description: Numbered steps on a page we can open. A playground page or a docs URL is ideal.
-      placeholder: |
-        1. `npm run playground`
-        2. Open http://localhost:4567/components/sample/
-        3. …
-    validations:
-      required: true
-
-  - type: textarea
-    id: expected
-    attributes:
-      label: Expected behaviour
-    validations:
-      required: true
 
   - type: textarea
     id: environment
     attributes:
       label: Environment
-      description: Browser and OS, page theme (light/dark), viewport or device if it matters. Node and Astro versions for build issues.
-      placeholder: |
-        Chrome 141 / macOS 26, dark theme, 600px viewport
-        Node 24.17, Astro 7.3.5
-    validations:
-      required: true
+      description: Optional. Browser and OS, page theme, viewport or device if it matters; Node and Astro versions for build issues.
+      placeholder: Chrome 141 / macOS 26, dark theme, 600px viewport
 
   - type: dropdown
     id: regression
     attributes:
-      label: Is this a regression?
+      label: Did it work before?
+      description: Optional.
       options:
         - Not sure
         - 'No, it never worked'
         - 'Yes, it worked in a previous version (say which below)'
-    validations:
-      required: true
 
   - type: textarea
     id: extra
     attributes:
       label: Anything else?
-      description: Related issues, consumer repo PRs, workarounds, the version it last worked in.
+      description: Optional. Related issues, workarounds, the version it last worked in.

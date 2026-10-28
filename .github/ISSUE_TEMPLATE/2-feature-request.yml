@@ -3,28 +3,10 @@ description: Propose a new component, option, token or integration capability.
 title: '[Feature]: '
 labels: [':screwdriver: enhancement']
 body:
-  - type: checkboxes
-    id: checks
+  - type: markdown
     attributes:
-      label: Before you start
-      options:
-        - label: I searched the existing issues and discussions and this has not been requested.
-          required: true
-
-  - type: dropdown
-    id: area
-    attributes:
-      label: Area
-      options:
-        - New component
-        - Existing component (new prop, slot, variant)
-        - Layout / chrome
-        - Code snippets / code theme
-        - Styles / theming / tokens
-        - Integration (createDocsSite, plugins, llms, sidebar helpers)
-        - Playground / developer experience
-    validations:
-      required: true
+      value: |
+        Two fields are required: the problem and what you propose. The rest is optional.
 
   - type: textarea
     id: problem
@@ -38,22 +20,36 @@ body:
     id: proposal
     attributes:
       label: Proposed solution
-      description: The API you have in mind — component name, props, tokens, config keys. Sketch the markup if it helps.
-      render: markdown
+      description: The API you have in mind — component name, props, tokens, config keys. A rough sketch is fine.
     validations:
       required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      description: Optional.
+      options:
+        - New component
+        - Existing component (new prop, slot, variant)
+        - Layout / chrome
+        - Code snippets / code theme
+        - Styles / theming / tokens
+        - Integration (createDocsSite, plugins, llms, sidebar helpers)
+        - Playground / developer experience
 
   - type: input
     id: design
     attributes:
       label: Design reference
-      description: Figma link or design doc, if one exists. Visual changes need design sign-off before implementation.
+      description: Optional. Figma link or design doc, if one exists.
       placeholder: https://www.figma.com/design/…
 
   - type: dropdown
     id: consumers
     attributes:
       label: Which sites need it?
+      description: Optional.
       multiple: true
       options:
         - All docs sites
@@ -63,14 +59,12 @@ body:
         - Blazor docs
         - API docs
         - Blog
-    validations:
-      required: true
 
   - type: textarea
     id: alternatives
     attributes:
       label: Alternatives considered
-      description: Workarounds you tried and why they are not enough.
+      description: Optional. Workarounds you tried and why they are not enough.
 
   - type: checkboxes
     id: contribution

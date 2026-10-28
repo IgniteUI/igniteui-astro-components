@@ -1,7 +1,7 @@
 <!--
-Keep every section and heading below: the "PR template" check fails the PR
-when a required section is missing or empty, or a required checkbox is not
-ticked. Lines like this one are comments and are ignored.
+Only three things are checked automatically: a non-empty Summary, a Related
+issue line, and at least one Type of change box. Everything else is optional —
+fill in what helps the reviewer and delete or leave "N/A" for the rest.
 -->
 
 ## Summary
@@ -10,7 +10,7 @@ ticked. Lines like this one are comments and are ignored.
 
 ## Related issue
 
-<!-- "Closes #123", "Part of #123", or "No issue: <one-line justification>". Required. -->
+<!-- "Closes #123", "Part of #123", or just "No issue". -->
 
 ## Type of change
 
@@ -21,34 +21,24 @@ ticked. Lines like this one are comments and are ignored.
 - [ ] Styles / theming / tokens
 - [ ] Documentation or playground only
 - [ ] Refactor, tooling or dependency update
-- [ ] Breaking change (consumer sites need to change something — describe it under Consumer impact)
-
-## What changed
-
-<!-- Bullet list of the actual changes: files, exports, tokens, behaviour. -->
+- [ ] Breaking change (consumer sites must change something — say what under Consumer impact)
 
 ## How to test
 
-<!-- Steps a reviewer can follow on the playground or a docs site. -->
+<!-- Optional. A playground page or docs URL and a couple of steps. -->
 
 ## Consumer impact
 
 <!--
-The published package is consumed by the docs sites, api-docs and the blog.
-State what a consumer must do after upgrading: nothing / bump + no changes /
-config or markup change (describe) / follow-up PR in <repo>.
+Optional unless "Breaking change" is ticked. The package is consumed by the
+docs sites, api-docs and the blog: say what they must do after upgrading, if
+anything.
 -->
 
 ## Screenshots
 
-<!-- Required for any visual change: before/after, light and dark theme. Write "N/A" otherwise. -->
+<!-- Optional. Welcome for visual changes (before/after, light and dark). -->
 
-## Checklist
+## Notes for the reviewer
 
-- [ ] `npm test`, `npm run lint`, `npm run format:check` and `npm run playground:check` pass locally
-- [ ] `npm run playground:build` succeeds
-- [ ] The playground has a page or section demonstrating the change (new or updated)
-- [ ] README / component README updated for any new export, prop, token or default
-- [ ] Verified in light and dark page theme
-- [ ] Keyboard and screen-reader behaviour checked for any interactive change (or N/A)
-- [ ] No new `!important`, hard-coded colours outside `palette.ts` / `_variables.scss`, or leftover debug code
+<!-- Optional. Trade-offs, follow-ups, things you are unsure about. -->

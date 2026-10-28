@@ -3,42 +3,24 @@ description: A WCAG, keyboard, screen reader, contrast or motion problem in a co
 title: '[A11y]: '
 labels: [':wheelchair: a11y', ':bug: bug']
 body:
+  - type: markdown
+    attributes:
+      value: |
+        Required: where, what is wrong, and how to reproduce it. The rest is optional.
+
   - type: input
     id: component
     attributes:
       label: Component or page
-      placeholder: CopyCode button on pre.astro-code
+      placeholder: CopyCode button on a code block
     validations:
       required: true
-
-  - type: dropdown
-    id: category
-    attributes:
-      label: Category
-      multiple: true
-      options:
-        - Colour contrast
-        - Keyboard navigation / focus
-        - Screen reader (names, roles, announcements)
-        - Touch / pointer target size
-        - Motion / animation
-        - Structure (headings, landmarks, tables)
-        - Other
-    validations:
-      required: true
-
-  - type: input
-    id: criterion
-    attributes:
-      label: WCAG success criterion
-      description: If you know it, e.g. `1.4.3 Contrast (Minimum)` or `2.4.7 Focus Visible`.
-      placeholder: 1.4.3 Contrast (Minimum)
 
   - type: textarea
     id: description
     attributes:
       label: What is wrong and who does it affect?
-      description: Include measured values where possible (contrast ratio, target size) and the tool you used (axe, Lighthouse, VoiceOver, NVDA…).
+      description: Measured values help (contrast ratio, target size) and the tool you used (axe, Lighthouse, VoiceOver, NVDA…).
     validations:
       required: true
 
@@ -53,15 +35,36 @@ body:
     validations:
       required: true
 
+  - type: dropdown
+    id: category
+    attributes:
+      label: Category
+      description: Optional.
+      multiple: true
+      options:
+        - Colour contrast
+        - Keyboard navigation / focus
+        - Screen reader (names, roles, announcements)
+        - Touch / pointer target size
+        - Motion / animation
+        - Structure (headings, landmarks, tables)
+        - Other
+
+  - type: input
+    id: criterion
+    attributes:
+      label: WCAG success criterion
+      description: Optional, if you know it.
+      placeholder: 1.4.3 Contrast (Minimum)
+
   - type: textarea
     id: environment
     attributes:
       label: Environment
-      description: Browser, OS, assistive technology and version, page theme.
-    validations:
-      required: true
+      description: Optional. Browser, OS, assistive technology and version, page theme.
 
   - type: textarea
     id: suggestion
     attributes:
       label: Suggested fix
+      description: Optional.
