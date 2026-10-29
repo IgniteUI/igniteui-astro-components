@@ -41,6 +41,12 @@ interface Props {
   logoText?: string;
   /** Platform label shown below logoText (e.g. 'Angular'). Auto-detected from virtual module when omitted. */
   platformLabel?: string | null;
+  /**
+   * Keep one branch of the tree open at a time: only the current page's
+   * groups are open on load, and expanding a group collapses the others.
+   * The filter still opens every group with a match. Defaults to true.
+   */
+  singleBranchExpand?: boolean;
 }
 
 const useTrailingSlash = configuredTrailingSlash !== 'never';
@@ -51,13 +57,19 @@ const {
   trailingSlash = useTrailingSlash,
   logoText = ULTIMATE_UI_PLATFORMS.has(virtualPlatform ?? '') ? 'Ultimate UI' : 'Ignite UI',
   platformLabel = platformLabelFor(virtualPlatform),
+  singleBranchExpand = true,
 } = Astro.props;
 const items = (itemsProp ?? sidebarData) as SidebarEntry[];
-const nodes = toTreeNodes(items, currentSlug, { trailingSlash });
+const nodes = toTreeNodes(items, currentSlug, { trailingSlash, singleBranch: singleBranchExpand });
 const activeId = normalizeSlug(currentSlug);
 ---
 
-<sidebar-filter class="docs-sidebar" id="docs-sidebar" data-no-results="No topics match">
+<sidebar-filter
+  class="docs-sidebar"
+  id="docs-sidebar"
+  data-no-results="No topics match"
+  data-single-branch-expand={singleBranchExpand ? '' : undefined}
+>
   <div class="igd-sidebar-logo">
     {/* Keep as <span>, not <h1> — avoids competing with the page <h1> in search. */}
     <span class="igd-logo-text">{logoText}</span>
