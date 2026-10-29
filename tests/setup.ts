@@ -1,8 +1,9 @@
 import type { PlatformContext } from '../src/lib/types.ts';
 
 /**
- * Shared mock `platformContext` injected via `AstroContainer` locals
- * for every component that reads `Astro.locals.platformContext`.
+ * Shared mock `platformContext` for components that read `Astro.locals.platformContext`.
+ * Nothing injects it automatically: pass it per render, e.g.
+ * `container.renderToString(Component, { locals: { platformContext: MOCK_PLATFORM } })`.
  */
 export const MOCK_PLATFORM: PlatformContext = {
   name: 'React',
