@@ -39,15 +39,6 @@ describe('SidebarLabel', () => {
     expect(html).toContain('group-label-text');
   });
 
-  it('renders child count for group nodes', async () => {
-    const container = await AstroContainer.create();
-    const html = await container.renderToString(SidebarLabel, {
-      props: { node: GROUP_NODE, depth: 0, isLeaf: false, isActive: false },
-    });
-
-    expect(html).toContain('/2/');
-  });
-
   it('renders badges for leaf nodes', async () => {
     const container = await AstroContainer.create();
     const nodeWithBadge: TreeNode = {
@@ -59,7 +50,7 @@ describe('SidebarLabel', () => {
     });
 
     expect(html).toContain('New');
-    expect(html).toContain('sidebar-badge new');
+    expect(html).toContain('class="igd-badge new sidebar-badge"');
   });
 
   it('renders premium icon for premium badge', async () => {

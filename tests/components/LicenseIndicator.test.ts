@@ -28,7 +28,7 @@ describe('LicenseIndicator', () => {
     });
 
     expect(html).toContain('Premium');
-    expect(html).toContain('class="sidebar-badge premium"');
+    expect(html).toContain('class="igd-badge premium license-indicator-badge"');
   });
 
   it('renders an Open Source badge when license="opensource"', async () => {
@@ -38,7 +38,7 @@ describe('LicenseIndicator', () => {
     });
 
     expect(html).toContain('Open Source');
-    expect(html).toContain('class="sidebar-badge opensource"');
+    expect(html).toContain('class="igd-badge opensource license-indicator-badge"');
   });
 
   it('renders the premium icon when license="premium"', async () => {

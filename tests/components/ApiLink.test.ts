@@ -3,7 +3,26 @@ import { experimental_AstroContainer as AstroContainer } from 'astro/container';
 import ApiLink from '../../src/components/mdx/ApiLink/ApiLink.astro';
 import { MOCK_PLATFORM } from '../setup.ts';
 
-const locals = { platformContext: MOCK_PLATFORM };
+const locals = {
+  platformContext: {
+    ...MOCK_PLATFORM,
+    apiLinkIndex: {
+      symbols: {
+        IgrToast: {
+          p: 'igniteui-react',
+          u: '/react/igniteui-react/latest/classes/igrtoast.html',
+          k: 'class' as const,
+          m: { show: 'show' },
+        },
+        configureTheme: {
+          p: 'igniteui-react',
+          u: '/react/igniteui-react/latest/functions/configuretheme.html',
+          k: 'function' as const,
+        },
+      },
+    },
+  },
+};
 
 describe('ApiLink', () => {
   it('renders an anchor element', async () => {
@@ -69,14 +88,40 @@ describe('ApiLink', () => {
     expect(html).toContain('#show');
   });
 
-  it('builds URL from the correct docRoot', async () => {
+  it('resolves root-relative index URLs against the docRoot origin', async () => {
     const container = await AstroContainer.create();
     const html = await container.renderToString(ApiLink, {
       props: { type: 'Toast' },
       locals,
     });
 
-    expect(html).toContain('https://example.com/react/igniteui-react/latest');
+    expect(html).toContain(
+      'href="https://example.com/react/igniteui-react/latest/classes/igrtoast.html"',
+    );
+  });
+
+  it('renders code text without a link when the symbol is not in the index', async () => {
+    const container = await AstroContainer.create();
+    const html = await container.renderToString(ApiLink, {
+      props: { type: 'Calendar' },
+      locals,
+    });
+
+    expect(html).toContain('<code');
+    expect(html).toContain('IgrCalendar');
+    expect(html).not.toContain('<a ');
+  });
+
+  it('renders code text without a link when no index is available', async () => {
+    const container = await AstroContainer.create();
+    const html = await container.renderToString(ApiLink, {
+      props: { type: 'Toast' },
+      locals: { platformContext: MOCK_PLATFORM },
+    });
+
+    expect(html).toContain('<code');
+    expect(html).toContain('IgrToast');
+    expect(html).not.toContain('<a ');
   });
 
   it('renders kind="sass" link using sassApiUrl', async () => {

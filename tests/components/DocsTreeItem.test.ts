@@ -12,9 +12,7 @@ const LEAF_NODE: TreeNode = {
 const GROUP_NODE: TreeNode = {
   id: 'group-1',
   label: 'Group Item',
-  children: [
-    { id: 'child-1', label: 'Child One', href: '/docs/child-one/' },
-  ],
+  children: [{ id: 'child-1', label: 'Child One', href: '/docs/child-one/' }],
 };
 
 describe('DocsTreeItem', () => {

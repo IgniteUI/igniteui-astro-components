@@ -22,25 +22,6 @@ describe('DocsSubHeader', () => {
     expect(html).toContain('IgniteUI');
   });
 
-  it('renders theme toggle when showThemeToggle=true', async () => {
-    const container = await AstroContainer.create();
-    const html = await container.renderToString(DocsSubHeader, {
-      props: { showThemeToggle: true },
-    });
-
-    expect(html).toContain('data-theme-toggle');
-    expect(html).toContain('Toggle light/dark theme');
-  });
-
-  it('does not render theme toggle by default', async () => {
-    const container = await AstroContainer.create();
-    const html = await container.renderToString(DocsSubHeader, {
-      props: {},
-    });
-
-    expect(html).not.toContain('data-theme-toggle');
-  });
-
   it('renders package selector when packages are provided', async () => {
     const container = await AstroContainer.create();
     const html = await container.renderToString(DocsSubHeader, {

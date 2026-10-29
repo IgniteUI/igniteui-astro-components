@@ -6,9 +6,7 @@ import type { SidebarEntry } from '../../src/lib/sidebar/types.ts';
 const SIDEBAR: SidebarEntry[] = [
   {
     label: 'Components',
-    items: [
-      { label: 'Button', slug: 'components/button' },
-    ],
+    items: [{ label: 'Button', slug: 'components/button' }],
   },
 ];
 

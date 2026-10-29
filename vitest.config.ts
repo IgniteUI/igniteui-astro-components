@@ -30,22 +30,7 @@ export const navLang = 'en';
         `.trim();
       }
       if (id === prefix + NAV_HTML_ID) {
-        return `
-export const platform = 'react';
-export const navLang = 'en';
-export const themeApiUrl = '';
-export const widgetScriptSrc = '';
-export const prefetched = false;
-export const headerHtml = '';
-export const uiFooterHtml = '';
-export const footerHtml = '';
-export const abPrefetched = false;
-export const abHeaderHtml = '';
-export const abFooterHtml = '';
-export const abFooterUtilsHtml = '';
-export const abFooterCopyrightHtml = '';
-export const abContactSalesHtml = '';
-        `.trim();
+        return `export const platform = 'react';`;
       }
       return null;
     },
@@ -53,11 +38,11 @@ export const abContactSalesHtml = '';
 }
 
 export default getViteConfig({
-  // @ts-expect-error — Vite plugin array type mismatch between astro and vitest; safe at runtime
   plugins: [virtualDocsMocks()],
   test: {
     globals: false,
     environment: 'node',
+    include: ['tests/**/*.test.ts'],
     setupFiles: ['./tests/setup.ts'],
   },
 });
