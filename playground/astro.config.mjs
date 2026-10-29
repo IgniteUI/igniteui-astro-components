@@ -196,6 +196,23 @@ function createThemingSassImporter() {
   };
 }
 
+/**
+ * Playground-only lab for issue #136: a switcher on every page that compares
+ * igc-tree's `singleBranchExpand` with a sidebar-managed single branch.
+ * See src/scripts/single-branch-lab.ts.
+ * @returns {import('astro').AstroIntegration}
+ */
+function singleBranchLab() {
+  return {
+    name: 'playground:single-branch-lab',
+    hooks: {
+      'astro:config:setup': ({ injectScript }) => {
+        injectScript('page', `import '/src/scripts/single-branch-lab.ts';`);
+      },
+    },
+  };
+}
+
 export default defineConfig({
   root: repoRoot,
   srcDir: './src',
@@ -207,6 +224,7 @@ export default defineConfig({
    * the marketing site's exported chrome instead of the legacy fetched one. */
   integrations: [
     mdx(),
+    singleBranchLab(),
     ...(process.env.IG_CHROME_SNAPSHOT
       ? [igChrome({ snapshot: process.env.IG_CHROME_SNAPSHOT })]
       : []),
