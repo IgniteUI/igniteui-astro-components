@@ -168,63 +168,65 @@ const platformLabel = currentPlatform ? (PLATFORM_LABELS[currentPlatform] ?? nul
 
   <div class="igd-docs-subheader__content">
     <!-- Search (overridable via named slot) -->
-    <slot name="search">
-      <Search />
-    </slot>
+    <slot name="search"><Search /></slot>
 
     {/* Package selector */}
-    {packages && packages.length > 0 && (
-      <>
-        <igc-select
-          distance="4"
-          id="package-select"
-          class="igd-package-select"
-          outlined
-          value={selectedPackage}
-          aria-label={packageLabel}
-        >
-          {platformIcon && (
-            <igc-icon name={platformIcon} collection="docs" slot="prefix" aria-hidden="true" />
-          )}
-          {packages.map((p) => {
-            const icon = getPlatformIcon(p.value ?? '') ?? getPlatformIcon(p.label ?? '');
-            return (
-              <igc-select-item value={p.value} data-href={p.href} data-base={p.base}>
-                {icon && (
-                  <igc-icon slot="prefix" name={icon} collection="docs" aria-hidden="true" />
-                )}
-                {p.label}
-              </igc-select-item>
-            );
-          })}
-        </igc-select>
-        <igc-tooltip
-          id="package-tooltip"
-          class="igd-package-select-tooltip"
-          anchor="package-select"
-          placement="bottom"
-          with-arrow
-        >
-          {selectedPackageLabel}
-        </igc-tooltip>
-      </>
-    )}
+    {
+      packages && packages.length > 0 && (
+        <>
+          <igc-select
+            distance="4"
+            id="package-select"
+            class="igd-package-select"
+            outlined
+            value={selectedPackage}
+            aria-label={packageLabel}
+          >
+            {platformIcon && (
+              <igc-icon name={platformIcon} collection="docs" slot="prefix" aria-hidden="true" />
+            )}
+            {packages.map((p) => {
+              const icon = getPlatformIcon(p.value ?? '') ?? getPlatformIcon(p.label ?? '');
+              return (
+                <igc-select-item value={p.value} data-href={p.href} data-base={p.base}>
+                  {icon && (
+                    <igc-icon slot="prefix" name={icon} collection="docs" aria-hidden="true" />
+                  )}
+                  {p.label}
+                </igc-select-item>
+              );
+            })}
+          </igc-select>
+          <igc-tooltip
+            id="package-tooltip"
+            class="igd-package-select-tooltip"
+            anchor="package-select"
+            placement="bottom"
+            with-arrow
+          >
+            {selectedPackageLabel}
+          </igc-tooltip>
+        </>
+      )
+    }
 
     <!-- Version selector -->
-    {versions && versions.length > 0 && (
-      <igc-select
-        distance="4"
-        id="version-select"
-        class="igd-version-select"
-        outlined
-        value={selectedVersion}
-        aria-label={versionLabel}
-      >
-        {versions.map((v) => (
-          <igc-select-item value={v}>{v}</igc-select-item>
-        ))}
-      </igc-select>
-    )}
+    {
+      versions && versions.length > 0 && (
+        <igc-select
+          distance="4"
+          id="version-select"
+          class="igd-version-select"
+          outlined
+          value={selectedVersion}
+          aria-label={versionLabel}
+        >
+          {versions.map((v) => (
+            <igc-select-item value={v}>{v}</igc-select-item>
+          ))}
+        </igc-select>
+      )
+    }
 
     <!-- TODO WHY WE NEED THIS? -->
     <!--{filteredLinks.length > 0 && (-->
