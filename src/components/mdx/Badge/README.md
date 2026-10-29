@@ -31,9 +31,7 @@ import Badge from 'igniteui-astro-components/components/mdx/Badge.astro';
 <Badge variant="premium" />
 <Badge variant="opensource" />
 
-{/* Inside a heading */}
-
-## My Feature <Badge variant="new" />
+{/* Inside a heading: `### My Feature <Badge variant="new" />` */}
 
 {/* Custom slot content */}
 

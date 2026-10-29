@@ -32,24 +32,11 @@ Valid platform names: `Angular`, `React`, `WebComponents`, `Blazor`
 
 ## Platform context
 
-The active platform is read from the `PLATFORM` environment variable via `getPlatformContext()`. Set it in `astro.config.ts`:
+The active platform is `Astro.locals.platformContext.name`, set by the host site's middleware (see [playground/src/middleware.ts](../../../../playground/src/middleware.ts)). Names in `for` must match `platformContext.name` exactly (`Angular`, `React`, `WebComponents`, `Blazor`). Without the middleware the render throws, because the component destructures the context.
 
-```ts
-createDocsSite({ platform: 'angular' });
-// → only <PlatformBlock for="Angular"> blocks render
-```
+The xplat docs build additionally inlines and strips `<PlatformBlock>` at build time (a Vite plugin in that repo), so the component never reaches the browser there.
 
-Or in the environment directly:
+## Registering in MDX
 
-```sh
-PLATFORM=React astro build
-```
-
-## MDX global registration
-
-To avoid importing `PlatformBlock` in every MDX file, register it globally in `mdx-components.ts`:
-
-```ts
-// src/mdx-components.ts
-export { default as PlatformBlock } from 'igniteui-astro-components/components/mdx/PlatformBlock.astro';
-```
+Nothing is registered automatically. Import the component at the top of each
+MDX file, or pass it through the `components` map of a `<Content />` render.

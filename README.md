@@ -7,9 +7,16 @@ This package provides the navbar, sidebar, search, page frame, and MDX
 components for Infragistics documentation sites, keeping the integration
 story simple for consumer repos.
 
-> **Status:** internal — published from this repo as a parallel copy of the
-> components living in `docs-template`. Both trees are kept in sync until
-> consumers migrate fully.
+> **Status:** internal. Consumed by
+> [igniteui-documentation](https://github.com/IgniteUI/igniteui-documentation)
+> (`docs-template`), api-docs and the Infragistics blog. The docs repo keeps its
+> own fork of the Astro integration and uses this package as a component library.
+
+> **For AI agents:** start with [`llms.txt`](./llms.txt) — an index of every
+> export with its props and a link to the README that documents it. The package
+> ships it, so in a consumer it is at
+> `node_modules/igniteui-astro-components/llms.txt`. Working on this repo? Read
+> [`AGENTS.md`](./AGENTS.md).
 
 ---
 
@@ -19,96 +26,100 @@ story simple for consumer repos.
 npm install igniteui-astro-components
 ```
 
-`astro@^7.3.4` is required as a peer dependency.
+Peer dependencies: `astro@^7.3.5`, `igniteui-theming@^29`,
+`igniteui-webcomponents@^7.4.1`. There is no build step: the package ships its
+`.astro`, `.ts` and `.scss` sources and your Astro/Vite pipeline compiles them.
 
 ---
 
 ## Quick start
 
-Add the integration to your `astro.config.ts`:
+This is the setup every current consumer uses: the package as a component
+library, with the host owning its Astro config.
+
+**1. Astro config.** Enable MDX and let Sass resolve the package's bare
+`@use 'igniteui-theming/...'` imports:
 
 ```ts
+// astro.config.ts
 import { defineConfig } from 'astro/config';
-import { createDocsSite } from 'igniteui-astro-components/integration';
+import mdx from '@astrojs/mdx';
+import { rehypeHeadingAnchors } from 'igniteui-astro-components/plugins/rehype-heading-anchors';
 
-export default createDocsSite({
-  site: 'https://my-org.github.io/my-docs',
-  title: 'My Library',
-  description: 'Reference docs for My Library.',
-  platform: 'angular', // 'angular' | 'react' | 'web-components' | 'blazor' | …
-  navLang: 'en', // 'en' | 'jp' | 'kr'
-  source: {
-    tocPath: './my-docs/toc.yml',
-    docsDir: './my-docs/en/components',
-    imagesDir: './my-docs/en/images',
-  },
+export default defineConfig({
+  integrations: [mdx()],
+  markdown: { rehypePlugins: [rehypeHeadingAnchors] },
+  vite: { css: { preprocessorOptions: { scss: { loadPaths: ['node_modules'] } } } },
 });
 ```
 
-Use the layout in a route:
+**2. Virtual modules.** `DocsLayout`, `DocsSidebar`, `DocsSubHeader`,
+`GlobalNavBar` and `GlobalFooter` import `virtual:docs-template/site-meta` and
+`virtual:docs-template/nav-html` at module level, so both must resolve. Either
+run `siteMetaIntegration()` or stub them with a small Vite plugin — copy
+`virtualDocsModules()` from [playground/astro.config.mjs](playground/astro.config.mjs).
+The contract is in [src/virtual-modules.d.ts](src/virtual-modules.d.ts).
+
+**3. Middleware.** `ApiLink`, `ApiRef`, `PlatformBlock`, `Sample` and
+`ThemingWidget` read `Astro.locals.platformContext` and
+`Astro.locals.envVars`. Set them in `src/middleware.ts`; see
+[playground/src/middleware.ts](playground/src/middleware.ts) for the shape
+(`PlatformContext` is exported from `igniteui-astro-components/lib/types`).
+
+**4. A page.** `DocsLayout` imports `styles/theme.scss` and the JetBrains Mono
+font itself, so nothing else is needed:
 
 ```astro
 ---
 import DocsLayout from 'igniteui-astro-components/layouts/DocsLayout.astro';
-import DocsSidebar from 'igniteui-astro-components/components/sidebar/DocsSidebar.astro';
+import DocsSidebar from 'igniteui-astro-components/components/DocsSidebar/DocsSidebar.astro';
+import DocsToc from 'igniteui-astro-components/components/DocsToc.astro';
 
 const { slug } = Astro.params;
+const { headings } = Astro.props;
 ---
 
-<DocsLayout title="Hello" hasSidebar currentSlug={slug}>
-  <DocsSidebar slot="sidebar" currentSlug={slug} />
+<DocsLayout title="Hello" siteTitle="My Library" hasSidebar currentSlug={slug}>
+  <DocsSidebar slot="sidebar" items={sidebar} currentSlug={slug} />
+  <DocsToc slot="toc" headings={headings} offsetTarget=".docs-subheader" />
   <slot />
 </DocsLayout>
 ```
 
-Import MDX components in a page or `mdx-components.ts`:
+**5. MDX components.** Nothing is auto-registered. Import what a topic uses at
+the top of the MDX file (the convention in the docs repos):
 
-```ts
-export { default as ApiLink } from 'igniteui-astro-components/components/mdx/ApiLink.astro';
-export { default as ApiRef } from 'igniteui-astro-components/components/mdx/ApiRef.astro';
-export { default as PlatformBlock } from 'igniteui-astro-components/components/mdx/PlatformBlock.astro';
-export { default as Sample } from 'igniteui-astro-components/components/mdx/Sample.astro';
+```mdx
+import Sample from 'igniteui-astro-components/components/mdx/Sample.astro';
+import ApiLink from 'igniteui-astro-components/components/mdx/ApiLink.astro';
+import DocsAside from 'igniteui-astro-components/components/mdx/DocsAside.astro';
+import PlatformBlock from 'igniteui-astro-components/components/mdx/PlatformBlock.astro';
 ```
 
-Pull in the base styles once (e.g. from your root layout or `astro.config`):
+or pass them through the `components` map of `<Content />` when the MDX is
+authored without imports.
 
-```ts
-import 'igniteui-astro-components/styles/custom.scss';
-import 'igniteui-astro-components/styles/ig-theme.scss';
-```
+### The reference integration
+
+`igniteui-astro-components/integration` exports `createDocsSite()` and
+`siteMetaIntegration()`: a full docs-site config (site meta virtual modules,
+sidebar from a JSON TOC, static images, remark/rehype pipeline, Pagefind index,
+`llms.txt` generation, the Infragistics chrome). It is the origin of the docs
+repo's integration, but it is **not usable as-is today**: it injects route files
+that are not in this package, it imports `pagefind` without declaring it, and it
+registers no middleware. Treat it as reference code until those issues are
+closed.
 
 ---
 
 ## Fonts
 
-`createDocsSite` (and the playground) configure **Instrument Sans** and **JetBrains Mono** via [Astro's built-in font API](https://docs.astro.build/en/guides/fonts/) (stable since Astro 6). This is better than a `<link>` to Google Fonts because fonts are downloaded and self-hosted at build time — no third-party CDN request, no user data sent to Google, faster load (one fewer network round-trip), and an auto-generated fallback stack that prevents layout shift (CLS).
-
-`DocsLayout` injects the `@font-face` declarations and `<link rel="preload">` tags into `<head>` via the `<Font>` component, and references the fonts through the CSS custom properties `var(--font-sans)` and `var(--font-mono)`.
-
-> **Not using `createDocsSite`?** Add the font configuration manually to your own `astro.config.*`:
->
-> ```ts
-> import { defineConfig, fontProviders } from 'astro/config';
->
-> export default defineConfig({
->   fonts: [
->     {
->       provider: fontProviders.google(),
->       name: 'Instrument Sans',
->       cssVariable: '--font-sans',
->       weights: ['400..700'],
->       styles: ['normal', 'italic'],
->     },
->     {
->       provider: fontProviders.google(),
->       name: 'JetBrains Mono',
->       cssVariable: '--font-mono',
->       weights: ['100..800'],
->       styles: ['normal', 'italic'],
->     },
->   ],
-> });
-> ```
+`DocsLayout` imports the **JetBrains Mono** variable font from
+`@fontsource-variable/jetbrains-mono` (self-hosted, no CDN request) and
+`styles/theme.scss` sets `--font-mono: 'JetBrains Mono Variable'` on `:root`.
+The sans-serif stack is the Infragistics brand font through
+`--igd-font-sans`, and code uses `--igd-font-mono`. Override either custom
+property to change the fonts site-wide.
 
 ---
 
@@ -142,7 +153,7 @@ import DocsLayout from 'igniteui-astro-components/layouts/DocsLayout.astro';
 
 ```astro
 ---
-import DocsSidebar from 'igniteui-astro-components/components/sidebar/DocsSidebar.astro';
+import DocsSidebar from 'igniteui-astro-components/components/DocsSidebar/DocsSidebar.astro';
 import type { SidebarEntry } from 'igniteui-astro-components/lib/sidebar/types';
 
 const sidebar: SidebarEntry[] = [
@@ -194,7 +205,7 @@ A minimal setup that needs no virtual modules or Astro integration:
 ---
 // src/layouts/MyDocsLayout.astro
 import DocsLayout from 'igniteui-astro-components/layouts/DocsLayout.astro';
-import DocsSidebar from 'igniteui-astro-components/components/sidebar/DocsSidebar.astro';
+import DocsSidebar from 'igniteui-astro-components/components/DocsSidebar/DocsSidebar.astro';
 import DocsToc from 'igniteui-astro-components/components/DocsToc.astro';
 import type { SidebarEntry } from 'igniteui-astro-components/lib/sidebar/types';
 import type { MarkdownHeading } from 'astro';
@@ -237,59 +248,85 @@ const sidebar: SidebarEntry[] = [/* … your tree … */];
 
 ### Chrome components
 
-| Export                                   | Purpose                                                                | Docs                                                   |
-| ---------------------------------------- | ---------------------------------------------------------------------- | ------------------------------------------------------ |
-| `…/components/GlobalNavBar.astro`        | IG global navigation bar — legacy, fetched from `/navigation`          | [README](src/components/GlobalNavBar/README.md)        |
-| `…/components/GlobalFooter.astro`        | IG global footer — legacy, fetched from `/navigation`                  | [README](src/components/GlobalFooter/README.md)        |
-| `…/chrome`                               | `igChrome()` — render the header/footer from a synced snapshot         | [below](#the-infragistics-header-and-footer)           |
-| `…/chrome/contract`                      | `parseFragment()` — the `ig-chrome` contract checks, for sync scripts  | [below](#the-infragistics-header-and-footer)           |
-| `…/components/DocsSubHeader.astro`       | Secondary fixed bar — site title + breadcrumb + product links + search | [README](src/components/DocsSubHeader/README.md)       |
-| `…/components/Search.astro`              | Pagefind-powered full-text search modal                                | [README](src/components/Search/README.md)              |
-| `…/components/ThemingWidget.astro`       | Theming widget                                                         | [README](src/components/ThemingWidget/README.md)       |
-| `…/components/MobileSidebarToggle.astro` | Mobile-only sidebar disclosure button                                  | [README](src/components/MobileSidebarToggle/README.md) |
-| `…/components/DocsToc.astro`             | "On this page" table of contents with scroll-spy                       | [README](src/components/DocsToc/README.md)             |
+| Export                                   | Purpose                                                                            | Docs                                                   |
+| ---------------------------------------- | ---------------------------------------------------------------------------------- | ------------------------------------------------------ |
+| `…/components/GlobalNavBar.astro`        | IG global navigation bar — legacy, fetched from `/navigation`                      | [README](src/components/GlobalNavBar/README.md)        |
+| `…/components/GlobalFooter.astro`        | IG global footer — legacy, fetched from `/navigation`                              | [README](src/components/GlobalFooter/README.md)        |
+| `…/chrome`                               | `igChrome()` — render the header/footer from a synced snapshot                     | [below](#the-infragistics-header-and-footer)           |
+| `…/chrome/contract`                      | `parseFragment()` — the `ig-chrome` contract checks, for sync scripts              | [below](#the-infragistics-header-and-footer)           |
+| `…/components/DocsSubHeader.astro`       | Secondary fixed bar — site title, product links, package/version selectors, search | [README](src/components/DocsSubHeader/README.md)       |
+| `…/components/Search.astro`              | Pagefind-powered full-text search modal                                            | [README](src/components/Search/README.md)              |
+| `…/components/SearchAdvanced.astro`      | Client-side API symbol search over a JSON index (api-docs)                         | [README](src/components/SearchAdvanced/README.md)      |
+| `…/components/ThemingWidget.astro`       | Theme / colour-mode picker                                                         | [README](src/components/ThemingWidget/README.md)       |
+| `…/components/CopyCode.astro`            | Adds a copy button to every Shiki code block                                       | [README](src/components/CopyCode/README.md)            |
+| `…/components/MobileSidebarToggle.astro` | Mobile-only sidebar disclosure button                                              | [README](src/components/MobileSidebarToggle/README.md) |
+| `…/components/MobileTocToggle.astro`     | Mobile-only "On this page" dropdown                                                | [README](src/components/MobileTocToggle/README.md)     |
+| `…/components/DocsToc.astro`             | "On this page" table of contents with scroll-spy                                   | [README](src/components/DocsToc/README.md)             |
+| `…/components/DocsToc/toTreeNodes`       | `headingsToTreeNodes()`, `TocConfig` — headings → `TreeNode[]`                     | [README](src/components/DocsToc/README.md)             |
 
-### Sidebar suite
+`DocsBreadcrumb` and `LicenseIndicator` are rendered by `DocsLayout` but are
+not exported yet.
 
-| Export                                          | Purpose                                                                  | Docs                                       |
-| ----------------------------------------------- | ------------------------------------------------------------------------ | ------------------------------------------ |
-| `…/components/sidebar/DocsSidebar.astro`        | Composition root — filter input + recursive tree                         | [README](src/components/sidebar/README.md) |
-| `…/components/sidebar/SidebarTree.astro`        | Recursive `<ul>` of items                                                | [README](src/components/sidebar/README.md) |
-| `…/components/sidebar/SidebarItem.astro`        | One link or `<details>` group                                            | [README](src/components/sidebar/README.md) |
-| `…/components/sidebar/SidebarFilterInput.astro` | Filter input markup                                                      | [README](src/components/sidebar/README.md) |
-| `…/components/sidebar/sidebar-filter`           | `<sidebar-filter>` custom element + cross-navigation hooks               | [README](src/components/sidebar/README.md) |
-| `…/lib/sidebar/types`                           | `SidebarEntry`, `SidebarGroup`, `SidebarLink`, `SidebarBadge`            | —                                          |
-| `…/lib/sidebar/helpers`                         | `isActive`, `isGroup`, `isInitiallyOpen`, `getBreadcrumb`, `joinPath`, … | —                                          |
-| `…/sidebar`                                     | `buildSidebarFromToc()` — TOC → sidebar tree converter (build-time)      | —                                          |
+### Sidebar and tree
+
+| Export                                              | Purpose                                                                                    | Docs                                           |
+| --------------------------------------------------- | ------------------------------------------------------------------------------------------ | ---------------------------------------------- |
+| `…/components/DocsSidebar/DocsSidebar.astro`        | Composition root — logo, filter input, tree                                                | [README](src/components/DocsSidebar/README.md) |
+| `…/components/DocsSidebar/SidebarFilterInput.astro` | Filter input markup                                                                        | [README](src/components/DocsSidebar/README.md) |
+| `…/components/DocsSidebar/SidebarLabel.astro`       | Label renderer used with `DocsTree`                                                        | [README](src/components/DocsSidebar/README.md) |
+| `…/components/DocsSidebar/toTreeNodes`              | `toTreeNodes()` — `SidebarEntry[]` → `TreeNode[]`                                          | [README](src/components/DocsSidebar/README.md) |
+| `…/components/DocsSidebar/sidebar-filter`           | `<sidebar-filter>` custom element + cross-navigation hooks                                 | [README](src/components/DocsSidebar/README.md) |
+| `…/components/DocsTree/DocsTree.astro`              | Generic `<igc-tree>` renderer shared by sidebar and TOC                                    | [README](src/components/DocsTree/README.md)    |
+| `…/components/DocsTree/DocsTreeItem.astro`          | One `<igc-tree-item>`, recursive                                                           | [README](src/components/DocsTree/README.md)    |
+| `…/components/DocsTree/types`                       | `TreeNode`, `TreeVariant`                                                                  | [README](src/components/DocsTree/README.md)    |
+| `…/components/DocsTree/docs-tree.css`               | Tree styles (export currently points at a missing file; the real file is `docs-tree.scss`) | [README](src/components/DocsTree/README.md)    |
+| `…/lib/sidebar/types`                               | `SidebarEntry`, `SidebarGroup`, `SidebarLink`, `SidebarBadge`, `SIDEBAR_BADGE_VARIANTS`    | —                                              |
+| `…/lib/sidebar/helpers`                             | `isActive`, `isGroup`, `isInitiallyOpen`, `getBreadcrumb`, `joinPath`, …                   | —                                              |
+| `…/lib/types`                                       | `PlatformName`, `ApiPackageConfig`, `PlatformContext`                                      | —                                              |
+| `…/sidebar`                                         | `buildSidebarFromToc()` — JSON TOC → sidebar tree converter (build-time)                   | —                                              |
 
 ### MDX components
 
-| Export                                 | Purpose                                               | Docs                                                 |
-| -------------------------------------- | ----------------------------------------------------- | ---------------------------------------------------- |
-| `…/components/mdx/ApiLink.astro`       | Inline link to an API symbol with platform-aware URLs | [README](src/components/mdx/ApiLink/README.md)       |
-| `…/components/mdx/ApiRef.astro`        | Block API reference card                              | [README](src/components/mdx/ApiRef/README.md)        |
-| `…/components/mdx/DoDont.astro`        | Side-by-side Do / Don't image guidance panels         | [README](src/components/mdx/DoDont/README.md)        |
-| `…/components/mdx/PlatformBlock.astro` | Show content only on selected platforms               | [README](src/components/mdx/PlatformBlock/README.md) |
-| `…/components/mdx/Sample.astro`        | Embedded code-view sample widget                      | [README](src/components/mdx/Sample/README.md)        |
+| Export                                 | Purpose                                                   | Docs                                                 |
+| -------------------------------------- | --------------------------------------------------------- | ---------------------------------------------------- |
+| `…/components/mdx/ApiLink.astro`       | Inline link to an API symbol with platform-aware URLs     | [README](src/components/mdx/ApiLink/README.md)       |
+| `…/components/mdx/ApiRef.astro`        | Block "API References" list                               | [README](src/components/mdx/ApiRef/README.md)        |
+| `…/components/mdx/Sample.astro`        | Embedded live sample with code tabs and live-edit buttons | [README](src/components/mdx/Sample/README.md)        |
+| `…/components/mdx/PlatformBlock.astro` | Show content only on selected platforms                   | [README](src/components/mdx/PlatformBlock/README.md) |
+| `…/components/mdx/DocsAside.astro`     | Note / info / warning callout                             | [README](src/components/mdx/DocsAside/README.md)     |
+| `…/components/mdx/Badge.astro`         | Status chip (preview, new, updated, premium, opensource)  | [README](src/components/mdx/Badge/README.md)         |
+| `…/components/mdx/Anatomy.astro`       | Framed component anatomy image                            | [README](src/components/mdx/Anatomy/README.md)       |
+| `…/components/mdx/DoDont.astro`        | Side-by-side Do / Don't image guidance panels             | [README](src/components/mdx/DoDont/README.md)        |
+| `…/components/mdx/Faq.astro`           | FAQ accordion                                             | [README](src/components/mdx/Faq/README.md)           |
+| `…/components/mdx/FaqItem.astro`       | One question/answer panel                                 | [README](src/components/mdx/Faq/README.md)           |
+| `…/components/mdx/Faq/types`           | `FaqEntry`, `FaqIndicatorPosition`                        | [README](src/components/mdx/Faq/README.md)           |
 
 ### Build helpers
 
-| Export                             | Purpose                                                                |
-| ---------------------------------- | ---------------------------------------------------------------------- |
-| `…/platform`                       | Platform / nav-language types                                          |
-| `…/content`                        | Content collection helpers                                             |
-| `…/content-config`                 | Default content collection schema                                      |
-| `…/llms`                           | `llms.txt` manifest generator                                          |
-| `…/plugins/remark-env-vars`        | Remark plugin — `{Environment.X}` token substitution                   |
-| `…/plugins/remark-md-links`        | Remark plugin — `.md` → slug link rewriting + `DOCS_BASE` prepending   |
-| `…/plugins/remark-html-transforms` | Remark plugin — divider→`<hr>`, code lang normalization, img src fixes |
+| Export                             | Purpose                                                                          |
+| ---------------------------------- | -------------------------------------------------------------------------------- |
+| `…/platform`                       | `PlatformKey`, `NavLang`, `getPlatformHead()`, `getNavConfig()`, `PLATFORM_DEFS` |
+| `…/content`                        | `createDocsCollection()` content collection helper                               |
+| `…/content-config`                 | Default content collection schema                                                |
+| `…/llms`                           | `buildLlmsTxt()` — generates `llms.txt` files for a docs _site_                  |
+| `…/plugins/remark-env-vars`        | Remark plugin — `{Environment.X}` token substitution                             |
+| `…/plugins/remark-md-links`        | Remark plugin — `.md` → slug link rewriting + `DOCS_BASE` prepending             |
+| `…/plugins/remark-html-transforms` | Remark plugin — divider→`<hr>`, code lang normalization, img src fixes           |
+| `…/plugins/rehype-heading-anchors` | Rehype plugin — anchor links on headings (used by every consumer)                |
+| `…/plugins/rehype-table-wrapper`   | Rehype plugin — wraps tables for horizontal scrolling                            |
+| `…/plugins/rehype-pagefind-ignore` | Rehype plugin — `data-pagefind-ignore` on code blocks                            |
 
 ### Styles
 
-| Export                   | Purpose                                  |
-| ------------------------ | ---------------------------------------- |
-| `…/styles/custom.scss`   | Base tokens + sidebar/sample styles      |
-| `…/styles/ig-theme.scss` | IG color palette mapped to design tokens |
+| Export                | Purpose                                                                                                                              |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| `…/styles/theme.scss` | The only stylesheet: igniteui-theming setup, layer order, `--igd-*` tokens, markdown and code-block styles. `DocsLayout` imports it. |
+
+Design tokens are CSS custom properties prefixed `--igd-` and defined on
+`:root` in [src/styles/global/\_variables.scss](src/styles/global/_variables.scss)
+(fonts, accent, surfaces, spacing, radius, badges, asides, FAQ, tables).
+Override them in the host's own stylesheet; there are no Sass `!default`
+variables to configure.
 
 ---
 
@@ -485,7 +522,7 @@ Import component files directly by relative path without any alias or install:
 ```astro
 ---
 import DocsLayout from '../../astro-components/src/layouts/DocsLayout/DocsLayout.astro';
-import DocsSidebar from '../../astro-components/src/components/sidebar/DocsSidebar.astro';
+import DocsSidebar from '../../astro-components/src/components/DocsSidebar/DocsSidebar.astro';
 import ApiLink from '../../astro-components/src/components/mdx/ApiLink/ApiLink.astro';
 ---
 ```
@@ -496,16 +533,13 @@ This works immediately but ties your import paths to the internal folder structu
 
 ## Development
 
-```sh
-npm install
-```
-
-There is no build step — sources are published as-is and consumers compile
-them through their own Astro / Vite pipeline. TypeScript is used only for
-type-checking during development:
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for setup, the playground, tests,
+lint/format, how to add a component, and how releases work. The short version:
 
 ```sh
-npx tsc --noEmit
+npm ci
+npm run playground        # http://localhost:4567
+npm test && npm run lint && npm run playground:check
 ```
 
 ---

@@ -27,7 +27,8 @@ import Sample from 'igniteui-astro-components/components/mdx/Sample.astro';
 | `position`        | `string`                         | —                            | Where the iframe sits inside the container when it doesn't fill it. Accepts a horizontal token (`start`, `center`, `end`) and/or a vertical token (`top`, `center`, `bottom`), space-separated in any order — e.g. `"center"`, `"start top"`, `"end bottom"`.                                                      |
 | `resizable`       | `boolean`                        | `false`                      | Show a drag handle on the right edge that resizes the iframe's width so responsive demos can be previewed at different widths. Left/right arrow keys resize it when focused. Combines with `fitContent`: the drag owns the width, the content keeps dictating the height.                                          |
 | `noBorder`        | `boolean`                        | `true`                       | Drop the 1px border drawn around the iframe/container. Pass `noBorder={false}` to draw it — recommended whenever chrome (code tabs or `fullscreenBtn`) is visible.                                                                                                                                                 |
-| `noBackground`    | `boolean`                        | `true`                       | Hide the grid-pattern backdrop drawn behind the iframe, keeping the container fully transparent. Pass `noBackground={false}` to show it.                                                                                                                                                                           |
+| `showThemePicker` | `boolean`                        | `false`                      | Opt in to the in-sample theme picker in the widget footer. Its initial theme comes from the site, not from the usage.                                                                                                                                                                                              |
+| `noBackground`    | `boolean`                        | `!showThemePicker`           | Hide the grid-pattern backdrop drawn behind the iframe, keeping the container fully transparent. Defaults to `false` when `showThemePicker` is on, so a theme-switched demo has a surface of its own. An explicit value always wins.                                                                               |
 | `whiteBackground` | `boolean`                        | `false`                      | Paint the backdrop behind the iframe pure white (`#fff`) instead of the default light gray. Only the light side changes — dark mode (the site's, or the in-sample theming widget's) is left as is. Implies a painted background, so it also overrides the transparency `noBackground` leaves behind in light mode. |
 
 ## Examples
@@ -64,7 +65,7 @@ import Sample from 'igniteui-astro-components/components/mdx/Sample.astro';
 
 ## Environment configuration
 
-The base URLs are resolved from `environment.json` at build time via `siteMetaIntegration` and exposed through `getPlatformContext().getEnvVars()`:
+The base URLs are read from `Astro.locals.envVars`, a plain `Record<string, string>` that the host site's middleware must set (the docs sites load it from their `environment.json`; see [playground/src/middleware.ts](../../../../playground/src/middleware.ts) for a minimal version). The platform (`Astro.locals.platformContext`) comes from the same middleware:
 
 | Key               | Used by                        |
 | ----------------- | ------------------------------ |
@@ -95,11 +96,16 @@ export default defineConfig({
 
 Any [Shiki bundled theme](https://shiki.style/themes) name is accepted. If the define is absent the default `dark-plus` is used.
 
-> **Note:** highlight.js is no longer required. Remove any hljs `<script>` / `<link>` head entries from your integration config if they were added solely for code tabs.
+> **Note:** highlight.js is not required for code tabs. `createDocsSite()` still injects it into `<head>` for inline code; if you wire your own head entries you can leave it out.
 
-## MDX global registration
+## Registering in MDX
 
-```ts
-// src/mdx-components.ts
-export { default as Sample } from 'igniteui-astro-components/components/mdx/Sample.astro';
+Nothing is registered automatically. Either import the component at the top of
+each MDX file (the convention in the docs repos):
+
+```mdx
+import Sample from 'igniteui-astro-components/components/mdx/Sample.astro';
 ```
+
+or pass it through the `components` map of a `<Content />` render when the MDX
+is authored without imports (CMS content, for example).

@@ -43,6 +43,7 @@ the index is unavailable, `ApiLink` renders code text and does not guess a URL.
 | `kind`     | `'class' \| 'interface' \| 'enum' \| 'type' \| 'variable' \| 'function'` | auto         | Optional narrowing. Usually unnecessary when the index is available.                                                                    |
 | `prefixed` | `boolean`                                                                | `true`       | Candidate-name override for symbols that are never platform-prefixed. Avoid for new docs when the index can resolve the symbol.         |
 | `suffix`   | `boolean`                                                                | `true`       | Candidate-name override for symbols that never use the platform class suffix. Avoid for new docs when the index can resolve the symbol. |
+| `raw`      | `boolean`                                                                | `false`      | Marks a deliberately authored raw link in strict xplat documentation, so tooling does not flag it.                                      |
 
 Platform names use `PlatformContext.name`: `Angular`, `React`,
 `WebComponents`, or `Blazor`.
