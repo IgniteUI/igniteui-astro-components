@@ -1,171 +1,154 @@
 @use 'igniteui-theming/sass/typography' as *;
+@use '../../styles/global/breakpoints' as *;
 
 @layer components {
+  // Desktop base. On tablet/mobile DocsLayout.scss turns this into a slide-in overlay.
+  .docs-sidebar {
+    --igd-sidebar-z-index: 0;
 
-// Desktop base. On tablet/mobile DocsLayout.scss turns this into a slide-in overlay.
-.docs-sidebar {
-	--igd-sidebar-z-index: 0;
-	display: flex;
-	flex-direction: column;
-	z-index: var(--igd-sidebar-z-index);
-	border-inline-end: var(--igd-app-outline);
-	padding-inline: var(--igd-padding-md);
-	padding-block: calc(var(--igd-padding-lg) + rem(14px));
-	background-color: var(--igd-layout-sections-bg);
-	position: sticky;
-	top: var(--igd-header-height);
-	height: calc(100dvh - var(--igd-header-height));
-	max-height: 100dvh;
-	align-self: start;
-	gap: rem(24px);
+    display: flex;
+    flex-direction: column;
+    z-index: var(--igd-sidebar-z-index);
+    border-inline-end: var(--igd-app-outline);
+    padding: 0;
+    background-color: var(--igd-layout-sections-bg);
+    position: sticky;
+    top: var(--igd-header-height);
+    height: calc(100dvh - var(--igd-header-height));
+    max-height: 100dvh;
+    align-self: start;
 
-	.sidebar-gutter {
-		overflow-y: hidden;
-		scrollbar-gutter: stable;
+    .sidebar-gutter {
+      display: grid;
+      gap: rem(16px);
+      overflow-y: hidden;
+      padding: rem(16px);
+      border-bottom: var(--igd-app-outline);
 
-		// This Makes sure the input border is visible
-		// This is the height of the input in fluent theme + 8px padding
-		// TODO this can be made smart using a css variable to override the original height of the input and used here
-		min-height: rem(40px);
+      &:empty {
+        display: none;
+      }
+    }
+  }
 
+  // Hidden by default. DocsLayout.scss reveals it on tablet/mobile when the sidebar is open.
+  .docs-sidebar-backdrop {
+    display: none;
+  }
 
-		igc-icon {
-			color: light-dark(var(--ig-gray-800), var(--ig-gray-300));
-		}
+  // Hidden by default; shown on mobile/tablet where the sidebar is a slide-in overlay.
+  .igd-sidebar-logo {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    padding: rem(16px) rem(20px) rem(8px);
 
-		&:empty {
-			display: none;
-		}
-	}
+    .igd-logo-text {
+      @include type-style('h3') {
+        margin-block-end: rem(4px);
+        line-height: 1;
+      }
+      color: var(--ig-gray-800);
+    }
+
+    .igd-logo__platform {
+      @include type-style('subtitle', false) {
+        line-height: 1;
+        margin: 0;
+      }
+      color: var(--ig-gray-500);
+    }
+  }
+
+  .sidebar-scroll {
+    overflow-y: auto;
+    min-height: 0;
+    padding-block: rem(12px);
+    scroll-behavior: smooth;
+    overscroll-behavior: contain;
+    flex-grow: 1;
+    flex-basis: 0%;
+  }
+
+  .sidebar-premium-icon {
+    --size: #{rem(20px)};
+
+    justify-self: end;
+    color: var(--igd-premium-color);
+    flex-shrink: 0;
+  }
+
+  .igd-label-and-badge {
+    display: flex;
+    align-items: center;
+    gap: rem(8px);
+
+    igc-badge {
+      justify-self: end;
+    }
+  }
+
+  // Group rows: row inset, then the chevron column (see the layout model in
+  // DocsTree/docs-tree.scss). No flex gap here — the chevron's own margin is
+  // the single source of the icon→label spacing.
+  .docs-tree-group {
+    padding: rem(12px) rem(8px) rem(12px) var(--docs-tree-row-inset, #{rem(6px)});
+  }
+
+  .group-label-text {
+    @include type-style('body-2') {
+      font-weight: 700;
+      margin-block: 0;
+    }
+
+    color: light-dark(var(--ig-gray-900), var(--ig-gray-500));
+    user-select: none;
+  }
+
+  .group-label-count {
+    color: light-dark(var(--ig-gray-700), var(--ig-gray-600));
+    background: light-dark(var(--ig-gray-100), var(--ig-gray-200));
+    padding: rem(2px) rem(8px);
+    aspect-ratio: 1;
+    border-radius: rem(4px);
+    margin-inline-start: rem(8px);
+    font-size: 12px;
+  }
+
+  .igd-badge-container {
+    display: flex;
+    align-items: center;
+    gap: rem(4px);
+    margin-left: auto;
+
+    igc-badge::part(base) {
+      max-height: 20px;
+    }
+  }
+
+  // Full-text tooltip for truncated labels (see sidebar-tooltip.ts).
+  .igd-sidebar-tooltip {
+    --ig-tooltip-background: light-dark(var(--ig-gray-800), var(--ig-gray-200));
+    --ig-tooltip-text-color: light-dark(var(--ig-gray-50), var(--ig-gray-900));
+    --ig-tooltip-border-radius: #{rem(4px)};
+
+    &::part(base) {
+      @include type-style('body-2') {
+        margin-block: 0;
+        line-height: rem(20px);
+      }
+
+      max-width: rem(320px);
+      padding: rem(6px) rem(10px);
+      font-family: var(--igd-font-sans);
+      white-space: normal;
+      word-break: break-word;
+    }
+
+    // Labels are not clamped on mobile/tablet (see DocsTree/docs-tree.scss),
+    // and hover tooltips make no sense on touch — keep it out of the overlay.
+    @media (max-width: #{$bp-tablet-max}) {
+      display: none;
+    }
+  }
 }
-
-// Hidden by default. DocsLayout.scss reveals it on tablet/mobile when the sidebar is open.
-.docs-sidebar-backdrop {
-	display: none;
-}
-
-.sidebar-logo {
-	display: none;
-	margin-block-end: rem(8px);
-	padding-inline-start: rem(20px);
-
-	> svg {
-		width: rem(79px);
-
-		.logo-type {
-			fill: var(--igd-logo-type);
-		}
-	}
-}
-
-.sidebar-scroll {
-	overflow-y: auto;
-	scrollbar-gutter: stable;
-}
-
-.sidebar-badge {
-	--border-radius: #{rem(4px)};
-	--elevation: none;
-	
-	&::part(base) {
-		@include type-style('overline') {
-			margin: 0;
-		};
-		
-		border-radius: var(--border-radius);
-		border-width: rem(1px);
-		border-style: solid;
-		border-color: var(--border-color);
-	}
-	
-	igc-icon {
-		--size: #{rem(18px)}
-	}
-	
-	// TODO, This has to be fixed inside the component
-	span {
-		position: relative;
-		padding-inline: rem(3px);
-	}
-}
-
-.updated {
-	--background-color: var(--igd-updated-bg);
-	--text-color: var(--igd-updated-color);
-	--icon-color: var(--igd-updated-color);
-	--border-color: var(--igd-updated-border);
-}
-
-.new {
-	--background-color: var(--igd-new-bg);
-	--text-color: var(--igd-new-color);
-	--icon-color: var(--igd-new-color);
-	--border-color: var(--igd-new-border);
-}
-
-.preview {
-	--background-color: var(--igd-preview-bg);
-	--text-color: var(--igd-preview-color);
-	--icon-color: var(--igd-preview-color);
-	--border-color: var(--igd-preview-border);
-}
-
-
-.premium {
-	--background-color: var(--igd-premium-bg);
-	--text-color: var(--igd-premium-color);
-	--icon-color: var(--igd-premium-color);
-	--border-color: var(--igd-premium-border);
-}
-
-.opensource {
-	--background-color: var(--igd-opensource-bg);
-	--text-color: var(--igd-opensource-color);
-	--icon-color: var(--igd-opensource-color);
-	--border-color: var(--igd-opensource-border);
-}
-
-.sidebar-premium-icon {
-	--size: #{rem(24px)};
-	
-	justify-self: end;
-	color: var(--igd-premium-color);
-	flex-shrink: 0;
-}
-
-.igd-lable-and-badge {
-	display: flex;
-	align-items: center;
-	gap: rem(8px);
-	
-	igc-badge {
-		justify-self: end;
-	}
-}
-
-.docs-tree-group {
-	gap: rem(8px);
-}
-
-.group-label-text {
-	@include type-style('body-2') {
-		margin-block: 0;
-	};
-	
-	color: light-dark(var(--ig-gray-800), var(--ig-gray-600));
-}
-
-.group-label-count {
-	color: light-dark(var(--ig-gray-500), var(--ig-gray-600));
-	margin-inline-start: rem(8px)
-}
-
-.igd-badge-container {
-	display: flex;
-	align-items: center;
-	gap: rem(4px);
-	margin-left: auto;
-}
-
-}
-

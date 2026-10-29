@@ -1,0 +1,261 @@
+---
+layout: ../../layouts/PlaygroundMdxLayout.astro
+title: Faq
+slug: components/faq
+---
+
+import Faq from '../../../../src/components/mdx/Faq/Faq.astro';
+import FaqItem from '../../../../src/components/mdx/Faq/FaqItem.astro';
+
+export const items = [
+  {
+    question: 'How do I install Ignite UI for Web Components?',
+    answer: 'Run <code>npm install igniteui-webcomponents</code> in your project root.',
+  },
+  {
+    question: 'Do I need a license?',
+    subtitle: 'Licensing',
+    answer: 'The core components are open source. Some components require a paid license.',
+  },
+  {
+    question: 'This one is disabled',
+    answer: 'You will never read this.',
+    disabled: true,
+  },
+];
+
+# Faq
+
+A question / answer list built on `<igc-accordion>` and `<igc-expansion-panel>`.
+`Faq` owns the accordion (grouping, keyboard navigation), `FaqItem` owns a
+single panel. Every Ignite UI property is exposed as a prop, and all styling
+goes through `--igd-faq-*` tokens.
+
+---
+
+## Slot mode
+
+The preferred authoring mode: answers are real content, so they can contain
+markdown, links, code blocks, and other components.
+
+<Faq>
+  <FaqItem question="How do I install Ignite UI for Web Components?" open>
+
+    Install it from npm:
+
+    ```bash
+    npm install igniteui-webcomponents
+    ```
+
+  </FaqItem>
+
+  <FaqItem question="Which browsers are supported?">
+
+    The last two versions of every evergreen browser. Answers accept full
+    markdown — [links](/), `inline code`, and lists:
+
+    - Chrome / Edge
+    - Firefox
+    - Safari
+
+  </FaqItem>
+
+  <FaqItem question="Can an answer hold another component?">
+
+    Yes. Anything that renders in MDX renders here.
+
+  </FaqItem>
+</Faq>
+
+```mdx
+<Faq>
+  <FaqItem question="How do I install Ignite UI for Web Components?" open>
+    Install it from npm.
+  </FaqItem>
+
+  <FaqItem question="Which browsers are supported?">
+    The last two versions of every evergreen browser.
+  </FaqItem>
+</Faq>
+```
+
+Leave a blank line above and below the answer body so MDX parses it as
+markdown instead of raw text.
+
+---
+
+## Data mode
+
+Pass `items` when the answers are short static copy. `answer` is injected as
+an HTML string.
+
+`answer` is **not sanitized** — it goes straight through `set:html`. Pass only
+trusted, author-controlled markup; anything untrusted or user-generated belongs
+in the default slot, which Astro escapes.
+
+<Faq items={items} indicatorPosition="end" />
+
+```mdx
+export const items = [
+  {
+    question: 'How do I install Ignite UI for Web Components?',
+    answer: 'Run <code>npm install igniteui-webcomponents</code>.',
+  },
+  { question: 'Do I need a license?', subtitle: 'Licensing', answer: 'Some components do.' },
+  { question: 'This one is disabled', answer: 'Never read.', disabled: true },
+];
+
+<Faq items={items} indicatorPosition="end" />
+```
+
+---
+
+## singleExpand
+
+Forwarded to `igc-accordion[single-expand]` — opening a question collapses
+the previously open one.
+
+<Faq singleExpand>
+  <FaqItem question="Open me first" open>
+
+    Now open the next question — this one closes on its own.
+
+  </FaqItem>
+
+  <FaqItem question="Then open me">
+
+    And the first one collapsed.
+
+  </FaqItem>
+
+  <FaqItem question="Or me">
+
+    Only one answer is ever visible.
+
+  </FaqItem>
+</Faq>
+
+```mdx
+<Faq singleExpand>
+  <FaqItem question="Open me first" open>
+    Now open the next question.
+  </FaqItem>
+</Faq>
+```
+
+---
+
+## Indicator position
+
+`indicatorPosition` maps to `igc-expansion-panel[indicator-position]`:
+`end` (default), `start`, or `none`.
+
+<Faq>
+  <FaqItem question="indicatorPosition=&quot;end&quot; (default)">
+
+    The chevron sits after the question.
+
+  </FaqItem>
+
+  <FaqItem question="indicatorPosition=&quot;start&quot;" indicatorPosition="start">
+
+    The chevron sits before the question.
+
+  </FaqItem>
+
+  <FaqItem question="indicatorPosition=&quot;none&quot;" indicatorPosition="none">
+
+    No chevron at all — the whole header is still the toggle.
+
+  </FaqItem>
+</Faq>
+
+```mdx
+<FaqItem question="Ends with a chevron" indicatorPosition="end">
+  Answer body.
+</FaqItem>
+```
+
+In slot mode set it per `FaqItem`. The `indicatorPosition` prop on `Faq`
+applies to `items` entries only — Astro cannot pass props into slotted
+children.
+
+---
+
+## Custom indicator
+
+The `indicator` and `indicator-expanded` slots are forwarded to the panel.
+
+<Faq>
+  <FaqItem question="Swap the chevron for a docs icon">
+    <igc-icon slot="indicator" name="chevron" collection="docs" />
+
+    The `indicator` slot replaces the collapsed indicator; add
+    `indicator-expanded` to change the open state too.
+
+  </FaqItem>
+</Faq>
+
+```mdx
+<FaqItem question="Custom indicator">
+  <igc-icon slot="indicator" name="chevron" collection="docs" />
+  Answer body.
+</FaqItem>
+```
+
+---
+
+## Disabled
+
+Disabled panels are inert and skipped by the accordion's keyboard navigation.
+
+<Faq>
+  <FaqItem question="Interactive question">
+
+    Reachable with <kbd>Tab</kbd> and the arrow keys.
+
+  </FaqItem>
+
+  <FaqItem question="Disabled question" disabled>
+
+    Unreachable.
+
+  </FaqItem>
+</Faq>
+
+---
+
+## Theming
+
+Override any `--igd-faq-*` token — the component maps them onto the
+`--ig-expansion-panel-*` theme properties internally.
+
+<div style="--igd-faq-border-radius: 0; --igd-faq-gap: 0; --igd-faq-spacing: 0.75; --igd-faq-indicator-color: var(--ig-success-500); --igd-faq-open-border-color: var(--ig-success-500);">
+  <Faq>
+    <FaqItem question="Square, flush, green indicator">
+
+      Scoped token overrides — no Ignite UI variables touched.
+
+    </FaqItem>
+
+    <FaqItem question="Second question">
+
+      Same list, same tokens.
+
+    </FaqItem>
+
+  </Faq>
+</div>
+
+```astro
+<div style="--igd-faq-border-radius: 0; --igd-faq-gap: 0; --igd-faq-spacing: 0.75;">
+  <Faq>
+    <FaqItem question="Square and flush">Answer.</FaqItem>
+  </Faq>
+</div>
+```
+
+Density goes through `--igd-faq-spacing` (which feeds Ignite UI's
+`--ig-spacing`) rather than a padding token — the panel derives its padding
+from the layout scale, and its real body padding sits on an inner element that
+is not an exposed CSS part.

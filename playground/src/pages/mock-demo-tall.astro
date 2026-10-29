@@ -1,0 +1,48 @@
+---
+// Taller placeholder used to demo <Sample fitContent>. Its content has a
+// concrete, self-describing height so the iframe visibly grows to match it
+// (rather than scrolling inside a fixed box). Served at /mock-demo-tall.
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mock Demo (tall)</title>
+    <style>
+      body {
+        margin: 0;
+        font-family: system-ui, sans-serif;
+      }
+      /* No padding around the demo itself — spacing comes from the host <Sample>. */
+      .rows {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .row {
+        padding: 16px;
+        border-radius: 8px;
+        background: linear-gradient(90deg, #eef2ff, #f5f3ff);
+        border: 1px solid #e0e7ff;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="panel">
+      <div class="rows">
+        <div class="row">Row 1</div>
+        <div class="row">Row 2</div>
+        <div class="row">Row 3</div>
+        <div class="row">Row 4</div>
+        <div class="row">Row 5</div>
+        <div class="row">Row 6</div>
+        <div class="row">Row 7</div>
+        <div class="row">Row 8</div>
+        <div class="row">Row 9</div>
+        <div class="row">Row 10</div>
+      </div>
+    </div>
+  </body>
+</html>

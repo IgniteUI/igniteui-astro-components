@@ -1,6 +1,14 @@
 # ApiLink
 
-Renders an inline `<a><code>` link pointing to the TypeDoc API reference for a class, interface, enum, type alias, variable, or function — with platform-aware URL generation.
+Renders an inline API documentation link with platform-aware resolution.
+
+For TypeDoc symbols, `ApiLink` first queries the generated api-docs link index.
+That index contains the real symbol names, packages, URL segments, and member
+anchors produced by api-docs. If the index is unavailable, or if a symbol is
+missing from it, `ApiLink` renders plain code text instead of generating a
+guessed URL.
+
+Sass links are separate and still use `kind="sass"`.
 
 ## Import
 
@@ -8,61 +16,104 @@ Renders an inline `<a><code>` link pointing to the TypeDoc API reference for a c
 import ApiLink from 'igniteui-astro-components/components/mdx/ApiLink.astro';
 ```
 
-## Props
+## Preferred Usage
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `type` | `string` | *(required)* | Short symbol name without platform prefix, e.g. `"Toast"`. |
-| `kind` | `'class' \| 'interface' \| 'enum' \| 'type' \| 'variable' \| 'function'` | `'class'` | TypeDoc symbol kind — determines the URL path segment. |
-| `member` | `string` | — | Optional member name (property/method). Appended as a `#anchor`. |
-| `pkg` | `string` | `'core'` | Package key: `'core'` \| `'charts'` \| `'grids'` \| `'gauges'` \| `'maps'` \| `'inputs'` \| `'layouts'` \| `'excel'` \| `'spreadsheet'` \| `'datasources'`. |
-| `label` | `string` | auto | Override the display text. Defaults to the prefixed name (+ `.member` when provided). |
-| `prefixed` | `boolean` | `true` | When `true`, prepends the platform prefix (`Igr`/`Igx`/`Igc`/`Igb`) to `type`. Set `false` for already-qualified names or non-prefixed symbols like function names. |
-| `suffix` | `boolean` | `true` | When `true`, appends the platform class suffix (e.g. `Component` for Angular). Set `false` for utility classes that do not carry a suffix. |
+Author MDX with the unprefixed API name:
+
+```mdx
+<ApiLink type="Grid" />
+<ApiLink type="Grid" member="rowSelection" />
+<ApiLink type="CategoryChart" />
+```
+
+The resolver handles platform prefix/suffix candidates, package lookup, kind
+lookup, URL segment lookup, and member anchor lookup.
+
+Omitting `pkg` relies on `platformContext.apiLinkIndex` being available. When
+the index is unavailable, `ApiLink` renders code text and does not guess a URL.
+
+## TypeDoc Props
+
+| Prop       | Type                                                                     | Default      | Description                                                                                                                             |
+| ---------- | ------------------------------------------------------------------------ | ------------ | --------------------------------------------------------------------------------------------------------------------------------------- |
+| `type`     | `string`                                                                 | _(required)_ | Short symbol name without platform prefix, e.g. `"Grid"` instead of `"IgrGrid"`.                                                        |
+| `member`   | `string`                                                                 | —            | Optional member name. Resolved through the generated member map when available.                                                         |
+| `label`    | `string`                                                                 | auto         | Override the display text.                                                                                                              |
+| `pkg`      | `string`                                                                 | —            | Ambiguity override only. Use when the same symbol exists in multiple packages and the combined index cannot choose safely.              |
+| `kind`     | `'class' \| 'interface' \| 'enum' \| 'type' \| 'variable' \| 'function'` | auto         | Optional narrowing. Usually unnecessary when the index is available.                                                                    |
+| `prefixed` | `boolean`                                                                | `true`       | Candidate-name override for symbols that are never platform-prefixed. Avoid for new docs when the index can resolve the symbol.         |
+| `suffix`   | `boolean`                                                                | `true`       | Candidate-name override for symbols that never use the platform class suffix. Avoid for new docs when the index can resolve the symbol. |
+
+Platform names use `PlatformContext.name`: `Angular`, `React`,
+`WebComponents`, or `Blazor`.
 
 ## Examples
 
 ```mdx
-{/* Core class — auto-prefix applied */}
-<ApiLink type="Toast" />
-{/* → <a href="…/classes/igniteui-react.igrtoast.html"><code>IgrToast</code></a> */}
+{/* Let the generated index find package, kind, and exact symbol name. */}
 
-{/* Class member */}
-<ApiLink type="Toast" member="show" label="Show" />
+<ApiLink type="Grid" />
 
-{/* Sub-package */}
-<ApiLink pkg="charts" type="CategoryChart" />
+{/* Member anchors are resolved from the generated member map. */}
 
-{/* Function — no prefix, no suffix */}
-<ApiLink kind="function" type="configureTheme" prefixed={false} />
+<ApiLink type="Grid" member="rowSelection" />
 
-{/* Type alias */}
-<ApiLink kind="type" type="AbsolutePosition" prefixed={false} />
+{/* Use pkg only when the symbol name is ambiguous across packages. */}
 
-{/* Interface */}
-<ApiLink kind="interface" type="ComboTemplateProps" prefixed={false} />
-
-{/* Enum */}
-<ApiLink kind="enum" type="CalendarSelection" />
-
-{/* Utility class without platform suffix */}
-<ApiLink type="SortingStrategy" suffix={false} />
+<ApiLink type="Workbook" pkg="excel" />
 ```
 
-## Platform context
+## ApiLink Index
 
-The current platform is read from the `PLATFORM` environment variable (set at build time). Use `siteMetaIntegration({ platform })` or `createDocsSite({ platform })` in `astro.config.ts`:
+`ApiLink` resolves TypeDoc symbols from `platformContext.apiLinkIndex`, a compact
+registry generated from api-docs TypeDoc data and stored by the docs host. The
+component does not fetch api-docs during the documentation build.
 
-```ts
-createDocsSite({ platform: 'react' });
-// prefix → 'Igr', docRoot → 'https://www.infragistics.com/products/ignite-ui-react/docs/typescript/latest'
+The docs host loads one latest registry per platform, for example:
+
+```txt
+src/data/api-link-index/angular/staging-latest.json
+src/data/api-link-index/webcomponents/staging-latest.json
 ```
 
-Supported platforms and their prefixes:
+Registry symbol fields are intentionally short because the files are large:
 
-| Platform | Prefix | Class suffix |
-|----------|--------|--------------|
-| `Angular` | `Igx` | `Component` (DV pkgs only) |
-| `React` | `Igr` | — |
-| `WebComponents` | `Igc` | — |
-| `Blazor` | `Igb` | — |
+| Field | Meaning                                                 |
+| ----- | ------------------------------------------------------- |
+| `p`   | Package id that owns the symbol.                        |
+| `u`   | Root-relative API URL path for the symbol page.         |
+| `k`   | Symbol kind, e.g. `class`, `interface`, `enum`, `type`. |
+| `m`   | Member name to anchor map.                              |
+
+When `pkg` is present, `ApiLink` uses it only as a package filter for ambiguous
+symbol names; package URLs and kinds still come from the registry.
+When a symbol is ambiguous, omitting `pkg` or `kind` causes `ApiLink` to throw
+during rendering instead of guessing a URL.
+When a symbol is not found, `ApiLink` renders code text instead of generating a
+guessed URL.
+When a registry symbol exists but the requested member does not, `ApiLink`
+renders code text instead of generating a guessed member URL.
+
+## Sass Props
+
+Use `kind="sass"` for Sass API reference links. Sass links do not use the
+api-docs link index; they read their base URL from `platformContext.sassApiUrl`.
+
+| Prop     | Type      | Default      | Description                                                                                    |
+| -------- | --------- | ------------ | ---------------------------------------------------------------------------------------------- |
+| `kind`   | `'sass'`  | _(required)_ | Enables Sass API link mode.                                                                    |
+| `module` | `string`  | —            | Sass module path segment, e.g. `"animations"` or `"themes"`.                                   |
+| `type`   | `string`  | —            | Anchor fragment without `#`, e.g. `"mixin-slide-in-left"`. Omit it to link to the module page. |
+| `label`  | `string`  | auto         | Override the display text. Defaults to `type`, then `module`, then an empty string.            |
+| `code`   | `boolean` | `true`       | Wrap the label in `<code>`. Set `false` for prose labels.                                      |
+
+```mdx
+<ApiLink kind="sass" module="animations" label="animations Sass module" code={false} />
+<ApiLink kind="sass" module="animations" type="mixin-slide-in-left" label="slide-in-left" />
+```
+
+Sass URL shape:
+
+```txt
+{sassApiUrl}/{module}#{type}
+```

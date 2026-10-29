@@ -7,11 +7,6 @@ import { createDocsCollection } from './content-helper.ts';
 // proper frontmatter to these files (no `title` → fail schema).
 export const collections = {
   docs: createDocsCollection(process.env.DOCS_SOURCE_PATH, {
-    exclude: [
-      'grids_templates/**',
-      'style-guide.md',
-      'themes/sass/presets/**',
-      'themes.md',
-    ],
+    exclude: ['grids_templates/**', 'style-guide.md', 'themes/sass/presets/**', 'themes.md'],
   }),
 };

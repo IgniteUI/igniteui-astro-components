@@ -22,21 +22,39 @@
  *   sidebar-filter-scroll  → scrollTop of the scroll container
  */
 
-const FILTER_KEY  = 'sidebar-filter-value';
+const FILTER_KEY = 'sidebar-filter-value';
 const DETAILS_KEY = 'sidebar-filter-details';
-const SCROLL_KEY  = 'sidebar-filter-scroll';
+const SCROLL_KEY = 'sidebar-filter-scroll';
 
 const SCROLL_SELECTOR = '[data-sidebar-scroll]';
-const ITEM_SELECTOR   = 'igc-tree-item[data-path]';
-const GROUP_SELECTOR  = 'igc-tree-item[data-group-key]';
+const ITEM_SELECTOR = 'igc-tree-item[data-path]';
+const GROUP_SELECTOR = 'igc-tree-item[data-group-key]';
 
 let _isClientSideNav = false;
 
 // ── Storage helpers ──────────────────────────────────────────────────────────
 
-const safeGet    = (k: string): string    => { try { return sessionStorage.getItem(k) ?? ''; } catch { return ''; } };
-const safeSet    = (k: string, v: string) => { try { sessionStorage.setItem(k, v);            } catch { /* quota */ } };
-const safeRemove = (k: string)            => { try { sessionStorage.removeItem(k);            } catch { /* */ } };
+const safeGet = (k: string): string => {
+  try {
+    return sessionStorage.getItem(k) ?? '';
+  } catch {
+    return '';
+  }
+};
+const safeSet = (k: string, v: string) => {
+  try {
+    sessionStorage.setItem(k, v);
+  } catch {
+    /* quota */
+  }
+};
+const safeRemove = (k: string) => {
+  try {
+    sessionStorage.removeItem(k);
+  } catch {
+    /* */
+  }
+};
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -57,19 +75,28 @@ const collectExpandedKeys = (root: ParentNode): string[] => {
 /**
  * Apply expanded state using setAttribute / removeAttribute.
  * Used ONLY in astro:before-swap on not-yet-upgraded DOM nodes.
+ * With `onlyActiveBranch`, the saved keys are ignored.
  */
-const applyExpandedAttr = (root: ParentNode, openKeys: Set<string>): void => {
+const applyExpandedAttr = (
+  root: ParentNode,
+  openKeys: Set<string>,
+  onlyActiveBranch: boolean,
+): void => {
   root.querySelectorAll<HTMLElement>(GROUP_SELECTOR).forEach((el) => {
     // Always keep ancestors of the active page open.
-    if (el.querySelector('a[aria-current="page"]')) { el.setAttribute('expanded', ''); return; }
+    if (el.querySelector('a[aria-current="page"]')) {
+      el.setAttribute('expanded', '');
+      return;
+    }
     const key = el.dataset.groupKey;
-    if (key && openKeys.has(key)) el.setAttribute('expanded', '');
-    else                          el.removeAttribute('expanded');
+    if (!onlyActiveBranch && key && openKeys.has(key)) el.setAttribute('expanded', '');
+    else el.removeAttribute('expanded');
   });
 };
 
-const tokenize = (q: string): string[]   => q.toLowerCase().split(/\s+/).filter(Boolean);
-const itemPath = (el: HTMLElement): string => (el.dataset.path ?? el.dataset.label ?? '').toLowerCase();
+const tokenize = (q: string): string[] => q.toLowerCase().split(/\s+/).filter(Boolean);
+const itemPath = (el: HTMLElement): string =>
+  (el.dataset.path ?? el.dataset.label ?? '').toLowerCase();
 
 // ── Cross-navigation hooks ───────────────────────────────────────────────────
 
@@ -83,58 +110,65 @@ document.addEventListener('astro:before-preparation', () => {
   // (which tracks user-intent expand state including manual collapses during filter).
   // When NOT filtering, DETAILS_KEY was already kept up-to-date by onItemToggle,
   // so we leave it as-is.
-  const host     = document.querySelector<HTMLElement>('sidebar-filter[data-filtering]');
+  const host = document.querySelector<HTMLElement>('sidebar-filter[data-filtering]');
   const intended = host?.dataset.openSnapshot;
   if (intended !== undefined) safeSet(DETAILS_KEY, intended);
 });
 
 document.addEventListener('astro:before-swap', (e) => {
-  const newDoc    = (e as unknown as { newDocument: Document }).newDocument;
+  const newDoc = (e as unknown as { newDocument: Document }).newDocument;
   const newScroll = newDoc.querySelector<HTMLElement>(SCROLL_SELECTOR);
   if (newScroll) newScroll.style.visibility = 'hidden';
 
+  // Single-branch: the new page's branch replaces the saved one, unless the
+  // filter carries over and keeps every group it opened.
+  const onlyActiveBranch =
+    !!newDoc.querySelector('sidebar-filter[data-single-branch-expand]') &&
+    !!newDoc.querySelector(`${GROUP_SELECTOR} a[aria-current="page"]`) &&
+    !safeGet(FILTER_KEY);
+
   const raw = safeGet(DETAILS_KEY);
-  applyExpandedAttr(newDoc, new Set(raw ? raw.split('\n').filter(Boolean) : []));
+  applyExpandedAttr(newDoc, new Set(raw ? raw.split('\n').filter(Boolean) : []), onlyActiveBranch);
 });
 
 // ── Custom element ───────────────────────────────────────────────────────────
 
-type ExpandableEl = HTMLElement & { expanded: boolean };
+type ExpandableEl = HTMLElement & { expanded: boolean; collapseWithEvent(): Promise<void> };
 type FilterInputEl = HTMLElement & { value: string; focus(): void };
 type FilterClearEl = HTMLElement & { hidden: boolean };
 
 class SidebarFilter extends HTMLElement {
   private hasFilter = false;
-  private input!:    FilterInputEl;
+  private input!: FilterInputEl;
   private clearBtn!: FilterClearEl;
-  private status!:   HTMLElement;
-  private scrollEl:  HTMLElement | null = null;
-  private items:     HTMLElement[] = [];
-  private groups:    HTMLElement[] = [];
+  private status!: HTMLElement;
+  private scrollEl: HTMLElement | null = null;
+  private items: HTMLElement[] = [];
+  private groups: HTMLElement[] = [];
 
   /** User-intent expand state during active filter. */
-  private openSnapshot:      Set<string> | null = null;
+  private openSnapshot: Set<string> | null = null;
   /** Pre-filter snapshot; restored on Esc / clear. */
   private preFilterSnapshot: Set<string> | null = null;
   /** Suppress event-driven persistence while programmatically changing state. */
   private suppressPersist = false;
 
   connectedCallback(): void {
-    const input    = this.querySelector<FilterInputEl>('[data-sidebar-filter-input]');
+    const input = this.querySelector<FilterInputEl>('[data-sidebar-filter-input]');
     const clearBtn = this.querySelector<FilterClearEl>('[data-sidebar-filter-clear]');
-    const status   = this.querySelector<HTMLElement>('[data-sidebar-filter-status]');
+    const status = this.querySelector<HTMLElement>('[data-sidebar-filter-status]');
     const hasFilter = !!(input && clearBtn && status);
     this.hasFilter = hasFilter;
 
     if (hasFilter) {
-      this.input    = input;
+      this.input = input;
       this.clearBtn = clearBtn;
-      this.status   = status;
+      this.status = status;
     }
 
     this.scrollEl = this.querySelector<HTMLElement>(SCROLL_SELECTOR);
-    this.items    = [...this.querySelectorAll<HTMLElement>(ITEM_SELECTOR)];
-    this.groups   = [...this.querySelectorAll<HTMLElement>(GROUP_SELECTOR)];
+    this.items = [...this.querySelectorAll<HTMLElement>(ITEM_SELECTOR)];
+    this.groups = [...this.querySelectorAll<HTMLElement>(GROUP_SELECTOR)];
 
     // On a hard load (non-client-nav) DETAILS_KEY may be stale or empty.
     // Prime it now from the SSR DOM attributes so onItemToggle can safely
@@ -143,18 +177,17 @@ class SidebarFilter extends HTMLElement {
       safeSet(DETAILS_KEY, collectExpandedKeys(this).join('\n'));
     }
 
-    if (hasFilter) this.bindEvents(); else this.bindTreeEvents();
+    if (hasFilter) this.bindEvents();
+    else this.bindTreeEvents();
     this.restoreOnConnect();
   }
 
   // ── Events ───────────────────────────────────────────────────────────────
 
   private bindEvents(): void {
-    // igc-input fires 'igcInput' instead of the native 'input' event.
-    this.input.addEventListener('igcInput',  this.onFilterInput as EventListener);
-    this.input.addEventListener('keydown',  this.onFilterKeydown);
+    this.input.addEventListener('igcInput', this.onFilterInput as EventListener);
+    this.input.addEventListener('keydown', this.onFilterKeydown);
     this.clearBtn.addEventListener('click', this.onClearClick);
-
     this.bindTreeEvents();
   }
 
@@ -162,17 +195,48 @@ class SidebarFilter extends HTMLElement {
   private bindTreeEvents(): void {
     // igcItemExpanded / igcItemCollapsed are dispatched on <igc-tree> with
     // the igc-tree-item instance in event.detail — NOT in e.target.
-    this.addEventListener('igcItemExpanded',  this.onItemToggle as EventListener);
+    this.addEventListener('igcItemExpanded', this.onItemToggle as EventListener);
     this.addEventListener('igcItemCollapsed', this.onItemToggle as EventListener);
+    this.addEventListener('igcItemExpanding', this.onItemExpanding as EventListener);
   }
 
   private onFilterInput = (): void => {
+    this.pinScrollY();
     safeSet(FILTER_KEY, this.input.value);
     this.applyFilter(this.input.value, 'user');
   };
 
   private onFilterKeydown = (e: KeyboardEvent): void => {
+    this.pinScrollY();
     if (e.key === 'Escape' && this.input.value) this.resetFilter();
+  };
+
+  /**
+   * Chrome-only: filter mutations trigger a browser-internal scroll. Pin
+   * scrollY via rAF for ~200ms (before-paint, invisible) and force
+   * `scroll-behavior: auto` so it's an instant jump, not a smooth animation
+   * we'd have to fight each frame. Prior inline value is restored at end.
+   */
+  private pinFrames = 0;
+  private prevScrollBehavior: string | null = null;
+  private pinScrollY = (): void => {
+    const wasActive = this.pinFrames > 0;
+    const y = window.scrollY;
+    this.pinFrames = 10;
+    if (wasActive) return;
+    this.prevScrollBehavior = document.documentElement.style.getPropertyValue('scroll-behavior');
+    document.documentElement.style.setProperty('scroll-behavior', 'auto', 'important');
+    const tick = (): void => {
+      if (window.scrollY !== y) window.scrollTo({ top: y, behavior: 'instant' as ScrollBehavior });
+      if (--this.pinFrames > 0) requestAnimationFrame(tick);
+      else {
+        if (this.prevScrollBehavior)
+          document.documentElement.style.setProperty('scroll-behavior', this.prevScrollBehavior);
+        else document.documentElement.style.removeProperty('scroll-behavior');
+        this.prevScrollBehavior = null;
+      }
+    };
+    tick();
   };
 
   private onClearClick = (): void => {
@@ -185,13 +249,13 @@ class SidebarFilter extends HTMLElement {
 
     // The events are dispatched on <igc-tree>; the actual item is in e.detail.
     const item = (e as CustomEvent<HTMLElement>).detail;
-    const key  = item?.dataset?.groupKey;
+    const key = item?.dataset?.groupKey;
     if (!key) return;
 
     if (this.openSnapshot) {
       // Filter active — update user-intent snapshot, not live state.
       if (e.type === 'igcItemExpanded') this.openSnapshot.add(key);
-      else                              this.openSnapshot.delete(key);
+      else this.openSnapshot.delete(key);
       this.syncSnapshotAttr();
       safeSet(DETAILS_KEY, [...this.openSnapshot].join('\n'));
       return;
@@ -202,22 +266,38 @@ class SidebarFilter extends HTMLElement {
     // `expanded` property to the attribute asynchronously; the attribute
     // is still the old value at the time this synchronous event fires.
     const saved = safeGet(DETAILS_KEY);
-    const keys  = new Set(saved ? saved.split('\n').filter(Boolean) : []);
+    const keys = new Set(saved ? saved.split('\n').filter(Boolean) : []);
     if (e.type === 'igcItemExpanded') keys.add(key);
-    else                              keys.delete(key);
+    else keys.delete(key);
     safeSet(DETAILS_KEY, [...keys].join('\n'));
+  };
+
+  /**
+   * Single-branch: a user expand collapses every open group outside the new
+   * branch. igc-tree's own `singleBranchExpand` isn't used: turning it on
+   * collapses every group, the current page's included, and while filtering
+   * the next expand would collapse the groups the filter opened.
+   */
+  private onItemExpanding = (e: Event): void => {
+    // While filtering, every group with a match stays open.
+    if (!this.singleBranch || this.openSnapshot) return;
+
+    const item = (e as CustomEvent<HTMLElement>).detail;
+    for (const el of this.groups as ExpandableEl[]) {
+      if (el.expanded && !el.contains(item)) void el.collapseWithEvent();
+    }
   };
 
   private syncSnapshotAttr(): void {
     if (this.openSnapshot) this.dataset.openSnapshot = [...this.openSnapshot].join('\n');
-    else                   delete this.dataset.openSnapshot;
+    else delete this.dataset.openSnapshot;
   }
 
   // ── Restore on connect ───────────────────────────────────────────────────
 
   private restoreOnConnect(): void {
     const isClientNav = _isClientSideNav;
-    _isClientSideNav  = false;
+    _isClientSideNav = false;
 
     if (this.hasFilter) {
       const saved = isClientNav ? safeGet(FILTER_KEY) : '';
@@ -237,22 +317,55 @@ class SidebarFilter extends HTMLElement {
   private restoreScroll(isClientNav: boolean): void {
     const sc = this.scrollEl;
     if (!sc) return;
-    requestAnimationFrame(() => {
-      sc.scrollTop = isClientNav
-        ? (parseInt(safeGet(SCROLL_KEY) || '0', 10) || 0)
-        : this.activeScrollOffset(sc);
-      sc.style.visibility = '';
-    });
+    if (isClientNav) {
+      requestAnimationFrame(() => {
+        sc.scrollTo({ top: parseInt(safeGet(SCROLL_KEY) || '0', 10) || 0, behavior: 'instant' });
+        sc.style.visibility = '';
+        // After restoring, ensure the active item is visible — it may
+        // have shifted due to expand/collapse changes on the new page.
+        requestAnimationFrame(() => {
+          const active = this.querySelector<HTMLAnchorElement>('a[aria-current="page"]');
+          if (active && !this.isElementVisible(active, sc)) {
+            this.scrollToCenter(active, sc);
+          }
+        });
+      });
+    } else {
+      // On hard refresh, wait for astro:page-load (which scrolls the page
+      // back to top and runs initSidebarHeights) before centering.
+      document.addEventListener(
+        'astro:page-load',
+        () => {
+          requestAnimationFrame(() => {
+            if (!this.isConnected) return;
+            const sidebar = this.closest<HTMLElement>('.docs-sidebar');
+            if (sidebar) {
+              sidebar.style.maxHeight =
+                Math.max(0, window.innerHeight - sidebar.getBoundingClientRect().top) + 'px';
+            }
+            sc.style.visibility = '';
+            const active = this.querySelector<HTMLAnchorElement>('a[aria-current="page"]');
+            if (active) this.scrollToCenter(active, sc);
+          });
+        },
+        { once: true },
+      );
+    }
   }
 
-  private activeScrollOffset(sc: HTMLElement): number {
-    const active   = this.querySelector<HTMLAnchorElement>('a[aria-current="page"]');
-    if (!active) return 0;
-    const linkRect = active.getBoundingClientRect();
-    const cRect    = sc.getBoundingClientRect();
-    if (linkRect.top < cRect.top)       return sc.scrollTop + (linkRect.top  - cRect.top);
-    if (linkRect.bottom > cRect.bottom) return sc.scrollTop + (linkRect.bottom - cRect.bottom);
-    return sc.scrollTop;
+  /** Scroll the container so that `el` is vertically centered within it. */
+  private scrollToCenter(el: HTMLElement, container: HTMLElement): void {
+    const elRect = el.getBoundingClientRect();
+    const cRect = container.getBoundingClientRect();
+    const elCenter = elRect.top + elRect.height / 2;
+    const cCenter = cRect.top + cRect.height / 2;
+    container.scrollTop += elCenter - cCenter;
+  }
+
+  private isElementVisible(el: HTMLElement, container: HTMLElement): boolean {
+    const elRect = el.getBoundingClientRect();
+    const cRect = container.getBoundingClientRect();
+    return elRect.top >= cRect.top && elRect.bottom <= cRect.bottom;
   }
 
   // ── Filter ───────────────────────────────────────────────────────────────
@@ -261,11 +374,14 @@ class SidebarFilter extends HTMLElement {
     const trimmed = rawQuery.trim();
     this.syncClearButton(trimmed);
 
-    if (!trimmed) { this.exitFilterMode(); return; }
+    if (!trimmed) {
+      this.exitFilterMode();
+      return;
+    }
 
     if (!this.openSnapshot) {
-      const current          = new Set(collectExpandedKeys(this));
-      this.openSnapshot      = new Set(current);
+      const current = new Set(collectExpandedKeys(this));
+      this.openSnapshot = new Set(current);
       this.preFilterSnapshot = source === 'user' ? new Set(current) : null;
       this.syncSnapshotAttr();
     }
@@ -297,13 +413,17 @@ class SidebarFilter extends HTMLElement {
     // Clear match marks — CSS restores visibility automatically.
     for (const el of this.items) delete el.dataset.filterMatch;
 
-    const restore = this.preFilterSnapshot ?? this.openSnapshot;
+    // Single-branch: return to the current page's branch, not to the groups
+    // that were open before filtering, which may be a second branch.
+    const restore = this.singleBranch
+      ? this.activeBranchKeys()
+      : (this.preFilterSnapshot ?? this.openSnapshot);
     if (restore) {
       this.withSuppressed(() => this.setExpandedState(restore!));
       safeSet(DETAILS_KEY, [...restore].join('\n'));
     }
 
-    this.openSnapshot      = null;
+    this.openSnapshot = null;
     this.preFilterSnapshot = null;
     this.syncSnapshotAttr();
     this.ensureActiveAncestorsExpanded();
@@ -330,10 +450,14 @@ class SidebarFilter extends HTMLElement {
   /** Run fn with event-driven persistence suppressed. */
   private withSuppressed(fn: () => void): void {
     this.suppressPersist = true;
-    try { fn(); } finally {
+    try {
+      fn();
+    } finally {
       // igcItem* events may fire after a render cycle; release the suppress
       // flag after the next task to be safe.
-      setTimeout(() => { this.suppressPersist = false; }, 0);
+      setTimeout(() => {
+        this.suppressPersist = false;
+      }, 0);
     }
   }
 
@@ -367,8 +491,23 @@ class SidebarFilter extends HTMLElement {
   private markMatches(matches: Set<HTMLElement>): void {
     for (const el of this.items) {
       if (matches.has(el)) el.dataset.filterMatch = 'true';
-      else                 delete el.dataset.filterMatch;
+      else delete el.dataset.filterMatch;
     }
+  }
+
+  private get singleBranch(): boolean {
+    return this.hasAttribute('data-single-branch-expand');
+  }
+
+  /** Keys of the groups that contain the active page. */
+  private activeBranchKeys(): Set<string> {
+    const keys = new Set<string>();
+    for (const el of this.groups) {
+      if (el.dataset.groupKey && el.querySelector('a[aria-current="page"]')) {
+        keys.add(el.dataset.groupKey);
+      }
+    }
+    return keys;
   }
 
   private ensureActiveAncestorsExpanded(): void {
@@ -386,7 +525,8 @@ class SidebarFilter extends HTMLElement {
 
   private updateStatus(state: 'no-match' | null): void {
     if (!this.hasFilter) return;
-    this.status.textContent = state === 'no-match' ? (this.dataset.noResults ?? 'No topics match') : '';
+    this.status.textContent =
+      state === 'no-match' ? (this.dataset.noResults ?? 'No topics match') : '';
   }
 
   private syncClearButton(value: string): void {
@@ -395,6 +535,7 @@ class SidebarFilter extends HTMLElement {
   }
 
   private resetFilter(): void {
+    this.pinScrollY();
     this.input.value = '';
     this.syncClearButton('');
     safeRemove(FILTER_KEY);

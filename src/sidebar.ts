@@ -28,14 +28,14 @@ export type { SidebarEntry, SidebarGroup, SidebarLink } from './lib/sidebar/type
 // ---------------------------------------------------------------------------
 
 interface TocItem {
-    name?: string;
-    href?: string;
-    header?: boolean;
-    items?: TocItem[];
-    new?: boolean;
-    preview?: boolean;
-    updated?: boolean;
-    premium?: boolean;
+  name?: string;
+  href?: string;
+  header?: boolean;
+  items?: TocItem[];
+  new?: boolean;
+  preview?: boolean;
+  updated?: boolean;
+  premium?: boolean;
 }
 
 // ---------------------------------------------------------------------------
@@ -43,26 +43,28 @@ interface TocItem {
 // ---------------------------------------------------------------------------
 
 function docExists(docsDir: string, href: string, exclude: RegExp[]): boolean {
-    if (!href) return false;
-    if (exclude?.some((p) => p.test(href))) return false;
-    // Check the href as-is, then also with .md ↔ .mdx swapped so that toc.json
-    // entries like "charts/chart-features.md" resolve even when the file on disk
-    // is "charts/chart-features.mdx" (and vice-versa).
-    if (fs.existsSync(path.join(docsDir, href))) return true;
-    const alt = href.endsWith('.mdx')
-        ? href.slice(0, -4) + '.md'
-        : href.endsWith('.md') ? href.slice(0, -3) + '.mdx' : null;
-    return alt !== null && fs.existsSync(path.join(docsDir, alt));
+  if (!href) return false;
+  if (exclude?.some((p) => p.test(href))) return false;
+  // Check the href as-is, then also with .md ↔ .mdx swapped so that toc.json
+  // entries like "charts/chart-features.md" resolve even when the file on disk
+  // is "charts/chart-features.mdx" (and vice-versa).
+  if (fs.existsSync(path.join(docsDir, href))) return true;
+  const alt = href.endsWith('.mdx')
+    ? href.slice(0, -4) + '.md'
+    : href.endsWith('.md')
+      ? href.slice(0, -3) + '.mdx'
+      : null;
+  return alt !== null && fs.existsSync(path.join(docsDir, alt));
 }
 
 function hrefToSlug(href: string): string {
-    if (!href) return '';
-    let slug = href
-        .replace(/\\/g, '/')
-        .replace(/\.(md|mdx)$/i, '')
-        .toLowerCase();
-    slug = slug.replace(/\/index$/, '');
-    return slug === 'index' ? '' : slug;
+  if (!href) return '';
+  let slug = href
+    .replace(/\\/g, '/')
+    .replace(/\.(md|mdx)$/i, '')
+    .toLowerCase();
+  slug = slug.replace(/\/index$/, '');
+  return slug === 'index' ? '' : slug;
 }
 
 /**
@@ -71,51 +73,51 @@ function hrefToSlug(href: string): string {
  *   • depth ≥ 1 (nested groups) → `collapsed: true`
  */
 function collapsedForDepth(depth: number): boolean {
-    return depth > 0;
+  return depth > 0;
 }
 
 function convertTocItem(
-    docsDir: string,
-    item: TocItem,
-    exclude: RegExp[],
-    depth: number,
+  docsDir: string,
+  item: TocItem,
+  exclude: RegExp[],
+  depth: number,
 ): SidebarEntry | null {
-    if (!item.name) return null;
+  if (!item.name) return null;
 
-    if (item.items && item.items.length > 0) {
-        const group: SidebarGroup = {
-            label: item.name,
-            items: [],
-            collapsed: collapsedForDepth(depth),
-        };
-        if (item.href && docExists(docsDir, item.href, exclude)) {
-            group.items.push({ label: 'Overview', slug: hrefToSlug(item.href) });
-        }
-        for (const child of item.items) {
-            const entry = convertTocItem(docsDir, child, exclude, depth + 1);
-            if (entry) group.items.push(entry);
-        }
-        return group.items.length > 0 ? group : null;
+  if (item.items && item.items.length > 0) {
+    const group: SidebarGroup = {
+      label: item.name,
+      items: [],
+      collapsed: collapsedForDepth(depth),
+    };
+    if (item.href && docExists(docsDir, item.href, exclude)) {
+      group.items.push({ label: 'Overview', slug: hrefToSlug(item.href) });
     }
-
-    if (item.href) {
-        if (!docExists(docsDir, item.href, exclude)) return null;
-        const entry: SidebarLink = { label: item.name, slug: hrefToSlug(item.href) };
-        // Status badge — only one slot available, priority order:
-        if (item.new) entry.badge = { text: 'New', variant: 'success' };
-        else if (item.preview) entry.badge = { text: 'Preview', variant: 'caution' };
-        else if (item.updated) entry.badge = { text: 'Updated', variant: 'note' };
-        // Premium is rendered via data-premium attr so it can coexist with a
-        // status badge (CSS ::after pseudo-element adds the star icon).
-        if (item.premium) {
-            entry.attrs = { 'data-premium': 'true' };
-            // Only use the badge slot for premium when no status badge is shown.
-            if (!entry.badge) entry.badge = { text: 'Premium', variant: 'tip' };
-        }
-        return entry;
+    for (const child of item.items) {
+      const entry = convertTocItem(docsDir, child, exclude, depth + 1);
+      if (entry) group.items.push(entry);
     }
+    return group.items.length > 0 ? group : null;
+  }
 
-    return null;
+  if (item.href) {
+    if (!docExists(docsDir, item.href, exclude)) return null;
+    const entry: SidebarLink = { label: item.name, slug: hrefToSlug(item.href) };
+    // Status badge — only one slot available, priority order:
+    if (item.new) entry.badge = { text: 'New', variant: 'success' };
+    else if (item.preview) entry.badge = { text: 'Preview', variant: 'caution' };
+    else if (item.updated) entry.badge = { text: 'Updated', variant: 'note' };
+    // Premium is rendered via data-premium attr so it can coexist with a
+    // status badge (CSS ::after pseudo-element adds the star icon).
+    if (item.premium) {
+      entry.attrs = { 'data-premium': 'true' };
+      // Only use the badge slot for premium when no status badge is shown.
+      if (!entry.badge) entry.badge = { text: 'Premium', variant: 'tip' };
+    }
+    return entry;
+  }
+
+  return null;
 }
 
 // ---------------------------------------------------------------------------
@@ -123,44 +125,48 @@ function convertTocItem(
 // ---------------------------------------------------------------------------
 
 export interface BuildSidebarFromTocOptions {
-    /** Absolute path to the TOC file (.json). */
-    tocPath: string;
-    /** Absolute path to the Markdown docs directory. */
-    docsDir: string;
-    /** Extra patterns to exclude (matched against the `href`). */
-    exclude?: RegExp[];
+  /** Absolute path to the TOC file (.json). */
+  tocPath: string;
+  /** Absolute path to the Markdown docs directory. */
+  docsDir: string;
+  /** Extra patterns to exclude (matched against the `href`). */
+  exclude?: RegExp[];
 }
 
 /**
  * Reads a JSON TOC file and converts it to a sidebar array.
  */
-export function buildSidebarFromToc({ tocPath, docsDir, exclude = [] }: BuildSidebarFromTocOptions): SidebarEntry[] {
-    if (!tocPath || !fs.existsSync(tocPath)) return [];
-    const tocRaw = fs.readFileSync(tocPath, 'utf-8');
-    const tocItems: TocItem[] = JSON.parse(tocRaw);
+export function buildSidebarFromToc({
+  tocPath,
+  docsDir,
+  exclude = [],
+}: BuildSidebarFromTocOptions): SidebarEntry[] {
+  if (!tocPath || !fs.existsSync(tocPath)) return [];
+  const tocRaw = fs.readFileSync(tocPath, 'utf-8');
+  const tocItems: TocItem[] = JSON.parse(tocRaw);
 
-    const sidebar: SidebarEntry[] = [];
-    let currentGroup: SidebarGroup | null = null;
+  const sidebar: SidebarEntry[] = [];
+  let currentGroup: SidebarGroup | null = null;
 
-    for (const item of tocItems) {
-        if (item.header) {
-            if (currentGroup) sidebar.push(currentGroup);
-            // Root-level header section — open by default.
-            currentGroup = { label: item.name!, items: [], collapsed: collapsedForDepth(0) };
-            if (item.href && docExists(docsDir, item.href, exclude)) {
-                currentGroup.items.push({ label: 'Overview', slug: hrefToSlug(item.href) });
-            }
-            continue;
-        }
-        // Items inside a header section are at depth 1 (nested);
-        // items outside any header section are at depth 0 (root).
-        const depth = currentGroup ? 1 : 0;
-        const entry = convertTocItem(docsDir, item, exclude, depth);
-        if (!entry) continue;
-        if (currentGroup) currentGroup.items.push(entry);
-        else sidebar.push(entry);
+  for (const item of tocItems) {
+    if (item.header) {
+      if (currentGroup) sidebar.push(currentGroup);
+      // Root-level header section — open by default.
+      currentGroup = { label: item.name!, items: [], collapsed: collapsedForDepth(0) };
+      if (item.href && docExists(docsDir, item.href, exclude)) {
+        currentGroup.items.push({ label: 'Overview', slug: hrefToSlug(item.href) });
+      }
+      continue;
     }
+    // Items inside a header section are at depth 1 (nested);
+    // items outside any header section are at depth 0 (root).
+    const depth = currentGroup ? 1 : 0;
+    const entry = convertTocItem(docsDir, item, exclude, depth);
+    if (!entry) continue;
+    if (currentGroup) currentGroup.items.push(entry);
+    else sidebar.push(entry);
+  }
 
-    if (currentGroup) sidebar.push(currentGroup);
-    return sidebar;
+  if (currentGroup) sidebar.push(currentGroup);
+  return sidebar;
 }

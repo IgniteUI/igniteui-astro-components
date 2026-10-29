@@ -26,6 +26,7 @@ None — the component is self-contained.
 ---
 import Search from 'igniteui-astro-components/components/Search.astro';
 ---
+
 <Search />
 ```
 

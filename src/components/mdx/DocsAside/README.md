@@ -10,43 +10,43 @@ import DocsAside from 'igniteui-astro-components/components/mdx/DocsAside.astro'
 
 ## Props
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `type` | `'note' \| 'tip' \| 'warning' \| 'danger'` | `'note'` | Semantic variant — controls the color accent and default icon. |
-| `title` | `string` | auto | Override the heading text. Defaults to the capitalised `type` name (`Note`, `Tip`, `Warning`, `Danger`). |
-| `color` | `string` | — | Override the accent color via the `--aside-color` CSS custom property. Accepts any valid CSS color value. |
-| `icon` | `string` | auto | Override the icon with raw SVG markup. Pass an empty string `""` to suppress the icon entirely. |
-| `class` | `string` | — | Additional CSS class(es) to add to the `<aside>` element. |
+| Prop    | Type                                       | Default  | Description                                                                                               |
+| ------- | ------------------------------------------ | -------- | --------------------------------------------------------------------------------------------------------- |
+| `type`  | `'note' \| 'tip' \| 'warning' \| 'danger'` | `'note'` | Semantic variant — controls the color accent and default icon.                                            |
+| `title` | `string`                                   | auto     | Override the heading text. Defaults to the capitalised `type` name (`Note`, `Tip`, `Warning`, `Danger`).  |
+| `color` | `string`                                   | —        | Override the accent color via the `--aside-color` CSS custom property. Accepts any valid CSS color value. |
+| `icon`  | `string`                                   | auto     | Override the icon with raw SVG markup. Pass an empty string `""` to suppress the icon entirely.           |
+| `class` | `string`                                   | —        | Additional CSS class(es) to add to the `<aside>` element.                                                 |
 
 ## Examples
 
 ```mdx
 {/* Default note */}
-<DocsAside>
-  This is a general note.
-</DocsAside>
+
+<DocsAside>This is a general note.</DocsAside>
 
 {/* Tip variant */}
-<DocsAside type="tip">
-  Use keyboard shortcuts to speed up your workflow.
-</DocsAside>
+
+<DocsAside type="tip">Use keyboard shortcuts to speed up your workflow.</DocsAside>
 
 {/* Warning with custom title */}
+
 <DocsAside type="warning" title="Breaking change">
   The `foo` prop was removed in v2. Use `bar` instead.
 </DocsAside>
 
 {/* Danger */}
-<DocsAside type="danger">
-  Deleting this record is irreversible.
-</DocsAside>
+
+<DocsAside type="danger">Deleting this record is irreversible.</DocsAside>
 
 {/* Custom accent color */}
+
 <DocsAside type="note" color="hsl(280, 80%, 50%)">
   A purple-accented callout.
 </DocsAside>
 
 {/* No icon */}
+
 <DocsAside type="tip" icon="">
   This tip has no icon.
 </DocsAside>
@@ -54,12 +54,12 @@ import DocsAside from 'igniteui-astro-components/components/mdx/DocsAside.astro'
 
 ## Variants
 
-| `type` | Accent color | Default title |
-|--------|-------------|---------------|
-| `note` | Blue | Note |
-| `tip` | Green | Tip |
-| `warning` | Amber | Warning |
-| `danger` | Red | Danger |
+| `type`    | Accent color | Default title |
+| --------- | ------------ | ------------- |
+| `note`    | Blue         | Note          |
+| `tip`     | Green        | Tip           |
+| `warning` | Amber        | Warning       |
+| `danger`  | Red          | Danger        |
 
 ## Icons
 

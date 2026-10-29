@@ -2,58 +2,51 @@
 import './DocsAside.scss';
 
 interface Props {
-    type?: 'note' | 'info' | 'warning';
-    title?: string;
-    color?: string;
-    class?: string;
-    /** Override icon name from the 'docs' collection. */
-    icon?: string;
+  type?: 'note' | 'info' | 'warning';
+  title?: string;
+  color?: string;
+  class?: string;
+  /** Override icon name from the 'docs' collection. */
+  icon?: string;
 }
 
 const { type = 'note', title, icon, class: className } = Astro.props;
 
 const defaultLabels: Record<string, string> = {
-    note: 'Note',
-    info: 'Info',
-    warning: 'Warning',
+  note: 'Note',
+  info: 'Info',
+  warning: 'Warning',
 };
 
 const defaultIcons: Record<string, string> = {
-    note: 'note',
-    info: 'info',
-    warning: 'warning',
+  note: 'note',
+  info: 'info',
+  warning: 'warning',
 };
 
 const label = title ?? defaultLabels[type];
-const resolvedIcon = icon!==undefined ? icon: defaultIcons[type];
+const resolvedIcon = icon !== undefined ? icon : defaultIcons[type];
 ---
 
-<div
-    class:list={ ['igd-aside', `igd-aside--${ type }`, className] }
-    aria-label={ label }
-    role="note"
->
-    { resolvedIcon &&
-        <igc-icon
-            class="igd-aside__icon"
-            name={ resolvedIcon }
-            collection="docs"
-            aria-hidden="true"></igc-icon>
-    }
+<div class:list={['igd-aside', `igd-aside--${type}`, className]} aria-label={label} role="note">
+  {
+    resolvedIcon && (
+      <igc-icon class="igd-aside__icon" name={resolvedIcon} collection="docs" aria-hidden="true" />
+    )
+  }
 
-    <span class="igd-aside__title" aria-hidden="true">
-        { label }
-    </span>
+  <span class="igd-aside__title" aria-hidden="true">
+    {label}
+  </span>
 
-    <div class="igd-aside__content">
-        <slot/>
-    </div>
+  <div class="igd-aside__content">
+    <slot />
+  </div>
 </div>
 
 <script>
-    import { defineComponents, IgcIconComponent } from 'igniteui-webcomponents';
-    import '../../../scripts/icon-registry';
+  import { defineComponents, IgcIconComponent } from 'igniteui-webcomponents';
+  import '../../../scripts/icon-registry';
 
-    defineComponents(IgcIconComponent);
+  defineComponents(IgcIconComponent);
 </script>
-

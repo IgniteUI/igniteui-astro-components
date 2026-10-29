@@ -6,11 +6,8 @@
  * Single source of truth, no duplication.
  */
 
-export type SidebarBadgeVariant =
-  | 'new'
-  | 'updated'
-  | 'preview'
-  | 'premium';
+export const SIDEBAR_BADGE_VARIANTS = ['new', 'updated', 'preview', 'premium'] as const;
+export type SidebarBadgeVariant = (typeof SIDEBAR_BADGE_VARIANTS)[number];
 
 export interface SidebarBadge {
   text: string;

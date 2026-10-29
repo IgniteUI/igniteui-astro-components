@@ -10,8 +10,8 @@ import PlatformBlock from 'igniteui-astro-components/components/mdx/PlatformBloc
 
 ## Props
 
-| Prop | Type | Description |
-|------|------|-------------|
+| Prop  | Type     | Description                                                 |
+| ----- | -------- | ----------------------------------------------------------- |
 | `for` | `string` | Comma-separated list of platform names to show content for. |
 
 Valid platform names: `Angular`, `React`, `WebComponents`, `Blazor`
@@ -20,14 +20,12 @@ Valid platform names: `Angular`, `React`, `WebComponents`, `Blazor`
 
 ```mdx
 {/* Single platform */}
-<PlatformBlock for="Angular">
-  This paragraph only appears in Angular docs.
-</PlatformBlock>
+
+<PlatformBlock for="Angular">This paragraph only appears in Angular docs.</PlatformBlock>
 
 {/* Multiple platforms */}
-<PlatformBlock for="Angular, React">
-  Visible in Angular and React docs only.
-</PlatformBlock>
+
+<PlatformBlock for="Angular, React">Visible in Angular and React docs only.</PlatformBlock>
 
 {/* All platforms (just write the content without PlatformBlock) */}
 ```

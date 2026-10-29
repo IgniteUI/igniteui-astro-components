@@ -1,6 +1,13 @@
 import type { PlatformContext } from './lib/types.ts';
 
 declare global {
+  /**
+   * The synced marketing chrome, defined at build time by the igChrome()
+   * integration (src/chrome/integration.ts). Undeclared when it isn't
+   * registered: read it as `typeof __IG_CHROME__ !== 'undefined'`.
+   */
+  const __IG_CHROME__: import('./chrome/integration').IgChromeData;
+
   namespace App {
     interface Locals {
       platformContext?: PlatformContext;
@@ -27,10 +34,23 @@ declare module 'virtual:docs-template/site-meta' {
   }>;
   /** Astro trailingSlash config value: 'always' | 'never' | 'ignore'. */
   export const trailingSlash: 'always' | 'never' | 'ignore';
+  /** Optional package switcher entries. */
+  export const packages:
+    Array<string | { label: string; value?: string; href?: string; base?: string }> | undefined;
+  /** Currently selected package. */
+  export const selectedPackage: string | undefined;
 }
 
 declare module 'virtual:docs-template/nav-html' {
-  export const platform: 'igniteui' | 'angular' | 'react' | 'blazor' | 'web-components' | 'slingshot' | 'appbuilder' | null;
-  export const themeApiUrl: string;
-  export const widgetScriptSrc: string;
+  export const platform:
+    | 'igniteui'
+    | 'angular'
+    | 'react'
+    | 'blazor'
+    | 'web-components'
+    | 'winui'
+    | 'uno'
+    | 'slingshot'
+    | 'appbuilder'
+    | null;
 }

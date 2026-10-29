@@ -29,6 +29,7 @@ export * from './platform';
 export * from './content-helper';
 
 // Sidebar runtime types & tree helpers
+export { SIDEBAR_BADGE_VARIANTS } from './lib/sidebar/types';
 export type {
   SidebarBadge,
   SidebarBadgeVariant,

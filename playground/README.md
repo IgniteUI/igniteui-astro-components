@@ -8,9 +8,8 @@ without having to publish the package or wire it into a consumer repo.
 From the repo root:
 
 ```sh
-npm install        # installs astro + sass for both root and playground
-cd playground
-npm run dev
+npm install
+npm run playground:dev
 ```
 
 Then open http://localhost:4567.
@@ -36,24 +35,19 @@ Then open http://localhost:4567.
 
 ## Pages
 
-| Route | Component(s) under test |
-| --- | --- |
-| `/` | `DocsLayout`, `DocsSidebar` |
-| `/components/sidebar` | `DocsSidebar`, `SidebarTree`, `SidebarItem`, `SidebarFilterInput` |
-| `/components/nav-bar` | `GlobalNavBar`, `GlobalFooter` |
-| `/components/api-link` | `ApiLink` |
-| `/components/api-ref` | `ApiRef` |
-| `/components/platform-block` | `PlatformBlock` |
+| Route                        | Component(s) under test                                           |
+| ---------------------------- | ----------------------------------------------------------------- |
+| `/`                          | `DocsLayout`, `DocsSidebar`                                       |
+| `/components/sidebar`        | `DocsSidebar`, `SidebarTree`, `SidebarItem`, `SidebarFilterInput` |
+| `/components/nav-bar`        | `GlobalNavBar`, `GlobalFooter`                                    |
+| `/components/api-link`       | `ApiLink`                                                         |
+| `/components/api-ref`        | `ApiRef`                                                          |
+| `/components/badge`          | `Badge`                                                           |
+| `/components/platform-block` | `PlatformBlock`                                                   |
 
 ## Caveats
 
 - The global nav/footer prefetch is disabled (`prefetched: false`), so
   you'll see the inline-fallback markup defined in each component.
-- The `Sample` MDX component is **not** demoed because it imports
-  `../../scripts/sample-widget` from a path that doesn't yet exist in
-  this package (the script lives in the upstream `docs-template`
-  project). Add `src/scripts/sample-widget.ts` and a Sample demo page
-  once the script is ported.
-- No MDX integration is wired up; tests use `.astro` pages exclusively.
-  Add `@astrojs/mdx` to `playground/package.json` and the `integrations`
-  array if you need to test components in `.mdx`.
+- Astro, MDX, Sätteri, and the playground's other development dependencies
+  are managed by the repository's root `package.json`.

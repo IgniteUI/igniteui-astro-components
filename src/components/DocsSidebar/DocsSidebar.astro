@@ -8,8 +8,12 @@
  * Package: igniteui-webcomponents (public, MIT) — change the import path
  * in the <script> block below to use @infragistics/igniteui-webcomponents.
  */
-import { sidebar as sidebarData, trailingSlash as configuredTrailingSlash } from 'virtual:docs-template/site-meta';
-import logoRaw from '../../assets/ig-logo.svg?raw';
+import {
+  sidebar as sidebarData,
+  trailingSlash as configuredTrailingSlash,
+} from 'virtual:docs-template/site-meta';
+import { platform as virtualPlatform } from 'virtual:docs-template/nav-html';
+import { ULTIMATE_UI_PLATFORMS, platformLabelFor } from '../../platform';
 import SidebarFilterInput from './SidebarFilterInput.astro';
 import './DocsSidebar.scss';
 import SidebarLabel from './SidebarLabel.astro';
@@ -33,63 +37,104 @@ interface Props {
    * (exposed via the virtual module). Falls back to `true` if not configured.
    */
   trailingSlash?: boolean;
+  /** Logo text shown in the slide-in sidebar. Defaults to the current product family. */
+  logoText?: string;
+  /** Platform label shown below logoText (e.g. 'Angular'). Auto-detected from virtual module when omitted. */
+  platformLabel?: string | null;
+  /**
+   * Keep one branch of the tree open at a time: only the current page's
+   * groups are open on load, and expanding a group collapses the others.
+   * The filter still opens every group with a match. Defaults to true.
+   */
+  singleBranchExpand?: boolean;
 }
 
 const useTrailingSlash = configuredTrailingSlash !== 'never';
-const { currentSlug = '', items: itemsProp, showFilter = true, trailingSlash = useTrailingSlash } = Astro.props;
+const {
+  currentSlug = '',
+  items: itemsProp,
+  showFilter = true,
+  trailingSlash = useTrailingSlash,
+  logoText = ULTIMATE_UI_PLATFORMS.has(virtualPlatform ?? '') ? 'Ultimate UI' : 'Ignite UI',
+  platformLabel = platformLabelFor(virtualPlatform),
+  singleBranchExpand = true,
+} = Astro.props;
 const items = (itemsProp ?? sidebarData) as SidebarEntry[];
-const nodes = toTreeNodes(items, currentSlug, { trailingSlash });
+const nodes = toTreeNodes(items, currentSlug, { trailingSlash, singleBranch: singleBranchExpand });
 const activeId = normalizeSlug(currentSlug);
 ---
 
-<sidebar-filter class="docs-sidebar" id="docs-sidebar" data-no-results="No topics match">
-    <div class="sidebar-gutter">
-        <div class="sidebar-logo" aria-hidden="true">
-            <Fragment set:html={logoRaw} />
-        </div>
-{ showFilter && <SidebarFilterInput/> }
-    </div>
-    <div class="sidebar-scroll" data-sidebar-scroll>
-        <DocsTree
-            nodes={ nodes }
-            variant="sidebar"
-            activeId={ activeId }
-            toggleNodeOnClick
-            ariaLabel="Sidebar navigation"
-            renderLabel={ SidebarLabel }
-        />
-    </div>
+<sidebar-filter
+  class="docs-sidebar"
+  id="docs-sidebar"
+  data-no-results="No topics match"
+  data-single-branch-expand={singleBranchExpand ? '' : undefined}
+>
+  <div class="igd-sidebar-logo">
+    {/* Keep as <span>, not <h1> — avoids competing with the page <h1> in search. */}
+    <span class="igd-logo-text">{logoText}</span>
+    {platformLabel && <span class="igd-logo__platform">for {platformLabel}</span>}
+  </div>
+  <div class="sidebar-gutter">{showFilter && <SidebarFilterInput />}</div>
+  <div class="sidebar-scroll" data-sidebar-scroll>
+    <DocsTree
+      nodes={nodes}
+      variant="sidebar"
+      activeId={activeId}
+      toggleNodeOnClick
+      ariaLabel="Sidebar navigation"
+      renderLabel={SidebarLabel}
+    />
+  </div>
+  {/* Shared tooltip showing the full text of a truncated (line-clamped) label.
+      Anchored at runtime to the hovered/focused row by sidebar-tooltip.ts, which
+      also owns show/hide — hence the empty trigger lists. */}
+  <igc-tooltip
+    data-sidebar-tooltip
+    class="igd-sidebar-tooltip"
+    placement="right"
+    show-triggers=""
+    hide-triggers=""
+    with-arrow
+  ></igc-tooltip>
 </sidebar-filter>
 <div class="docs-sidebar-backdrop" id="docs-sidebar-backdrop" aria-hidden="true"></div>
 
 <script>
-    // Register Ignite UI Web Components used by the sidebar filter input.
-    // (DocsTree registers IgcTreeComponent / IgcTreeItemComponent itself.)
-    // To use the licensed package, change the import to:
-    //   import { ... } from '@infragistics/igniteui-webcomponents';
-    import {
-        defineComponents,
-        IgcBadgeComponent,
-        IgcInputComponent,
-        IgcButtonComponent,
-        IgcIconComponent,
-    } from 'igniteui-webcomponents';
+  // Register Ignite UI Web Components used by the sidebar filter input.
+  // (DocsTree registers IgcTreeComponent / IgcTreeItemComponent itself.)
+  // To use the licensed package, change the import to:
+  //   import { ... } from '@infragistics/igniteui-webcomponents';
+  import {
+    defineComponents,
+    IgcBadgeComponent,
+    IgcInputComponent,
+    IgcButtonComponent,
+    IgcIconComponent,
+    IgcTooltipComponent,
+  } from 'igniteui-webcomponents';
 
-    defineComponents(IgcBadgeComponent, IgcInputComponent, IgcButtonComponent, IgcIconComponent);
+  defineComponents(
+    IgcBadgeComponent,
+    IgcInputComponent,
+    IgcButtonComponent,
+    IgcIconComponent,
+    IgcTooltipComponent,
+  );
 
-    // Icons (sidebar-filter-search, sidebar-filter-clear) are registered via
-    // the icon registry which picks up all SVGs from src/assets/icons/.
-    import '../../scripts/icon-registry';
+  // Icons (sidebar-filter-search, sidebar-filter-clear) are registered via
+  // the icon registry which picks up all SVGs from src/assets/icons/.
+  import '../../scripts/icon-registry';
 
-    import './sidebar-filter';
+  import './sidebar-filter';
+  import './sidebar-tooltip';
 
-    // Close the sidebar overlay when the backdrop is clicked.
-    document.addEventListener('click', (e) => {
-        if ((e.target as Element | null)?.closest('#docs-sidebar-backdrop')) {
-            document.body.removeAttribute('data-sidebar-open');
-            const toggle = document.querySelector<HTMLElement>('[data-sidebar-toggle]');
-            toggle?.setAttribute('aria-expanded', 'false');
-        }
-    });
+  // Close the sidebar overlay when the backdrop is clicked.
+  document.addEventListener('click', (e) => {
+    if ((e.target as Element | null)?.closest('#docs-sidebar-backdrop')) {
+      document.body.removeAttribute('data-sidebar-open');
+      const toggle = document.querySelector<HTMLElement>('[data-sidebar-toggle]');
+      toggle?.setAttribute('aria-expanded', 'false');
+    }
+  });
 </script>
-

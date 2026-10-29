@@ -10,8 +10,8 @@ import MobileSidebarToggle from 'igniteui-astro-components/components/MobileSide
 
 ## Props
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
+| Prop    | Type     | Default             | Description                                                                   |
+| ------- | -------- | ------------------- | ----------------------------------------------------------------------------- |
 | `label` | `string` | `'Components List'` | Visible button text and aria-label suffix. Typically the active section name. |
 
 ## Behaviour
@@ -25,6 +25,7 @@ import MobileSidebarToggle from 'igniteui-astro-components/components/MobileSide
 ---
 import MobileSidebarToggle from 'igniteui-astro-components/components/MobileSidebarToggle.astro';
 ---
+
 <MobileSidebarToggle label="Components" />
 ```
 

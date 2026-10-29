@@ -5,7 +5,7 @@
  * Receives `{ node, depth, isLeaf, isActive }` from DocsTreeItem.
  * Branches on isLeaf:
  *   • leaf  → label text + optional badge (from node.meta.badge)
- *   • group → label text only (the caret lives in the native indicator slot of igc-tree-item)
+ *   • group → label text only (DocsTreeItem renders the leading chevron before it)
  *
  * The outer container is the `<a class="docs-tree-link">` (leaves) or
  * `<div class="docs-tree-group">` (groups) provided by DocsTreeItem.
@@ -13,6 +13,7 @@
  */
 import type { TreeNode } from '../DocsTree/types';
 import type { SidebarBadge } from '../../lib/sidebar/types';
+import Badge from '../mdx/Badge/Badge.astro';
 
 interface Props {
   node: TreeNode;
@@ -22,35 +23,44 @@ interface Props {
 }
 
 const { node, isLeaf } = Astro.props;
-const childCount = !isLeaf ? (node.children?.length ?? 0) : 0;
 const badges = (node.meta?.badges ?? []) as SidebarBadge[];
 ---
 
-{isLeaf ? (
-  <>
-    <div class="igd-lable-and-badge">
+{
+  isLeaf ? (
+    <>
+      <div class="igd-label-and-badge">
         <span class="docs-tree-label">{node.label}</span>
         {badges.length > 0 && (
-            <div class="igd-badge-container">
-                {badges.filter(b => b.variant !== 'premium').map((badge) => (
-                    <>
-                        <igc-badge class={`sidebar-badge ${badge.variant}`} aria-hidden="true"><span>{badge.text}</span></igc-badge>
-                        <span class="visually-hidden">, {badge.text}</span>
-                    </>
-                ))}
-                {badges.some(b => b.variant === 'premium') && (
-                    <>
-                        <igc-icon name="premium" collection="docs" class="sidebar-premium-icon" aria-hidden="true"></igc-icon>
-                        <span class="visually-hidden">, Premium</span>
-                    </>
-                )}
-            </div>
+          <div class="igd-badge-container">
+            {badges
+              .filter((b) => b.variant !== 'premium')
+              .map((badge) => (
+                <>
+                  <Badge variant={badge.variant} class="sidebar-badge" aria-hidden="true">
+                    <span>{badge.text}</span>
+                  </Badge>
+                  <span class="visually-hidden">, {badge.text}</span>
+                </>
+              ))}
+            {badges.some((b) => b.variant === 'premium') && (
+              <>
+                <igc-icon
+                  name="premium"
+                  collection="docs"
+                  class="sidebar-premium-icon"
+                  aria-hidden="true"
+                />
+                <span class="visually-hidden">, Premium</span>
+              </>
+            )}
+          </div>
         )}
-    </div>
-  </>
-) : (
-  <span class="group-label-text">
-        <span>{node.label}</span>
-        <span class="group-label-count">/{childCount}/</span>
-  </span>
-)}
+      </div>
+    </>
+  ) : (
+    <span class="group-label-text">
+      <span>{node.label}</span>
+    </span>
+  )
+}

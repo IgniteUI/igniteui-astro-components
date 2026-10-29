@@ -14,14 +14,20 @@
  * The two virtual module stubs below satisfy the Vite module resolver (the
  * components import from them at the top level). Nav HTML is not fetched here
  * — GlobalNavBar and GlobalFooter self-fetch via fetchIgNav() at build time
- * and fall back to static minimal markup when the fetch fails.
+ * and fall back to static minimal markup when the fetch fails. Set
+ * `IG_CHROME_SNAPSHOT=<folder>` to render the marketing site's exported chrome
+ * from a snapshot instead (see igChrome below).
  */
 
 import { defineConfig } from 'astro/config';
-import { fileURLToPath } from 'node:url';
+import { createRequire } from 'node:module';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import path from 'node:path';
+import fs from 'node:fs';
 import mdx from '@astrojs/mdx';
+import { satteri } from '@astrojs/markdown-satteri';
 import { getPlatformHead } from '../src/platform.ts';
+import { igChrome } from '../src/chrome/integration.ts';
 import { rehypeHeadingAnchors } from '../src/plugins/rehype-heading-anchors.ts';
 import { rehypeTableWrapper } from '../src/plugins/rehype-table-wrapper.ts';
 
@@ -32,7 +38,72 @@ process.env.DOCS_ENV ??= 'development';
 process.env.BASE_URL ??= 'http://localhost:4567';
 
 // Platform head entries (IG CSS + JS) injected into <head> by DocsLayout.
-const platformHeadEntries = getPlatformHead('angular', 'en');
+// The legacy chrome's CSS/JS only when the legacy chrome renders (no snapshot).
+const platformHeadEntries = getPlatformHead('angular', 'en', {
+  legacyChrome: !process.env.IG_CHROME_SNAPSHOT,
+});
+
+/**
+ * Dev-only Vite plugin: handles POST /api/icons/replace
+ * so the IconGallery upload button can replace SVG files in src/assets/icons/.
+ * Only active during `astro dev` — no-op in production builds.
+ */
+function iconUploadPlugin() {
+  return {
+    name: 'playground:icon-upload',
+    /** @param {import('vite').ViteDevServer} server */
+    configureServer(server) {
+      /**
+       * @param {import('node:http').IncomingMessage} req
+       * @param {import('node:http').ServerResponse} res
+       */
+      const handler = async (req, res) => {
+        if (req.method !== 'POST') {
+          res.writeHead(405).end('Method Not Allowed');
+          return;
+        }
+
+        let body = '';
+        for await (const chunk of req) body += chunk;
+
+        let filename, content;
+        try {
+          ({ filename, content } = JSON.parse(body));
+        } catch {
+          res.writeHead(400).end('Invalid JSON');
+          return;
+        }
+
+        // Security: only allow simple .svg filenames, no path traversal
+        if (typeof filename !== 'string' || !/^[\w-]+\.svg$/.test(filename)) {
+          res.writeHead(400).end('Invalid filename');
+          return;
+        }
+
+        const iconsDir = path.resolve(repoRoot, '../src/assets/icons');
+        const dest = path.join(iconsDir, filename);
+
+        // Ensure destination is inside the icons directory
+        if (!dest.startsWith(iconsDir + path.sep)) {
+          res.writeHead(403).end('Forbidden');
+          return;
+        }
+
+        try {
+          fs.writeFileSync(dest, content, 'utf8');
+          // Let Vite's filesystem watcher detect the change naturally (triggers HMR)
+          res
+            .writeHead(200, { 'Content-Type': 'application/json' })
+            .end(JSON.stringify({ ok: true }));
+        } catch (err) {
+          res.writeHead(500).end(String(err));
+        }
+      };
+
+      server.middlewares.use('/api/icons/replace', handler);
+    },
+  };
+}
 
 /**
  * Vite plugin that supplies stub implementations of the two virtual modules
@@ -47,15 +118,18 @@ const platformHeadEntries = getPlatformHead('angular', 'en');
 function virtualDocsModules() {
   const siteMetaId = 'virtual:docs-template/site-meta';
   const navHtmlId = 'virtual:docs-template/nav-html';
+  /** @param {string} id */
   const resolved = (id) => '\0' + id;
 
   return {
     name: 'playground:virtual-docs-modules',
+    /** @param {string} id */
     resolveId(id) {
       if (id === siteMetaId) return resolved(siteMetaId);
       if (id === navHtmlId) return resolved(navHtmlId);
       return null;
     },
+    /** @param {string} id */
     load(id) {
       if (id === resolved(siteMetaId)) {
         // Intentionally minimal — sidebar, title, and productLinks are
@@ -68,6 +142,9 @@ export const sidebar = [];
 export const productLinks = [];
 export const headEntries = ${JSON.stringify(platformHeadEntries)};
 export const trailingSlash = 'ignore';
+export const packages = [];
+export const selectedPackage = null;
+export const navLang = 'en';
         `;
       }
       if (id === resolved(navHtmlId)) {
@@ -75,8 +152,6 @@ export const trailingSlash = 'ignore';
         return `
 export const platform = 'angular';
 export const navLang = 'en';
-export const themeApiUrl = '';
-export const widgetScriptSrc = '';
 export const prefetched = false;
 export const headerHtml = '';
 export const uiFooterHtml = '';
@@ -95,7 +170,53 @@ export const abContactSalesHtml = '';
 }
 
 const repoRoot = path.dirname(fileURLToPath(import.meta.url));
+const themingPackageDir = path.dirname(
+  createRequire(import.meta.url).resolve('igniteui-theming/package.json'),
+);
 
+/**
+ * Sass importer for `igniteui-theming` subpaths.
+ * Vite 8 enforces the package export map, whose current Sass pattern does not
+ * resolve extensionless imports. Resolve them directly until the package is fixed.
+ */
+function createThemingSassImporter() {
+  const prefix = 'igniteui-theming/';
+
+  return {
+    /** @param {string} url */
+    findFileUrl(url) {
+      if (!url.startsWith(prefix)) return null;
+
+      const candidate = path.join(themingPackageDir, url.slice(prefix.length));
+      return fs.existsSync(candidate) || fs.existsSync(path.dirname(candidate))
+        ? pathToFileURL(candidate)
+        : null;
+    },
+  };
+}
+
+/**
+ * Playground-only lab for issue #136: a switcher on every page that compares
+ * igc-tree's `singleBranchExpand` with a sidebar-managed single branch.
+ * See src/scripts/single-branch-lab.ts.
+ * @returns {import('astro').AstroIntegration}
+ */
+function singleBranchLab() {
+  return {
+    name: 'playground:single-branch-lab',
+    hooks: {
+      'astro:config:setup': ({ injectScript }) => {
+        injectScript('page', `import '/src/scripts/single-branch-lab.ts';`);
+      },
+    },
+  };
+}
+
+/** @type {import('astro').ShikiConfig} */
+const markdownShikiConfig = {
+  theme: 'dark-plus',
+  wrap: true,
+};
 export default defineConfig({
   root: repoRoot,
   srcDir: './src',
@@ -103,29 +224,31 @@ export default defineConfig({
   outDir: './dist',
   // Disable image optimization — playground pages just use plain <img>.
   image: { service: { entrypoint: 'astro/assets/services/noop' } },
-  integrations: [mdx()],
+  /* `IG_CHROME_SNAPSHOT=<folder>` renders the header/footer from a snapshot of
+   * the marketing site's exported chrome instead of the legacy fetched one. */
+  integrations: [
+    mdx(),
+    singleBranchLab(),
+    ...(process.env.IG_CHROME_SNAPSHOT
+      ? [igChrome({ snapshot: process.env.IG_CHROME_SNAPSHOT })]
+      : []),
+  ],
   markdown: {
-    shikiConfig: {
-      themes: {
-        light: 'catppuccin-latte',
-        dark: 'catppuccin-mocha',
-      },
-      wrap: true,
-    },
-    rehypePlugins: [rehypeHeadingAnchors, rehypeTableWrapper],
+    shikiConfig: markdownShikiConfig,
+    processor: satteri({
+      hastPlugins: [rehypeHeadingAnchors, rehypeTableWrapper],
+    }),
   },
   vite: {
-    plugins: [virtualDocsModules()],
+    define: {
+      __IGD_SAMPLE_CODE_THEME__: JSON.stringify(markdownShikiConfig.theme),
+    },
+    plugins: [iconUploadPlugin(), virtualDocsModules()],
     css: {
       preprocessorOptions: {
         scss: {
-          // Allow `@use 'igniteui-theming'` (in ../src/styles/ig-theme.scss)
-          // to resolve from the playground's node_modules even though the
-          // file lives outside this folder.
-          loadPaths: [
-            path.join(repoRoot, 'node_modules'),
-            path.resolve(repoRoot, '..', 'node_modules'),
-          ],
+          importers: [createThemingSassImporter()],
+          loadPaths: [path.resolve(repoRoot, '..', 'node_modules')],
         },
       },
     },

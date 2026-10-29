@@ -10,23 +10,23 @@ import DocsLayout from 'igniteui-astro-components/layouts/DocsLayout.astro';
 
 ## Props
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `title` | `string` | — | Page `<title>` prepended to the site name. Omit to show the site name only. |
-| `description` | `string \| null` | — | `<meta name="description">` value. |
-| `keywords` | `string \| null` | — | `<meta name="keywords">` value. |
-| `hasSidebar` | `boolean` | `true` | Renders the sidebar rail when `true`. Provide content via `<… slot="sidebar">`. |
-| `currentSlug` | `string` | `''` | Slug of the current page — used for breadcrumbs in the sub-header. |
-| `siteTitle` | `string` | virtual module | Override the site name used in `<title>` and the sub-header. Use this when not running `siteMetaIntegration`. |
+| Prop          | Type             | Default        | Description                                                                                                   |
+| ------------- | ---------------- | -------------- | ------------------------------------------------------------------------------------------------------------- |
+| `title`       | `string`         | —              | Page `<title>` prepended to the site name. Omit to show the site name only.                                   |
+| `description` | `string \| null` | —              | `<meta name="description">` value.                                                                            |
+| `keywords`    | `string \| null` | —              | `<meta name="keywords">` value.                                                                               |
+| `hasSidebar`  | `boolean`        | `true`         | Renders the sidebar rail when `true`. Provide content via `<… slot="sidebar">`.                               |
+| `currentSlug` | `string`         | `''`           | Slug of the current page — used for breadcrumbs in the sub-header.                                            |
+| `siteTitle`   | `string`         | virtual module | Override the site name used in `<title>` and the sub-header. Use this when not running `siteMetaIntegration`. |
 
 ## Slots
 
-| Slot | Description |
-|------|-------------|
-| *(default)* | Main page content. |
-| `sidebar` | Sidebar content — typically `<DocsSidebar>`. Only rendered when `hasSidebar={true}`. |
-| `toc` | "On this page" column — pass `<DocsToc slot="toc" headings={headings} />` here. Omit to hide the TOC sidebar entirely. |
-| `head` | Extra `<head>` entries injected after platform defaults. |
+| Slot        | Description                                                                                                            |
+| ----------- | ---------------------------------------------------------------------------------------------------------------------- |
+| _(default)_ | Main page content.                                                                                                     |
+| `sidebar`   | Sidebar content — typically `<DocsSidebar>`. Only rendered when `hasSidebar={true}`.                                   |
+| `toc`       | "On this page" column — pass `<DocsToc slot="toc" headings={headings} />` here. Omit to hide the TOC sidebar entirely. |
+| `head`      | Extra `<head>` entries injected after platform defaults.                                                               |
 
 ## Example
 
@@ -48,20 +48,12 @@ const { headings } = Astro.props as { headings: MarkdownHeading[] };
 const slug = Astro.params.slug ?? '';
 
 const sidebar: SidebarEntry[] = [
-  { label: 'Getting Started', collapsed: false, items: [
-    { label: 'Introduction', slug: '' },
-  ]},
-  { label: 'Components', collapsed: false, items: [
-    { label: 'Toast', slug: 'components/toast' },
-  ]},
+  { label: 'Getting Started', collapsed: false, items: [{ label: 'Introduction', slug: '' }] },
+  { label: 'Components', collapsed: false, items: [{ label: 'Toast', slug: 'components/toast' }] },
 ];
 ---
-<DocsLayout
-  title="Toast"
-  siteTitle="My Library"
-  hasSidebar
-  currentSlug={slug}
->
+
+<DocsLayout title="Toast" siteTitle="My Library" hasSidebar currentSlug={slug}>
   <DocsSidebar slot="sidebar" items={sidebar} currentSlug={slug} />
   <DocsToc slot="toc" headings={headings} offsetTarget=".docs-subheader" />
   <slot />
@@ -79,6 +71,7 @@ import DocsSidebar from 'igniteui-astro-components/components/sidebar/DocsSideba
 
 const slug = Astro.params.slug ?? '';
 ---
+
 <DocsLayout title="Changelog" siteTitle="My Library" hasSidebar currentSlug={slug}>
   <DocsSidebar slot="sidebar" currentSlug={slug} />
   <slot />
@@ -99,17 +92,30 @@ import DocsToc from 'igniteui-astro-components/components/DocsToc.astro';
 const { headings } = Astro.props;
 const slug = Astro.params.slug ?? '';
 ---
-<DocsLayout
-  title="Toast"
-  description="Toast component documentation"
-  hasSidebar
-  currentSlug={slug}
->
+
+<DocsLayout title="Toast" description="Toast component documentation" hasSidebar currentSlug={slug}>
   <DocsSidebar slot="sidebar" currentSlug={slug} />
   <DocsToc slot="toc" headings={headings} offsetTarget=".docs-subheader" />
   <slot />
 </DocsLayout>
 ```
+
+## Header and footer
+
+`DocsLayout` renders the Infragistics header and footer itself; which one
+depends on the build:
+
+| Build                                       | Header / footer                                                  |
+| ------------------------------------------- | ---------------------------------------------------------------- |
+| the site registers `igChrome({ snapshot })` | the marketing site's exported chrome, from the site's snapshot   |
+| `navLang: 'jp'`                             | the legacy chrome fetched from `jp.infragistics.com/navigation`  |
+| otherwise                                   | the legacy chrome fetched from `www.infragistics.com/navigation` |
+
+With a snapshot, the head part goes into `<head>` (with
+`<meta name="ig-chrome" content="v1 build=…">`), the header into the sticky,
+persisted `global-nav-bar` wrapper, and the footer into a full-width grid cell
+with `data-igd-footer`, persisted across navigations. See
+[The Infragistics header and footer](../../../README.md#the-infragistics-header-and-footer).
 
 ## Virtual module dependencies
 
@@ -118,7 +124,7 @@ they are provided automatically. When not, supply minimal stubs via a Vite
 plugin (see [playground/astro.config.mjs](../../../playground/astro.config.mjs)
 for a reference implementation):
 
-| Module | Used for | Can be overridden by prop |
-|--------|----------|--------------------------|
+| Module                            | Used for                                                        | Can be overridden by prop                                                                               |
+| --------------------------------- | --------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
 | `virtual:docs-template/site-meta` | Site title, sidebar tree, product links, extra `<head>` entries | `siteTitle` on `DocsLayout`, `items` on `DocsSidebar`, `productLinks`/`sidebarItems` on `DocsSubHeader` |
-| `virtual:docs-template/nav-html` | Pre-fetched nav/footer HTML, widget script URL, platform key | — (not yet prop-overridable) |
+| `virtual:docs-template/nav-html`  | Pre-fetched nav/footer HTML, widget script URL, platform key    | — (not yet prop-overridable)                                                                            |

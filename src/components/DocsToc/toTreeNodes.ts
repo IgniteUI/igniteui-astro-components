@@ -12,10 +12,7 @@
 import type { MarkdownHeading } from 'astro';
 import type { TreeNode } from '../DocsTree/types';
 
-export type TocConfig =
-  | false
-  | { minHeadingLevel?: number; maxHeadingLevel?: number }
-  | undefined;
+export type TocConfig = false | { minHeadingLevel?: number; maxHeadingLevel?: number } | undefined;
 
 interface TocItem {
   depth: number;
@@ -51,7 +48,5 @@ const toNode = (item: TocItem): TreeNode => ({
   children: item.children.length > 0 ? item.children.map(toNode) : undefined,
 });
 
-export const headingsToTreeNodes = (
-  headings: MarkdownHeading[],
-  config: TocConfig,
-): TreeNode[] => buildToc(headings, config).map(toNode);
+export const headingsToTreeNodes = (headings: MarkdownHeading[], config: TocConfig): TreeNode[] =>
+  buildToc(headings, config).map(toNode);

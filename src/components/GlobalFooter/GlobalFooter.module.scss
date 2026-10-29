@@ -12,7 +12,7 @@
   // Element selector — not hashed by CSS Modules.
   footer {
     position: relative;
-    z-index: 1000;
+    z-index: 0;
   }
 
   // .footer is a class name from injected footerHtml — must use :global()

@@ -4,13 +4,13 @@
   "description": "Reusable Astro components, layouts, and integrations for Infragistics / Ignite UI documentation sites. Replaces the Starlight defaults with project-specific implementations.",
   "type": "module",
   "engines": {
-    "node": "^20.19.0 || ^22.13.0 || >=24.0.0"
+    "node": ">=22.12.0"
   },
   "license": "MIT",
   "author": "Infragistics",
   "repository": {
     "type": "git",
-    "url": "https://github.com/IgniteUI/igniteui-astro-components"
+    "url": "git+https://github.com/IgniteUI/igniteui-astro-components.git"
   },
   "keywords": [
     "astro",
@@ -40,9 +40,12 @@
     "./content-config": "./src/content.config.ts",
     "./llms": "./src/llms.ts",
     "./layouts/DocsLayout.astro": "./src/layouts/DocsLayout/DocsLayout.astro",
+    "./chrome": "./src/chrome/integration.ts",
+    "./chrome/contract": "./src/chrome/contract.mjs",
     "./components/GlobalNavBar.astro": "./src/components/GlobalNavBar/GlobalNavBar.astro",
     "./components/GlobalFooter.astro": "./src/components/GlobalFooter/GlobalFooter.astro",
     "./components/DocsSubHeader.astro": "./src/components/DocsSubHeader/DocsSubHeader.astro",
+    "./components/CopyCode.astro": "./src/components/CopyCode/CopyCode.astro",
     "./components/Search.astro": "./src/components/Search/Search.astro",
     "./components/SearchAdvanced.astro": "./src/components/SearchAdvanced/SearchAdvanced.astro",
     "./components/ThemingWidget.astro": "./src/components/ThemingWidget/ThemingWidget.astro",
@@ -59,9 +62,15 @@
     "./components/DocsTree/DocsTreeItem.astro": "./src/components/DocsTree/DocsTreeItem.astro",
     "./components/DocsTree/types": "./src/components/DocsTree/types.ts",
     "./components/DocsTree/docs-tree.css": "./src/components/DocsTree/docs-tree.css",
+    "./components/mdx/Anatomy.astro": "./src/components/mdx/Anatomy/Anatomy.astro",
     "./components/mdx/ApiRef.astro": "./src/components/mdx/ApiRef/ApiRef.astro",
     "./components/mdx/ApiLink.astro": "./src/components/mdx/ApiLink/ApiLink.astro",
     "./components/mdx/DocsAside.astro": "./src/components/mdx/DocsAside/DocsAside.astro",
+    "./components/mdx/DoDont.astro": "./src/components/mdx/DoDont/DoDont.astro",
+    "./components/mdx/Badge.astro": "./src/components/mdx/Badge/Badge.astro",
+    "./components/mdx/Faq.astro": "./src/components/mdx/Faq/Faq.astro",
+    "./components/mdx/FaqItem.astro": "./src/components/mdx/Faq/FaqItem.astro",
+    "./components/mdx/Faq/types": "./src/components/mdx/Faq/types.ts",
     "./components/mdx/PlatformBlock.astro": "./src/components/mdx/PlatformBlock/PlatformBlock.astro",
     "./components/mdx/Sample.astro": "./src/components/mdx/Sample/Sample.astro",
     "./lib/sidebar/types": "./src/lib/sidebar/types.ts",
@@ -72,46 +81,59 @@
     "./plugins/remark-html-transforms": "./src/plugins/remark-html-transforms.ts",
     "./plugins/rehype-table-wrapper": "./src/plugins/rehype-table-wrapper.ts",
     "./plugins/rehype-heading-anchors": "./src/plugins/rehype-heading-anchors.ts",
+    "./plugins/rehype-pagefind-ignore": "./src/plugins/rehype-pagefind-ignore.ts",
     "./styles/theme.scss": "./src/styles/theme.scss",
     "./package.json": "./package.json"
   },
   "peerDependencies": {
-    "astro": "^5.0.0 || ^6.0.0",
-    "igniteui-webcomponents": "^7.1.3"
-  },
-  "peerDependenciesMeta": {
-    "igniteui-webcomponents": {
-      "optional": true
-    }
+    "astro": "^7.3.5",
+    "igniteui-theming": "^29.0.0",
+    "igniteui-webcomponents": "^7.4.1"
   },
   "dependencies": {
-    "@fontsource-variable/instrument-sans": "^5.2.8",
-    "@fontsource-variable/jetbrains-mono": "^5.2.8",
-    "igniteui-webcomponents": "^7.1.3",
-    "jsdom": "^29.0.1"
+    "@astrojs/mdx": "^8.0.2",
+    "@astrojs/markdown-satteri": "^0.4.2",
+    "@fontsource-variable/instrument-sans": "^5.3.0",
+    "@fontsource-variable/inter": "^5.3.0",
+    "@fontsource-variable/jetbrains-mono": "^5.3.0",
+    "github-slugger": "^2.0.0",
+    "jsdom": "^30.1.1",
+    "satteri": "^0.10.5",
+    "shiki": "^4.4.0"
   },
   "devDependencies": {
-    "@types/jsdom": "^21.1.7",
-    "astro": "^6.1.6",
-    "igniteui-theming": "^26.0.1",
-    "sass": "^1.83.0",
-    "typescript": "^5.6.0",
-    "vitest": "^4.1.7"
+    "@astrojs/check": "^0.9.10",
+    "@types/jsdom": "^30.0.0",
+    "astro": "^7.3.5",
+    "husky": "^9.1.7",
+    "igniteui-theming": "^29.0.0",
+    "igniteui-webcomponents": "^7.4.1",
+    "lint-staged": "^17.6.0",
+    "oxlint": "^1.86.0",
+    "prettier": "^3.9.9",
+    "prettier-plugin-astro": "^1.1.0",
+    "sass": "^1.105.0",
+    "typescript": "~6.0.3",
+    "vitest": "^5.0.5"
   },
-  "workspaces": [
-    "playground"
-  ],
   "publishConfig": {
     "access": "public"
   },
   "scripts": {
-    "test": "vitest run",
+    "test": "npm run test:scripts && npm run test:components",
+    "test:scripts": "node --test \"scripts/**/*.test.mjs\"",
+    "test:components": "vitest run",
     "test:watch": "vitest",
-    "playground": "npm --prefix playground run dev",
-    "playground:dev": "npm --prefix playground run dev",
-    "playground:build": "npm --prefix playground run build",
-    "playground:preview": "npm --prefix playground run preview",
-    "playground:clean": "npm --prefix playground run clean",
-    "playground:check": "npm --prefix playground run check"
+    "test:sample-widget": "node --test scripts/sample-widget.test.mjs",
+    "playground": "npm run playground:dev",
+    "playground:dev": "astro sync --root playground && astro dev --root playground --port 4567",
+    "playground:build": "astro sync --root playground && astro build --root playground",
+    "playground:preview": "astro preview --root playground --port 4567",
+    "playground:check": "astro check --root playground",
+    "lint": "oxlint .",
+    "lint:fix": "oxlint . --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "prepare": "husky"
   }
 }

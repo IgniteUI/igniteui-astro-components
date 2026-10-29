@@ -1,0 +1,4 @@
+{
+  "*.{js,cjs,mjs,ts,mts,cts,astro}": ["oxlint --fix"],
+  "*.{js,cjs,mjs,ts,mts,cts,astro,json,md,scss,css,yml,yaml}": ["prettier --write"]
+}
