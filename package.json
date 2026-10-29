@@ -26,7 +26,9 @@
   "files": [
     "src",
     "README.md",
-    "LICENSE"
+    "LICENSE",
+    "llms.txt",
+    "llms-full.txt"
   ],
   "exports": {
     ".": {
@@ -121,6 +123,7 @@
   "scripts": {
     "test": "node --test \"scripts/**/*.test.mjs\"",
     "test:sample-widget": "node --test scripts/sample-widget.test.mjs",
+    "build:llms": "node scripts/build-llms.mjs",
     "playground": "npm run playground:dev",
     "playground:dev": "astro sync --root playground && astro dev --root playground --port 4567",
     "playground:build": "astro sync --root playground && astro build --root playground",

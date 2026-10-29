@@ -1,15 +1,16 @@
 # Sidebar suite
 
-The sidebar is composed of four focused components and a custom element:
+The sidebar is composed of a few focused pieces on top of the shared
+[`DocsTree`](../DocsTree/README.md) component:
 
-| File                       | Export path                                     | Description                                 |
-| -------------------------- | ----------------------------------------------- | ------------------------------------------- |
-| `DocsSidebar.astro`        | `…/components/sidebar/DocsSidebar.astro`        | Composition root — filter + scrollable tree |
-| `SidebarFilterInput.astro` | `…/components/sidebar/SidebarFilterInput.astro` | Filter `<input>` markup                     |
-| `SidebarTree.astro`        | `…/components/sidebar/SidebarTree.astro`        | Recursive `<ul>` renderer                   |
-| `SidebarItem.astro`        | `…/components/sidebar/SidebarItem.astro`        | Single link or `<details>` group            |
-| `sidebar-filter.ts`        | `…/components/sidebar/sidebar-filter`           | `<sidebar-filter>` custom element           |
-| `sidebar-tooltip.ts`       | `…/components/sidebar/sidebar-tooltip`          | Full-text tooltip for truncated labels      |
+| File                       | Export path                                         | Description                                                                 |
+| -------------------------- | --------------------------------------------------- | --------------------------------------------------------------------------- |
+| `DocsSidebar.astro`        | `…/components/DocsSidebar/DocsSidebar.astro`        | Composition root — logo, filter and the scrollable tree                     |
+| `SidebarFilterInput.astro` | `…/components/DocsSidebar/SidebarFilterInput.astro` | Filter `<input>` markup (`data-sidebar-filter-*` hooks)                     |
+| `SidebarLabel.astro`       | `…/components/DocsSidebar/SidebarLabel.astro`       | Label renderer passed to `DocsTree` (`node`, `depth`, `isLeaf`, `isActive`) |
+| `toTreeNodes.ts`           | `…/components/DocsSidebar/toTreeNodes`              | `SidebarEntry[]` → `TreeNode[]` adapter                                     |
+| `sidebar-filter.ts`        | `…/components/DocsSidebar/sidebar-filter`           | `<sidebar-filter>` custom element                                           |
+| `sidebar-tooltip.ts`       | (internal)                                          | Full-text tooltip for truncated labels                                      |
 
 ---
 
@@ -20,15 +21,19 @@ The only component you need to mount directly.
 ### Import
 
 ```astro
-import DocsSidebar from 'igniteui-astro-components/components/sidebar/DocsSidebar.astro';
+import DocsSidebar from 'igniteui-astro-components/components/DocsSidebar/DocsSidebar.astro';
 ```
 
 ### Props
 
-| Prop          | Type             | Default        | Description                                                                                                                                       |
-| ------------- | ---------------- | -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `currentSlug` | `string`         | `''`           | Slug of the active page. Highlights the matching link and auto-expands ancestor groups.                                                           |
-| `items`       | `SidebarEntry[]` | virtual module | Sidebar tree to render. **Overrides** the `virtual:docs-template/site-meta` value when provided. Use this when not running `siteMetaIntegration`. |
+| Prop            | Type             | Default             | Description                                                                                                                                       |
+| --------------- | ---------------- | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `currentSlug`   | `string`         | `''`                | Slug of the active page. Highlights the matching link and auto-expands ancestor groups.                                                           |
+| `items`         | `SidebarEntry[]` | virtual module      | Sidebar tree to render. **Overrides** the `virtual:docs-template/site-meta` value when provided. Use this when not running `siteMetaIntegration`. |
+| `showFilter`    | `boolean`        | `true`              | Render the filter input above the tree.                                                                                                           |
+| `trailingSlash` | `boolean`        | from Astro config   | Append a trailing slash to generated links. Derived from the site's `trailingSlash` setting via the virtual module; `true` when unknown.          |
+| `logoText`      | `string`         | product family      | Text in the slide-in sidebar's logo area.                                                                                                         |
+| `platformLabel` | `string \| null` | from virtual module | Platform label under the logo text (for example `'Angular'`). Pass `null` to hide it.                                                             |
 
 ### Example
 
@@ -36,7 +41,7 @@ import DocsSidebar from 'igniteui-astro-components/components/sidebar/DocsSideba
 
 ```astro
 ---
-import DocsSidebar from 'igniteui-astro-components/components/sidebar/DocsSidebar.astro';
+import DocsSidebar from 'igniteui-astro-components/components/DocsSidebar/DocsSidebar.astro';
 import type { SidebarEntry } from 'igniteui-astro-components/lib/sidebar/types';
 
 // Define the tree inline or import from a shared config file.
@@ -57,7 +62,7 @@ const sidebar: SidebarEntry[] = [
       {
         label: 'Calendar',
         slug: 'components/calendar',
-        badge: { text: 'New', variant: 'success' },
+        badges: [{ text: 'New', variant: 'new' }],
       },
     ],
   },
@@ -83,7 +88,7 @@ When `createDocsSite()` / `siteMetaIntegration()` is configured, omit
 
 ```astro
 ---
-import DocsSidebar from 'igniteui-astro-components/components/sidebar/DocsSidebar.astro';
+import DocsSidebar from 'igniteui-astro-components/components/DocsSidebar/DocsSidebar.astro';
 ---
 
 <DocsSidebar currentSlug="components/toast" />
@@ -120,7 +125,7 @@ module:
 // astro.config.ts
 import { buildSidebarFromToc, siteMetaIntegration } from 'igniteui-astro-components/integration';
 
-const sidebar = buildSidebarFromToc({ tocPath: './docs/toc.yml', docsDir: './docs/en' });
+const sidebar = buildSidebarFromToc({ tocPath: './docs/toc.json', docsDir: './docs/en' });
 
 export default defineConfig({
   integrations: [siteMetaIntegration({ title: 'My Docs', sidebar })],
@@ -129,11 +134,16 @@ export default defineConfig({
 
 ### SidebarEntry type
 
+Import from `igniteui-astro-components/lib/sidebar/types`; the file is the
+source of truth, this is a summary:
+
 ```ts
+type SidebarBadge = { text: string; variant: 'new' | 'updated' | 'preview' | 'premium' };
+
 type SidebarLink = {
   label: string;
   slug: string;
-  badge?: { text: string; variant: 'note' | 'tip' | 'caution' | 'danger' | 'success' | 'default' };
+  badges?: SidebarBadge[];
   attrs?: Record<string, string | boolean | undefined>;
 };
 
@@ -145,6 +155,10 @@ type SidebarGroup = {
 
 type SidebarEntry = SidebarLink | SidebarGroup;
 ```
+
+`SIDEBAR_BADGE_VARIANTS` is exported from the same module. Helpers such as
+`isGroup`, `isActive`, `getBreadcrumb` and `joinPath` live in
+`igniteui-astro-components/lib/sidebar/helpers`.
 
 ### Filter behaviour
 
@@ -168,15 +182,29 @@ clamped and the tooltip is not shown.
 
 ---
 
-## SidebarTree / SidebarItem
+## Building a custom sidebar
 
-These are used internally by `DocsSidebar`. Import them directly only when building a fully custom sidebar layout.
+`DocsSidebar` converts `SidebarEntry[]` to `TreeNode[]` with `toTreeNodes()`
+and renders them through `DocsTree` with `SidebarLabel` as the label renderer.
+To build your own layout, reuse those pieces:
 
 ```astro
-import SidebarTree from 'igniteui-astro-components/components/sidebar/SidebarTree.astro'; import
-SidebarItem from 'igniteui-astro-components/components/sidebar/SidebarItem.astro';
+---
+import DocsTree from 'igniteui-astro-components/components/DocsTree/DocsTree.astro';
+import SidebarLabel from 'igniteui-astro-components/components/DocsSidebar/SidebarLabel.astro';
+import { toTreeNodes } from 'igniteui-astro-components/components/DocsSidebar/toTreeNodes';
+
+const nodes = toTreeNodes(sidebar, currentSlug, { trailingSlash: true });
+---
+
+<DocsTree
+  nodes={nodes}
+  variant="sidebar"
+  activeId={currentSlug}
+  toggleNodeOnClick
+  renderLabel={SidebarLabel}
+/>
 ```
 
-`SidebarTree` props: `items: SidebarEntry[]`, `currentSlug: string`, `ancestors?: string[]`
-
-`SidebarItem` props: `item: SidebarEntry`, `currentSlug: string`, `ancestors?: string[]`
+See the [DocsTree README](../DocsTree/README.md) for the `TreeNode` shape and
+the `--docs-tree-*` styling tokens.

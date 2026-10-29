@@ -44,7 +44,7 @@ import ApiRef from 'igniteui-astro-components/components/mdx/ApiRef.astro';
 
 ## Platform context
 
-Same as `ApiLink` — resolved from the `Platform` env var via `getPlatformContext()`.
+Same as `ApiLink` — read from `Astro.locals.platformContext` (`PlatformContext` from `igniteui-astro-components/lib/types`), which the host site's middleware must set. Without it the render throws, because the component destructures the context.
 
 When a page mixes types from different packages or different kinds, use separate `<ApiRef>` blocks:
 
