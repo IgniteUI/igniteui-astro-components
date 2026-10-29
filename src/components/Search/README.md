@@ -32,7 +32,7 @@ import Search from 'igniteui-astro-components/components/Search.astro';
 
 ## Build setup
 
-The package imports `pagefind` but does not declare it as a dependency, so the
+The package imports `pagefind` but does not declare it as a dependency (issue #157), so the
 host site must install it:
 
 ```sh

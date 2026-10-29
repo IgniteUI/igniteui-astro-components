@@ -279,7 +279,7 @@ not exported yet.
 | `…/components/DocsTree/DocsTree.astro`              | Generic `<igc-tree>` renderer shared by sidebar and TOC                                    | [README](src/components/DocsTree/README.md)    |
 | `…/components/DocsTree/DocsTreeItem.astro`          | One `<igc-tree-item>`, recursive                                                           | [README](src/components/DocsTree/README.md)    |
 | `…/components/DocsTree/types`                       | `TreeNode`, `TreeVariant`                                                                  | [README](src/components/DocsTree/README.md)    |
-| `…/components/DocsTree/docs-tree.css`               | Tree styles (export currently points at a missing file; the real file is `docs-tree.scss`) | [README](src/components/DocsTree/README.md)    |
+| `…/components/DocsTree/docs-tree.css`               | Tree styles (export points at a missing file, see #159; the real file is `docs-tree.scss`) | [README](src/components/DocsTree/README.md)    |
 | `…/lib/sidebar/types`                               | `SidebarEntry`, `SidebarGroup`, `SidebarLink`, `SidebarBadge`, `SIDEBAR_BADGE_VARIANTS`    | —                                              |
 | `…/lib/sidebar/helpers`                             | `isActive`, `isGroup`, `isInitiallyOpen`, `getBreadcrumb`, `joinPath`, …                   | —                                              |
 | `…/lib/types`                                       | `PlatformName`, `ApiPackageConfig`, `PlatformContext`                                      | —                                              |

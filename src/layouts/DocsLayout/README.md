@@ -30,7 +30,7 @@ import DocsLayout from 'igniteui-astro-components/layouts/DocsLayout.astro';
 | `themeStorageKey` | `string`         | `'docs-theme'` | `localStorage` key the theme toggle persists to.                                                              |
 
 `hasToc` (`boolean`, default `true`) is also read at runtime and hides the `toc`
-slot when `false`, but it is not yet declared in the `Props` interface, so
+slot when `false`, but it is not yet declared in the `Props` interface (issue #161), so
 TypeScript consumers must spread it in (`{...{ hasToc: false }}`).
 
 ## Slots

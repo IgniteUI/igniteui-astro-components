@@ -17,7 +17,7 @@ import DocsAside from 'igniteui-astro-components/components/mdx/DocsAside.astro'
 | `icon`  | `string`                        | auto     | Name of an icon registered in the `docs` collection (`src/scripts/icon-manifest.ts`). Pass `""` to hide the icon. |
 | `class` | `string`                        | —        | Additional CSS class(es) added to the container.                                                                  |
 
-The component also declares a `color` prop, but nothing reads it; use the CSS
+The component also declares a `color` prop, but nothing reads it (issue #162); use the CSS
 custom properties below to change the accent instead.
 
 ## Examples

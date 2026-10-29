@@ -28,7 +28,7 @@
 - Middleware: `ApiLink`, `ApiRef`, `PlatformBlock`, `Sample` and `ThemingWidget` read `Astro.locals.platformContext` (`PlatformContext` from `igniteui-astro-components/lib/types`) and `Astro.locals.envVars`. Set both in `src/middleware.ts`; reference: [playground/src/middleware.ts](playground/src/middleware.ts). Without them those components throw.
 - MDX components are not auto-registered: import each one at the top of the MDX file, or pass a `components` map to `<Content />`.
 - Markdown pipeline: `rehypeHeadingAnchors` (every consumer), `rehypeTableWrapper`, `rehypePagefindIgnore`; remark plugins `remarkEnvVars`, `remarkMdLinks`, `remarkHtmlTransforms` are for the docs repos' content conventions.
-- `createDocsSite()` / `siteMetaIntegration()` in `igniteui-astro-components/integration` is reference code, not used by any consumer: it injects routes the package does not ship, imports `pagefind` without declaring it, and registers no middleware. See [README.md](README.md#the-reference-integration).
+- `createDocsSite()` / `siteMetaIntegration()` in `igniteui-astro-components/integration` is reference code, not used by any consumer: it injects routes the package does not ship, imports `pagefind` without declaring it, and registers no middleware (issues #157, #158). See [README.md](README.md#the-reference-integration).
 - Local checkout instead of npm: `"igniteui-astro-components": "file:../astro-components"` (symlink; Vite 8 may need `vite.resolve.preserveSymlinks: true`), or a `tsconfig` path alias. See [README.md](README.md#using-from-another-repo-without-publishing-a-package).
 
 ### Common tasks
@@ -74,7 +74,7 @@
 
 - [DocsSidebar](src/components/DocsSidebar/README.md): `igniteui-astro-components/components/DocsSidebar/DocsSidebar.astro` — logo, filter and navigation tree. Props: `currentSlug`, `items`, `showFilter`, `trailingSlash`, `logoText`, `platformLabel`. Companions: `igniteui-astro-components/components/DocsSidebar/SidebarFilterInput.astro`, `igniteui-astro-components/components/DocsSidebar/SidebarLabel.astro` (`node`, `depth`, `isLeaf`, `isActive`), `igniteui-astro-components/components/DocsSidebar/toTreeNodes` (`toTreeNodes(entries, currentSlug, { trailingSlash })`), `igniteui-astro-components/components/DocsSidebar/sidebar-filter` (`<sidebar-filter>` element).
 - [DocsToc](src/components/DocsToc/README.md): `igniteui-astro-components/components/DocsToc.astro` — "On this page" list with scroll-spy. Props: `headings`, `tocConfig`, `label`, `offsetTarget`. Adapter: `igniteui-astro-components/components/DocsToc/toTreeNodes` (`headingsToTreeNodes`, `TocConfig`).
-- [DocsTree](src/components/DocsTree/README.md): `igniteui-astro-components/components/DocsTree/DocsTree.astro` — generic `<igc-tree>` renderer used by both. Props: `nodes`*, `variant`* (`sidebar` | `toc`), `activeId`, `toggleNodeOnClick`, `ariaLabel`, `renderLabel`. Also `igniteui-astro-components/components/DocsTree/DocsTreeItem.astro`, `igniteui-astro-components/components/DocsTree/types` (`TreeNode`, `TreeVariant`) and `igniteui-astro-components/components/DocsTree/docs-tree.css` (export currently broken: the file is `docs-tree.scss`). Tokens `--docs-tree-*`.
+- [DocsTree](src/components/DocsTree/README.md): `igniteui-astro-components/components/DocsTree/DocsTree.astro` — generic `<igc-tree>` renderer used by both. Props: `nodes`*, `variant`* (`sidebar` | `toc`), `activeId`, `toggleNodeOnClick`, `ariaLabel`, `renderLabel`. Also `igniteui-astro-components/components/DocsTree/DocsTreeItem.astro`, `igniteui-astro-components/components/DocsTree/types` (`TreeNode`, `TreeVariant`) and `igniteui-astro-components/components/DocsTree/docs-tree.css` (export broken, see issue #159; the file is `docs-tree.scss`). Tokens `--docs-tree-*`.
 - Types and helpers: `igniteui-astro-components/lib/sidebar/types` (`SidebarEntry`, `SidebarGroup`, `SidebarLink`, `SidebarBadge`, `SIDEBAR_BADGE_VARIANTS`), `igniteui-astro-components/lib/sidebar/helpers` (`isGroup`, `isActive`, `hasActive`, `joinPath`, `isInitiallyOpen`, `getBreadcrumb`, `getActiveLink`, …), `igniteui-astro-components/lib/types` (`PlatformName`, `ApiPackageConfig`, `PlatformContext`).
 - `igniteui-astro-components/sidebar` — `buildSidebarFromToc({ tocPath, docsDir, exclude })`, converts a JSON TOC to `SidebarEntry[]` at config time.
 
@@ -447,7 +447,7 @@ not exported yet.
 | `…/components/DocsTree/DocsTree.astro`              | Generic `<igc-tree>` renderer shared by sidebar and TOC                                    | [README](src/components/DocsTree/README.md)    |
 | `…/components/DocsTree/DocsTreeItem.astro`          | One `<igc-tree-item>`, recursive                                                           | [README](src/components/DocsTree/README.md)    |
 | `…/components/DocsTree/types`                       | `TreeNode`, `TreeVariant`                                                                  | [README](src/components/DocsTree/README.md)    |
-| `…/components/DocsTree/docs-tree.css`               | Tree styles (export currently points at a missing file; the real file is `docs-tree.scss`) | [README](src/components/DocsTree/README.md)    |
+| `…/components/DocsTree/docs-tree.css`               | Tree styles (export points at a missing file, see #159; the real file is `docs-tree.scss`) | [README](src/components/DocsTree/README.md)    |
 | `…/lib/sidebar/types`                               | `SidebarEntry`, `SidebarGroup`, `SidebarLink`, `SidebarBadge`, `SIDEBAR_BADGE_VARIANTS`    | —                                              |
 | `…/lib/sidebar/helpers`                             | `isActive`, `isGroup`, `isInitiallyOpen`, `getBreadcrumb`, `joinPath`, …                   | —                                              |
 | `…/lib/types`                                       | `PlatformName`, `ApiPackageConfig`, `PlatformContext`                                      | —                                              |
@@ -751,7 +751,7 @@ import DocsLayout from 'igniteui-astro-components/layouts/DocsLayout.astro';
 | `themeStorageKey` | `string`         | `'docs-theme'` | `localStorage` key the theme toggle persists to.                                                              |
 
 `hasToc` (`boolean`, default `true`) is also read at runtime and hides the `toc`
-slot when `false`, but it is not yet declared in the `Props` interface, so
+slot when `false`, but it is not yet declared in the `Props` interface (issue #161), so
 TypeScript consumers must spread it in (`{...{ hasToc: false }}`).
 
 ### Slots
@@ -1696,7 +1696,7 @@ import Search from 'igniteui-astro-components/components/Search.astro';
 
 ### Build setup
 
-The package imports `pagefind` but does not declare it as a dependency, so the
+The package imports `pagefind` but does not declare it as a dependency (issue #157), so the
 host site must install it:
 
 ```sh
@@ -2404,7 +2404,7 @@ import DocsAside from 'igniteui-astro-components/components/mdx/DocsAside.astro'
 | `icon`  | `string`                        | auto     | Name of an icon registered in the `docs` collection (`src/scripts/icon-manifest.ts`). Pass `""` to hide the icon. |
 | `class` | `string`                        | —        | Additional CSS class(es) added to the container.                                                                  |
 
-The component also declares a `color` prop, but nothing reads it; use the CSS
+The component also declares a `color` prop, but nothing reads it (issue #162); use the CSS
 custom properties below to change the accent instead.
 
 ### Examples
