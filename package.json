@@ -10,7 +10,7 @@
   "author": "Infragistics",
   "repository": {
     "type": "git",
-    "url": "https://github.com/IgniteUI/igniteui-astro-components"
+    "url": "git+https://github.com/IgniteUI/igniteui-astro-components.git"
   },
   "keywords": [
     "astro",
@@ -66,6 +66,7 @@
     "./components/mdx/ApiRef.astro": "./src/components/mdx/ApiRef/ApiRef.astro",
     "./components/mdx/ApiLink.astro": "./src/components/mdx/ApiLink/ApiLink.astro",
     "./components/mdx/DocsAside.astro": "./src/components/mdx/DocsAside/DocsAside.astro",
+    "./components/mdx/DoDont.astro": "./src/components/mdx/DoDont/DoDont.astro",
     "./components/mdx/Badge.astro": "./src/components/mdx/Badge/Badge.astro",
     "./components/mdx/Faq.astro": "./src/components/mdx/Faq/Faq.astro",
     "./components/mdx/FaqItem.astro": "./src/components/mdx/Faq/FaqItem.astro",
@@ -118,6 +119,8 @@
     "access": "public"
   },
   "scripts": {
+    "test": "node --test \"scripts/**/*.test.mjs\"",
+    "test:sample-widget": "node --test scripts/sample-widget.test.mjs",
     "playground": "npm run playground:dev",
     "playground:dev": "astro sync --root playground && astro dev --root playground --port 4567",
     "playground:build": "astro sync --root playground && astro build --root playground",

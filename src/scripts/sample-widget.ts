@@ -33,7 +33,8 @@ defineComponents(
 );
 
 import './icon-registry';
-import type { Highlighter } from 'shiki';
+import type { BundledLanguage, Highlighter } from 'shiki';
+import { ULTIMATE_UI_PLATFORMS } from '../lib/ultimate-ui-platforms';
 import footerStackblitzIcon from '../components/mdx/Sample/assets/stackblitz.svg?raw';
 import footerOpenExternalIcon from '../components/mdx/Sample/assets/open-external.svg?raw';
 
@@ -49,13 +50,26 @@ const XPLAT_SAMPLES_ORDER: Record<string, string[]> = {
   react: ['tsx', 'ts', 'html', 'css'],
   wc: ['tsx', 'ts', 'html', 'css'],
   blazor: ['razor', 'cs', 'js', 'css'],
+  // XAML platforms: markup first, then code-behind. Samples are authored as
+  // Sample.xaml / Sample.xaml.cs plus optional data-model .cs files.
+  winui: ['xaml', 'cs'],
+  uno: ['xaml', 'cs'],
 };
 
 const XPLAT_CODE_BASE: Record<string, string> = {
   wc: '/assets/code-viewer/',
   react: '/code-viewer/',
   blazor: '/code-viewer/',
+  winui: '/code-viewer/',
+  uno: '/code-viewer/',
 };
+
+/**
+ * Platforms whose samples cannot be handed off to StackBlitz / CodeSandbox —
+ * they are compiled .NET apps, and their sources are not published in an
+ * `igniteui-<platform>-examples` repo. Gates the "open in" footer only.
+ */
+const SANDBOX_UNSUPPORTED_PLATFORMS = new Set(['blazor', 'winui', 'uno']);
 
 const DV_PATHS = ['gauges/', 'maps/', 'excel/', 'charts/'];
 const ASSETS_RE = /([.]{0,2}\/)*assets\//g;
@@ -68,6 +82,8 @@ declare const __IGD_SAMPLE_CODE_THEME__: string | undefined;
 interface SampleFile {
   fileExtension: string;
   fileHeader: string;
+  /** Original file name for platforms exposing multiple markup/source files. */
+  fileName?: string;
   content: string;
   isMain: boolean;
   path?: string;
@@ -90,11 +106,18 @@ interface WidgetContext {
  */
 function normalizePlatform(raw: string): string {
   if (raw === 'webcomponents' || raw === 'web-components') return 'wc';
+  if (raw === 'uno-platform') return 'uno';
   return raw;
 }
 
 function isXplatPlatform(platform: string): boolean {
-  return platform === 'react' || platform === 'wc' || platform === 'blazor';
+  return (
+    platform === 'react' ||
+    platform === 'wc' ||
+    platform === 'blazor' ||
+    platform === 'winui' ||
+    platform === 'uno'
+  );
 }
 
 function getSamplePath(iframeSrc: string, demosBaseUrl: string): string {
@@ -139,7 +162,13 @@ function replaceRelativeAssetUrls(files: SampleFile[], demosBaseUrl: string): vo
 
 // ─── Code Highlighting ────────────────────────────────────────────────────────
 
-const LANG_MAP: Record<string, string> = { js: 'javascript', ts: 'typescript', cs: 'csharp' };
+// Shiki has no XAML grammar; XAML is XML, so WinUI/Uno markup highlights as that.
+const LANG_MAP: Record<string, string> = {
+  js: 'javascript',
+  ts: 'typescript',
+  cs: 'csharp',
+  xaml: 'xml',
+};
 
 const SHIKI_LANGS = [
   'text',
@@ -152,6 +181,11 @@ const SHIKI_LANGS = [
   'csharp',
   'razor',
 ] as const;
+
+// Only the WinUI/Uno samples show these (XAML markup and data files), so they load on first use
+// rather than on every sample page.
+const SHIKI_LAZY_LANGS = ['xml', 'json'] as const;
+const HIGHLIGHT_LANGS: ReadonlySet<string> = new Set([...SHIKI_LANGS, ...SHIKI_LAZY_LANGS]);
 
 let _highlighterPromise: Promise<Highlighter> | null = null;
 
@@ -176,9 +210,12 @@ function getHighlighter(): Promise<Highlighter> {
 }
 
 function highlightCode(codeEl: HTMLElement, lang: string): void {
-  const safeLang = (SHIKI_LANGS as readonly string[]).includes(lang) ? lang : 'text';
+  const safeLang = HIGHLIGHT_LANGS.has(lang) ? lang : 'text';
   getHighlighter()
-    .then((h) => {
+    .then(async (h) => {
+      if (!h.getLoadedLanguages().includes(safeLang)) {
+        await h.loadLanguage(safeLang as BundledLanguage);
+      }
       const tmp = document.createElement('div');
       tmp.innerHTML = h.codeToHtml(codeEl.textContent ?? '', {
         lang: safeLang,
@@ -251,11 +288,11 @@ function wireCopyButton(btn: HTMLElement, getText: () => string): void {
 
 // ─── Code Tab Rendering ───────────────────────────────────────────────────────
 
-function addCodeTab(igcTabs: HTMLElement, file: SampleFile): void {
+function addCodeTab(igcTabs: HTMLElement, file: SampleFile, useFileName = false): void {
   const lang = normalizeCodeLang(file.fileExtension);
 
   const tab = document.createElement('igc-tab');
-  tab.setAttribute('label', file.fileHeader.toUpperCase());
+  tab.setAttribute('label', (useFileName && file.fileName) || file.fileHeader.toUpperCase());
 
   const wrapper = document.createElement('div');
   wrapper.className = 'code-wrapper';
@@ -494,10 +531,8 @@ class XplatCodeService {
     this.platform = platform;
     this.samplesOrder = XPLAT_SAMPLES_ORDER[platform] || ['ts', 'html', 'css'];
     this.codeBase = XPLAT_CODE_BASE[platform] || '/code-viewer/';
-    // Gates only the StackBlitz / CodeSandbox buttons — Blazor samples can't be
-    // live-edited in a browser sandbox. The footer itself is always rendered:
-    // it also carries the fullscreen button and the in-sample theme picker.
-    this.enableLiveEditing = platform !== 'blazor';
+    // Gates the StackBlitz / CodeSandbox footer, not editing of the embedded sample.
+    this.enableLiveEditing = !SANDBOX_UNSUPPORTED_PLATFORMS.has(platform);
   }
 
   async init(ctx: WidgetContext): Promise<void> {
@@ -527,11 +562,18 @@ class XplatCodeService {
 
       (data.sampleFiles || ([] as SampleFile[]))
         .filter((f: SampleFile) => f.isMain)
-        .sort(
-          (a: SampleFile, b: SampleFile) =>
-            this.samplesOrder.indexOf(a.fileHeader) - this.samplesOrder.indexOf(b.fileHeader),
-        )
-        .forEach((file: SampleFile) => addCodeTab(igcTabs, file));
+        .sort((a: SampleFile, b: SampleFile) => {
+          const rank = (file: SampleFile) => {
+            const index = this.samplesOrder.indexOf(file.fileHeader);
+            return index < 0 && ULTIMATE_UI_PLATFORMS.has(this.platform)
+              ? Number.MAX_SAFE_INTEGER
+              : index;
+          };
+          return rank(a) - rank(b);
+        })
+        .forEach((file: SampleFile) =>
+          addCodeTab(igcTabs, file, ULTIMATE_UI_PLATFORMS.has(this.platform)),
+        );
 
       // Use sdk.openProject() to avoid the StackBlitz GitHub clone freeze bug.
       addFooter(
