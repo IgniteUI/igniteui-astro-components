@@ -1,0 +1,95 @@
+# igniteui-astro-components
+
+> Astro components, layouts, plugins and styles that build the Infragistics / Ignite UI documentation sites. No build step: `.astro`, `.ts` and `.scss` sources ship as-is and are imported by subpath.
+
+## How to use this file
+
+- Links are relative to the package root. In a consumer that root is `node_modules/igniteui-astro-components/` (a symlink to a checkout when installed with a `file:` dependency); on GitHub prefix them with `https://raw.githubusercontent.com/IgniteUI/igniteui-astro-components/master/`. Prefer the local copy: it matches the installed version (`package.json#version` beside this file).
+- Each line below gives the import specifier, what the component does, its prop names (`*` = required) and the README that documents it. The `export interface Props` at the top of each `.astro` file is the authority when a README disagrees.
+- `llms-full.txt` next to this file contains every README verbatim for one-shot ingestion.
+
+## Consumer prerequisites
+
+- Peers: `astro ^7.3.5`, `igniteui-theming ^29`, `igniteui-webcomponents ^7.4.1`, plus `@astrojs/mdx` for the MDX components. Add `vite.css.preprocessorOptions.scss.loadPaths: ['node_modules']` so the package's bare `@use 'igniteui-theming/...'` imports resolve.
+- Styles: `igniteui-astro-components/styles/theme.scss` is the only stylesheet. `DocsLayout` imports it (and the JetBrains Mono font); import it yourself only without the layout. Theme by overriding `--igd-*` custom properties (see [Styles](#styles)).
+- Virtual modules: `DocsLayout`, `DocsSidebar`, `DocsSubHeader`, `GlobalNavBar` and `GlobalFooter` import `virtual:docs-template/site-meta` (`title`, `sidebar`, `navLang`, `productLinks`, `headEntries`, `trailingSlash`, `packages`, `selectedPackage`) and `virtual:docs-template/nav-html` (`platform`). Provide them with `siteMetaIntegration()` or stub them with a Vite plugin: copy `virtualDocsModules()` from [playground/astro.config.mjs](playground/astro.config.mjs). Contract: [src/virtual-modules.d.ts](src/virtual-modules.d.ts).
+- Middleware: `ApiLink`, `ApiRef`, `PlatformBlock`, `Sample` and `ThemingWidget` read `Astro.locals.platformContext` (`PlatformContext` from `igniteui-astro-components/lib/types`) and `Astro.locals.envVars`. Set both in `src/middleware.ts`; reference: [playground/src/middleware.ts](playground/src/middleware.ts). Without them those components throw.
+- MDX components are not auto-registered: import each one at the top of the MDX file, or pass a `components` map to `<Content />`.
+- Markdown pipeline: `rehypeHeadingAnchors` (every consumer), `rehypeTableWrapper`, `rehypePagefindIgnore`; remark plugins `remarkEnvVars`, `remarkMdLinks`, `remarkHtmlTransforms` are for the docs repos' content conventions.
+- `createDocsSite()` / `siteMetaIntegration()` in `igniteui-astro-components/integration` is reference code, not used by any consumer: it injects routes the package does not ship, imports `pagefind` without declaring it, and registers no middleware. See [README.md](README.md#the-reference-integration).
+- Local checkout instead of npm: `"igniteui-astro-components": "file:../astro-components"` (symlink; Vite 8 may need `vite.resolve.preserveSymlinks: true`), or a `tsconfig` path alias. See [README.md](README.md#using-from-another-repo-without-publishing-a-package).
+
+## Common tasks
+
+1. Import a component: `import X from 'igniteui-astro-components/<subpath>.astro'` using the specifiers listed below; `.astro` files are never reachable from the bare package name.
+2. Find a component's props: its line here, then its README, then `interface Props` in the `.astro` file.
+3. Embed a live demo in MDX: `<Sample src="/grids/grid/overview" height={600} alt="..." />` ([Sample](src/components/mdx/Sample/README.md)).
+4. Link an API symbol: `<ApiLink type="Grid" member="sortingExpressions" />` ([ApiLink](src/components/mdx/ApiLink/README.md)).
+5. Callout: `<DocsAside type="info" title="...">...</DocsAside>`; `type` is `note`, `info` or `warning`.
+6. Platform-specific MDX: `<PlatformBlock for="Angular, React">...</PlatformBlock>`; names are exactly `Angular`, `React`, `WebComponents`, `Blazor`.
+7. Build a page: `DocsLayout` with `DocsSidebar` in `slot="sidebar"`, `DocsToc` in `slot="toc"`, `MobileTocToggle` in `slot="mobile-toc"` ([DocsLayout](src/layouts/DocsLayout/README.md)).
+8. Change colours, fonts or spacing: override `--igd-*` custom properties in the host stylesheet; no Sass variables are configurable.
+9. Sidebar data: `SidebarEntry[]` from `igniteui-astro-components/lib/sidebar/types`; groups have `items`, links have `slug` and optional `badges`.
+10. Report a problem with the package: [CONTRIBUTING.md](CONTRIBUTING.md#filing-issues). Problems with docs *content* belong in IgniteUI/igniteui-documentation.
+
+## MDX components
+
+- [ApiLink](src/components/mdx/ApiLink/README.md): `igniteui-astro-components/components/mdx/ApiLink.astro` — inline link to an API symbol, URL resolved per platform. Props (TypeDoc): `type`*, `member`, `label`, `pkg`, `kind`, `prefixed`, `suffix`, `raw`; (Sass): `kind="sass"`*, `module`, `type`, `label`, `code`. Needs `platformContext`.
+- [ApiRef](src/components/mdx/ApiRef/README.md): `igniteui-astro-components/components/mdx/ApiRef.astro` — "API References" list for several symbols. Props: `types`*, `kind`, `pkg`, `prefixed`, `suffix`. Needs `platformContext`.
+- [Sample](src/components/mdx/Sample/README.md): `igniteui-astro-components/components/mdx/Sample.astro` — live demo iframe with code tabs and live-edit buttons. Props: `src`*, `height`, `alt`, `lob`, `dv`, `crm`, `wc`, `iframeOnly`, `fullscreenBtn`, `hideCode`, `showThemePicker`, `fitContent`, `spacing`, `position`, `resizable`, `noBorder`, `noBackground`, `whiteBackground`. Needs `platformContext` and `envVars` (`demosBaseUrl`, `dvDemosBaseUrl`, `lobDemosBaseUrl`, `crmDemoBaseUrl`, `wcDemosBaseUrl`).
+- [PlatformBlock](src/components/mdx/PlatformBlock/README.md): `igniteui-astro-components/components/mdx/PlatformBlock.astro` — renders children only on the listed platforms. Props: `for`* (comma list). Needs `platformContext`.
+- [DocsAside](src/components/mdx/DocsAside/README.md): `igniteui-astro-components/components/mdx/DocsAside.astro` — callout. Props: `type` (`note` | `info` | `warning`), `title`, `icon`, `class`. Default slot is the body.
+- [Badge](src/components/mdx/Badge/README.md): `igniteui-astro-components/components/mdx/Badge.astro` — status chip on `igc-badge`. Props: `variant` (`preview` | `new` | `updated` | `premium` | `opensource`), `class`, `aria-label`, `aria-hidden`. Default slot overrides the text.
+- [Anatomy](src/components/mdx/Anatomy/README.md): `igniteui-astro-components/components/mdx/Anatomy.astro` — framed anatomy diagram. Props: `src`*, `alt`*, `class`.
+- [DoDont](src/components/mdx/DoDont/README.md): `igniteui-astro-components/components/mdx/DoDont.astro` — side-by-side Do / Don't image panels. Props: `doSrc`*, `doAlt`*, `dontSrc`*, `dontAlt`*, `doLabel`, `dontLabel`, `loading`, `errorText`, `class`. Slots `do`, `dont`.
+- [Faq](src/components/mdx/Faq/README.md): `igniteui-astro-components/components/mdx/Faq.astro` — accordion of questions on `igc-accordion`. Props: `items`, `singleExpand`, `indicatorPosition`, `class`, `id`, aria/data pass-through. `igniteui-astro-components/components/mdx/FaqItem.astro` — one panel; props: `question`*, `subtitle`, `answer`, `open`, `disabled`, `indicatorPosition`, `class`, `id`. Types: `igniteui-astro-components/components/mdx/Faq/types` (`FaqEntry`, `FaqIndicatorPosition`).
+
+## Layout and chrome
+
+- [DocsLayout](src/layouts/DocsLayout/README.md): `igniteui-astro-components/layouts/DocsLayout.astro` — full page shell (nav bar, sub-header, breadcrumb, sidebar, content, TOC, footer). Props: `title`, `description`, `keywords`, `hasSidebar`, `currentSlug`, `siteTitle`, `license`, `is404`, `packages`, `selectedPackage`, `packageLabel`, `versions`, `selectedVersion`, `versionLabel`, `showThemeToggle`, `themeStorageKey` (+ runtime-only `hasToc`). Slots: default, `sidebar`, `toc`, `mobile-toc`, `subheader`, `head`. Imports `styles/theme.scss`; needs both virtual modules.
+- [DocsSubHeader](src/components/DocsSubHeader/README.md): `igniteui-astro-components/components/DocsSubHeader.astro` — sticky bar with site title, product links, package/version selectors, theme toggle and search. Props: `siteTitle`, `pageTitle`, `currentSlug`, `logoText`, `productLinks`, `sidebarItems`, `packages`, `selectedPackage`, `packageLabel`, `versions`, `selectedVersion`, `versionLabel`, `showThemeToggle`, `themeStorageKey`. Slot `search`.
+- [GlobalNavBar](src/components/GlobalNavBar/README.md): `igniteui-astro-components/components/GlobalNavBar.astro` — legacy Infragistics header fetched from `/navigation` at build. Props: `lang`.
+- [GlobalFooter](src/components/GlobalFooter/README.md): `igniteui-astro-components/components/GlobalFooter.astro` — legacy Infragistics footer. Props: `lang`.
+- [Search](src/components/Search/README.md): `igniteui-astro-components/components/Search.astro` — Pagefind full-text search dialog (Ctrl/⌘+K). No props; the host must install `pagefind` and build the index.
+- [SearchAdvanced](src/components/SearchAdvanced/README.md): `igniteui-astro-components/components/SearchAdvanced.astro` — client-side API symbol search over a JSON index. Props: `indexUrl`, `placeholder`, `showScope`, `tabs`, `allTabLimit`, `platform`, `class`.
+- [ThemingWidget](src/components/ThemingWidget/README.md): `igniteui-astro-components/components/ThemingWidget.astro` — theme and colour-mode picker, emits `igd-theme-change`. Props: `themes`, `selectedTheme`, `mode`, `showMode`, `id`, `class`, `label`, `target`.
+- [CopyCode](src/components/CopyCode/README.md): `igniteui-astro-components/components/CopyCode.astro` — adds a copy button to every Shiki `<pre>`. No props; `DocsLayout` mounts it.
+- [MobileSidebarToggle](src/components/MobileSidebarToggle/README.md): `igniteui-astro-components/components/MobileSidebarToggle.astro` — mobile disclosure button for the sidebar. Props: `label` (default `Components List`).
+- [MobileTocToggle](src/components/MobileTocToggle/README.md): `igniteui-astro-components/components/MobileTocToggle.astro` — mobile "On this page" dropdown. Props: `headings`, `tocConfig`, `label`.
+- [DocsBreadcrumb](src/components/DocsBreadcrumb/README.md): rendered by `DocsLayout` above the content; not exported yet. `LicenseIndicator` likewise.
+
+## Sidebar, TOC and tree
+
+- [DocsSidebar](src/components/DocsSidebar/README.md): `igniteui-astro-components/components/DocsSidebar/DocsSidebar.astro` — logo, filter and navigation tree. Props: `currentSlug`, `items`, `showFilter`, `trailingSlash`, `logoText`, `platformLabel`. Companions: `igniteui-astro-components/components/DocsSidebar/SidebarFilterInput.astro`, `igniteui-astro-components/components/DocsSidebar/SidebarLabel.astro` (`node`, `depth`, `isLeaf`, `isActive`), `igniteui-astro-components/components/DocsSidebar/toTreeNodes` (`toTreeNodes(entries, currentSlug, { trailingSlash })`), `igniteui-astro-components/components/DocsSidebar/sidebar-filter` (`<sidebar-filter>` element).
+- [DocsToc](src/components/DocsToc/README.md): `igniteui-astro-components/components/DocsToc.astro` — "On this page" list with scroll-spy. Props: `headings`, `tocConfig`, `label`, `offsetTarget`. Adapter: `igniteui-astro-components/components/DocsToc/toTreeNodes` (`headingsToTreeNodes`, `TocConfig`).
+- [DocsTree](src/components/DocsTree/README.md): `igniteui-astro-components/components/DocsTree/DocsTree.astro` — generic `<igc-tree>` renderer used by both. Props: `nodes`*, `variant`* (`sidebar` | `toc`), `activeId`, `toggleNodeOnClick`, `ariaLabel`, `renderLabel`. Also `igniteui-astro-components/components/DocsTree/DocsTreeItem.astro`, `igniteui-astro-components/components/DocsTree/types` (`TreeNode`, `TreeVariant`) and `igniteui-astro-components/components/DocsTree/docs-tree.css` (export currently broken: the file is `docs-tree.scss`). Tokens `--docs-tree-*`.
+- Types and helpers: `igniteui-astro-components/lib/sidebar/types` (`SidebarEntry`, `SidebarGroup`, `SidebarLink`, `SidebarBadge`, `SIDEBAR_BADGE_VARIANTS`), `igniteui-astro-components/lib/sidebar/helpers` (`isGroup`, `isActive`, `hasActive`, `joinPath`, `isInitiallyOpen`, `getBreadcrumb`, `getActiveLink`, …), `igniteui-astro-components/lib/types` (`PlatformName`, `ApiPackageConfig`, `PlatformContext`).
+- `igniteui-astro-components/sidebar` — `buildSidebarFromToc({ tocPath, docsDir, exclude })`, converts a JSON TOC to `SidebarEntry[]` at config time.
+
+## Plugins and build helpers
+
+- Rehype: `igniteui-astro-components/plugins/rehype-heading-anchors` (anchor links on headings), `igniteui-astro-components/plugins/rehype-table-wrapper` (scrollable table wrapper), `igniteui-astro-components/plugins/rehype-pagefind-ignore` (`data-pagefind-ignore` on code).
+- Remark: `igniteui-astro-components/plugins/remark-env-vars` (`{Environment.X}` substitution), `igniteui-astro-components/plugins/remark-md-links` (`.md` → slug links, `DOCS_BASE` prefix), `igniteui-astro-components/plugins/remark-html-transforms` (dividers, code language normalisation, image paths).
+- `igniteui-astro-components/platform` — `PlatformKey`, `NavLang`, `PLATFORM_DEFS`, `getPlatformHead(platform, lang, { legacyChrome })`, `getNavConfig()`, `platformLabelFor()`.
+- `igniteui-astro-components/content` — `createDocsCollection(sourceDir, { exclude, extendSchema })`; `igniteui-astro-components/content-config` — default content collections.
+- `igniteui-astro-components` (bare) — barrel of the runtime helpers above (`integration`, `sidebar`, `platform`, `content`, sidebar types and helpers); never `.astro` files.
+
+## Styles
+
+- `igniteui-astro-components/styles/theme.scss` — igniteui-theming setup (`--ig-theme: fluent`), cascade layers, `--font-mono`, and the `global/` partials: palette, variables, type scale, markdown, code blocks (always dark), copy button, component overrides.
+- Tokens on `:root` in [src/styles/global/_variables.scss](src/styles/global/_variables.scss): fonts `--igd-font-sans`, `--igd-font-mono`; brand `--igd-accent`, `--igd-on-accent`, `--igd-logo-type`, `--igd-illustration`; surfaces `--igd-app-bg`, `--igd-on-app-bg`, `--igd-layout-sections-bg`, `--igd-app-outline*`; shape `--igd-border-radius`, `--igd-border-radius-xl`, `--igd-padding-{sm,md,lg}`, `--igd-page-padding`, `--igd-sidebar-spacing`; layout `--igd-header-height`, `--igd-page-layout-grid`, `--igd-toc-*`; badges `--igd-{preview,new,updated,premium,opensource}-{bg,color,border}`; asides `--igd-aside-*`; FAQ `--igd-faq-*`; tables `--igd-table-*`.
+- Component-scoped tokens: `--igd-theming-*` (ThemingWidget), `--igd-anatomy-*` (Anatomy), `--igd-dodont-*` (DoDont), `--docs-tree-*` (DocsTree), `--ig-toc-width` (DocsToc), `--docs-global-nav-height` / `--docs-subheader-height` (DocsSubHeader).
+
+## Contributing
+
+- [AGENTS.md](AGENTS.md): commands, layout, conventions, issue and PR rules for agents working in this repo.
+- [CONTRIBUTING.md](CONTRIBUTING.md): the same for people, with reasons, plus release and consumer-testing procedures.
+- [.github/PULL_REQUEST_TEMPLATE.md](.github/PULL_REQUEST_TEMPLATE.md): the PR body a CI check enforces.
+
+## Optional
+
+- [llms-full.txt](llms-full.txt): this index plus every README, generated by `npm run build:llms`.
+- `igniteui-astro-components/integration` — `createDocsSite()`, `siteMetaIntegration()`, `staticImagesIntegration()`; reference only (see prerequisites).
+- `igniteui-astro-components/chrome` (`igChrome({ snapshot })`) and `igniteui-astro-components/chrome/contract` (`parseFragment()`, `CHROME_CONTRACT`) — render the marketing site's header/footer from a synced snapshot. See [README.md](README.md#the-infragistics-header-and-footer).
+- `igniteui-astro-components/llms` — `buildLlmsTxt()` and `LlmsSet`: generates `llms.txt` files for a docs *site*; unrelated to this file.
+- [playground/README.md](playground/README.md): the in-repo site that renders every component for manual testing.
