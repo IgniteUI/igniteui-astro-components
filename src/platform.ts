@@ -25,7 +25,9 @@ export type HeadEntry = {
 };
 
 export type PlatformKey =
-  'angular' | 'react' | 'blazor' | 'web-components' | 'slingshot' | 'appbuilder';
+  'angular' | 'react' | 'blazor' | 'web-components' | 'winui' | 'uno' | 'slingshot' | 'appbuilder';
+
+export { ULTIMATE_UI_PLATFORMS } from './lib/ultimate-ui-platforms';
 
 /** Locale code for nav/API requests and UI string lookups. */
 export type NavLang = 'en' | 'jp' | 'kr';
@@ -60,8 +62,20 @@ export interface NavConfig {
   navUrl: string | null;
 }
 
+/** The legacy fetched chrome's own CSS. Kept last in IG_STYLES, as before. */
+const IG_LEGACY_CHROME_STYLES: HeadEntry[] = [
+  {
+    tag: 'link',
+    attrs: { rel: 'stylesheet', href: 'https://www.infragistics.com/css/navigation.css' },
+  },
+  {
+    tag: 'link',
+    attrs: { rel: 'stylesheet', href: 'https://www.infragistics.com/css/footer.css' },
+  },
+];
+
 // ---------------------------------------------------------------------------
-// Shared IG styles — used by: angular, react, blazor, web-components, slingshot
+// Shared IG styles — used by: angular, react, blazor, web-components, winui, uno, slingshot
 // ---------------------------------------------------------------------------
 const IG_STYLES: HeadEntry[] = [
   // Bootstrap is wrapped in a CSS cascade layer so its global resets do not
@@ -95,18 +109,12 @@ const IG_STYLES: HeadEntry[] = [
     tag: 'link',
     attrs: { rel: 'stylesheet', href: 'https://fonts.googleapis.com/icon?family=Material+Icons' },
   },
-  {
-    tag: 'link',
-    attrs: { rel: 'stylesheet', href: 'https://www.infragistics.com/css/navigation.css' },
-  },
-  {
-    tag: 'link',
-    attrs: { rel: 'stylesheet', href: 'https://www.infragistics.com/css/footer.css' },
-  },
+  ...IG_LEGACY_CHROME_STYLES,
 ];
 
 // ---------------------------------------------------------------------------
-// Shared IG scripts — used by: angular, react, blazor, web-components, slingshot
+// Shared IG scripts — used by: angular, react, blazor, web-components, winui, uno, slingshot
+// All three belong to the legacy fetched chrome.
 // ---------------------------------------------------------------------------
 const IG_SCRIPTS: HeadEntry[] = [
   {
@@ -291,6 +299,8 @@ export const PLATFORM_DEFS: Record<PlatformKey, PlatformDef> = {
   react: { navType: 'infragistics', styles: IG_STYLES, scripts: IG_SCRIPTS },
   blazor: { navType: 'infragistics', styles: IG_STYLES, scripts: IG_SCRIPTS },
   'web-components': { navType: 'infragistics', styles: IG_STYLES, scripts: IG_SCRIPTS },
+  winui: { navType: 'infragistics', styles: IG_STYLES, scripts: IG_SCRIPTS },
+  uno: { navType: 'infragistics', styles: IG_STYLES, scripts: IG_SCRIPTS },
   slingshot: { navType: 'infragistics', styles: IG_STYLES, scripts: IG_SCRIPTS },
   appbuilder: { navType: 'appbuilder', styles: APPBUILDER_STYLES, scripts: APPBUILDER_SCRIPTS },
 };
@@ -341,6 +351,25 @@ export const IGDOCS_PLATFORMS: Record<string, PlatformMeta> = {
     title: 'Ignite UI for Blazor',
     description: 'Component documentation for Ignite UI for Blazor.',
   },
+  // XAML platforms ship under the Ultimate UI brand, hence `ultimate-ui-*` URL slugs.
+  WinUI: {
+    lang: 'en',
+    label: 'WinUI',
+    key: 'winui',
+    devPort: 4335,
+    base: '/products/ultimate-ui-winui/winui/components',
+    title: 'Infragistics Ultimate UI for WinUI',
+    description: 'Component documentation for Infragistics Ultimate UI for WinUI.',
+  },
+  Uno: {
+    lang: 'en',
+    label: 'Uno Platform',
+    key: 'uno',
+    devPort: 4336,
+    base: '/products/ultimate-ui-uno-platform/uno-platform/components',
+    title: 'Infragistics Ultimate UI for Uno Platform',
+    description: 'Component documentation for Infragistics Ultimate UI for Uno Platform.',
+  },
   // Japanese
   AngularJP: {
     lang: 'jp',
@@ -378,7 +407,50 @@ export const IGDOCS_PLATFORMS: Record<string, PlatformMeta> = {
     title: 'Ignite UI for Blazor',
     description: 'Component documentation for Ignite UI for Blazor.',
   },
+  // XAML platforms ship under the Ultimate UI brand, hence `ultimate-ui-*` URL slugs.
+  WinUIJP: {
+    lang: 'jp',
+    label: 'WinUI',
+    key: 'winui',
+    devPort: 4345,
+    base: '/products/ultimate-ui-winui/winui/components',
+    title: 'Infragistics Ultimate UI for WinUI',
+    description: 'Component documentation for Infragistics Ultimate UI for WinUI.',
+  },
+  UnoJP: {
+    lang: 'jp',
+    label: 'Uno Platform',
+    key: 'uno',
+    devPort: 4346,
+    base: '/products/ultimate-ui-uno-platform/uno-platform/components',
+    title: 'Infragistics Ultimate UI for Uno Platform',
+    description: 'Component documentation for Infragistics Ultimate UI for Uno Platform.',
+  },
 };
+
+/**
+ * The legacy fetched chrome's own CSS and JS: navigation.css, footer.css,
+ * jQuery 3.1, plugins.nav.js and navigation.js. Only needed where that chrome
+ * renders: a site without igChrome(), or a Japanese build. Matched by entry,
+ * not by URL, so a changed URL or a cache-busting query cannot slip past it.
+ */
+const LEGACY_CHROME = new Set<HeadEntry>([...IG_LEGACY_CHROME_STYLES, ...IG_SCRIPTS]);
+
+export interface PlatformHeadOptions {
+  /**
+   * Include the legacy fetched chrome's CSS/JS. Default `true`. Pass `false`
+   * when the build renders the synced chrome (igChrome) instead.
+   */
+  legacyChrome?: boolean;
+}
+
+/**
+ * The display label for a platform key ('winui' → 'WinUI'), from IGDOCS_PLATFORMS, or `null` for
+ * a platform it does not list.
+ */
+export function platformLabelFor(platform: string | null | undefined): string | null {
+  return Object.values(IGDOCS_PLATFORMS).find((p) => p.key === platform)?.label ?? null;
+}
 
 /**
  * Returns an array of head entries for the given platform.
@@ -386,17 +458,23 @@ export const IGDOCS_PLATFORMS: Record<string, PlatformMeta> = {
  *
  * @param platform - Platform identifier.
  * @param lang - Locale — not currently used but kept for API completeness.
+ * @param options - See PlatformHeadOptions.
  */
-export function getPlatformHead(platform: string, _lang = 'en'): HeadEntry[] {
+export function getPlatformHead(
+  platform: string,
+  _lang = 'en',
+  { legacyChrome = true }: PlatformHeadOptions = {},
+): HeadEntry[] {
   const def = PLATFORM_DEFS[platform as PlatformKey];
   if (!def) {
     console.warn(`[docs-template] Unknown platform "${platform}" — no head entries injected.`);
     return [];
   }
+  const keep = (entry: HeadEntry) => legacyChrome || !LEGACY_CHROME.has(entry);
   return [
     { tag: 'meta', attrs: { property: 'docs:platform', content: platform } },
-    ...def.styles,
-    ...def.scripts,
+    ...def.styles.filter(keep),
+    ...def.scripts.filter(keep),
   ];
 }
 
@@ -416,6 +494,8 @@ export function getNavConfig(platform: string | null, lang = 'en'): NavConfig {
     case 'react':
     case 'blazor':
     case 'web-components':
+    case 'uno':
+    case 'winui':
     case 'slingshot':
       return { navType: 'infragistics', navUrl: `${igBase}/navigation` };
     default:
