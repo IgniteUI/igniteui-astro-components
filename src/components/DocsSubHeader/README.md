@@ -27,12 +27,12 @@ import DocsSubHeader from 'igniteui-astro-components/components/DocsSubHeader.as
 
 `PackageEntry` is `{ label: string; value?: string; href?: string; base?: string }`:
 
-| Field   | Description                                                                        |
-| ------- | ---------------------------------------------------------------------------------- |
-| `label` | Text shown in the dropdown.                                                        |
-| `value` | Value matched against `selectedPackage`. Defaults to `label`.                      |
-| `href`  | Where selecting the entry navigates, e.g. the platform's getting started page.     |
-| `base`  | Root URL of the entry's docs site. Enables topic-preserving switching (see below). |
+| Field   | Description                                                                      |
+| ------- | -------------------------------------------------------------------------------- |
+| `label` | Text shown in the dropdown.                                                      |
+| `value` | Value matched against `selectedPackage`. Defaults to `label`.                    |
+| `href`  | Where selecting the entry navigates, e.g. the platform's getting started page.   |
+| `base`  | Root URL of the entry's docs site. Switching keeps the current page (see below). |
 
 ## Slots
 
@@ -42,12 +42,10 @@ import DocsSubHeader from 'igniteui-astro-components/components/DocsSubHeader.as
 
 ## Behaviour
 
-- Selecting a package navigates to its `href`. When the entry also has a `base`, the switcher first
-  tries the current topic on that site — the current path with this site's base
-  (`import.meta.env.BASE_URL`) swapped for `base`, keeping the `#hash` — and checks it with a `HEAD`
-  request. If that page exists it goes there; on a 404, network error or a 3-second timeout it falls
-  back to `href`. The check needs the target to be same-origin (or to send CORS headers), so a
-  cross-origin target, e.g. local dev pointing at staging, always falls back to `href`.
+- Selecting a package navigates to its `href`. When the entry also has a `base`, it goes to the same
+  page on that site instead: the current URL with this site's base (`import.meta.env.BASE_URL`)
+  swapped for `base`, keeping the query and `#hash`. Nothing checks that the page exists there, so
+  the server should redirect missing pages, e.g. to the platform's getting started page.
 - Product links from the virtual module are shown; the currently active platform link is hidden.
 - The search button opens the Pagefind dialog (see `Search` component).
 - CSS custom properties used for positioning:

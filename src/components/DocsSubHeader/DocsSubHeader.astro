@@ -73,8 +73,8 @@ interface Props {
    * Each entry is either a plain string label, or an object with a `label`, optional `value`
    * (defaults to `label`), and optional `href` to navigate to when selected.
    * Set `base` to the root URL of the entry's docs site to keep the reader on the current
-   * topic: the current page path is tried under `base` first and `href` is the fallback when
-   * that page does not exist.
+   * page: selecting the entry goes to the current URL with this site's base swapped for `base`.
+   * Nothing checks that the page exists there; redirect missing pages on the server.
    */
   packages?: Array<string | { label: string; value?: string; href?: string; base?: string }>;
   /** Currently selected package value (must match one of `packages`). */
@@ -168,65 +168,63 @@ const platformLabel = currentPlatform ? (PLATFORM_LABELS[currentPlatform] ?? nul
 
   <div class="igd-docs-subheader__content">
     <!-- Search (overridable via named slot) -->
-    <slot name="search"><Search /></slot>
+    <slot name="search">
+      <Search />
+    </slot>
 
     {/* Package selector */}
-    {
-      packages && packages.length > 0 && (
-        <>
-          <igc-select
-            distance="4"
-            id="package-select"
-            class="igd-package-select"
-            outlined
-            value={selectedPackage}
-            aria-label={packageLabel}
-          >
-            {platformIcon && (
-              <igc-icon name={platformIcon} collection="docs" slot="prefix" aria-hidden="true" />
-            )}
-            {packages.map((p) => {
-              const icon = getPlatformIcon(p.value ?? '') ?? getPlatformIcon(p.label ?? '');
-              return (
-                <igc-select-item value={p.value} data-href={p.href} data-base={p.base}>
-                  {icon && (
-                    <igc-icon slot="prefix" name={icon} collection="docs" aria-hidden="true" />
-                  )}
-                  {p.label}
-                </igc-select-item>
-              );
-            })}
-          </igc-select>
-          <igc-tooltip
-            id="package-tooltip"
-            class="igd-package-select-tooltip"
-            anchor="package-select"
-            placement="bottom"
-            with-arrow
-          >
-            {selectedPackageLabel}
-          </igc-tooltip>
-        </>
-      )
-    }
-
-    <!-- Version selector -->
-    {
-      versions && versions.length > 0 && (
+    {packages && packages.length > 0 && (
+      <>
         <igc-select
           distance="4"
-          id="version-select"
-          class="igd-version-select"
+          id="package-select"
+          class="igd-package-select"
           outlined
-          value={selectedVersion}
-          aria-label={versionLabel}
+          value={selectedPackage}
+          aria-label={packageLabel}
         >
-          {versions.map((v) => (
-            <igc-select-item value={v}>{v}</igc-select-item>
-          ))}
+          {platformIcon && (
+            <igc-icon name={platformIcon} collection="docs" slot="prefix" aria-hidden="true" />
+          )}
+          {packages.map((p) => {
+            const icon = getPlatformIcon(p.value ?? '') ?? getPlatformIcon(p.label ?? '');
+            return (
+              <igc-select-item value={p.value} data-href={p.href} data-base={p.base}>
+                {icon && (
+                  <igc-icon slot="prefix" name={icon} collection="docs" aria-hidden="true" />
+                )}
+                {p.label}
+              </igc-select-item>
+            );
+          })}
         </igc-select>
-      )
-    }
+        <igc-tooltip
+          id="package-tooltip"
+          class="igd-package-select-tooltip"
+          anchor="package-select"
+          placement="bottom"
+          with-arrow
+        >
+          {selectedPackageLabel}
+        </igc-tooltip>
+      </>
+    )}
+
+    <!-- Version selector -->
+    {versions && versions.length > 0 && (
+      <igc-select
+        distance="4"
+        id="version-select"
+        class="igd-version-select"
+        outlined
+        value={selectedVersion}
+        aria-label={versionLabel}
+      >
+        {versions.map((v) => (
+          <igc-select-item value={v}>{v}</igc-select-item>
+        ))}
+      </igc-select>
+    )}
 
     <!-- TODO WHY WE NEED THIS? -->
     <!--{filteredLinks.length > 0 && (-->
@@ -245,26 +243,14 @@ const platformLabel = currentPlatform ? (PLATFORM_LABELS[currentPlatform] ?? nul
 <script>
   /**
    * Where selecting a package entry should navigate. With a `base` (root URL of the entry's
-   * docs site) the current topic is kept when it exists there - this page's path with the
-   * site's own base swapped for the entry's - otherwise the entry's `href` is the fallback.
+   * docs site) it is this page's URL with the site's own base swapped for the entry's; the
+   * server handles a page that does not exist there. Otherwise it is the entry's `href`.
    */
-  async function resolvePackageHref({ href, base }: DOMStringMap): Promise<string | undefined> {
-    const fallback = href ?? base;
+  function packageHref({ href, base }: DOMStringMap): string | undefined {
     const currentBase = import.meta.env.BASE_URL.replace(/\/$/, '');
-    const { pathname, hash } = window.location;
-    if (!base || !pathname.startsWith(currentBase)) return fallback;
-
-    try {
-      const topicUrl = new URL(
-        `${base.replace(/\/$/, '')}${pathname.slice(currentBase.length)}${hash}`,
-        window.location.href,
-      );
-      const res = await fetch(topicUrl, { method: 'HEAD', signal: AbortSignal.timeout(3000) });
-      if (res.ok) return topicUrl.href;
-    } catch {
-      // Unreachable, timed out, or cross-origin without CORS - use the fallback.
-    }
-    return fallback;
+    const { pathname, search, hash } = window.location;
+    if (!base || !pathname.startsWith(currentBase)) return href;
+    return `${base.replace(/\/$/, '')}${pathname.slice(currentBase.length)}${search}${hash}`;
   }
 
   if (!customElements.get('docs-subheader-menu')) {
@@ -310,11 +296,8 @@ const platformLabel = currentPlatform ? (PLATFORM_LABELS[currentPlatform] ?? nul
             const item = packageSelect.querySelector<HTMLElement>(
               `igc-select-item[value="${val}"]`,
             );
-            if (item) {
-              resolvePackageHref(item.dataset).then((href) => {
-                if (href) window.location.href = href;
-              });
-            }
+            const href = item && packageHref(item.dataset);
+            if (href) window.location.href = href;
             // Sync tooltip content with the new selection label
             if (packageTooltip) {
               packageTooltip.textContent = item?.textContent?.trim() ?? val;
