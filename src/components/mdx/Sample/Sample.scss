@@ -122,9 +122,9 @@ igc-tab::part(tab-header) {
   display: flex;
 }
 
-// `hideCode`: no tabs header, so the demo pane sits directly in the widget's
-// own frame, which already draws the border, and takes its top corners.
-.igd-code-view--hide-code {
+// `chrome="demo"`: no tabs header, so the demo pane sits directly in the
+// widget's own frame, which already draws the border, and takes its top corners.
+.igd-code-view--demo {
   .igd-sample-container {
     flex: 1 1 0;
     min-width: 0;
@@ -148,7 +148,7 @@ igc-tab::part(tab-header) {
 
   display: grid;
   // The iframe frame takes all the space left over; anything after it (the
-  // fullscreen bar in iframeOnly mode) keeps its own height.
+  // fullscreen bar with chrome="bare") keeps its own height.
   grid-template-rows: minmax(0, 1fr);
   position: relative;
   border: rem(1px) solid var(--ig-gray-300);
