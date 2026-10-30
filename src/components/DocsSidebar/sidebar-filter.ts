@@ -75,8 +75,13 @@ const collectExpandedKeys = (root: ParentNode): string[] => {
 /**
  * Apply expanded state using setAttribute / removeAttribute.
  * Used ONLY in astro:before-swap on not-yet-upgraded DOM nodes.
+ * With `onlyActiveBranch`, the saved keys are ignored.
  */
-const applyExpandedAttr = (root: ParentNode, openKeys: Set<string>): void => {
+const applyExpandedAttr = (
+  root: ParentNode,
+  openKeys: Set<string>,
+  onlyActiveBranch: boolean,
+): void => {
   root.querySelectorAll<HTMLElement>(GROUP_SELECTOR).forEach((el) => {
     // Always keep ancestors of the active page open.
     if (el.querySelector('a[aria-current="page"]')) {
@@ -84,7 +89,7 @@ const applyExpandedAttr = (root: ParentNode, openKeys: Set<string>): void => {
       return;
     }
     const key = el.dataset.groupKey;
-    if (key && openKeys.has(key)) el.setAttribute('expanded', '');
+    if (!onlyActiveBranch && key && openKeys.has(key)) el.setAttribute('expanded', '');
     else el.removeAttribute('expanded');
   });
 };
@@ -115,13 +120,20 @@ document.addEventListener('astro:before-swap', (e) => {
   const newScroll = newDoc.querySelector<HTMLElement>(SCROLL_SELECTOR);
   if (newScroll) newScroll.style.visibility = 'hidden';
 
+  // Single-branch: the new page's branch replaces the saved one, unless the
+  // filter carries over and keeps every group it opened.
+  const onlyActiveBranch =
+    !!newDoc.querySelector('sidebar-filter[data-single-branch-expand]') &&
+    !!newDoc.querySelector(`${GROUP_SELECTOR} a[aria-current="page"]`) &&
+    !safeGet(FILTER_KEY);
+
   const raw = safeGet(DETAILS_KEY);
-  applyExpandedAttr(newDoc, new Set(raw ? raw.split('\n').filter(Boolean) : []));
+  applyExpandedAttr(newDoc, new Set(raw ? raw.split('\n').filter(Boolean) : []), onlyActiveBranch);
 });
 
 // ── Custom element ───────────────────────────────────────────────────────────
 
-type ExpandableEl = HTMLElement & { expanded: boolean };
+type ExpandableEl = HTMLElement & { expanded: boolean; collapseWithEvent(): Promise<void> };
 type FilterInputEl = HTMLElement & { value: string; focus(): void };
 type FilterClearEl = HTMLElement & { hidden: boolean };
 
@@ -185,6 +197,7 @@ class SidebarFilter extends HTMLElement {
     // the igc-tree-item instance in event.detail — NOT in e.target.
     this.addEventListener('igcItemExpanded', this.onItemToggle as EventListener);
     this.addEventListener('igcItemCollapsed', this.onItemToggle as EventListener);
+    this.addEventListener('igcItemExpanding', this.onItemExpanding as EventListener);
   }
 
   private onFilterInput = (): void => {
@@ -257,6 +270,22 @@ class SidebarFilter extends HTMLElement {
     if (e.type === 'igcItemExpanded') keys.add(key);
     else keys.delete(key);
     safeSet(DETAILS_KEY, [...keys].join('\n'));
+  };
+
+  /**
+   * Single-branch: a user expand collapses every open group outside the new
+   * branch. igc-tree's own `singleBranchExpand` isn't used: turning it on
+   * collapses every group, the current page's included, and while filtering
+   * the next expand would collapse the groups the filter opened.
+   */
+  private onItemExpanding = (e: Event): void => {
+    // While filtering, every group with a match stays open.
+    if (!this.singleBranch || this.openSnapshot) return;
+
+    const item = (e as CustomEvent<HTMLElement>).detail;
+    for (const el of this.groups as ExpandableEl[]) {
+      if (el.expanded && !el.contains(item)) void el.collapseWithEvent();
+    }
   };
 
   private syncSnapshotAttr(): void {
@@ -384,7 +413,11 @@ class SidebarFilter extends HTMLElement {
     // Clear match marks — CSS restores visibility automatically.
     for (const el of this.items) delete el.dataset.filterMatch;
 
-    const restore = this.preFilterSnapshot ?? this.openSnapshot;
+    // Single-branch: return to the current page's branch, not to the groups
+    // that were open before filtering, which may be a second branch.
+    const restore = this.singleBranch
+      ? this.activeBranchKeys()
+      : (this.preFilterSnapshot ?? this.openSnapshot);
     if (restore) {
       this.withSuppressed(() => this.setExpandedState(restore!));
       safeSet(DETAILS_KEY, [...restore].join('\n'));
@@ -460,6 +493,21 @@ class SidebarFilter extends HTMLElement {
       if (matches.has(el)) el.dataset.filterMatch = 'true';
       else delete el.dataset.filterMatch;
     }
+  }
+
+  private get singleBranch(): boolean {
+    return this.hasAttribute('data-single-branch-expand');
+  }
+
+  /** Keys of the groups that contain the active page. */
+  private activeBranchKeys(): Set<string> {
+    const keys = new Set<string>();
+    for (const el of this.groups) {
+      if (el.dataset.groupKey && el.querySelector('a[aria-current="page"]')) {
+        keys.add(el.dataset.groupKey);
+      }
+    }
+    return keys;
   }
 
   private ensureActiveAncestorsExpanded(): void {
