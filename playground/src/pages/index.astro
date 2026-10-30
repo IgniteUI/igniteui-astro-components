@@ -57,9 +57,8 @@ const headings = [
       with filter input.
     </li>
     <li>
-      <a href="/components/sidebar-igc">Sidebar (igc-tree)</a> — same sidebar built with <code
-        >igniteui-webcomponents</code
-      >
+      <a href="/components/sidebar-igc">Sidebar (igc-tree)</a> — same sidebar built with{' '}
+      <code>igniteui-webcomponents</code>
       igc-tree.
     </li>
     <li>
@@ -70,47 +69,60 @@ const headings = [
   <h3 id="navigation-components">Navigation components</h3>
   <ul>
     <li>
-      <a href="/components/nav-bar">Global nav &amp; footer</a> — top navigation bar and site footer.
+      <a href="/components/nav-bar">Global nav &amp; footer</a> — top navigation bar and site
+      footer.
     </li>
     <li>
-      <a href="/components/docs-subheader">DocsSubHeader</a> — secondary fixed bar with breadcrumb, search,
-      package/version selectors, theme toggle, and product links.
+      <a href="/components/docs-subheader">DocsSubHeader</a> — secondary fixed bar with breadcrumb,
+      search, package/version selectors, theme toggle, and product links.
     </li>
   </ul>
 
   <h3 id="mdx-components">MDX components</h3>
   <ul>
     <li>
-      <a href="/components/anatomy">Anatomy</a> — framed, centered canvas for component anatomy images.
-    </li>
-    <li><a href="/components/api-link">ApiLink</a> — inline link to an API reference entry.</li>
-    <li><a href="/components/api-ref">ApiRef</a> — full API reference block.</li>
-    <li>
-      <a href="/components/badge">Badge</a> — inline status chips (preview, new, updated, premium, opensource).
+      <a href="/components/anatomy">Anatomy</a> — framed, centered canvas for component anatomy
+      images.
     </li>
     <li>
-      <a href="/components/docs-aside">DocsAside</a> — note, tip, warning, and danger callout blocks.
+      <a href="/components/api-link">ApiLink</a> — inline link to an API reference entry.
+    </li>
+    <li>
+      <a href="/components/api-ref">ApiRef</a> — full API reference block.
+    </li>
+    <li>
+      <a href="/components/badge">Badge</a> — inline status chips (preview, new, updated, premium,
+      opensource).
+    </li>
+    <li>
+      <a href="/components/docs-aside">DocsAside</a> — note, tip, warning, and danger callout
+      blocks.
     </li>
     <li>
       <a href="/components/do-dont">DoDont</a> — side-by-side Do / Don't image guidance panels.
     </li>
     <li>
-      <a href="/components/platform-block">PlatformBlock</a> — conditionally renders content per platform.
+      <a href="/components/figma-ui-kits">FigmaUiKits</a> — "Design in Figma" banner linking to the
+      UI kits in the Figma Community.
+    </li>
+    <li>
+      <a href="/components/platform-block">PlatformBlock</a> — conditionally renders content per
+      platform.
     </li>
   </ul>
 
   <h2 id="styles">Styles</h2>
   <ul>
     <li>
-      <a href="/styles/colors">Styles</a> — Colors, Typography, Lists, Tables, Code, Images, and more
-      — one focused page per topic.
+      <a href="/styles/colors">Styles</a> — Colors, Typography, Lists, Tables, Code, Images, and
+      more — one focused page per topic.
     </li>
     <li>
       <a href="/styles/colors">Colors</a> — the full color palette exposed as CSS custom properties.
     </li>
     <li>
-      <a href="/styles/typography">Typography</a> — heading scale, body text, inline elements, and icon
-      catalogue.
+      <a href="/styles/typography">Typography</a> — heading scale, body text, inline elements, and
+      icon catalogue.
     </li>
   </ul>
 
@@ -118,16 +130,14 @@ const headings = [
   <p>
     The playground uses the prop-driven pattern: sidebar data, product links, and the site title are
     defined in
-    <code>playground/src/site-config.ts</code> and passed directly as props to <code
-      >DocsLayout</code
-    > and <code>DocsSidebar</code> — no
+    <code>playground/src/site-config.ts</code> and passed directly as props to{' '}
+    <code>DocsLayout</code> and <code>DocsSidebar</code> — no
     <code>siteMetaIntegration</code> required.
   </p>
   <p>
-    The virtual module stubs in <code>astro.config.mjs</code> are still present to satisfy the module
-    resolver, but the <code>sidebar</code>,
-    <code>title</code>, and <code>productLinks</code> values they export are intentionally empty — the
-    real data flows through props.
+    The virtual module stubs in <code>astro.config.mjs</code> are still present to satisfy the
+    module resolver, but the <code>sidebar</code>,<code>title</code>, and <code>productLinks</code>{' '}
+    values they export are intentionally empty — the real data flows through props.
   </p>
 
   <h3 id="adding-a-demo-page">Adding a demo page</h3>

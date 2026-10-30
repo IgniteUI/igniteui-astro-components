@@ -1,0 +1,300 @@
+---
+import { Code } from 'astro:components';
+import DocsLayout from '../../../../src/layouts/DocsLayout/DocsLayout.astro';
+import DocsSidebar from '../../../../src/components/DocsSidebar/DocsSidebar.astro';
+import DocsToc from '../../../../src/components/DocsToc/DocsToc.astro';
+import DocsAside from '../../../../src/components/mdx/DocsAside/DocsAside.astro';
+import FigmaUiKits from '../../../../src/components/mdx/FigmaUiKits/FigmaUiKits.astro';
+import { DEFAULT_FIGMA_UI_KITS } from '../../../../src/components/mdx/FigmaUiKits/kits';
+import { SITE_TITLE, SIDEBAR } from '../../site-config';
+
+const slug = 'components/figma-ui-kits';
+
+// API reference
+// One row per prop, kept in sync with the Props interface in
+// src/components/mdx/FigmaUiKits/FigmaUiKits.astro.
+
+interface PropRow {
+  name: string;
+  type: string;
+  def: string;
+  /** Description (HTML). */
+  description: string;
+}
+
+const propRows: PropRow[] = [
+  {
+    name: 'kits',
+    type: 'FigmaUiKit[]',
+    def: '<code>DEFAULT_FIGMA_UI_KITS</code>',
+    description: `The kits to link to, in display order. Each entry is
+            <code>{ label: string; href: string }</code>. A kit with an empty
+            <code>label</code> or <code>href</code> throws at build time.`,
+  },
+  {
+    name: 'title',
+    type: 'string',
+    def: "'Design in Figma:'",
+    description: `Bold lead-in before the description. The default follows the site language
+            (see <a href="#localization">Localization</a>).`,
+  },
+  {
+    name: 'description',
+    type: 'string',
+    def: "'Explore our UI kits'",
+    description: `Text after the title. The default follows the site language.`,
+  },
+  {
+    name: 'class',
+    type: 'string',
+    def: '—',
+    description: `Optional extra class(es) forwarded to the container — for one-off
+            overrides such as a custom <code>--igd-figma-kits-gap</code>.`,
+  },
+];
+
+const headings = [
+  { depth: 2, slug: 'quick-start', text: 'Quick start' },
+  { depth: 2, slug: 'props', text: 'Props (API reference)' },
+  { depth: 2, slug: 'default', text: 'Default' },
+  { depth: 2, slug: 'responsive', text: 'Responsive layout' },
+  { depth: 2, slug: 'wording', text: 'Custom wording' },
+  { depth: 2, slug: 'kits', text: 'Custom kits' },
+  { depth: 2, slug: 'localization', text: 'Localization' },
+  { depth: 2, slug: 'accessibility', text: 'Accessibility' },
+  { depth: 2, slug: 'styling', text: 'Styling' },
+];
+
+// ─ Snippets ────────────────────────────────────────────────────────────────────
+
+// The `---` fences are interpolated (not written literally at line-start) so the
+// Astro-aware linter doesn't mistake them for the end of this file's frontmatter.
+const usageQuickStart = `${'---'}
+import FigmaUiKits from 'igniteui-astro-components/components/mdx/FigmaUiKits.astro';
+${'---'}
+
+The Ignite UI for Angular Button is a directive that turns any element into a button…
+
+<FigmaUiKits />
+
+<Sample src="/inputs/button/overview" height={200} />`;
+
+const usageDefault = `<FigmaUiKits />`;
+
+const usageWording = `<FigmaUiKits title="Prototype it:" description="Start from a ready-made kit" />`;
+
+const usageKits = `${'---'}
+import { DEFAULT_FIGMA_UI_KITS } from 'igniteui-astro-components/components/mdx/FigmaUiKits/kits';
+${'---'}
+
+<FigmaUiKits kits={DEFAULT_FIGMA_UI_KITS.filter((kit) => kit.label !== 'Bootstrap')} />`;
+
+const usageTokens = `.my-topic .igd-figma-kits {
+  --igd-figma-kits-gap: 16px;
+  --igd-figma-kits-padding-block: 12px;
+}`;
+---
+
+<DocsLayout title="FigmaUiKits" siteTitle={SITE_TITLE} hasSidebar currentSlug={slug}>
+  <DocsSidebar slot="sidebar" items={SIDEBAR} currentSlug={slug} />
+  <DocsToc slot="toc" headings={headings} offsetTarget=".docs-subheader" />
+
+  <h1>FigmaUiKits</h1>
+  <p>
+    <code>FigmaUiKits</code> is the <strong>"Design in Figma" call-to-action banner</strong> that
+    links a component topic to the Ignite UI kits in the Figma Community — one link per theme:
+    Material, Fluent, Bootstrap and Indigo. It belongs in every component topic, between the
+    component description and the live demo, so designers can jump straight to the matching kit.
+  </p>
+  <FigmaUiKits />
+
+  <h2 id="quick-start">Quick start</h2>
+  <p>
+    Import the component and drop it after the topic's introduction. With no props it renders the
+    four theme kits with the default, localized wording:
+  </p>
+  <Code code={usageQuickStart} lang="astro" theme="dark-plus" wrap />
+
+  <h2 id="props">Props (API reference)</h2>
+  <div class="igd-table-wrapper" role="region" aria-labelledby="props-table-caption" tabindex="0">
+    <table>
+      <caption id="props-table-caption" class="visually-hidden">
+        FigmaUiKits component props
+      </caption>
+      <thead>
+        <tr>
+          <th>Prop</th>
+          <th>Type</th>
+          <th>Default</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        {propRows.map((row) => (
+          <tr>
+            <td>
+              <code>{row.name}</code>
+            </td>
+            <td>
+              <code>{row.type}</code>
+            </td>
+            <td set:html={row.def} />
+            <td set:html={row.description} />
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+
+  <h2 id="default">Default</h2>
+  <p>
+    The Figma logo and the title sit at the start of the row, the kit links at the end. Each link
+    opens its kit in a new tab and is marked with an external-link icon.
+  </p>
+  <Code code={usageDefault} lang="astro" theme="dark-plus" wrap />
+  <FigmaUiKits />
+
+  <h2 id="responsive">Responsive layout</h2>
+  <p>
+    The banner is always 100% of its container and wraps as the space runs out, with no media
+    queries: first the links drop below the title, then the links themselves wrap onto further rows.
+    It responds to the width it is given rather than to the viewport, so the same markup fits the
+    main column, a narrow aside or a phone screen. The frames below are fixed-width containers that
+    show the layout at common breakpoints.
+  </p>
+  <div class="figma-kits-demo">
+    {[720, 480, 320].map((width) => (
+      <figure class="figma-kits-demo__frame" style={`--demo-width: ${width}px`}>
+        <figcaption class="figma-kits-demo__caption">{width}px container</figcaption>
+        <FigmaUiKits />
+      </figure>
+    ))}
+  </div>
+
+  <h2 id="wording">Custom wording</h2>
+  <p>
+    <code>title</code> and <code>description</code> override the default copy. Keep the title short
+    and ending in a colon — it reads as a lead-in to the description.
+  </p>
+  <Code code={usageWording} lang="astro" theme="dark-plus" wrap />
+  <FigmaUiKits title="Prototype it:" description="Start from a ready-made kit" />
+
+  <h2 id="kits">Custom kits</h2>
+  <p>
+    The default list is exported as <code>DEFAULT_FIGMA_UI_KITS</code> from
+    <code>…/components/mdx/FigmaUiKits/kits</code>. Filter or reorder it when a topic applies to
+    only some themes, or pass a list of your own:
+  </p>
+  <Code code={usageKits} lang="astro" theme="dark-plus" wrap />
+  <FigmaUiKits kits={DEFAULT_FIGMA_UI_KITS.filter((kit) => kit.label !== 'Bootstrap')} />
+  <DocsAside type="info">
+    Prefer the defaults. Every topic then links to the same files, and a republished kit is updated
+    in one place — <code>kits.ts</code> — instead of in every topic.
+  </DocsAside>
+
+  <h2 id="localization">Localization</h2>
+  <p>
+    The default title, description and the screen-reader "(opens in a new tab)" hint follow the site
+    language — the docs integration's <code>navLang</code>, read from
+    <code>virtual:docs-template/site-meta</code>, then <code>Astro.currentLocale</code> and finally
+    English. Kit names are product names and are not translated.
+  </p>
+  <div class="igd-table-wrapper" role="region" aria-labelledby="locale-table-caption" tabindex="0">
+    <table>
+      <caption id="locale-table-caption" class="visually-hidden">
+        Default wording per language
+      </caption>
+      <thead>
+        <tr>
+          <th>Language</th>
+          <th>
+            <code>title</code>
+          </th>
+          <th>
+            <code>description</code>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <code>en</code> (default)
+          </td>
+          <td>Design in Figma:</td>
+          <td>Explore our UI kits</td>
+        </tr>
+        <tr>
+          <td>
+            <code>jp</code> / <code>ja</code>
+          </td>
+          <td>Figma でデザイン:</td>
+          <td>UI キットを見る</td>
+        </tr>
+        <tr>
+          <td>
+            <code>kr</code> / <code>ko</code>
+          </td>
+          <td>Figma에서 디자인:</td>
+          <td>UI 키트 살펴보기</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2 id="accessibility">Accessibility</h2>
+  <ul>
+    <li>
+      <strong>New-tab links are announced.</strong> Each kit link carries a visually hidden "(opens
+      in a new tab)", so a screen reader hears "Material (opens in a new tab), link". The
+      external-link icon and the Figma logo are <code>aria-hidden</code>.
+    </li>
+    <li>
+      <strong>The kits are a real list.</strong> They render as a <code>&lt;ul&gt;</code>, so
+      assistive tech announces how many kits there are.
+    </li>
+    <li>
+      <strong>No extra landmark.</strong> The banner is a plain <code>&lt;div&gt;</code>, not an
+      <code>&lt;aside&gt;</code> or <code>&lt;nav&gt;</code>: it repeats on every topic, and a
+      landmark per page would only add noise to the landmark list.
+    </li>
+    <li>
+      <strong>Comfortable targets and visible focus.</strong> Links have a 24px-tall hit area (WCAG
+      2.2 target size) and a <code>:focus-visible</code> outline; their colors match the markdown
+      links in both themes.
+    </li>
+  </ul>
+
+  <h2 id="styling">Styling</h2>
+  <p>
+    The container reads <code>--igd-figma-kits-padding-block</code>,
+    <code>--igd-figma-kits-padding-inline</code>, <code>--igd-figma-kits-gap</code>,
+    <code>--igd-figma-kits-radius</code>, <code>--igd-figma-kits-bg</code> and
+    <code>--igd-figma-kits-border-color</code>. Set them on an ancestor or through{' '}
+    <code>class</code>:
+  </p>
+  <Code code={usageTokens} lang="css" theme="dark-plus" wrap />
+</DocsLayout>
+
+<style>
+  .figma-kits-demo {
+    display: grid;
+    gap: 1.5rem;
+    margin-block-end: 1.5rem;
+  }
+
+  .figma-kits-demo__frame {
+    inline-size: min(var(--demo-width), 100%);
+    margin: 0;
+  }
+
+  .figma-kits-demo__caption {
+    margin-block: 0 0.5rem;
+    font-size: 0.75rem;
+    text-align: start;
+    color: var(--ig-gray-600);
+  }
+
+  .figma-kits-demo__frame :global(.igd-figma-kits) {
+    margin-block-end: 0;
+  }
+</style>

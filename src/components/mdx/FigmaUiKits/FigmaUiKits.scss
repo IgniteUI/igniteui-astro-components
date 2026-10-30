@@ -1,0 +1,169 @@
+@use 'igniteui-theming/sass/typography' as *;
+
+// Unlayered on purpose: the markdown layer styles every `p`, `ul`, `li` and
+// `a` — including an external-link icon on `a[target='_blank']` — and these
+// rules must win over it (same as DoDont.scss).
+
+.igd-figma-kits {
+  // The public --igd-figma-kits-* tokens are only read, never set, so a value
+  // from an ancestor or a class on the block reaches every rule.
+  --_padding-block: var(--igd-figma-kits-padding-block, #{rem(8px)});
+  --_padding-inline: var(--igd-figma-kits-padding-inline, #{rem(16px)});
+  --_radius: var(--igd-figma-kits-radius, #{rem(4px)});
+  --_gap: var(--igd-figma-kits-gap, #{rem(24px)});
+  // The dark gray scale is inverted, so gray-50 / gray-200 are the dark
+  // counterparts of the light gray-100 canvas and gray-300 border.
+  --_bg: var(--igd-figma-kits-bg, light-dark(var(--ig-gray-100), var(--ig-gray-50)));
+  --_border-color: var(
+    --igd-figma-kits-border-color,
+    light-dark(var(--ig-gray-300), var(--ig-gray-200))
+  );
+
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  column-gap: var(--_gap);
+  row-gap: #{rem(8px)};
+  box-sizing: border-box;
+  inline-size: 100%;
+  margin: 0 0 #{rem(24px)};
+  padding: var(--_padding-block) var(--_padding-inline);
+  background: var(--_bg);
+  border: #{rem(1px)} solid var(--_border-color);
+  border-radius: var(--_radius);
+
+  // Keep a visible frame in forced-colors mode, where backgrounds are dropped.
+  @media (forced-colors: active) {
+    border-color: CanvasText;
+  }
+}
+
+.igd-figma-kits__heading {
+  display: flex;
+  align-items: center;
+  gap: #{rem(8px)};
+  margin: 0;
+  min-inline-size: 0;
+}
+
+// The Figma mark sits on a white tile in both themes, as in the brand guidelines.
+.igd-figma-kits__logo {
+  display: grid;
+  place-items: center;
+  flex: none;
+  inline-size: #{rem(27px)};
+  block-size: #{rem(31px)};
+  background: #fff;
+  border-radius: #{rem(4px)};
+
+  svg {
+    display: block;
+    inline-size: #{rem(15.5px)};
+    block-size: auto;
+  }
+}
+
+.igd-figma-kits__text {
+  min-inline-size: 0;
+}
+
+.igd-figma-kits__list {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  column-gap: var(--_gap);
+  row-gap: #{rem(4px)};
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.igd-figma-kits__item {
+  margin: 0;
+  padding: 0;
+
+  &::before,
+  &::marker {
+    content: none;
+  }
+}
+
+.igd-figma-kits__link {
+  display: inline-flex;
+  align-items: center;
+  gap: #{rem(8px)};
+  // A 24px-tall hit area meets WCAG 2.2 target size without changing the row.
+  min-block-size: #{rem(24px)};
+  border-radius: #{rem(2px)};
+  text-decoration: none;
+
+  // The markdown layer appends its own external-link icon; this block has one.
+  &::after {
+    content: none;
+  }
+
+  &:hover {
+    text-decoration: underline;
+    text-underline-offset: #{rem(3px)};
+  }
+
+  &:focus-visible {
+    outline: #{rem(2px)} solid currentColor;
+    outline-offset: #{rem(2px)};
+  }
+}
+
+.igd-figma-kits__icon {
+  display: block;
+  flex: none;
+  inline-size: #{rem(20px)};
+  block-size: #{rem(20px)};
+}
+
+// Visually hidden, still read by screen readers.
+.igd-figma-kits__sr-only {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+// TYPOGRAPHY
+
+.igd-figma-kits__title {
+  @include type-style('body-1') {
+    margin: 0;
+  }
+
+  font-weight: 700;
+  line-height: #{rem(20px)};
+  color: var(--ig-gray-900);
+}
+
+.igd-figma-kits__description {
+  @include type-style('body-1') {
+    margin: 0;
+  }
+
+  color: var(--ig-gray-700);
+}
+
+.igd-figma-kits__link {
+  @include type-style('body-2') {
+    margin: 0;
+  }
+
+  font-weight: 700;
+  color: light-dark(var(--ig-primary-500), var(--ig-primary-200));
+
+  &:hover,
+  &:focus-visible {
+    color: light-dark(var(--ig-primary-600), var(--ig-primary-100));
+  }
+}

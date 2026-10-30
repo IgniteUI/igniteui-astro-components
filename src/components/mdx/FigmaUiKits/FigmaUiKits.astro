@@ -1,0 +1,152 @@
+---
+/**
+ * Renders the "Design in Figma" call-to-action banner that links a component
+ * topic to the Ignite UI kits in the Figma Community.
+ *
+ * Usage:
+ *   <FigmaUiKits />
+ *
+ * It sits between a topic's description and its live demo. The banner is one
+ * row on a wide column — the Figma logo and title on the inline start, the
+ * kit links on the inline end — and wraps as the space runs out: first the
+ * links drop below the title, then the links themselves wrap. It responds to
+ * the width it is given rather than to the viewport, so it fits the main
+ * column, an aside or a narrow screen alike.
+ *
+ * Links: each kit opens in a new tab. The external-link icon is decorative
+ * and a visually hidden "(opens in a new tab)" carries that fact to screen
+ * readers. The banner is a plain <div> with a <ul>, not an <aside> or <nav>:
+ * it repeats on every topic, and a landmark per page would only add noise to
+ * a screen reader's landmark list.
+ *
+ * Localization: the default title, description and new-tab hint follow the
+ * site language — the docs integration's `navLang`, the same value DocsLayout
+ * passes to the nav bar and footer. The kit names are product names and stay
+ * as they are. Pass `title` / `description` to override the wording.
+ */
+import { navLang } from 'virtual:docs-template/site-meta';
+import { DEFAULT_FIGMA_UI_KITS, type FigmaUiKit } from './kits';
+import './FigmaUiKits.scss';
+
+interface Props {
+  /**
+   * The kits to link to, in display order.
+   * @default the Material, Fluent, Bootstrap and Indigo kits
+   */
+  kits?: FigmaUiKit[];
+  /**
+   * Bold lead-in before the description.
+   * @default 'Design in Figma:' (localized for jp / kr)
+   */
+  title?: string;
+  /**
+   * Text after the title.
+   * @default 'Explore our UI kits' (localized for jp / kr)
+   */
+  description?: string;
+  /** Optional extra class(es) forwarded to the container. */
+  class?: string;
+}
+
+/**
+ * Default copy per site language: the integration's `navLang` (`jp`, `kr`) or
+ * an Astro i18n locale (`ja`, `ko`). Anything unrecognized falls back to
+ * English.
+ */
+const DEFAULT_TEXT: Record<string, { title: string; description: string; newTab: string }> = {
+  en: {
+    title: 'Design in Figma:',
+    description: 'Explore our UI kits',
+    newTab: '(opens in a new tab)',
+  },
+  jp: {
+    title: 'Figma でデザイン:',
+    description: 'UI キットを見る',
+    newTab: '(新しいタブで開きます)',
+  },
+  ja: {
+    title: 'Figma でデザイン:',
+    description: 'UI キットを見る',
+    newTab: '(新しいタブで開きます)',
+  },
+  kr: {
+    title: 'Figma에서 디자인:',
+    description: 'UI 키트 살펴보기',
+    newTab: '(새 탭에서 열림)',
+  },
+  ko: {
+    title: 'Figma에서 디자인:',
+    description: 'UI 키트 살펴보기',
+    newTab: '(새 탭에서 열림)',
+  },
+};
+
+const lang = (navLang ?? Astro.currentLocale ?? 'en').toLowerCase();
+const defaults = DEFAULT_TEXT[lang] ?? DEFAULT_TEXT.en;
+
+const {
+  kits = DEFAULT_FIGMA_UI_KITS,
+  title = defaults.title,
+  description = defaults.description,
+  class: className,
+} = Astro.props;
+
+for (const kit of kits) {
+  if (!kit.label?.trim() || !kit.href?.trim()) {
+    throw new Error('<FigmaUiKits> requires every kit to have a non-empty `label` and `href`.');
+  }
+}
+---
+
+<div class:list={['igd-figma-kits', className]}>
+  <p class="igd-figma-kits__heading">
+    <span class="igd-figma-kits__logo" aria-hidden="true">
+      <svg viewBox="0 0 15.52 22.73" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path
+          d="M0 18.95c0-2.1 1.74-3.79 3.88-3.79h3.88v3.79c0 2.09-1.74 3.78-3.88 3.78S0 21.04 0 18.95Z"
+          fill="#24CB71"
+        ></path>
+        <path
+          d="M7.76 0v7.58h3.88c2.14 0 3.88-1.7 3.88-3.79S13.78 0 11.64 0H7.76Z"
+          fill="#FF7237"
+        ></path>
+        <path
+          d="M11.61 15.16c2.14 0 3.88-1.7 3.88-3.8 0-2.09-1.74-3.78-3.88-3.78s-3.88 1.7-3.88 3.79 1.74 3.79 3.88 3.79Z"
+          fill="#00B6FF"
+        ></path>
+        <path
+          d="M0 3.79c0 2.09 1.74 3.79 3.88 3.79h3.88V0H3.88C1.74 0 0 1.7 0 3.79Z"
+          fill="#FF3737"
+        ></path>
+        <path
+          d="M0 11.37c0 2.09 1.74 3.79 3.88 3.79h3.88V7.58H3.88C1.74 7.58 0 9.27 0 11.37Z"
+          fill="#874FFF"
+        ></path>
+      </svg>
+    </span>
+    <span class="igd-figma-kits__text">
+      <strong class="igd-figma-kits__title">{title}</strong>{' '}
+      <span class="igd-figma-kits__description">{description}</span>
+    </span>
+  </p>
+
+  <ul class="igd-figma-kits__list">
+    {kits.map((kit) => (
+      <li class="igd-figma-kits__item">
+        <a class="igd-figma-kits__link" href={kit.href} target="_blank" rel="noopener noreferrer">
+          {kit.label}
+          <span class="igd-figma-kits__sr-only"> {defaults.newTab}</span>
+          <svg
+            class="igd-figma-kits__icon"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path d="M4.76 16.58c-.38 0-.7-.13-.96-.39a1.3 1.3 0 0 1-.38-.95V4.76c0-.38.13-.7.38-.96.26-.25.58-.38.96-.38h4.38a.54.54 0 0 1 .54.54.55.55 0 0 1-.54.54H4.76a.25.25 0 0 0-.26.26v10.48c0 .07.03.13.08.18s.11.08.18.08h10.48c.07 0 .13-.03.18-.08s.08-.11.08-.18v-4.38c0-.16.05-.29.15-.39a.53.53 0 0 1 .39-.15c.15 0 .28.05.38.15.11.1.16.23.16.39v4.38c0 .37-.13.69-.39.95s-.58.39-.95.39H4.76ZM15.5 5.27l-7.05 7.05a.5.5 0 0 1-.37.17.55.55 0 0 1-.38-.19.55.55 0 0 1-.18-.39c0-.14.06-.27.18-.39l7.02-7.02h-2.18a.53.53 0 0 1-.39-.15.53.53 0 0 1-.15-.39c0-.15.05-.28.15-.39.1-.1.23-.16.39-.16h3.37c.19 0 .35.07.48.19.13.13.19.29.19.48v3.37c0 .16-.05.28-.15.39a.53.53 0 0 1-.39.15.53.53 0 0 1-.38-.15.53.53 0 0 1-.16-.39V5.27Z" />
+          </svg>
+        </a>
+      </li>
+    ))}
+  </ul>
+</div>
