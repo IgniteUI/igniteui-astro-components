@@ -68,6 +68,8 @@
     "./components/mdx/DocsAside.astro": "./src/components/mdx/DocsAside/DocsAside.astro",
     "./components/mdx/DoDont.astro": "./src/components/mdx/DoDont/DoDont.astro",
     "./components/mdx/Badge.astro": "./src/components/mdx/Badge/Badge.astro",
+    "./components/mdx/FigmaUiKits.astro": "./src/components/mdx/FigmaUiKits/FigmaUiKits.astro",
+    "./components/mdx/FigmaUiKits/kits": "./src/components/mdx/FigmaUiKits/kits.ts",
     "./components/mdx/Faq.astro": "./src/components/mdx/Faq/Faq.astro",
     "./components/mdx/FaqItem.astro": "./src/components/mdx/Faq/FaqItem.astro",
     "./components/mdx/Faq/types": "./src/components/mdx/Faq/types.ts",

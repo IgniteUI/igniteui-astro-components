@@ -111,6 +111,7 @@ export const SIDEBAR: SidebarEntry[] = [
       { label: 'DocsAside', slug: 'components/docs-aside' },
       { label: 'DoDont', slug: 'components/do-dont' },
       { label: 'Faq', slug: 'components/faq' },
+      { label: 'FigmaUiKits', slug: 'components/figma-ui-kits' },
       { label: 'PlatformBlock', slug: 'components/platform-block' },
       { label: 'Sample', slug: 'components/sample' },
     ],
