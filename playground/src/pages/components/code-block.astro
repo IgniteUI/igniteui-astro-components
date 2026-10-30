@@ -34,6 +34,7 @@ const headings = [
   { depth: 2, slug: 'copy-button', text: 'Copy button' },
   { depth: 2, slug: 'tokens', text: 'Tokens (API reference)' },
   { depth: 2, slug: 'palette', text: 'Palette' },
+  { depth: 2, slug: 'custom-variant', text: 'Deriving another variant' },
   { depth: 2, slug: 'best-practices', text: 'Best practices' },
 ];
 
@@ -72,6 +73,27 @@ const usageTokens = `/* Any stylesheet loaded after theme.scss */
   --igd-code-line-height: 20px;
   --igd-code-copy-hover-color: var(--ig-secondary-500);
 }`;
+
+const usageRemap = `// code-theme-hc.ts
+import rosePineMoon from '@shikijs/themes/rose-pine-moon';
+import { remapTheme, ROSE_PINE_MOON_SLOTS } from 'igniteui-astro-components/code-theme';
+
+export const highContrastDark = remapTheme(rosePineMoon, {
+  name: 'ig-dark-hc',
+  colors: {
+    [ROSE_PINE_MOON_SLOTS.pine]: '#99c9ff', // keywords
+    [ROSE_PINE_MOON_SLOTS.gold]: '#ffa685', // strings
+  },
+  editorColors: { 'editor.background': '#000000', 'editor.foreground': '#ffffff' },
+});`;
+
+const usageRemapApply = `${'---'}
+import { Code } from 'astro:components';
+import { igCodeThemeLight } from 'igniteui-astro-components/code-theme';
+import { highContrastDark } from './code-theme-hc';
+${'---'}
+
+<Code code={snippet} lang="ts" themes={{ light: igCodeThemeLight, dark: highContrastDark }} defaultColor={false} wrap />`;
 
 const longLine = `export const columns = [{ field: 'ID', header: 'Identifier', width: '80px', sortable: true, filterable: true, resizable: true, pinned: false, hidden: false, dataType: 'number' }];`;
 
@@ -367,13 +389,56 @@ const slots = Object.keys(SLOT_ROLES) as RosePineSlot[];
       </tbody>
     </table>
   </div>
+
+  <h2 id="custom-variant">Deriving another variant</h2>
   <p>
-    Need a third variant (high contrast, a print theme)? <code>remapTheme()</code> is exported — see
-    the{' '}
-    <a href="https://github.com/IgniteUI/igniteui-astro-components/blob/master/src/code-theme/README.md">
-      code-theme README
-    </a>
-    .
+    Need a third variant, such as a high-contrast or print theme? <code>ig-dark</code> and{' '}
+    <code>ig-light</code> are built with <code>remapTheme()</code>, and it is exported. It takes a
+    bundled Shiki theme and swaps its colours. Scopes and font styles come from the base theme, so
+    only the palette changes. Any bundled theme works as a base, not just Rosé Pine.
+  </p>
+  <Code code={usageRemap} lang="ts" themes={igShikiThemes} defaultColor={false} wrap />
+  <ul>
+    <li>
+      <strong>
+        <code>name</code>
+      </strong>{' '}
+      is the theme id Shiki uses. <code>displayName</code> is optional and defaults to it.
+    </li>
+    <li>
+      <strong>
+        <code>colors</code>
+      </strong>{' '}
+      maps a base-theme hex to a new one. Matching ignores case and keeps an alpha suffix. Use{' '}
+      <code>ROSE_PINE_MOON_SLOTS</code> / <code>ROSE_PINE_DAWN_SLOTS</code> to look up a slot's
+      original hex by name rather than hard-coding it. The slots are the ones in the{' '}
+      <a href="#palette">palette table</a>.
+    </li>
+    <li>
+      <strong>
+        <code>editorColors</code>
+      </strong>{' '}
+      are merged over the base theme's editor colours. Set at least <code>editor.background</code>{' '}
+      and <code>editor.foreground</code>, because Shiki uses them for the snippet background and the
+      default text colour.
+    </li>
+    <li>
+      <strong>
+        <code>extraTokenColors</code>
+      </strong>{' '}
+      is an optional list of TextMate rules appended after the remapped ones. The last matching rule
+      wins, so this is how you colour a scope that has no slot in the base theme.
+    </li>
+  </ul>
+  <p>
+    The package CSS reads only the <code>light</code> and <code>dark</code> entries. To use the new
+    theme, put it in one of those two slots:
+  </p>
+  <Code code={usageRemapApply} lang="astro" themes={igShikiThemes} defaultColor={false} wrap />
+  <p>
+    For Markdown fences, pass the same map as <code>markdown.shikiConfig.themes</code>. If you
+    change the background, also set <code>--igd-code-bg</code> to match (see{' '}
+    <a href="#best-practices">Best practices</a>).
   </p>
 
   <h2 id="best-practices">Best practices</h2>
