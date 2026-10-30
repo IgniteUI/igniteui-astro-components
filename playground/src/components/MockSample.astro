@@ -28,6 +28,9 @@ interface Props {
 }
 
 import ThemingWidget from '../../../src/components/ThemingWidget/ThemingWidget.astro';
+// The real Sample.astro imports its stylesheet; the mock mirrors its markup so
+// it must carry the same styles on pages that render no real Sample.
+import '../../../src/components/mdx/Sample/Sample.scss';
 
 const {
   // height mirrors Sample.astro's default (150) so a snippet that omits it
@@ -147,7 +150,7 @@ function tabId(index: number) {
       {resolvedTabs.map((tab, i) => (
         <igc-tab id={tabId(i)} label={tab.label}>
           <div class="code-wrapper">
-            <pre>
+            <pre class="igd-code">
                 <code class={`language-${tab.lang}`}>{tab.content}</code>
               </pre>
             <igc-icon-button variant="flat" aria-label="Copy code" class="cv-hljs-code-copy">

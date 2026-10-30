@@ -1,0 +1,60 @@
+{/* Real Markdown fences rendered through the playground pipeline (Sätteri + Shiki + igShikiConfig); imported by pages/components/code-block.astro. */}
+
+```ts
+import { ApplicationConfig } from '@angular/core';
+import { provideCoreLibrary } from '@your-org/core-library';
+
+// Register the library once, at application bootstrap.
+export const appConfig: ApplicationConfig = {
+  providers: [
+    provideCoreLibrary({
+      apiKey: 'YOUR_API_KEY',
+      environment: 'production',
+      retries: 3,
+      debug: false,
+    }),
+  ],
+};
+```
+
+```html
+<igc-grid id="grid" primary-key="ID" auto-generate="false">
+  <igc-column field="Name" header="Employee" sortable></igc-column>
+  <igc-column field="Age" data-type="number"></igc-column>
+</igc-grid>
+```
+
+```scss
+@use 'igniteui-theming' as *;
+
+.sample {
+  --ig-size: var(--ig-size-small);
+
+  padding: rem(16px);
+  border-radius: var(--igd-border-radius);
+  background: light-dark(var(--ig-gray-50), var(--ig-gray-100));
+}
+```
+
+```csharp
+public class Employee
+{
+    public int ID { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public decimal Salary { get; init; }
+}
+```
+
+```razor
+<IgbGrid Data="Employees" PrimaryKey="ID" AutoGenerate="false">
+    <IgbColumn Field="Name" Header="Employee" Sortable="true" />
+</IgbGrid>
+
+@code {
+    private IEnumerable<Employee> Employees = EmployeeService.GetAll();
+}
+```
+
+```json
+{ "name": "igniteui-astro-components", "private": false, "sideEffects": ["*.scss"] }
+```

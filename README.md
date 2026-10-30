@@ -73,8 +73,7 @@ export { default as Sample } from 'igniteui-astro-components/components/mdx/Samp
 Pull in the base styles once (e.g. from your root layout or `astro.config`):
 
 ```ts
-import 'igniteui-astro-components/styles/custom.scss';
-import 'igniteui-astro-components/styles/ig-theme.scss';
+import 'igniteui-astro-components/styles/theme.scss';
 ```
 
 ---
@@ -272,6 +271,12 @@ const sidebar: SidebarEntry[] = [/* … your tree … */];
 | `…/components/mdx/PlatformBlock.astro` | Show content only on selected platforms               | [README](src/components/mdx/PlatformBlock/README.md) |
 | `…/components/mdx/Sample.astro`        | Embedded code-view sample widget                      | [README](src/components/mdx/Sample/README.md)        |
 
+### Code snippets
+
+| Export         | Purpose                                                                                   | Docs                               |
+| -------------- | ----------------------------------------------------------------------------------------- | ---------------------------------- |
+| `…/code-theme` | Brand light + dark Shiki themes (Rosé Pine recoloured) and the ready-made `igShikiConfig` | [README](src/code-theme/README.md) |
+
 ### Build helpers
 
 | Export                             | Purpose                                                                |
@@ -286,10 +291,9 @@ const sidebar: SidebarEntry[] = [/* … your tree … */];
 
 ### Styles
 
-| Export                   | Purpose                                  |
-| ------------------------ | ---------------------------------------- |
-| `…/styles/custom.scss`   | Base tokens + sidebar/sample styles      |
-| `…/styles/ig-theme.scss` | IG color palette mapped to design tokens |
+| Export                | Purpose                                                                                    |
+| --------------------- | ------------------------------------------------------------------------------------------ |
+| `…/styles/theme.scss` | Palette, typography, design tokens (`--igd-*`, incl. `--igd-code-*`) and all global styles |
 
 ---
 
