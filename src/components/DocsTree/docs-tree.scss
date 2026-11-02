@@ -280,6 +280,11 @@ igc-tree-item[data-has-children] {
   transition: transform 0.2s ease;
 }
 
+/* An empty group: the column is kept for alignment, the glyph is not shown. */
+.tree-expand-icon.is-placeholder {
+  visibility: hidden;
+}
+
 igc-tree-item[aria-expanded='false'] > [slot='label'] {
   .tree-expand-icon {
     color: var(--igd-accent);

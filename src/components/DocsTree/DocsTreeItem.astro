@@ -3,7 +3,9 @@
  * Recursive renderer for a single TreeNode.
  *
  * Three shapes a node can take:
- *   1. Group     — no `href`, has `children`     → label is a <div slot="label">
+ *   1. Group     — no `href`                     → label is a <div slot="label">
+ *                  (children optional: an empty group still renders as a group,
+ *                  its chevron column kept but hidden, rather than as a leaf)
  *   2. Leaf      — has `href`, no `children`     → label is wrapped in <a slot="label">
  *   3. Link+kids — has `href` AND `children`     → toc h2 with h3 children
  *
@@ -36,7 +38,11 @@ interface Props {
 const { node, depth, variant, activeId, renderLabel: RenderLabel } = Astro.props;
 
 const hasChildren = !!(node.children && node.children.length > 0);
-const isLeaf = !hasChildren;
+// A leaf is a link with nothing under it. A node without an href is a group even when it has no
+// children (a toc section whose pages were all filtered out for a platform): treating it as a leaf
+// put the leaf label layout under a group's chevron row, which rendered as an empty row with the
+// label wrapped below it.
+const isLeaf = !!node.href && !hasChildren;
 const isActive = activeId !== undefined && node.id === activeId;
 
 // Fold itemData entries into a plain object of `data-*` props so Astro spreads
@@ -56,45 +62,48 @@ if (node.itemData) {
   expanded={node.expanded ? '' : undefined}
   {...dataAttrs}
 >
-  {
-    node.href ? (
-      <div slot="label">
-        {/* The anchor is used only for navigation purpose it behave as an overlay on the ::part(wrapper) */}
-        <a
-          href={node.href}
-          aria-current={isActive ? 'page' : undefined}
-          class="docs-tree-link"
-          {...node.linkAttrs}
-        />
-        {hasChildren && <igc-icon name="chevron" collection="docs" class="tree-expand-icon" />}
-        {RenderLabel ? (
-          <RenderLabel node={node} depth={depth} isLeaf={isLeaf} isActive={isActive} />
-        ) : (
-          <span class="docs-tree-label">{node.label}</span>
-        )}
-      </div>
-    ) : (
-      <div slot="label" class="docs-tree-group">
-        <igc-icon name="chevron" collection="docs" class="tree-expand-icon" />
-        {RenderLabel ? (
-          <RenderLabel node={node} depth={depth} isLeaf={isLeaf} isActive={isActive} />
-        ) : (
-          <span class="docs-tree-label">{node.label}</span>
-        )}
-      </div>
-    )
-  }
+  {node.href ? (
+    <div slot="label">
+      {/* The anchor is used only for navigation purpose it behave as an overlay on the ::part(wrapper) */}
+      <a
+        href={node.href}
+        aria-current={isActive ? 'page' : undefined}
+        class="docs-tree-link"
+        {...node.linkAttrs}
+      />
+      {hasChildren && <igc-icon name="chevron" collection="docs" class="tree-expand-icon" />}
+      {RenderLabel ? (
+        <RenderLabel node={node} depth={depth} isLeaf={isLeaf} isActive={isActive} />
+      ) : (
+        <span class="docs-tree-label">{node.label}</span>
+      )}
+    </div>
+  ) : (
+    <div slot="label" class="docs-tree-group">
+      {/* An empty group keeps the chevron's column, so its label lines up with its siblings',
+            but shows nothing to expand. */}
+      <igc-icon
+        name="chevron"
+        collection="docs"
+        class:list={['tree-expand-icon', { 'is-placeholder': !hasChildren }]}
+        aria-hidden={hasChildren ? undefined : 'true'}
+      />
+      {RenderLabel ? (
+        <RenderLabel node={node} depth={depth} isLeaf={isLeaf} isActive={isActive} />
+      ) : (
+        <span class="docs-tree-label">{node.label}</span>
+      )}
+    </div>
+  )}
 
-  {
-    hasChildren &&
-      node.children!.map((child) => (
-        <Astro.self
-          node={child}
-          depth={depth + 1}
-          variant={variant}
-          activeId={activeId}
-          renderLabel={RenderLabel}
-        />
-      ))
-  }
+  {hasChildren &&
+    node.children!.map((child) => (
+      <Astro.self
+        node={child}
+        depth={depth + 1}
+        variant={variant}
+        activeId={activeId}
+        renderLabel={RenderLabel}
+      />
+    ))}
 </igc-tree-item>
