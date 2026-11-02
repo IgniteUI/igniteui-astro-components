@@ -12,7 +12,7 @@
   function initCopyButtons(): void {
     // Fenced blocks and <Code> only (Astro emits `astro-code`). Sample code
     // tabs (`pre.igd-code` inside `.code-wrapper`) bring their own button.
-    document.querySelectorAll<HTMLPreElement>('pre.astro-code').forEach((pre) => {
+    document.querySelectorAll<HTMLPreElement>('pre.astro-code, pre.shiki').forEach((pre) => {
       if (pre.closest('.copy-code-wrapper, .code-wrapper')) return;
 
       const wrapper = document.createElement('div');
