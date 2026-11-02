@@ -89,7 +89,7 @@
     padding: var(--igd-page-padding);
     min-width: 0;
 
-    pre:not(.astro-code) {
+    pre:not(.astro-code, .shiki) {
       @include type-style('code', false) {
         margin-block: 0;
       }
@@ -169,6 +169,7 @@
         }
 
         > .astro-code,
+        > .shiki,
         > .copy-code-wrapper {
           margin-top: rem(8px);
         }
