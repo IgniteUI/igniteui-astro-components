@@ -109,6 +109,10 @@
       margin-block-end: rem(26px);
     }
 
+    pre code {
+      font-family: inherit !important;
+    }
+
     kbd {
       @include type-style('code', false) {
         margin: 0;
