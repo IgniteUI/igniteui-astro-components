@@ -85,8 +85,15 @@ pre.igd-code {
   // variables because both brand themes derive from Rosé Pine and share
   // the same italic/bold decisions, so the two sets are always identical.
   span {
+    --shiki-light: initial;
+    --shiki-dark: initial;
+    --shiki-light-bg: initial;
+    --shiki-dark-bg: initial;
     color: light-dark(var(--shiki-light), var(--shiki-dark));
-    background-color: light-dark(var(--shiki-light-bg), var(--shiki-dark-bg));
+    background-color: light-dark(
+      var(--shiki-light-bg, transparent),
+      var(--shiki-dark-bg, transparent)
+    );
     font-style: var(--shiki-light-font-style);
     font-weight: var(--shiki-light-font-weight);
     text-decoration: var(--shiki-light-text-decoration);
