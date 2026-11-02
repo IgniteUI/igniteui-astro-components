@@ -13,6 +13,7 @@
  * moved to the `DocsBreadcrumb` component, rendered inside the main frame.
  */
 import { platform as virtualPlatform } from 'virtual:docs-template/nav-html';
+import { ULTIMATE_UI_PLATFORMS, platformLabelFor } from '../../platform';
 import {
   productLinks,
   sidebar as sidebarData,
@@ -72,8 +73,11 @@ interface Props {
    * Items for the package/platform selector dropdown. When omitted the selector is hidden.
    * Each entry is either a plain string label, or an object with a `label`, optional `value`
    * (defaults to `label`), and optional `href` to navigate to when selected.
+   * Set `base` to the root URL of the entry's docs site to keep the reader on the current
+   * page: selecting the entry goes to the current URL with this site's base swapped for `base`.
+   * Nothing checks that the page exists there; redirect missing pages on the server.
    */
-  packages?: Array<string | { label: string; value?: string; href?: string }>;
+  packages?: Array<string | { label: string; value?: string; href?: string; base?: string }>;
   /** Currently selected package value (must match one of `packages`). */
   selectedPackage?: string;
   /** Label rendered before the package selector. Defaults to `'Package'`. */
@@ -91,7 +95,7 @@ interface Props {
   /**
    * Text label shown in the logo area when the GlobalNavBar is visible.
    * Fades out and is replaced by the SVG logo once the subheader becomes sticky.
-   * Defaults to `'IgniteUI'`.
+   * Defaults to `'Ignite UI'` for web products and `'Ultimate UI'` for WinUI/Uno.
    */
   logoText?: string;
 }
@@ -110,18 +114,18 @@ const {
   versionLabel = 'Version',
   showThemeToggle = false,
   themeStorageKey = 'docs-theme',
-  logoText = 'Ignite UI',
+  logoText = ULTIMATE_UI_PLATFORMS.has(virtualPlatform ?? '') ? 'Ultimate UI' : 'Ignite UI',
 } = Astro.props;
 const resolvedSiteTitle = siteTitleProp ?? siteTitle;
 const currentPlatform = virtualPlatform ?? null;
 const resolvedLinks = (productLinksProp ?? productLinks) as ProductLink[];
 const filteredLinks = resolvedLinks.filter((l: ProductLink) => l.platform !== currentPlatform);
-type PackageEntry = string | { label: string; value?: string; href?: string };
+type PackageEntry = string | { label: string; value?: string; href?: string; base?: string };
 const rawPackages = packagesProp ?? (virtualPackages?.length > 0 ? virtualPackages : undefined);
 const packages = (rawPackages as PackageEntry[] | undefined)?.map((p: PackageEntry) =>
   typeof p === 'string'
-    ? { label: p, value: p, href: undefined }
-    : { label: p.label, value: p.value ?? p.label, href: p.href },
+    ? { label: p, value: p, href: undefined, base: undefined }
+    : { label: p.label, value: p.value ?? p.label, href: p.href, base: p.base },
 );
 const selectedPackage =
   selectedPackageProp ?? (virtualSelectedPackage || undefined) ?? packages?.[0]?.value;
@@ -134,13 +138,7 @@ const resolvedSidebar = (sidebarItems ?? sidebarData) as SidebarEntry[];
 const sidebarCrumbs = currentSlug ? getBreadcrumb(resolvedSidebar, currentSlug) : [];
 const crumbs = sidebarCrumbs.length > 0 ? sidebarCrumbs : pageTitle ? [pageTitle] : [];
 
-const PLATFORM_LABELS: Record<string, string> = {
-  angular: 'Angular',
-  react: 'React',
-  blazor: 'Blazor',
-  'web-components': 'Web Components',
-};
-const platformLabel = currentPlatform ? (PLATFORM_LABELS[currentPlatform] ?? null) : null;
+const platformLabel = platformLabelFor(currentPlatform);
 ---
 
 <docs-subheader-menu class="igd-docs-subheader" data-platform={currentPlatform ?? ''}>
@@ -165,65 +163,63 @@ const platformLabel = currentPlatform ? (PLATFORM_LABELS[currentPlatform] ?? nul
 
   <div class="igd-docs-subheader__content">
     <!-- Search (overridable via named slot) -->
-    <slot name="search"><Search /></slot>
+    <slot name="search">
+      <Search />
+    </slot>
 
     {/* Package selector */}
-    {
-      packages && packages.length > 0 && (
-        <>
-          <igc-select
-            distance="4"
-            id="package-select"
-            class="igd-package-select"
-            outlined
-            value={selectedPackage}
-            aria-label={packageLabel}
-          >
-            {platformIcon && (
-              <igc-icon name={platformIcon} collection="docs" slot="prefix" aria-hidden="true" />
-            )}
-            {packages.map((p) => {
-              const icon = getPlatformIcon(p.value ?? '') ?? getPlatformIcon(p.label ?? '');
-              return (
-                <igc-select-item value={p.value} data-href={p.href}>
-                  {icon && (
-                    <igc-icon slot="prefix" name={icon} collection="docs" aria-hidden="true" />
-                  )}
-                  {p.label}
-                </igc-select-item>
-              );
-            })}
-          </igc-select>
-          <igc-tooltip
-            id="package-tooltip"
-            class="igd-package-select-tooltip"
-            anchor="package-select"
-            placement="bottom"
-            with-arrow
-          >
-            {selectedPackageLabel}
-          </igc-tooltip>
-        </>
-      )
-    }
-
-    <!-- Version selector -->
-    {
-      versions && versions.length > 0 && (
+    {packages && packages.length > 0 && (
+      <>
         <igc-select
           distance="4"
-          id="version-select"
-          class="igd-version-select"
+          id="package-select"
+          class="igd-package-select"
           outlined
-          value={selectedVersion}
-          aria-label={versionLabel}
+          value={selectedPackage}
+          aria-label={packageLabel}
         >
-          {versions.map((v) => (
-            <igc-select-item value={v}>{v}</igc-select-item>
-          ))}
+          {platformIcon && (
+            <igc-icon name={platformIcon} collection="docs" slot="prefix" aria-hidden="true" />
+          )}
+          {packages.map((p) => {
+            const icon = getPlatformIcon(p.value ?? '') ?? getPlatformIcon(p.label ?? '');
+            return (
+              <igc-select-item value={p.value} data-href={p.href} data-base={p.base}>
+                {icon && (
+                  <igc-icon slot="prefix" name={icon} collection="docs" aria-hidden="true" />
+                )}
+                {p.label}
+              </igc-select-item>
+            );
+          })}
         </igc-select>
-      )
-    }
+        <igc-tooltip
+          id="package-tooltip"
+          class="igd-package-select-tooltip"
+          anchor="package-select"
+          placement="bottom"
+          with-arrow
+        >
+          {selectedPackageLabel}
+        </igc-tooltip>
+      </>
+    )}
+
+    <!-- Version selector -->
+    {versions && versions.length > 0 && (
+      <igc-select
+        distance="4"
+        id="version-select"
+        class="igd-version-select"
+        outlined
+        value={selectedVersion}
+        aria-label={versionLabel}
+      >
+        {versions.map((v) => (
+          <igc-select-item value={v}>{v}</igc-select-item>
+        ))}
+      </igc-select>
+    )}
 
     <!-- TODO WHY WE NEED THIS? -->
     <!--{filteredLinks.length > 0 && (-->
@@ -240,6 +236,18 @@ const platformLabel = currentPlatform ? (PLATFORM_LABELS[currentPlatform] ?? nul
 </docs-subheader-menu>
 
 <script>
+  /**
+   * Where selecting a package entry should navigate. With a `base` (root URL of the entry's
+   * docs site) it is this page's URL with the site's own base swapped for the entry's; the
+   * server handles a page that does not exist there. Otherwise it is the entry's `href`.
+   */
+  function packageHref({ href, base }: DOMStringMap): string | undefined {
+    const currentBase = import.meta.env.BASE_URL.replace(/\/$/, '');
+    const { pathname, search, hash } = window.location;
+    if (!base || !pathname.startsWith(currentBase)) return href;
+    return `${base.replace(/\/$/, '')}${pathname.slice(currentBase.length)}${search}${hash}`;
+  }
+
   if (!customElements.get('docs-subheader-menu')) {
     class DocsSubHeaderMenu extends HTMLElement {
       connectedCallback() {
@@ -283,7 +291,7 @@ const platformLabel = currentPlatform ? (PLATFORM_LABELS[currentPlatform] ?? nul
             const item = packageSelect.querySelector<HTMLElement>(
               `igc-select-item[value="${val}"]`,
             );
-            const href = item?.dataset?.href;
+            const href = item && packageHref(item.dataset);
             if (href) window.location.href = href;
             // Sync tooltip content with the new selection label
             if (packageTooltip) {
@@ -394,12 +402,10 @@ const platformLabel = currentPlatform ? (PLATFORM_LABELS[currentPlatform] ?? nul
   function initSelectors() {
     const packageSelect = document.querySelector('#package-select');
     if (packageSelect) {
+      // Navigation on change is handled by <docs-subheader-menu>.
       packageSelect.addEventListener('igcChange', (e: Event) => {
         const val = (e as CustomEvent).detail?.value ?? (packageSelect as any).value;
-        const item = packageSelect.querySelector<HTMLElement>(`igc-select-item[value="${val}"]`);
         syncTriggerIcon(packageSelect, val);
-        const href = item?.dataset?.href;
-        if (href) window.location.href = href;
       });
     }
   }

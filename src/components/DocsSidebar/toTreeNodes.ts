@@ -14,7 +14,13 @@
 
 import type { TreeNode } from '../DocsTree/types';
 import type { SidebarEntry } from '../../lib/sidebar/types';
-import { isGroup, isInitiallyOpen, joinPath, normalizeSlug } from '../../lib/sidebar/helpers';
+import {
+  hasActive,
+  isGroup,
+  isInitiallyOpen,
+  joinPath,
+  normalizeSlug,
+} from '../../lib/sidebar/helpers';
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 
@@ -33,16 +39,20 @@ const toNode = (
   ancestors: string[],
   currentSlug: string,
   trailingSlash: boolean,
+  singleBranch: boolean,
 ): TreeNode => {
   const path = joinPath(ancestors, entry.label);
 
   if (isGroup(entry)) {
+    const expanded = singleBranch
+      ? hasActive(entry.items, currentSlug)
+      : isInitiallyOpen(entry, currentSlug);
     return {
       id: path,
       label: entry.label,
-      expanded: isInitiallyOpen(entry, currentSlug) || undefined,
+      expanded: expanded || undefined,
       children: entry.items.map((child) =>
-        toNode(child, [...ancestors, entry.label], currentSlug, trailingSlash),
+        toNode(child, [...ancestors, entry.label], currentSlug, trailingSlash, singleBranch),
       ),
       itemData: {
         path,
@@ -69,10 +79,16 @@ const toNode = (
 export interface ToTreeNodesOptions {
   /** Append trailing slash to sidebar links. Defaults to `true`. */
   trailingSlash?: boolean;
+  /**
+   * Open only the groups that contain the current page, ignoring each
+   * group's `collapsed` flag. Defaults to `false`.
+   */
+  singleBranch?: boolean;
 }
 
 export const toTreeNodes = (
   entries: SidebarEntry[],
   currentSlug: string,
-  { trailingSlash = true }: ToTreeNodesOptions = {},
-): TreeNode[] => entries.map((entry) => toNode(entry, [], currentSlug, trailingSlash));
+  { trailingSlash = true, singleBranch = false }: ToTreeNodesOptions = {},
+): TreeNode[] =>
+  entries.map((entry) => toNode(entry, [], currentSlug, trailingSlash, singleBranch));

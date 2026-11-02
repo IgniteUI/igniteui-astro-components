@@ -27,6 +27,11 @@ type SassProps = {
 /** Props for TypeDoc API documentation links. */
 type TypeDocProps = {
   /**
+   * Marks a deliberately authored raw ApiLink in strict-xplat documentation.
+   * This is an authoring/checker annotation and has no rendering effect.
+   */
+  raw?: boolean;
+  /**
    * TypeDoc symbol kind. Narrows registry lookup when the same symbol exists
    * as multiple TypeDoc kinds.
    */

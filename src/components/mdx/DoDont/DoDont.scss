@@ -201,16 +201,16 @@
 }
 
 .igd-dodont__panel--do {
-  --_accent: var(--igd-dodont-accent, light-dark(var(--ig-success-700), var(--ig-success-100)));
+  --_accent: var(--igd-dodont-accent, light-dark(var(--ig-success-900), var(--ig-success-100)));
   // Same token the success badge is filled with.
-  --_frame-accent: var(--igd-dodont-frame-accent, var(--ig-success-500));
+  --_frame-accent: var(--igd-dodont-frame-accent, var(--ig-success-900));
 }
 
 .igd-dodont__panel--dont {
   // error-800: error-700 is 4.1:1 on white and fails AA for 14px text.
-  --_accent: var(--igd-dodont-accent, light-dark(var(--ig-error-800), var(--ig-error-300)));
+  --_accent: var(--igd-dodont-accent, light-dark(var(--ig-error-700), var(--ig-error-300)));
   // Same token the danger badge is filled with.
-  --_frame-accent: var(--igd-dodont-frame-accent, var(--ig-error-500));
+  --_frame-accent: var(--igd-dodont-frame-accent, var(--ig-error-700));
 }
 
 // TYPOGRAPHY
