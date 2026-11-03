@@ -149,6 +149,9 @@ for (const platform of ['winui', 'uno', 'uno-platform']) {
 
 // Without the widget's razor injection, the HTML grammar marks every Blazor component tag
 // as an unrecognized tag, which the brand theme styles as an error (#ff4d25).
+// The middle lines put `<` + capital where the injection must not match. If it does, the
+// attribute string or expression is left open and the closing `<h1>` loses its tag color,
+// and in the `@if` body the label turns into a C# comment.
 test('blazor razor tabs style component tags as classes, not as errors', async () => {
   const base = 'https://staging.infragistics.com/blazor-client';
   const route = 'grids/grid/overview';
@@ -158,7 +161,13 @@ test('blazor razor tabs style component tags as classes, not as errors', async (
       fileExtension: 'razor',
       fileHeader: 'razor',
       isMain: true,
-      content: '<IgbGrid Data="@data"></IgbGrid>\n<h1>Title</h1>',
+      content: [
+        '<IgbGrid Data="@data"></IgbGrid>',
+        '<IgbInput Placeholder="<Value " />',
+        '<p>@(value <Max ? value : Max)</p>',
+        '@if (show) { <IgbButton>// reset</IgbButton> }',
+        '<h1>Title</h1>',
+      ].join('\n'),
     },
   ];
   let ready;
@@ -183,9 +192,11 @@ test('blazor razor tabs style component tags as classes, not as errors', async (
       [...code.querySelectorAll('span')]
         .find((span) => span.textContent === text)
         ?.getAttribute('style');
-    // The brand theme colors a class #ffa685 and an HTML tag #66adff.
+    // The brand theme colors a class #ffa685, an HTML tag #66adff and a comment #7d91ab italic
+    // (tag punctuation shares the color, not the italic).
     assert.equal(style('IgbGrid'), 'color:#ffa685', code.innerHTML);
     assert.equal(style('h1'), 'color:#66adff', code.innerHTML);
+    assert.ok(!code.innerHTML.includes('color:#7d91ab;font-style:italic'), code.innerHTML);
   } finally {
     (await ready)?.dispose();
     dom.window.close();
