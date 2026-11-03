@@ -113,13 +113,17 @@
     "prettier": "^3.9.9",
     "prettier-plugin-astro": "^1.1.0",
     "sass": "^1.105.0",
-    "typescript": "~6.0.3"
+    "typescript": "~6.0.3",
+    "vitest": "^5.0.5"
   },
   "publishConfig": {
     "access": "public"
   },
   "scripts": {
-    "test": "node --test \"scripts/**/*.test.mjs\"",
+    "test": "npm run test:scripts && npm run test:components",
+    "test:scripts": "node --test \"scripts/**/*.test.mjs\"",
+    "test:components": "vitest run",
+    "test:watch": "vitest",
     "test:sample-widget": "node --test scripts/sample-widget.test.mjs",
     "playground": "npm run playground:dev",
     "playground:dev": "astro sync --root playground && astro dev --root playground --port 4567",
