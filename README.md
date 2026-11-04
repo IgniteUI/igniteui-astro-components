@@ -273,9 +273,9 @@ const sidebar: SidebarEntry[] = [/* … your tree … */];
 
 ### Code snippets
 
-| Export         | Purpose                                                                                   | Docs                               |
-| -------------- | ----------------------------------------------------------------------------------------- | ---------------------------------- |
-| `…/code-theme` | Brand light + dark Shiki themes (Rosé Pine recoloured) and the ready-made `igShikiConfig` | [README](src/code-theme/README.md) |
+| Export         | Purpose                                                                          | Docs                               |
+| -------------- | -------------------------------------------------------------------------------- | ---------------------------------- |
+| `…/code-theme` | Brand Shiki theme (Rosé Pine Moon recoloured) and the ready-made `igShikiConfig` | [README](src/code-theme/README.md) |
 
 ### Build helpers
 

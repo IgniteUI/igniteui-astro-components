@@ -1,57 +1,20 @@
 @use 'copy-button' as *;
 
-/// Colour scheme of code snippets, independent of the page theme.
-///
-///   'auto' — follow the page: light snippet on a light page, dark on dark
-///   'dark' — always the dark snippet, on both page themes
-///
-/// Product decision (Oct 2026): dark snippets everywhere. The light theme is
-/// still rendered into the HTML (`igShikiConfig` emits both), so restoring the
-/// light/dark behaviour is flipping this flag — nothing else changes.
-$igd-code-scheme: 'dark' !default;
-
 /* ============================================================
-   Code snippets — one look for every snippet on a page:
-     • markdown / MDX fenced blocks and <Code> from `astro:components`
-       (Astro rewrites Shiki's `shiki` class to `astro-code`)
-     • direct `codeToHtml()` output, which keeps `pre.shiki`
-     • Sample code tabs (sample-widget.ts adds `igd-code` to the <pre>)
-
-   Colours come from the brand dual theme (src/code-theme, applied by
-   `createDocsSite()` via `igShikiConfig`, `defaultColor: false`): Shiki
-   writes `--shiki-light` / `--shiki-dark` on every token and nothing
-   inline, and `light-dark()` resolves them from the page `color-scheme`
-   (`[data-theme]` sets it in _palette.scss) — no theme-specific selectors,
-   no `!important`, and the switch needs no reload.
-
-   A consumer that renders a single Shiki theme instead gets inline
-   colours from Shiki, which win over these rules — nothing breaks, the
-   snippet just uses that theme.
-
+   Code snippets: fenced blocks and <Code> (`pre.astro-code`), direct
+   `codeToHtml()` output (`pre.shiki`) and Sample code tabs (`pre.igd-code`).
+   Shiki writes the background, default text and token colours inline
+   (src/code-theme); these rules only shape the surface.
    Surface tokens (`--igd-code-*`) live in _variables.scss.
    ============================================================ */
-
-// Forced scheme: `color-scheme: dark` on the snippet and on the containers
-// that hold the copy buttons makes every `light-dark()` below — the Shiki
-// token colours and the `--igd-code-*` surface tokens alike — resolve to its
-// dark value, whatever the page theme is.
-@if $igd-code-scheme == 'dark' {
-  pre.astro-code,
-  pre.shiki,
-  pre.igd-code,
-  .copy-code-wrapper,
-  igc-tab .code-wrapper {
-    color-scheme: dark;
-  }
-}
 
 pre.astro-code,
 pre.shiki,
 pre.igd-code {
-  background-color: var(--igd-code-bg);
+  // Snippets are always dark: dark scrollbars and form-control colours.
+  color-scheme: dark;
   border: var(--igd-code-border);
   border-radius: var(--igd-code-radius);
-  color: var(--igd-code-fg);
   padding: var(--igd-code-padding);
   margin-block: 0 var(--igd-code-margin-bottom);
   font-family: var(--igd-code-font-family);
@@ -61,10 +24,6 @@ pre.igd-code {
   tab-size: 2;
   max-width: 100%;
   overflow-x: auto;
-  // Long lines wrap (igShikiConfig sets `wrap: true` for the same reason);
-  // the pre never forces a horizontal scrollbar on the page. `break-word`
-  // (not `anywhere`) matches the inline `word-wrap: break-word` Astro writes
-  // on fenced blocks, so a Sample tab computes exactly like a fence.
   white-space: pre-wrap;
   overflow-wrap: break-word;
   word-break: break-word;
@@ -79,27 +38,6 @@ pre.igd-code {
     border: 0;
     padding: 0;
     margin: 0;
-  }
-
-  // Dual-theme activation. A span with no `--shiki-*` (whitespace, plain
-  // text) makes the declaration invalid at computed-value time and falls
-  // back to the pre's `--igd-code-fg`, which is the intended default.
-  // `light-dark()` only takes colours; font styles are read from the light
-  // variables because both brand themes derive from Rosé Pine and share
-  // the same italic/bold decisions, so the two sets are always identical.
-  span {
-    --shiki-light: initial;
-    --shiki-dark: initial;
-    --shiki-light-bg: initial;
-    --shiki-dark-bg: initial;
-    color: light-dark(var(--shiki-light), var(--shiki-dark));
-    background-color: light-dark(
-      var(--shiki-light-bg, transparent),
-      var(--shiki-dark-bg, transparent)
-    );
-    font-style: var(--shiki-light-font-style);
-    font-weight: var(--shiki-light-font-weight);
-    text-decoration: var(--shiki-light-text-decoration);
   }
 }
 
@@ -127,13 +65,6 @@ pre.igd-code {
 
   &:hover > .copy-btn,
   &:focus-within > .copy-btn {
-    opacity: 1;
-  }
-}
-
-// No hover on touch devices — keep the button visible there.
-@media (hover: none) {
-  .copy-code-wrapper > .copy-btn {
     opacity: 1;
   }
 }

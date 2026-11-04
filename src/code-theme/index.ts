@@ -1,47 +1,15 @@
 /**
- * Brand Shiki themes for code snippets.
- *
- * Two themes — `ig-dark` (from Rosé Pine Moon) and `ig-light` (from Rosé Pine
- * Dawn) — recoloured with the palette in ./palette.ts, plus the ready-made
- * Astro `shikiConfig` that renders both at once so the page's `color-scheme`
- * picks the right one with no reload (see src/styles/global/_code-blocks.scss).
+ * Brand Shiki theme for code snippets: Rosé Pine Moon recoloured with the
+ * API Docs Figma palette (`api-snippet`, mode=dark).
  *
  * `createDocsSite()` applies `igShikiConfig` by default. See README.md in this
- * folder for manual usage (`<Code>`, `createHighlighter`, overriding).
+ * folder for manual usage (`<Code>`, `codeToHtml`).
  */
 import type { ShikiConfig } from 'astro';
-import type { RawThemeSetting, ThemeRegistrationRaw } from 'shiki';
+import type { ThemeRegistration } from 'shiki';
 import rosePineMoon from '@shikijs/themes/rose-pine-moon';
-import rosePineDawn from '@shikijs/themes/rose-pine-dawn';
-import { remapTheme } from './remap-theme';
-import {
-  IG_CODE_DARK,
-  IG_CODE_LIGHT,
-  ROSE_PINE_DAWN_SLOTS,
-  ROSE_PINE_MOON_SLOTS,
-  type CodePalette,
-  type RosePineSlot,
-} from './palette';
 
-export { remapTheme, type RemapThemeOptions } from './remap-theme';
-export {
-  IG_CODE_DARK,
-  IG_CODE_LIGHT,
-  ROSE_PINE_DAWN_SLOTS,
-  ROSE_PINE_MOON_SLOTS,
-  type CodePalette,
-  type RosePineSlot,
-} from './palette';
-
-/** Theme ids — what `codeToHtml({ themes })` and `<Code themes>` refer to. */
-export const IG_CODE_THEME_DARK = 'ig-dark';
-export const IG_CODE_THEME_LIGHT = 'ig-light';
-
-/**
- * Scopes that Rosé Pine leaves on the default foreground but the design
- * colours as "property keys": object-literal keys in TS/JS, JSON keys, YAML
- * keys and `obj.prop` member access.
- */
+/** Object-literal, JSON and YAML keys and `obj.prop` access: Rosé Pine leaves them on the default text colour. */
 const PROPERTY_KEY_SCOPES = [
   'meta.object-literal.key',
   'support.type.property-name.json',
@@ -50,71 +18,40 @@ const PROPERTY_KEY_SCOPES = [
   'variable.other.object.property',
 ];
 
-function slotMap(base: Record<RosePineSlot, string>, palette: CodePalette): Record<string, string> {
-  const map: Record<string, string> = {};
-  for (const slot of Object.keys(base) as RosePineSlot[]) map[base[slot]] = palette.slots[slot];
-  return map;
-}
-
-function buildTheme(
-  base: typeof rosePineMoon,
-  baseSlots: Record<RosePineSlot, string>,
-  palette: CodePalette,
-  name: string,
-  displayName: string,
-): ThemeRegistrationRaw {
-  const extraTokenColors: RawThemeSetting[] = [
-    { scope: PROPERTY_KEY_SCOPES, settings: { foreground: palette.propertyKey } },
-    // Rosé Pine colours the `//` / `/* */` of a comment as punctuation
-    // (`subtle`), brighter than the comment text; keep the whole comment muted.
+/** Dark brand theme. Rosé Pine colour → brand colour, scopes and font styles unchanged. */
+export const igCodeTheme: ThemeRegistration = {
+  ...rosePineMoon,
+  name: 'ig-dark',
+  displayName: 'Ignite UI Dark',
+  colors: {
+    ...rosePineMoon.colors,
+    'editor.background': '#00142b',
+    'editor.foreground': '#d2dbe8',
+  },
+  colorReplacements: {
+    '#e0def4': '#a9b8cc', // text: identifiers
+    '#908caa': '#d2dbe8', // subtle: punctuation
+    '#6e6a86': '#7d91ab', // muted: comments
+    '#3e8fb0': '#0a7aff', // pine: keywords (Figma #0176ff, lightened to pass AA)
+    '#f6c177': '#f95924', // gold: strings
+    '#ea9a97': '#ffa685', // rose: numbers, booleans, declared names
+    '#9ccfd8': '#66adff', // foam: tags, types
+    '#c4a7e7': '#99c9ff', // iris: attributes, parameters
+    '#eb6f92': '#ff4d25', // love: invalid, built-in functions
+  },
+  tokenColors: [
+    ...(rosePineMoon.tokenColors ?? []),
+    { scope: PROPERTY_KEY_SCOPES, settings: { foreground: '#66adff' } },
+    // Keep a comment's `//` / `/* */` as muted as its text.
     {
       scope: ['punctuation.definition.comment'],
-      settings: { foreground: palette.slots.muted, fontStyle: 'italic' },
+      settings: { foreground: '#7d91ab', fontStyle: 'italic' },
     },
-  ];
-  return remapTheme(base, {
-    name,
-    displayName,
-    colors: slotMap(baseSlots, palette),
-    editorColors: {
-      'editor.background': palette.background,
-      'editor.foreground': palette.foreground,
-    },
-    extraTokenColors,
-  });
-}
+  ],
+};
 
-/** Dark brand theme (Rosé Pine Moon recoloured). */
-export const igCodeThemeDark: ThemeRegistrationRaw = buildTheme(
-  rosePineMoon,
-  ROSE_PINE_MOON_SLOTS,
-  IG_CODE_DARK,
-  IG_CODE_THEME_DARK,
-  'Ignite UI Dark',
-);
-
-/** Light brand theme (Rosé Pine Dawn recoloured). */
-export const igCodeThemeLight: ThemeRegistrationRaw = buildTheme(
-  rosePineDawn,
-  ROSE_PINE_DAWN_SLOTS,
-  IG_CODE_LIGHT,
-  IG_CODE_THEME_LIGHT,
-  'Ignite UI Light',
-);
-
-/**
- * Dual-theme map for Astro's `<Code themes={…}>` and Shiki's
- * `codeToHtml({ themes })` / `createHighlighter({ themes: Object.values(…) })`.
- */
-export const igShikiThemes = { light: igCodeThemeLight, dark: igCodeThemeDark } as const;
-
-/**
- * Drop-in `markdown.shikiConfig` for Astro. `defaultColor: false` makes Shiki
- * emit only `--shiki-light` / `--shiki-dark` custom properties (no inline
- * colours), and the package CSS resolves them with `light-dark()`.
- */
+/** Drop-in `markdown.shikiConfig` for Astro. */
 export const igShikiConfig: ShikiConfig = {
-  themes: igShikiThemes,
-  defaultColor: false,
+  theme: igCodeTheme,
   wrap: true,
 };

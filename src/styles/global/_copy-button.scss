@@ -1,11 +1,6 @@
-/// Palette for the copy-code icon buttons (igc-icon-button) that sit on top
-/// of a code snippet — the page-level CopyCode button and the Sample code-tab
-/// button share it so both affordances look identical.
-///
-/// The code surface has its own colours (`--igd-code-bg`, light or dark via
-/// `light-dark()`), so the button's colours are pinned to the matching
-/// `--igd-code-copy-*` tokens instead of the site theme's button defaults.
-/// The success palette kicks in while the icon shows the post-copy check.
+/// Palette for the copy-code icon buttons (igc-icon-button) on top of a code
+/// snippet; the page-level CopyCode button and the Sample code-tab button share it.
+/// The success palette applies while the icon shows the post-copy check.
 @mixin copy-button-colors {
   --foreground: var(--igd-code-copy-color);
   --hover-foreground: var(--igd-code-copy-hover-color);
@@ -17,10 +12,7 @@
   --active-background: var(--igd-code-copy-hover-bg);
   --border-color: transparent;
   --border-color-hover: transparent;
-  // Keyboard focus ring: the component's own ring colour comes from the page
-  // theme and nearly vanishes on the dark snippet, so pin it to the brand blue.
-  --focus-border-color: var(--igd-code-copy-hover-color);
-  --focus-visible-border-color: var(--igd-code-copy-hover-color);
+  --border-color-focus: transparent;
 
   &:has([name='check']) {
     --foreground: var(--igd-code-copy-success-color);

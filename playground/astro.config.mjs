@@ -230,8 +230,7 @@ export default defineConfig({
       : []),
   ],
   markdown: {
-    // Brand dual (light/dark) code theme — the same object createDocsSite()
-    // applies for consumers. Fenced blocks, <Code> and Sample tabs all use it.
+    // Same brand code theme createDocsSite() applies for consumers.
     shikiConfig: igShikiConfig,
     processor: satteri({
       hastPlugins: [rehypeHeadingAnchors, rehypeTableWrapper],

@@ -717,8 +717,7 @@ export function createDocsSite(
       },
     },
     markdown: {
-      // Brand dual (light/dark) Shiki theme for fenced code blocks. A consumer
-      // can still pass its own `markdown.shikiConfig` — it replaces this one.
+      // Brand Shiki theme; a consumer's own `markdown.shikiConfig` replaces it.
       shikiConfig: igShikiConfig,
       ...(astroExtra as any).markdown,
       // Astro 7 renders Markdown/MDX with Sätteri instead of remark/rehype.

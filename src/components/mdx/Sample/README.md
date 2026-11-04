@@ -80,9 +80,7 @@ Outside the Web Components site, a `wc` sample needs `wcDemosBaseUrl`: without i
 
 Code tabs are syntax-highlighted client-side using [Shiki](https://shiki.style/) (lazy-loaded via dynamic import and pre-warmed at widget init). Supported languages: `typescript`, `tsx`, `javascript`, `html`, `css`, `scss`, `csharp`, `razor`.
 
-The tabs use the package's brand **light + dark** code theme — the same `igShikiThemes` that `createDocsSite()` applies to fenced Markdown blocks — so a code tab and a fenced block on the same page look identical and follow the site theme without a reload. See [`src/code-theme/README.md`](../../../code-theme/README.md).
-
-The surface (background, padding, font, copy button) comes from the shared `--igd-code-*` tokens; override those to retune the look. The theme itself is not configurable per project — tune `src/code-theme/palette.ts` instead.
+The tabs use the package's brand code theme (`igCodeTheme`, the same one `createDocsSite()` applies to fenced blocks), so a code tab and a fenced block look identical. See [`src/code-theme/README.md`](../../../code-theme/README.md).
 
 > **Note:** highlight.js is no longer required. Remove any hljs `<script>` / `<link>` head entries from your integration config if they were added solely for code tabs.
 
