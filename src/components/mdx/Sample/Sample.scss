@@ -463,6 +463,25 @@ igc-tab::part(tab-header) {
   }
 }
 
+// Names the icon-only action buttons (StackBlitz, full screen, copy code) on
+// hover/focus. Same look as the theme picker's mode tooltips, which share the
+// footer with these buttons.
+.igd-sample-action-tooltip {
+  --ig-tooltip-background: rgb(52 75 101 / 90%);
+  --ig-tooltip-text-color: var(--ig-gray-50);
+  --ig-tooltip-border-radius: #{rem(4px)};
+
+  &::part(base) {
+    min-height: rem(24px);
+    padding: rem(4px) rem(8px);
+    font-family: var(--igd-font-sans);
+    font-size: rem(10px);
+    font-weight: 500;
+    letter-spacing: rem(0.33px);
+    line-height: rem(16px);
+  }
+}
+
 .igd-code-view__header-actions {
   height: var(--sample-container-header-height);
   border-block-start: rem(1px) solid var(--ig-gray-300);
