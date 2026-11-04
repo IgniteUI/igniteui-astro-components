@@ -84,7 +84,10 @@ body {
 ):not(:defined) {
   opacity: 0;
 }
-igc-dialog:not(:defined) {
+// Dialogs and tooltips sit outside the layout flow once defined, so hide them
+// entirely; otherwise a tooltip's text shows inline until it upgrades.
+igc-dialog:not(:defined),
+igc-tooltip:not(:defined) {
   display: none;
 }
 
