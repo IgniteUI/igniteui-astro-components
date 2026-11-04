@@ -57,6 +57,10 @@
   --igd-padding-md: #{rem(24px)};
   --igd-padding-lg: #{rem(32px)};
 
+  // Links
+  --igd-link-color: light-dark(var(--ig-primary-500), var(--ig-primary-200));
+  --igd-link-hover-color: light-dark(var(--ig-primary-600), var(--ig-primary-100));
+
   --igd-updated-bg: light-dark(#eaf6fe, #0d1e38);
   --igd-updated-color: light-dark(#1151c1, #6b9fe8);
   --igd-updated-border: light-dark(#bae2f5, #1e3d6a);
@@ -147,6 +151,33 @@
 
   --igd-table-header-bg: var(--igd-layout-sections-bg);
   --igd-table-header-fg: light-dark(var(--ig-gray-900), var(--ig-gray-700));
+
+  // FIGMA UI KITS MDX
+  --igd-figma-kits-padding-block: #{rem(8px)};
+  --igd-figma-kits-padding-inline: var(--igd-padding-sm);
+  --igd-figma-kits-compact-padding-block: #{rem(12px)};
+  --igd-figma-kits-compact-padding-inline: #{rem(12px)};
+  --igd-figma-kits-gap: var(--igd-padding-md);
+  --igd-figma-kits-row-gap: #{rem(12px)};
+  --igd-figma-kits-item-gap: #{rem(8px)};
+  --igd-figma-kits-margin-bottom: #{rem(26px)};
+  --igd-figma-kits-radius: var(--igd-border-radius);
+  --igd-figma-kits-border-width: var(--igd-app-outline-size);
+  --igd-figma-kits-border-style: var(--igd-app-outline-style);
+  --igd-figma-kits-logo-size: #{rem(31px)};
+  --igd-figma-kits-target-size: #{rem(24px)};
+  --igd-figma-kits-underline-offset: #{rem(3px)};
+  --igd-figma-kits-focus-width: #{rem(2px)};
+  --igd-figma-kits-focus-offset: #{rem(2px)};
+  --igd-figma-kits-title-weight: 700;
+  --igd-figma-kits-link-weight: 700;
+
+  --igd-figma-kits-bg: light-dark(var(--ig-gray-100), var(--ig-gray-50));
+  --igd-figma-kits-border-color: light-dark(var(--ig-gray-300), var(--ig-gray-200));
+  --igd-figma-kits-title-color: var(--ig-gray-900);
+  --igd-figma-kits-description-color: var(--ig-gray-700);
+  --igd-figma-kits-link-color: var(--igd-link-color);
+  --igd-figma-kits-link-hover-color: var(--igd-link-hover-color);
 }
 
 /* ============================================================

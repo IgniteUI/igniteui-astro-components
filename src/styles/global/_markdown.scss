@@ -243,12 +243,12 @@
 
     a {
       font-size: inherit;
-      color: light-dark(var(--ig-primary-500), var(--ig-primary-200));
+      color: var(--igd-link-color);
       text-decoration: underline;
 
       &:hover,
       &:focus {
-        color: light-dark(var(--ig-primary-600), var(--ig-primary-100));
+        color: var(--igd-link-hover-color);
       }
 
       &:focus,

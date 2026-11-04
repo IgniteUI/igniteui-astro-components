@@ -1,36 +1,15 @@
 @use 'igniteui-theming/sass/typography' as *;
 
-// The banner switches to the compact layout at or below this container width.
-// Container queries cannot read custom properties, so this is a Sass value.
-$compact-max-width: 760px;
-
-// Unlayered on purpose: the markdown layer styles every `p`, `ul`, `li` and
-// `a` — including an external-link icon on `a[target='_blank']` — and these
-// rules must win over it (same as DoDont.scss).
+// Values come from the --igd-figma-kits-* tokens in global/_variables.scss.
 
 .igd-figma-kits {
-  // The public --igd-figma-kits-* tokens are only read, never set, so a value
-  // from an ancestor or a class on the block reaches every rule.
-  --_padding-block: var(--igd-figma-kits-padding-block, #{rem(8px)});
-  --_padding-inline: var(--igd-figma-kits-padding-inline, #{rem(16px)});
-  --_radius: var(--igd-figma-kits-radius, #{rem(4px)});
-  --_gap: var(--igd-figma-kits-gap, #{rem(24px)});
-  // The dark gray scale is inverted, so gray-50 / gray-200 are the dark
-  // counterparts of the light gray-100 canvas and gray-300 border.
-  --_bg: var(--igd-figma-kits-bg, light-dark(var(--ig-gray-100), var(--ig-gray-50)));
-  --_border-color: var(
-    --igd-figma-kits-border-color,
-    light-dark(var(--ig-gray-300), var(--ig-gray-200))
-  );
+  --_padding-block: var(--igd-figma-kits-padding-block);
+  --_padding-inline: var(--igd-figma-kits-padding-inline);
 
-  // The outer element is the query container; a container cannot restyle
-  // itself from its own query, so the visible frame is the inner banner.
   container: igd-figma-kits / inline-size;
-  // Size containment ignores the content's width, so the container must be
-  // sized from outside — otherwise it collapses inside a shrink-to-fit parent.
   box-sizing: border-box;
   inline-size: 100%;
-  margin: 0 0 #{rem(24px)};
+  margin: 0 0 var(--igd-figma-kits-margin-bottom);
 }
 
 .igd-figma-kits__banner {
@@ -38,16 +17,16 @@ $compact-max-width: 760px;
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  column-gap: var(--_gap);
-  row-gap: #{rem(8px)};
+  column-gap: var(--igd-figma-kits-gap);
+  row-gap: var(--igd-figma-kits-row-gap);
   box-sizing: border-box;
-  inline-size: 100%;
   padding: var(--_padding-block) var(--_padding-inline);
-  background: var(--_bg);
-  border: #{rem(1px)} solid var(--_border-color);
-  border-radius: var(--_radius);
+  background: var(--igd-figma-kits-bg);
+  border: var(--igd-figma-kits-border-width) var(--igd-figma-kits-border-style)
+    var(--igd-figma-kits-border-color);
+  border-radius: var(--igd-figma-kits-radius);
 
-  // Keep a visible frame in forced-colors mode, where backgrounds are dropped.
+  // Keep the frame visible in forced-colors mode.
   @media (forced-colors: active) {
     border-color: CanvasText;
   }
@@ -56,25 +35,20 @@ $compact-max-width: 760px;
 .igd-figma-kits__heading {
   display: flex;
   align-items: center;
-  gap: #{rem(8px)};
+  gap: var(--igd-figma-kits-item-gap);
   margin: 0;
   min-inline-size: 0;
 }
 
-// The Figma mark sits on a white tile in both themes, as in the brand guidelines.
 .igd-figma-kits__logo {
-  display: grid;
-  place-items: center;
+  display: block;
   flex: none;
-  inline-size: #{rem(27px)};
-  block-size: #{rem(31px)};
-  background: #fff;
-  border-radius: #{rem(4px)};
+  block-size: var(--igd-figma-kits-logo-size);
 
   svg {
     display: block;
-    inline-size: #{rem(15.5px)};
-    block-size: auto;
+    inline-size: auto;
+    block-size: 100%;
   }
 }
 
@@ -86,8 +60,8 @@ $compact-max-width: 760px;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  column-gap: var(--_gap);
-  row-gap: #{rem(4px)};
+  column-gap: var(--igd-figma-kits-gap);
+  row-gap: var(--igd-figma-kits-row-gap);
   margin: 0;
   padding: 0;
   list-style: none;
@@ -106,33 +80,39 @@ $compact-max-width: 760px;
 .igd-figma-kits__link {
   display: inline-flex;
   align-items: center;
-  gap: #{rem(8px)};
-  // A 24px-tall hit area meets WCAG 2.2 target size without changing the row.
-  min-block-size: #{rem(24px)};
-  border-radius: #{rem(2px)};
+  gap: var(--igd-figma-kits-item-gap);
+  min-block-size: var(--igd-figma-kits-target-size);
+  vertical-align: middle;
+  border-radius: var(--igd-figma-kits-radius);
   text-decoration: none;
 
-  // The markdown layer appends its own external-link icon; this block has one.
+  // Hide the markdown external-link icon; the link renders its own.
   &::after {
     content: none;
   }
 
   &:hover {
     text-decoration: underline;
-    text-underline-offset: #{rem(3px)};
+    text-underline-offset: var(--igd-figma-kits-underline-offset);
   }
 
   &:focus-visible {
-    outline: #{rem(2px)} solid currentColor;
-    outline-offset: #{rem(2px)};
+    outline: var(--igd-figma-kits-focus-width) solid currentColor;
+    outline-offset: var(--igd-figma-kits-focus-offset);
   }
 }
 
 .igd-figma-kits__icon {
   display: block;
   flex: none;
-  inline-size: #{rem(20px)};
-  block-size: #{rem(20px)};
+  inline-size: 1lh;
+  block-size: 1lh;
+
+  svg {
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
+  }
 }
 
 // Visually hidden, still read by screen readers.
@@ -148,26 +128,18 @@ $compact-max-width: 760px;
   border: 0;
 }
 
-// Only one title is shown; the regular layout uses the full one.
 .igd-figma-kits__title-compact {
   display: none;
 }
 
-// COMPACT
-// The mobile design: title over links, 12px padding and gaps, short title.
-
+// Compact layout: title over links, compact padding, short title.
 @mixin compact {
   .igd-figma-kits__banner {
-    --_padding-block: var(--igd-figma-kits-padding-block, #{rem(12px)});
-    --_padding-inline: var(--igd-figma-kits-padding-inline, #{rem(12px)});
+    --_padding-block: var(--igd-figma-kits-compact-padding-block);
+    --_padding-inline: var(--igd-figma-kits-compact-padding-inline);
 
     flex-direction: column;
     align-items: stretch;
-    gap: #{rem(12px)};
-  }
-
-  .igd-figma-kits__list {
-    row-gap: #{rem(12px)};
   }
 
   .igd-figma-kits__title-full {
@@ -183,8 +155,9 @@ $compact-max-width: 760px;
   @include compact;
 }
 
-@container igd-figma-kits (max-width: #{$compact-max-width}) {
-  .igd-figma-kits:not([data-variant='regular']) {
+// Phone layout: short title and tighter padding.
+@container igd-figma-kits (width < 480px) {
+  .igd-figma-kits {
     @include compact;
   }
 }
@@ -196,9 +169,8 @@ $compact-max-width: 760px;
     margin: 0;
   }
 
-  font-weight: 700;
-  line-height: #{rem(20px)};
-  color: var(--ig-gray-900);
+  font-weight: var(--igd-figma-kits-title-weight);
+  color: var(--igd-figma-kits-title-color);
 }
 
 .igd-figma-kits__description {
@@ -206,7 +178,7 @@ $compact-max-width: 760px;
     margin: 0;
   }
 
-  color: var(--ig-gray-700);
+  color: var(--igd-figma-kits-description-color);
 }
 
 .igd-figma-kits__link {
@@ -214,11 +186,11 @@ $compact-max-width: 760px;
     margin: 0;
   }
 
-  font-weight: 700;
-  color: light-dark(var(--ig-primary-500), var(--ig-primary-200));
+  font-weight: var(--igd-figma-kits-link-weight);
+  color: var(--igd-figma-kits-link-color);
 
   &:hover,
   &:focus-visible {
-    color: light-dark(var(--ig-primary-600), var(--ig-primary-100));
+    color: var(--igd-figma-kits-link-hover-color);
   }
 }
