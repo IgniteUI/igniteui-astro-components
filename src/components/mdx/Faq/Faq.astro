@@ -62,19 +62,17 @@ const { items, singleExpand = false, indicatorPosition, class: className, ...res
   single-expand={singleExpand ? '' : undefined}
   {...rest}
 >
-  {
-    items?.map((item) => (
-      <FaqItem
-        question={item.question}
-        subtitle={item.subtitle}
-        answer={item.answer}
-        open={item.open}
-        disabled={item.disabled}
-        indicatorPosition={item.indicatorPosition ?? indicatorPosition}
-        id={item.id}
-      />
-    ))
-  }
+  {items?.map((item) => (
+    <FaqItem
+      question={item.question}
+      subtitle={item.subtitle}
+      answer={item.answer}
+      open={item.open}
+      disabled={item.disabled}
+      indicatorPosition={item.indicatorPosition ?? indicatorPosition}
+      id={item.id}
+    />
+  ))}
   <slot />
 </igc-accordion>
 

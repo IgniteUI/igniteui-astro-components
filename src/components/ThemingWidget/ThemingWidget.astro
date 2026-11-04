@@ -144,76 +144,78 @@ const modeLabels: Record<ThemeMode, string> = {
       name="chevron"
       collection="theming-widget"
       class="igd-theming__toggle-icon igd-theming__toggle-icon--collapsed"
-      aria-hidden="true"></igc-icon>
+      aria-hidden="true"
+    ></igc-icon>
     <igc-icon
       slot="toggle-icon-expanded"
       name="chevron"
       collection="theming-widget"
       class="igd-theming__toggle-icon"
-      aria-hidden="true"></igc-icon>
+      aria-hidden="true"
+    ></igc-icon>
     <span slot="prefix" class="igd-theming__swatch" data-swatch>
-      {active?.swatch.map((c) => <span class="igd-theming__dot" style={`--dot: ${c}`} />)}
+      {active?.swatch.map((c) => (
+        <span class="igd-theming__dot" style={`--dot: ${c}`} />
+      ))}
     </span>
-    {
-      showMode && (
-        <igc-select-header slot="header" class="igd-theming__mode-row">
-          <span class="igd-theming__section-label">Mode</span>
-          <div class="igd-theming__mode-buttons" role="group" aria-label="Color mode">
-            {MODES.map((m) => (
-              <igc-icon-button
-                variant="flat"
-                name={m === 'light' ? 'sun' : 'moon'}
-                collection="theming-widget"
-                class="igd-theming__mode-btn"
-                id={modeButtonId(m)}
-                data-mode-btn={m}
-                aria-pressed={m === mode ? 'true' : 'false'}
-                aria-label={modeLabels[m]}
-              />
-            ))}
-          </div>
-        </igc-select-header>
-      )
-    }
-    {
-      themes.map((t) => {
-        const name = t.label ?? titleCase(t.name);
-        return (
-          <igc-select-item
-            class="igd-theming__option"
-            value={t.name}
-            data-option={t.name}
-            data-label={name}
-            data-swatch={t.swatch.join(',')}
-          >
-            <span slot="prefix" class="igd-theming__swatch">
-              {t.swatch.map((c) => (
-                <span class="igd-theming__dot" style={`--dot: ${c}`} />
-              ))}
-            </span>
-            <span class="igd-theming__option-name">{name}</span>
-            <igc-icon slot="suffix" name="check" collection="theming-widget" aria-hidden="true" />
-          </igc-select-item>
-        );
-      })
-    }
-  </igc-select>
-  {
-    showMode &&
-      MODES.map((m) => (
-        <igc-tooltip
-          anchor={modeButtonId(m)}
-          class="igd-theming__mode-tooltip"
-          placement="bottom"
-          with-arrow
+    {showMode && (
+      <igc-select-header slot="header" class="igd-theming__mode-row">
+        <span class="igd-theming__section-label">Mode</span>
+        <div class="igd-theming__mode-buttons" role="group" aria-label="Color mode">
+          {MODES.map((m) => (
+            <igc-icon-button
+              variant="flat"
+              name={m === 'light' ? 'sun' : 'moon'}
+              collection="theming-widget"
+              class="igd-theming__mode-btn"
+              id={modeButtonId(m)}
+              data-mode-btn={m}
+              aria-pressed={m === mode ? 'true' : 'false'}
+              aria-label={modeLabels[m]}
+            />
+          ))}
+        </div>
+      </igc-select-header>
+    )}
+    {themes.map((t) => {
+      const name = t.label ?? titleCase(t.name);
+      return (
+        <igc-select-item
+          class="igd-theming__option"
+          value={t.name}
+          data-option={t.name}
+          data-label={name}
+          data-swatch={t.swatch.join(',')}
         >
-          {modeLabels[m]}
-        </igc-tooltip>
-      ))
-  }
+          <span slot="prefix" class="igd-theming__swatch">
+            {t.swatch.map((c) => (
+              <span class="igd-theming__dot" style={`--dot: ${c}`} />
+            ))}
+          </span>
+          <span class="igd-theming__option-name">{name}</span>
+          <igc-icon slot="suffix" name="check" collection="theming-widget" aria-hidden="true" />
+        </igc-select-item>
+      );
+    })}
+  </igc-select>
+  {showMode &&
+    MODES.map((m) => (
+      <igc-tooltip
+        anchor={modeButtonId(m)}
+        class="igd-theming__mode-tooltip"
+        placement="bottom"
+        with-arrow
+      >
+        {modeLabels[m]}
+      </igc-tooltip>
+    ))}
   <span class="igd-theming__selected-value" aria-hidden="true">
-    <span class="igd-theming__selected-theme" data-selected-theme>{activeLabel}</span>
-    <span class="igd-theming__selected-mode" data-selected-mode>{modeLabels[mode]}</span>
+    <span class="igd-theming__selected-theme" data-selected-theme>
+      {activeLabel}
+    </span>
+    <span class="igd-theming__selected-mode" data-selected-mode>
+      {modeLabels[mode]}
+    </span>
   </span>
 </div>
 

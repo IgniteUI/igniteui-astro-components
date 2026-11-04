@@ -108,6 +108,7 @@ export const SIDEBAR: SidebarEntry[] = [
       { label: 'ApiLink', slug: 'components/api-link' },
       { label: 'ApiRef', slug: 'components/api-ref' },
       { label: 'Badge', slug: 'components/badge' },
+      { label: 'Code snippets', slug: 'components/code-block' },
       { label: 'DocsAside', slug: 'components/docs-aside' },
       { label: 'DoDont', slug: 'components/do-dont' },
       { label: 'Faq', slug: 'components/faq' },

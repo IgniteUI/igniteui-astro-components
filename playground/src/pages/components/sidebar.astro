@@ -43,26 +43,23 @@ const headings = [
 
   <h2 id="rendering">Rendering</h2>
   <p>
-    The sidebar is rendered with <code>&lt;igc-tree&gt;</code> /
-    <code>&lt;igc-tree-item&gt;</code> from
-    <code>igniteui-webcomponents</code>. The current page is indicated via <code
-      >aria-current="page"</code
-    > on the
+    The sidebar is rendered with <code>&lt;igc-tree&gt;</code> /<code>&lt;igc-tree-item&gt;</code>{' '}
+    from
+    <code>igniteui-webcomponents</code>. The current page is indicated via{' '}
+    <code>aria-current="page"</code> on the
     <code>&lt;a slot="label"&gt;</code> for the active item.
   </p>
 
   <h2 id="persistence">Persistence</h2>
   <p>
     Expand / collapse state and scroll position are persisted in
-    <code>sessionStorage</code> across Astro client-side navigations via the <code
-      >&lt;sidebar-filter&gt;</code
-    > custom element.
+    <code>sessionStorage</code> across Astro client-side navigations via the{' '}
+    <code>&lt;sidebar-filter&gt;</code> custom element.
   </p>
 
   <h2 id="filter-input">Filter input</h2>
   <p>
-    The filter input matches against item labels: matching items stay visible; non-matching ones get <code
-      >display:none</code
-    >.
+    The filter input matches against item labels: matching items stay visible; non-matching ones get{' '}
+    <code>display:none</code>.
   </p>
 </DocsLayout>
