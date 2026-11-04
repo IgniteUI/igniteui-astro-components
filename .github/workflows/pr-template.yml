@@ -1,8 +1,5 @@
-# Keeps the pull request template honest without getting in the way: only a
-# non-empty "Summary", a "Related issue" line (issue reference or "No issue")
-# and at least one ticked "Type of change" box are required. "Consumer impact"
-# becomes required only when "Breaking change" is ticked. Everything else in
-# the template is optional. Re-runs whenever the description is edited.
+# Checks the PR body: Summary, Related issue and one Type of change are required;
+# Consumer impact is required when Breaking change is ticked.
 name: PR template
 
 on:

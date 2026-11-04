@@ -1,5 +1,4 @@
-# Disables the "Open a blank issue" link so every issue goes through a form
-# with required fields.
+# Hides the blank-issue option; issues use the forms.
 blank_issues_enabled: false
 contact_links:
   - name: Question or usage help
