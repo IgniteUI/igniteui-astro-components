@@ -2,7 +2,7 @@
 
 Renders the "Design in Figma" call-to-action banner that links a component topic to the Ignite UI kits in Figma. It belongs between a topic's description and its live demo.
 
-By default the banner has one link, "Explore our UI kits", to the Infragistics Figma Community profile, which lists every kit. When each kit has its own Community file, pass `kits` to render one link per theme (Material, Fluent, Bootstrap, Indigo) instead. Don't point several kit links at the same page: each link name has to describe where it goes (WCAG 2.4.4).
+It links to the Indigo.Design UI kits for Material, Fluent, Bootstrap and Indigo out of the box, so a topic only needs `<FigmaUiKits />`. When a kit is republished, update its URL once in `kits.ts` (`DEFAULT_FIGMA_UI_KITS`) and every topic picks it up.
 
 ## Import
 
@@ -12,33 +12,31 @@ import FigmaUiKits from 'igniteui-astro-components/components/mdx/FigmaUiKits.as
 
 ## Props
 
-| Prop           | Type                  | Default                 | Description                                                                                       |
-| -------------- | --------------------- | ----------------------- | ------------------------------------------------------------------------------------------------- |
-| `kits`         | `FigmaUiKit[]`        | —                       | One link per kit, in display order. Each is `{ label: string; href: string }`.                    |
-| `href`         | `string`              | `FIGMA_UI_KITS_URL`     | Target of the single link shown when `kits` is not set: the Infragistics Figma Community profile. |
-| `title`        | `string`              | `'Design in Figma:'`    | Bold lead-in before the description. Localized by default.                                        |
-| `compactTitle` | `string`              | `'Design:'`             | Short title for the compact layout. Defaults to `title` when that is set. Localized by default.   |
-| `variant`      | `'auto' \| 'compact'` | `'auto'`                | `'auto'` wraps to fit and uses the compact layout on narrow containers; `'compact'` always does.  |
-| `description`  | `string`              | `'Explore our UI kits'` | Text after the title; the link text when `kits` is not set. Localized by default.                 |
-| `class`        | `string`              | —                       | Extra CSS classes for the container.                                                              |
+| Prop           | Type                  | Default                 | Description                                                                                      |
+| -------------- | --------------------- | ----------------------- | ------------------------------------------------------------------------------------------------ |
+| `kits`         | `FigmaUiKit[]`        | `DEFAULT_FIGMA_UI_KITS` | One link per kit, in display order. Each is `{ label: string; href: string }`.                   |
+| `title`        | `string`              | `'Design in Figma:'`    | Bold lead-in before the description. Localized by default.                                       |
+| `compactTitle` | `string`              | `'Design:'`             | Short title for the compact layout. Defaults to `title` when that is set. Localized by default.  |
+| `variant`      | `'auto' \| 'compact'` | `'auto'`                | `'auto'` wraps to fit and uses the compact layout on narrow containers; `'compact'` always does. |
+| `description`  | `string`              | `'Explore our UI kits'` | Text after the title. Localized by default.                                                      |
+| `class`        | `string`              | —                       | Extra CSS classes for the container.                                                             |
 
 It throws at build time when `kits` is an empty array or a kit has an empty `label` or `href`.
 
-`kits.ts` exports the `FigmaUiKit` type and `FIGMA_UI_KITS_URL`:
+`kits.ts` exports the `FigmaUiKit` type and `DEFAULT_FIGMA_UI_KITS`. Pass `kits` only to show a different set, for example a single kit on a theme-specific topic:
 
 ```astro
 ---
 import FigmaUiKits from 'igniteui-astro-components/components/mdx/FigmaUiKits.astro';
-import type { FigmaUiKit } from 'igniteui-astro-components/components/mdx/FigmaUiKits/kits';
+import { DEFAULT_FIGMA_UI_KITS } from 'igniteui-astro-components/components/mdx/FigmaUiKits/kits';
 
-const kits: FigmaUiKit[] = [
-  { label: 'Material', href: 'https://www.figma.com/community/file/…' },
-  { label: 'Indigo', href: 'https://www.figma.com/community/file/…' },
-];
+const materialOnly = DEFAULT_FIGMA_UI_KITS.filter((kit) => kit.label === 'Material');
 ---
 
-<FigmaUiKits kits={kits} />
+<FigmaUiKits kits={materialOnly} />
 ```
+
+Give every kit its own URL: several links with different names but the same destination fail WCAG 2.4.4 (link purpose).
 
 ## Layout
 
@@ -51,7 +49,7 @@ The outer `.igd-figma-kits` element is the query container and the inner `.igd-f
 ## Examples
 
 ```mdx
-{/* Default: one link to the Figma profile */}
+{/* Default: the four kits */}
 
 <FigmaUiKits />
 
@@ -76,10 +74,10 @@ The default `title`, `compactTitle` and `description`, and the hidden link text,
 
 ## Accessibility
 
-- Every link opens in a new tab and says so in visually hidden text. Kit links also name what they open, so "Material Figma UI kit (opens in a new tab)" makes sense in a screen reader's links list. The external-link icon and the Figma logo are `aria-hidden`.
-- Kit links are a real `<ul>`, so assistive tech announces how many there are.
+- Every link opens in a new tab and says so in visually hidden text. Each link also names what it opens, so "Material Figma UI kit (opens in a new tab)" makes sense in a screen reader's links list. The external-link icon and the Figma logo are `aria-hidden`.
+- The links are a real `<ul>`, so assistive tech announces how many there are.
 - The banner is a plain `<div>`, not an `<aside>` or `<nav>`. It repeats on every topic, and a landmark on every page would clutter the landmark list.
-- Links meet the WCAG 2.2 target size and have a visible `:focus-visible` outline. They use the same colours as markdown links.
+- Links meet the WCAG 2.2 target size and have a visible `:focus-visible` outline. They use the same colours as markdown links (`--igd-link-color`: 5.25:1 on the page and 4.77:1 on the banner in light mode, 12.5:1 or more in dark mode).
 - In forced-colors mode the frame keeps a `CanvasText` border.
 - The hidden-text class is a local copy of the standard sr-only pattern. Switch to the shared `.visually-hidden` once #177 is fixed.
 

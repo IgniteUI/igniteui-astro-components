@@ -5,7 +5,7 @@ import DocsSidebar from '../../../../src/components/DocsSidebar/DocsSidebar.astr
 import DocsToc from '../../../../src/components/DocsToc/DocsToc.astro';
 import DocsAside from '../../../../src/components/mdx/DocsAside/DocsAside.astro';
 import FigmaUiKits from '../../../../src/components/mdx/FigmaUiKits/FigmaUiKits.astro';
-import type { FigmaUiKit } from '../../../../src/components/mdx/FigmaUiKits/kits';
+import { DEFAULT_FIGMA_UI_KITS } from '../../../../src/components/mdx/FigmaUiKits/kits';
 import { SITE_TITLE, SIDEBAR } from '../../site-config';
 
 const slug = 'components/figma-ui-kits';
@@ -24,18 +24,11 @@ const propRows: PropRow[] = [
   {
     name: 'kits',
     type: 'FigmaUiKit[]',
-    def: '—',
+    def: '<code>DEFAULT_FIGMA_UI_KITS</code>',
     description: `One link per kit, in display order. Each entry is
-            <code>{ label: string; href: string }</code>. Without it the banner shows a single
-            <code>description</code> link to <code>href</code>. An empty list, or a kit with an
-            empty <code>label</code> or <code>href</code>, throws at build time.`,
-  },
-  {
-    name: 'href',
-    type: 'string',
-    def: '<code>FIGMA_UI_KITS_URL</code>',
-    description: `Target of the single link shown when <code>kits</code> is not set. Defaults to
-            the Infragistics Figma Community profile, which lists every kit.`,
+            <code>{ label: string; href: string }</code>. Defaults to the Material, Fluent,
+            Bootstrap and Indigo kits. An empty list, or a kit with an empty <code>label</code> or
+            <code>href</code>, throws at build time.`,
   },
   {
     name: 'title',
@@ -62,8 +55,7 @@ const propRows: PropRow[] = [
     name: 'description',
     type: 'string',
     def: "'Explore our UI kits'",
-    description: `Text after the title, and the link text when <code>kits</code> is not set. The
-            default follows the site language.`,
+    description: `Text after the title. The default follows the site language.`,
   },
   {
     name: 'class',
@@ -74,13 +66,8 @@ const propRows: PropRow[] = [
   },
 ];
 
-// Demo kits: Figma Community searches, so each link goes somewhere different.
-const communitySearch = (query: string) =>
-  `https://www.figma.com/community/search?resource_type=files&query=${encodeURIComponent(query)}`;
-const demoKits: FigmaUiKit[] = ['Material', 'Fluent', 'Bootstrap', 'Indigo'].map((label) => ({
-  label,
-  href: communitySearch(`Indigo.Design ${label} UI kit`),
-}));
+// Demo of a custom kit list: only the Material kit.
+const materialOnly = DEFAULT_FIGMA_UI_KITS.filter((kit) => kit.label === 'Material');
 
 const headings = [
   { depth: 2, slug: 'quick-start', text: 'Quick start' },
@@ -114,17 +101,12 @@ const usageVariants = `<FigmaUiKits variant="compact" />`;
 const usageWording = `<FigmaUiKits title="Prototype it:" description="Start from a ready-made kit" />`;
 
 const usageKits = `${'---'}
-import type { FigmaUiKit } from 'igniteui-astro-components/components/mdx/FigmaUiKits/kits';
+import { DEFAULT_FIGMA_UI_KITS } from 'igniteui-astro-components/components/mdx/FigmaUiKits/kits';
 
-const kits: FigmaUiKit[] = [
-  { label: 'Material', href: 'https://www.figma.com/community/file/…' },
-  { label: 'Fluent', href: 'https://www.figma.com/community/file/…' },
-  { label: 'Bootstrap', href: 'https://www.figma.com/community/file/…' },
-  { label: 'Indigo', href: 'https://www.figma.com/community/file/…' },
-];
+const materialOnly = DEFAULT_FIGMA_UI_KITS.filter((kit) => kit.label === 'Material');
 ${'---'}
 
-<FigmaUiKits kits={kits} />`;
+<FigmaUiKits kits={materialOnly} />`;
 
 const usageTokens = `.my-topic .igd-figma-kits {
   --igd-figma-kits-gap: var(--igd-padding-sm);
@@ -146,8 +128,8 @@ const usageTokens = `.my-topic .igd-figma-kits {
 
   <h2 id="quick-start">Quick start</h2>
   <p>
-    Import the component and drop it after the topic's introduction. With no props it renders one
-    localized "Explore our UI kits" link to the Infragistics Figma Community profile:
+    Import the component and drop it after the topic's introduction. With no props it links to the
+    Material, Fluent, Bootstrap and Indigo kits, with localized copy:
   </p>
   <Code code={usageQuickStart} lang="astro" theme="dark-plus" wrap />
 
@@ -184,8 +166,8 @@ const usageTokens = `.my-topic .igd-figma-kits {
 
   <h2 id="default">Default</h2>
   <p>
-    The Figma logo and the title come first, then one link to the Figma profile that lists every
-    kit. The link opens in a new tab and has the same external-link icon as markdown links.
+    The Figma logo and the title come first, then one link per kit to its Figma Community file. The
+    links open in a new tab and have the same external-link icon as markdown links.
   </p>
   <Code code={usageDefault} lang="astro" theme="dark-plus" wrap />
   <FigmaUiKits />
@@ -199,12 +181,12 @@ const usageTokens = `.my-topic .igd-figma-kits {
     "Design:", the links stack under it, and the padding tightens. That switch is a container query,
     so it follows the banner's own width, not the viewport.
   </p>
-  <p>The frames below are fixed-width containers with one link per kit.</p>
+  <p>The frames below are fixed-width containers.</p>
   <div class="figma-kits-demo">
     {[760, 600, 320].map((width) => (
       <figure class="figma-kits-demo__frame" style={`--demo-width: ${width}px`}>
         <figcaption class="figma-kits-demo__caption">{width}px container</figcaption>
-        <FigmaUiKits kits={demoKits} />
+        <FigmaUiKits />
       </figure>
     ))}
   </div>
@@ -214,7 +196,7 @@ const usageTokens = `.my-topic .igd-figma-kits {
     narrow aside:
   </p>
   <Code code={usageVariants} lang="astro" theme="dark-plus" wrap />
-  <FigmaUiKits variant="compact" kits={demoKits} />
+  <FigmaUiKits variant="compact" />
 
   <h2 id="wording">Custom wording</h2>
   <p>
@@ -227,15 +209,15 @@ const usageTokens = `.my-topic .igd-figma-kits {
 
   <h2 id="kits">Kit links</h2>
   <p>
-    When each kit has its own Figma Community file, pass <code>kits</code> to render one link per
-    theme instead of the single profile link:
+    The default kits live in <code>DEFAULT_FIGMA_UI_KITS</code> in <code>kits.ts</code>; update a
+    URL there when a kit is republished. Pass <code>kits</code> only to show a different set, for
+    example just the Material kit on a theme-specific topic:
   </p>
   <Code code={usageKits} lang="astro" theme="dark-plus" wrap />
-  <FigmaUiKits kits={demoKits} />
+  <FigmaUiKits kits={materialOnly} />
   <DocsAside type="info">
     Give every kit its own URL. Several links with different names but the same destination fail
-    WCAG 2.4.4 (link purpose). Until the kits have their own files, use the default single link. The
-    demo above links to Figma Community searches.
+    WCAG 2.4.4 (link purpose).
   </DocsAside>
 
   <h2 id="localization">Localization</h2>

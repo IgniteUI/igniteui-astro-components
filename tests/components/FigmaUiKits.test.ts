@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import { experimental_AstroContainer as AstroContainer } from 'astro/container';
 import FigmaUiKits from '../../src/components/mdx/FigmaUiKits/FigmaUiKits.astro';
-import { FIGMA_UI_KITS_URL } from '../../src/components/mdx/FigmaUiKits/kits';
+import { DEFAULT_FIGMA_UI_KITS } from '../../src/components/mdx/FigmaUiKits/kits';
 
 // FigmaUiKits reads navLang from the site-meta virtual module to pick its default copy.
 const siteMeta = vi.hoisted(() => ({ navLang: 'en' }));
@@ -38,19 +38,29 @@ describe('FigmaUiKits', () => {
     siteMeta.navLang = 'en';
   });
 
-  it('renders one link to the Figma profile by default', async () => {
-    const html = await render();
-    const [link, ...rest] = links(html);
+  it('renders the four default kits with their own Figma Community files', async () => {
+    const kitLinks = links(await render());
 
-    expect(rest).toHaveLength(0);
-    expect(html).not.toContain('igd-figma-kits__list');
-    expect(link).toContain(`href="${FIGMA_UI_KITS_URL}"`);
-    expect(link).toContain('target="_blank"');
-    expect(link).toContain('rel="noopener noreferrer"');
-    expect(text(link)).toBe('Explore our UI kits (opens in a new tab)');
+    expect(kitLinks).toHaveLength(4);
+    expect(new Set(DEFAULT_FIGMA_UI_KITS.map((kit) => kit.href)).size).toBe(4);
+    kitLinks.forEach((link, i) => {
+      expect(DEFAULT_FIGMA_UI_KITS[i].href).toMatch(
+        /^https:\/\/www\.figma\.com\/community\/file\//,
+      );
+      expect(link).toContain(`href="${DEFAULT_FIGMA_UI_KITS[i].href}"`);
+      expect(text(link)).toBe(
+        `${DEFAULT_FIGMA_UI_KITS[i].label} Figma UI kit (opens in a new tab)`,
+      );
+    });
+    expect(DEFAULT_FIGMA_UI_KITS.map((kit) => kit.label)).toEqual([
+      'Material',
+      'Fluent',
+      'Bootstrap',
+      'Indigo',
+    ]);
   });
 
-  it('renders one link per kit with a contextual accessible name', async () => {
+  it('renders the kits passed in instead of the defaults', async () => {
     const html = await render({ kits: KITS });
     const kitLinks = links(html);
 
