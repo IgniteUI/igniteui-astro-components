@@ -60,19 +60,18 @@ const headings = [
   <p>
     The left side derives a breadcrumb from the <code>currentSlug</code>
     prop by walking the sidebar tree. The crumb trail reads
-    <em>Components / DocsSubHeader</em> for this page. Pass <code>sidebarItems</code> to override the
-    tree used for resolution.
+    <em>Components / DocsSubHeader</em> for this page. Pass <code>sidebarItems</code> to override
+    the tree used for resolution.
   </p>
 
   <h3 id="advanced-search">Advanced search</h3>
   <p>
-    Setting <code>advancedSearch</code> on <code>DocsLayout</code> (or placing <code
-      >&lt;SearchAdvanced slot="search" /&gt;</code
-    > directly on
+    Setting <code>advancedSearch</code> on <code>DocsLayout</code> (or placing{' '}
+    <code>&lt;SearchAdvanced slot="search" /&gt;</code> directly on
     <code>DocsSubHeader</code>) replaces the default <code>Search</code>
-    button with the tabbed <code>SearchAdvanced</code> dialog. It loads a JSON index from <code
-      >indexUrl</code
-    > and supports configurable tab categories, a scope selector, and a per-category result limit.
+    button with the tabbed <code>SearchAdvanced</code> dialog. It loads a JSON index from{' '}
+    <code>indexUrl</code> and supports configurable tab categories, a scope selector, and a
+    per-category result limit.
   </p>
 
   <h3 id="package-selector">Package selector</h3>
@@ -93,11 +92,11 @@ const headings = [
 
   <h3 id="theme-toggle">Theme toggle</h3>
   <p>
-    Set <code>showThemeToggle</code> to <code>true</code> to render a sun/moon icon button that toggles
+    Set <code>showThemeToggle</code> to <code>true</code> to render a sun/moon icon button that
+    toggles
     <code>data-theme</code> between
-    <code>light</code> and <code>dark</code>. The chosen value is persisted in <code
-      >localStorage</code
-    > under the key specified by
+    <code>light</code> and <code>dark</code>. The chosen value is persisted in{' '}
+    <code>localStorage</code> under the key specified by
     <code>themeStorageKey</code> (defaults to <code>"docs-theme"</code>).
   </p>
 
@@ -105,9 +104,8 @@ const headings = [
   <p>
     Cross-product links are rendered on the right side of the bar. Pass
     <code>productLinks</code> directly (as done here via
-    <code>PRODUCT_LINKS</code> from <code>site-config.ts</code>) or let them come from the <code
-      >virtual:docs-template/site-meta</code
-    > virtual module. Links whose <code>platform</code> matches the current build platform are automatically
-    hidden.
+    <code>PRODUCT_LINKS</code> from <code>site-config.ts</code>) or let them come from the{' '}
+    <code>virtual:docs-template/site-meta</code> virtual module. Links whose <code>platform</code>{' '}
+    matches the current build platform are automatically hidden.
   </p>
 </DocsLayout>

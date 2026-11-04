@@ -121,7 +121,8 @@ const resolvedIndexUrl = indexUrl ?? `${basePath}api-search-index/manifest.json`
     >
       <igc-icon name="search" collection="docs" slot="prefix" aria-hidden="true"></igc-icon>
       <kbd class="search-trigger__hint" slot="suffix" style="display: none;">
-        <kbd>Ctrl</kbd><kbd>K</kbd>
+        <kbd>Ctrl</kbd>
+        <kbd>K</kbd>
       </kbd>
     </igc-input>
   </div>
@@ -147,7 +148,8 @@ const resolvedIndexUrl = indexUrl ?? `${basePath}api-search-index/manifest.json`
             name="search"
             collection="docs"
             slot="prefix"
-            aria-hidden="true"></igc-icon>
+            aria-hidden="true"
+          ></igc-icon>
           <igc-icon-button
             slot="suffix"
             class="igd-search-clear"
@@ -156,7 +158,8 @@ const resolvedIndexUrl = indexUrl ?? `${basePath}api-search-index/manifest.json`
             aria-label="Clear search"
             name="clear"
             collection="docs"
-            hidden></igc-icon-button>
+            hidden
+          ></igc-icon-button>
         </igc-input>
 
         <igc-select
@@ -169,17 +172,15 @@ const resolvedIndexUrl = indexUrl ?? `${basePath}api-search-index/manifest.json`
           aria-label="Search scope"
           value="current"
         >
-          {
-            platformIcon && (
-              <igc-icon
-                id="search-scope-trigger-icon"
-                name={platformIcon}
-                collection="docs"
-                slot="prefix"
-                aria-hidden="true"
-              />
-            )
-          }
+          {platformIcon && (
+            <igc-icon
+              id="search-scope-trigger-icon"
+              name={platformIcon}
+              collection="docs"
+              slot="prefix"
+              aria-hidden="true"
+            />
+          )}
           <igc-select-item value="current">
             <span data-scope-label>Current package</span>
           </igc-select-item>
@@ -189,7 +190,8 @@ const resolvedIndexUrl = indexUrl ?? `${basePath}api-search-index/manifest.json`
           anchor="search-scope-select"
           class="igd-search-scope-tooltip"
           placement="bottom"
-          with-arrow></igc-tooltip>
+          with-arrow
+        ></igc-tooltip>
       </header>
       <div class="igd-search-content">
         <div class="igd-search-status" aria-live="polite"></div>

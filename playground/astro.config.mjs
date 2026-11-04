@@ -30,6 +30,7 @@ import { getPlatformHead } from '../src/platform.ts';
 import { igChrome } from '../src/chrome/integration.ts';
 import { rehypeHeadingAnchors } from '../src/plugins/rehype-heading-anchors.ts';
 import { rehypeTableWrapper } from '../src/plugins/rehype-table-wrapper.ts';
+import { igShikiConfig } from '../src/code-theme/index.ts';
 
 // Default the platform context used by ApiLink / ApiRef / PlatformBlock.
 process.env.PLATFORM ??= 'React';
@@ -195,11 +196,23 @@ function createThemingSassImporter() {
   };
 }
 
-/** @type {import('astro').ShikiConfig} */
-const markdownShikiConfig = {
-  theme: 'dark-plus',
-  wrap: true,
-};
+/**
+ * Playground-only lab for issue #136: a switcher on every page that compares
+ * igc-tree's `singleBranchExpand` with a sidebar-managed single branch.
+ * See src/scripts/single-branch-lab.ts.
+ * @returns {import('astro').AstroIntegration}
+ */
+function singleBranchLab() {
+  return {
+    name: 'playground:single-branch-lab',
+    hooks: {
+      'astro:config:setup': ({ injectScript }) => {
+        injectScript('page', `import '/src/scripts/single-branch-lab.ts';`);
+      },
+    },
+  };
+}
+
 export default defineConfig({
   root: repoRoot,
   srcDir: './src',
@@ -211,20 +224,19 @@ export default defineConfig({
    * the marketing site's exported chrome instead of the legacy fetched one. */
   integrations: [
     mdx(),
+    singleBranchLab(),
     ...(process.env.IG_CHROME_SNAPSHOT
       ? [igChrome({ snapshot: process.env.IG_CHROME_SNAPSHOT })]
       : []),
   ],
   markdown: {
-    shikiConfig: markdownShikiConfig,
+    // Same brand code theme createDocsSite() applies for consumers.
+    shikiConfig: igShikiConfig,
     processor: satteri({
       hastPlugins: [rehypeHeadingAnchors, rehypeTableWrapper],
     }),
   },
   vite: {
-    define: {
-      __IGD_SAMPLE_CODE_THEME__: JSON.stringify(markdownShikiConfig.theme),
-    },
     plugins: [iconUploadPlugin(), virtualDocsModules()],
     css: {
       preprocessorOptions: {

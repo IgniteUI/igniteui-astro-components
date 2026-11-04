@@ -58,27 +58,21 @@ igc-tab {
     overflow: hidden auto;
     overscroll-behavior: contain;
 
+    // The <pre> carries `igd-code`, so surface, font and token colours come
+    // from the shared code-snippet rules (_code-blocks.scss) and match the
+    // page's fenced blocks. Only the frame differs: the tab draws the border.
     pre {
       margin: 0;
       border: none;
-      // Same spacing token the EXAMPLE pane uses for `md`, so the code
-      // and the demo share the same breathing room (and both follow an
-      // --igd-sample-spacing-md override).
-      padding: var(--igd-sample-spacing-md, #{rem(16px)});
       border-radius: 0;
-      white-space: pre-wrap;
-      word-break: break-word;
     }
 
-    // Match the page-level CopyCode button (.copy-btn): flat variant, same
-    // 8px corner offset, and the shared palette — the code pane is always
-    // dark (single dark Shiki theme) while the button's default colors
-    // follow the site theme, so without the palette the icon was invisible
-    // in light mode until hovered.
+    // Same affordance as the page-level CopyCode button (.copy-btn): flat
+    // variant, same corner offset, same `--igd-code-copy-*` palette.
     .cv-hljs-code-copy {
       position: absolute;
-      inset-block-start: rem(8px);
-      inset-inline-end: rem(8px);
+      inset-block-start: var(--igd-code-copy-inset);
+      inset-inline-end: var(--igd-code-copy-inset);
       opacity: 0;
       transition: opacity 0.2s ease;
       pointer-events: none;
@@ -460,6 +454,25 @@ igc-tab::part(tab-header) {
     --size: #{rem(24px)};
     --ig-icon-size: #{rem(18px)};
     --border-radius: #{rem(18px)};
+  }
+}
+
+// Names the icon-only action buttons (StackBlitz, full screen, copy code) on
+// hover/focus. Same look as the theme picker's mode tooltips, which share the
+// footer with these buttons.
+.igd-sample-action-tooltip {
+  --ig-tooltip-background: rgb(52 75 101 / 90%);
+  --ig-tooltip-text-color: var(--ig-gray-50);
+  --ig-tooltip-border-radius: #{rem(4px)};
+
+  &::part(base) {
+    min-height: rem(24px);
+    padding: rem(4px) rem(8px);
+    font-family: var(--igd-font-sans);
+    font-size: rem(10px);
+    font-weight: 500;
+    letter-spacing: rem(0.33px);
+    line-height: rem(16px);
   }
 }
 

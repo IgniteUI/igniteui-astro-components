@@ -169,12 +169,10 @@ if (Astro.props.kind === 'sass') {
 }
 ---
 
-{
-  renderLink ? (
-    <a href={url}>{renderCode ? <code>{displayLabel}</code> : displayLabel}</a>
-  ) : renderCode ? (
-    <code>{displayLabel}</code>
-  ) : (
-    displayLabel
-  )
-}
+{renderLink ? (
+  <a href={url}>{renderCode ? <code>{displayLabel}</code> : displayLabel}</a>
+) : renderCode ? (
+  <code>{displayLabel}</code>
+) : (
+  displayLabel
+)}

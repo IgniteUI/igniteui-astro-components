@@ -16,7 +16,7 @@ import DocsSubHeader from 'igniteui-astro-components/components/DocsSubHeader.as
 | ----------------- | ------------------------------------------------------ | -------------- | ---------------------------------------------------------------------- |
 | `productLinks`    | `{ label: string; href: string; platform?: string }[]` | virtual module | Override the cross-product navigation links.                           |
 | `sidebarItems`    | `SidebarEntry[]`                                       | virtual module | Override the sidebar tree used for breadcrumb generation.              |
-| `packages`        | `string[]`                                             | —              | Package names for the package selector dropdown. Hidden when omitted.  |
+| `packages`        | `(string \| PackageEntry)[]`                           | virtual module | Entries for the package selector dropdown. Hidden when omitted.        |
 | `selectedPackage` | `string`                                               | —              | Currently selected package (must match one of `packages`).             |
 | `packageLabel`    | `string`                                               | `'Package'`    | Label rendered before the package selector.                            |
 | `versions`        | `string[]`                                             | —              | Version labels for the version selector dropdown. Hidden when omitted. |
@@ -24,6 +24,15 @@ import DocsSubHeader from 'igniteui-astro-components/components/DocsSubHeader.as
 | `versionLabel`    | `string`                                               | `'Version'`    | Label rendered before the version selector.                            |
 | `showThemeToggle` | `boolean`                                              | `false`        | Show a light/dark theme toggle button.                                 |
 | `themeStorageKey` | `string`                                               | `'docs-theme'` | `localStorage` key for persisting the theme preference.                |
+
+`PackageEntry` is `{ label: string; value?: string; href?: string; base?: string }`:
+
+| Field   | Description                                                                      |
+| ------- | -------------------------------------------------------------------------------- |
+| `label` | Text shown in the dropdown.                                                      |
+| `value` | Value matched against `selectedPackage`. Defaults to `label`.                    |
+| `href`  | Where selecting the entry navigates, e.g. the platform's getting started page.   |
+| `base`  | Root URL of the entry's docs site. Switching keeps the current page (see below). |
 
 ## Slots
 
@@ -33,6 +42,10 @@ import DocsSubHeader from 'igniteui-astro-components/components/DocsSubHeader.as
 
 ## Behaviour
 
+- Selecting a package navigates to its `href`. When the entry also has a `base`, it goes to the same
+  page on that site instead: the current URL with this site's base (`import.meta.env.BASE_URL`)
+  swapped for `base`, keeping the query and `#hash`. Nothing checks that the page exists there, so
+  the server should redirect missing pages, e.g. to the platform's getting started page.
 - Product links from the virtual module are shown; the currently active platform link is hidden.
 - The search button opens the Pagefind dialog (see `Search` component).
 - CSS custom properties used for positioning:
