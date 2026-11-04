@@ -130,6 +130,7 @@
     "test:watch": "vitest",
     "test:sample-widget": "node --test scripts/sample-widget.test.mjs",
     "build:llms": "node scripts/build-llms.mjs",
+    "prepack": "npm run build:llms",
     "playground": "npm run playground:dev",
     "playground:dev": "astro sync --root playground && astro dev --root playground --port 4567",
     "playground:build": "astro sync --root playground && astro build --root playground",

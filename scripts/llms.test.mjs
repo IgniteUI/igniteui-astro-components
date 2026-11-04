@@ -1,7 +1,7 @@
 /**
- * Checks that llms-full.txt matches the build output, llms.txt covers every
- * export and README with working links, every exported component has a README,
- * and both files are published.
+ * Checks that llms-full.txt builds, llms.txt covers every export and README
+ * with working links, every exported component has a README, and both files
+ * are published.
  */
 
 import { test } from 'node:test';
@@ -20,12 +20,13 @@ const exportKeys = Object.keys(pkg.exports).filter(
   (key) => key !== '.' && key !== './package.json',
 );
 
-test('llms-full.txt matches a fresh build', () => {
-  assert.equal(
-    read('llms-full.txt'),
-    buildLlmsFull(rootDir),
-    'llms-full.txt is stale. Run `npm run build:llms` and commit the result.',
-  );
+test('llms-full.txt builds from llms.txt and every README', () => {
+  const full = buildLlmsFull(rootDir);
+  assert.ok(full.includes('## llms.txt\n'), 'llms.txt section missing');
+  assert.ok(full.includes('## README.md\n'), 'README section missing');
+  for (const rel of listReadmes(rootDir)) {
+    assert.ok(full.includes(`## ${rel}\n`), `${rel} section missing`);
+  }
 });
 
 test('llms.txt mentions every exported subpath', () => {
@@ -61,4 +62,5 @@ test('llms files are published with the package', () => {
   for (const file of ['llms.txt', 'llms-full.txt']) {
     assert.ok(pkg.files.includes(file), `package.json#files must include ${file}`);
   }
+  assert.equal(pkg.scripts.prepack, 'npm run build:llms', 'prepack must build llms-full.txt');
 });

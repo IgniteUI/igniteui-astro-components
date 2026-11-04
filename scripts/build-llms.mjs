@@ -1,10 +1,9 @@
 #!/usr/bin/env node
 /**
  * Builds `llms-full.txt` from `llms.txt`, the package exports, the root README
- * and every README under `src/`.
+ * and every README under `src/`. Runs at `prepack`; the file is not committed.
  *
  *   node scripts/build-llms.mjs          # write llms-full.txt
- *   node scripts/build-llms.mjs --check  # exit 1 when llms-full.txt is out of date
  */
 import fs from 'node:fs';
 import path from 'node:path';
@@ -128,20 +127,8 @@ if (isCli) {
   const rootDir = path.resolve(fileURLToPath(new URL('..', import.meta.url)));
   const outFile = path.join(rootDir, 'llms-full.txt');
   const fresh = buildLlmsFull(rootDir);
-
-  if (process.argv.includes('--check')) {
-    const current = fs.existsSync(outFile) ? fs.readFileSync(outFile, 'utf8') : '';
-    if (current !== fresh) {
-      console.error(
-        'llms-full.txt is out of date. Run `npm run build:llms` and commit the result.',
-      );
-      process.exit(1);
-    }
-    console.log('llms-full.txt is up to date.');
-  } else {
-    fs.writeFileSync(outFile, fresh);
-    console.log(
-      `Wrote ${path.relative(process.cwd(), outFile)} (${fresh.length.toLocaleString()} chars).`,
-    );
-  }
+  fs.writeFileSync(outFile, fresh);
+  console.log(
+    `Wrote ${path.relative(process.cwd(), outFile)} (${fresh.length.toLocaleString()} chars).`,
+  );
 }
