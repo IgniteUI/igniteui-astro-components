@@ -26,7 +26,7 @@ declare module 'virtual:docs-template/site-meta' {
     href: string;
     platform?: string;
   }>;
-  /** Extra <head> entries injected by siteMetaIntegration (platform CDN, highlight.js, etc.). */
+  /** Extra <head> entries injected by siteMetaIntegration (platform CDN, site-specific entries, etc.). */
   export const headEntries: Array<{
     tag: string;
     attrs?: Record<string, string | boolean | undefined>;

@@ -1,5 +1,6 @@
 ---
 import { Code } from 'astro:components';
+import { igCodeTheme } from '../../../../src/code-theme';
 import DocsLayout from '../../../../src/layouts/DocsLayout/DocsLayout.astro';
 import DocsSidebar from '../../../../src/components/DocsSidebar/DocsSidebar.astro';
 import DocsToc from '../../../../src/components/DocsToc/DocsToc.astro';
@@ -112,7 +113,7 @@ const usageCentering = `<!-- A small image keeps its intrinsic size and is cente
     Import the component and point <code>src</code> at your anatomy image. Always pass a descriptive{' '}
     <code>alt</code> — it is the accessible description of the diagram:
   </p>
-  <Code code={usageQuickStart} lang="astro" theme="dark-plus" wrap />
+  <Code code={usageQuickStart} lang="astro" theme={igCodeTheme} wrap />
   <DocsAside type="info">
     Both <code>src</code> and <code>alt</code> are required. The
     <code>alt</code> should describe the parts the diagram labels, not just name the component — see{' '}
@@ -156,7 +157,7 @@ const usageCentering = `<!-- A small image keeps its intrinsic size and is cente
     the frame, so it grows to fill the content box — never past the padding, no matter how large the
     source image is.
   </p>
-  <Code code={usageDefault} lang="astro" theme="dark-plus" wrap />
+  <Code code={usageDefault} lang="astro" theme={igCodeTheme} wrap />
   <Anatomy
     src="/mock-anatomy/button.svg"
     alt="Button anatomy: prefix icon, label, suffix icon, and container"
@@ -170,7 +171,7 @@ const usageCentering = `<!-- A small image keeps its intrinsic size and is cente
     screenshot is fine when that's all you have — just remember the baked-in labels aren't
     selectable (see the warning under <a href="#accessibility">Accessibility</a>).
   </p>
-  <Code code={usageRaster} lang="astro" theme="dark-plus" wrap />
+  <Code code={usageRaster} lang="astro" theme={igCodeTheme} wrap />
   <Anatomy
     src="/mock-anatomy/anatomy-test.png"
     alt="Human anatomy chart: full-body figures showing the muscular system, skeletal system, and the arterial (red) and venous (blue) circulatory systems, with close-up insets of the skull, eye, knee, and shoulder joints"
@@ -182,7 +183,7 @@ const usageCentering = `<!-- A small image keeps its intrinsic size and is cente
     you don't position it yourself. Here a compact badge diagram sits in the middle of the same
     padded canvas:
   </p>
-  <Code code={usageCentering} lang="astro" theme="dark-plus" wrap />
+  <Code code={usageCentering} lang="astro" theme={igCodeTheme} wrap />
   <Anatomy src="/mock-anatomy/badge.svg" alt="Badge anatomy: label and pill container" />
 
   <h2 id="accessibility">Accessibility</h2>
