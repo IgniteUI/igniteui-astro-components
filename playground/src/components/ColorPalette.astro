@@ -21,18 +21,31 @@ const accentShades = ['A100', 'A200', 'A400', 'A700'] as const;
 ---
 
 <div class="igd-palette">
-  {
-    families.map(({ name, label, accent }) => (
-      <div class="igd-palette__family">
-        <div class="igd-palette__meta">
-          <span class="igd-palette__name">{label}</span>
-          <code class="igd-palette__hint">--ig-{name}-*</code>
+  {families.map(({ name, label, accent }) => (
+    <div class="igd-palette__family">
+      <div class="igd-palette__meta">
+        <span class="igd-palette__name">{label}</span>
+        <code class="igd-palette__hint">--ig-{name}-*</code>
+      </div>
+      <div class="igd-palette__strip">
+        <div class="igd-palette__swatches">
+          {mainShades.map((shade) => (
+            <div
+              class={`igd-palette__swatch${shade === '500' ? ' igd-palette__swatch--main' : ''}`}
+              style={`background:var(--ig-${name}-${shade});color:var(--ig-${name}-${shade}-contrast);--c:var(--ig-${name}-${shade});`}
+              data-var={`--ig-${name}-${shade}`}
+              title={`--ig-${name}-${shade}`}
+              aria-label={`--ig-${name}-${shade}`}
+            >
+              <span class="igd-palette__shade">{shade}</span>
+            </div>
+          ))}
         </div>
-        <div class="igd-palette__strip">
-          <div class="igd-palette__swatches">
-            {mainShades.map((shade) => (
+        {accent && (
+          <div class="igd-palette__accents">
+            {accentShades.map((shade) => (
               <div
-                class={`igd-palette__swatch${shade === '500' ? ' igd-palette__swatch--main' : ''}`}
+                class="igd-palette__swatch"
                 style={`background:var(--ig-${name}-${shade});color:var(--ig-${name}-${shade}-contrast);--c:var(--ig-${name}-${shade});`}
                 data-var={`--ig-${name}-${shade}`}
                 title={`--ig-${name}-${shade}`}
@@ -42,25 +55,10 @@ const accentShades = ['A100', 'A200', 'A400', 'A700'] as const;
               </div>
             ))}
           </div>
-          {accent && (
-            <div class="igd-palette__accents">
-              {accentShades.map((shade) => (
-                <div
-                  class="igd-palette__swatch"
-                  style={`background:var(--ig-${name}-${shade});color:var(--ig-${name}-${shade}-contrast);--c:var(--ig-${name}-${shade});`}
-                  data-var={`--ig-${name}-${shade}`}
-                  title={`--ig-${name}-${shade}`}
-                  aria-label={`--ig-${name}-${shade}`}
-                >
-                  <span class="igd-palette__shade">{shade}</span>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
+        )}
       </div>
-    ))
-  }
+    </div>
+  ))}
 </div>
 
 <style>
