@@ -3,11 +3,7 @@
 // Values come from the --igd-figma-kits-* tokens in global/_variables.scss.
 
 .igd-figma-kits {
-  --_padding-block: var(--igd-figma-kits-padding-block);
-  --_padding-inline: var(--igd-figma-kits-padding-inline);
-
   container: igd-figma-kits / inline-size;
-  box-sizing: border-box;
   inline-size: 100%;
   margin: 0 0 var(--igd-figma-kits-margin-bottom);
 }
@@ -17,19 +13,12 @@
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  column-gap: var(--igd-figma-kits-gap);
-  row-gap: var(--igd-figma-kits-row-gap);
-  box-sizing: border-box;
-  padding: var(--_padding-block) var(--_padding-inline);
+  gap: var(--igd-figma-kits-row-gap) var(--igd-figma-kits-gap);
+  padding: var(--igd-figma-kits-padding-block) var(--igd-figma-kits-padding-inline);
   background: var(--igd-figma-kits-bg);
   border: var(--igd-figma-kits-border-width) var(--igd-figma-kits-border-style)
     var(--igd-figma-kits-border-color);
   border-radius: var(--igd-figma-kits-radius);
-
-  // Keep the frame visible in forced-colors mode.
-  @media (forced-colors: active) {
-    border-color: CanvasText;
-  }
 }
 
 .igd-figma-kits__heading {
@@ -40,16 +29,25 @@
   min-inline-size: 0;
 }
 
-.igd-figma-kits__logo {
+// Logo and link icon: the SVG fills the wrapper's height, width follows its viewBox.
+.igd-figma-kits__logo,
+.igd-figma-kits__icon {
   display: block;
   flex: none;
-  block-size: var(--igd-figma-kits-logo-size);
 
   svg {
     display: block;
     inline-size: auto;
     block-size: 100%;
   }
+}
+
+.igd-figma-kits__logo {
+  block-size: var(--igd-figma-kits-logo-size);
+}
+
+.igd-figma-kits__icon {
+  block-size: 1lh;
 }
 
 .igd-figma-kits__text {
@@ -60,8 +58,7 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  column-gap: var(--igd-figma-kits-gap);
-  row-gap: var(--igd-figma-kits-row-gap);
+  gap: var(--igd-figma-kits-row-gap) var(--igd-figma-kits-gap);
   margin: 0;
   padding: 0;
   list-style: none;
@@ -70,11 +67,6 @@
 .igd-figma-kits__item {
   margin: 0;
   padding: 0;
-
-  &::before,
-  &::marker {
-    content: none;
-  }
 }
 
 .igd-figma-kits__link {
@@ -102,19 +94,6 @@
   }
 }
 
-.igd-figma-kits__icon {
-  display: block;
-  flex: none;
-  inline-size: 1lh;
-  block-size: 1lh;
-
-  svg {
-    display: block;
-    inline-size: 100%;
-    block-size: 100%;
-  }
-}
-
 // Visually hidden, still read by screen readers.
 .igd-figma-kits__sr-only {
   position: absolute;
@@ -135,11 +114,10 @@
 // Compact layout: title over links, compact padding, short title.
 @mixin compact {
   .igd-figma-kits__banner {
-    --_padding-block: var(--igd-figma-kits-compact-padding-block);
-    --_padding-inline: var(--igd-figma-kits-compact-padding-inline);
-
     flex-direction: column;
     align-items: stretch;
+    padding: var(--igd-figma-kits-compact-padding-block)
+      var(--igd-figma-kits-compact-padding-inline);
   }
 
   .igd-figma-kits__title-full {
@@ -167,9 +145,9 @@
 .igd-figma-kits__title {
   @include type-style('body-1') {
     margin: 0;
+    font-weight: var(--igd-figma-kits-title-weight);
   }
 
-  font-weight: var(--igd-figma-kits-title-weight);
   color: var(--igd-figma-kits-title-color);
 }
 
@@ -184,9 +162,9 @@
 .igd-figma-kits__link {
   @include type-style('body-2') {
     margin: 0;
+    font-weight: var(--igd-figma-kits-link-weight);
   }
 
-  font-weight: var(--igd-figma-kits-link-weight);
   color: var(--igd-figma-kits-link-color);
 
   &:hover,
