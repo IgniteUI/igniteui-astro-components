@@ -1,0 +1,74 @@
+---
+import { Code } from 'astro:components';
+import DocsLayout from '../../../../src/layouts/DocsLayout/DocsLayout.astro';
+import DocsSidebar from '../../../../src/components/DocsSidebar/DocsSidebar.astro';
+import DocsToc from '../../../../src/components/DocsToc/DocsToc.astro';
+import DocsSubHeader from '../../../../src/components/DocsSubHeader/DocsSubHeader.astro';
+import SearchAdvanced from '../../../../src/components/SearchAdvanced/SearchAdvanced.astro';
+import { igCodeTheme } from '../../../../src/code-theme';
+import CodeFences from '../../components/CodeFences.mdx';
+import MockSample from '../../components/MockSample.astro';
+import {
+  SITE_TITLE,
+  SIDEBAR,
+  PRODUCT_LINKS,
+  SEARCH_TABS,
+  PACKAGES,
+  VERSIONS,
+} from '../../site-config';
+
+const slug = 'components/code-block';
+
+const headings = [
+  { depth: 2, slug: 'fenced-blocks', text: 'Fenced blocks' },
+  { depth: 2, slug: 'code-component', text: 'The <Code> component' },
+  { depth: 2, slug: 'sample-tabs', text: 'Sample code tabs' },
+];
+
+const usageCode = `${'---'}
+import { Code } from 'astro:components';
+import { igCodeTheme } from 'igniteui-astro-components/code-theme';
+${'---'}
+
+<Code code={snippet} lang="ts" theme={igCodeTheme} wrap />`;
+
+const longLine = `export const columns = [{ field: 'ID', header: 'Identifier', width: '80px', sortable: true, filterable: true, resizable: true, pinned: false, hidden: false, dataType: 'number' }];`;
+---
+
+<DocsLayout title="Code snippets" siteTitle={SITE_TITLE} hasSidebar currentSlug={slug}>
+  <DocsSubHeader
+    slot="subheader"
+    pageTitle="Code snippets"
+    currentSlug={slug}
+    siteTitle={SITE_TITLE}
+    productLinks={PRODUCT_LINKS}
+    showThemeToggle={true}
+    packages={[...PACKAGES]}
+    selectedPackage={PACKAGES[0].value}
+    versions={[...VERSIONS]}
+    selectedVersion={VERSIONS[0]}
+  >
+    <SearchAdvanced slot="search" tabs={SEARCH_TABS} showScope={true} />
+  </DocsSubHeader>
+  <DocsSidebar slot="sidebar" items={SIDEBAR} currentSlug={slug} />
+  <DocsToc slot="toc" headings={headings} offsetTarget=".docs-subheader" />
+
+  <h1>Code snippets</h1>
+  <p>
+    Visual check for the brand code theme (Rosé Pine Moon recoloured, see{' '}
+    <code>src/code-theme/README.md</code>). Fenced blocks, <code>&lt;Code&gt;</code> and Sample code
+    tabs should look identical, on both page themes.
+  </p>
+
+  <h2 id="fenced-blocks">Fenced blocks</h2>
+  <CodeFences />
+
+  <h2 id="code-component">
+    The <code>&lt;Code&gt;</code> component
+  </h2>
+  <Code code={usageCode} lang="astro" theme={igCodeTheme} wrap />
+  <Code code={longLine} lang="ts" theme={igCodeTheme} wrap />
+
+  <h2 id="sample-tabs">Sample code tabs</h2>
+  <MockSample id="code-block-sample" src="/mock-demo" alt="React Grid Example" />
+</DocsLayout>

@@ -23,42 +23,40 @@ const { headings = [], tocConfig, label = 'On this page' } = Astro.props;
 const nodes = headingsToTreeNodes(headings, tocConfig);
 ---
 
-{
-  nodes.length > 0 && (
-    <div class="mobile-toc">
-      <button
-        class="mobile-toc__trigger"
-        id="mobile-toc-trigger"
-        aria-expanded="false"
-        aria-controls="mobile-toc-dropdown"
+{nodes.length > 0 && (
+  <div class="mobile-toc">
+    <button
+      class="mobile-toc__trigger"
+      id="mobile-toc-trigger"
+      aria-expanded="false"
+      aria-controls="mobile-toc-dropdown"
+    >
+      <span class="mobile-toc__label">{label}</span>
+      <span class="mobile-toc__active" id="mobile-toc-active" aria-hidden="true" />
+      <svg
+        class="mobile-toc__chevron"
+        xmlns="http://www.w3.org/2000/svg"
+        width="16"
+        height="16"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
       >
-        <span class="mobile-toc__label">{label}</span>
-        <span class="mobile-toc__active" id="mobile-toc-active" aria-hidden="true" />
-        <svg
-          class="mobile-toc__chevron"
-          xmlns="http://www.w3.org/2000/svg"
-          width="16"
-          height="16"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2.5"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          aria-hidden="true"
-        >
-          <polyline points="6 9 12 15 18 9" />
-        </svg>
-      </button>
+        <polyline points="6 9 12 15 18 9" />
+      </svg>
+    </button>
 
-      <div class="mobile-toc__dropdown" id="mobile-toc-dropdown" aria-hidden="true">
-        <nav aria-label={label}>
-          <DocsTree nodes={nodes} variant="toc" />
-        </nav>
-      </div>
+    <div class="mobile-toc__dropdown" id="mobile-toc-dropdown" aria-hidden="true">
+      <nav aria-label={label}>
+        <DocsTree nodes={nodes} variant="toc" />
+      </nav>
     </div>
-  )
-}
+  </div>
+)}
 
 <script>
   function initMobileToc() {

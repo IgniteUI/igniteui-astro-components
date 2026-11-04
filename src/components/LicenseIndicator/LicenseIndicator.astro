@@ -11,12 +11,10 @@ const { license } = Astro.props;
 const label = license === 'premium' ? 'Premium' : 'Open Source';
 ---
 
-{
-  license && (
-    <Badge variant={license} class="license-indicator-badge">
-      <span>{label}</span>
+{license && (
+  <Badge variant={license} class="license-indicator-badge">
+    <span>{label}</span>
 
-      {license === 'premium' && <igc-icon name="premium" collection="docs" aria-hidden="true" />}
-    </Badge>
-  )
-}
+    {license === 'premium' && <igc-icon name="premium" collection="docs" aria-hidden="true" />}
+  </Badge>
+)}

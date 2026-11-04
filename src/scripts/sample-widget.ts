@@ -34,6 +34,7 @@ defineComponents(
 
 import './icon-registry';
 import type { BundledLanguage, Highlighter } from 'shiki';
+import { announceCopyStatus, clearCopyStatus } from './copy-status';
 import { ULTIMATE_UI_PLATFORMS } from '../lib/ultimate-ui-platforms';
 import footerStackblitzIcon from '../components/mdx/Sample/assets/stackblitz.svg?raw';
 import footerOpenExternalIcon from '../components/mdx/Sample/assets/open-external.svg?raw';
@@ -73,9 +74,6 @@ const SANDBOX_UNSUPPORTED_PLATFORMS = new Set(['blazor', 'winui', 'uno']);
 
 const DV_PATHS = ['gauges/', 'maps/', 'excel/', 'charts/'];
 const ASSETS_RE = /([.]{0,2}\/)*assets\//g;
-const DEFAULT_CODE_THEME = 'dark-plus';
-
-declare const __IGD_SAMPLE_CODE_THEME__: string | undefined;
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -189,17 +187,12 @@ const HIGHLIGHT_LANGS: ReadonlySet<string> = new Set([...SHIKI_LANGS, ...SHIKI_L
 
 let _highlighterPromise: Promise<Highlighter> | null = null;
 
-function getCodeTheme(): string {
-  return typeof __IGD_SAMPLE_CODE_THEME__ === 'string' && __IGD_SAMPLE_CODE_THEME__.trim()
-    ? __IGD_SAMPLE_CODE_THEME__
-    : DEFAULT_CODE_THEME;
-}
-
+// Shiki and the brand theme load lazily, only once a code tab exists.
 function getHighlighter(): Promise<Highlighter> {
   if (!_highlighterPromise) {
-    _highlighterPromise = import('shiki')
-      .then(({ createHighlighter }) =>
-        createHighlighter({ themes: [getCodeTheme()], langs: [...SHIKI_LANGS] }),
+    _highlighterPromise = Promise.all([import('shiki'), import('../code-theme')])
+      .then(([{ createHighlighter }, { igCodeTheme }]) =>
+        createHighlighter({ themes: [igCodeTheme], langs: [...SHIKI_LANGS] }),
       )
       .catch((err) => {
         _highlighterPromise = null;
@@ -209,6 +202,7 @@ function getHighlighter(): Promise<Highlighter> {
   return _highlighterPromise;
 }
 
+/** Highlight a code tab with the brand theme the page's fenced blocks use. */
 function highlightCode(codeEl: HTMLElement, lang: string): void {
   const safeLang = HIGHLIGHT_LANGS.has(lang) ? lang : 'text';
   getHighlighter()
@@ -219,13 +213,17 @@ function highlightCode(codeEl: HTMLElement, lang: string): void {
       const tmp = document.createElement('div');
       tmp.innerHTML = h.codeToHtml(codeEl.textContent ?? '', {
         lang: safeLang,
-        theme: getCodeTheme(),
+        theme: h.getLoadedThemes()[0],
       });
       const shikiPre = tmp.firstElementChild as HTMLElement | null;
       const shikiCode = shikiPre?.querySelector('code');
       if (!shikiPre || !shikiCode) return;
       const parentPre = codeEl.parentElement;
-      if (parentPre) parentPre.style.cssText = shikiPre.style.cssText;
+      if (parentPre) {
+        // Shiki's inline background and text colour.
+        parentPre.style.cssText = shikiPre.style.cssText;
+        parentPre.classList.add('igd-code');
+      }
       codeEl.innerHTML = shikiCode.innerHTML;
     })
     .catch(console.warn);
@@ -272,17 +270,30 @@ function wireCopyButton(btn: HTMLElement, getText: () => string): void {
     tooltip.message = label;
   };
 
+  // Element that holds the copy-status live region.
+  const host = btn.parentElement ?? btn;
+
   btn.addEventListener('click', () => {
-    navigator.clipboard.writeText(getText()).then(() => {
-      icon?.setAttribute('name', 'check');
-      setLabel(CODE_COPIED_LABEL);
-      // A click inside the show delay cancels the pending show; open it now.
-      void tooltip.show();
-      setTimeout(() => {
-        icon?.setAttribute('name', 'copy');
-        setLabel(COPY_CODE_LABEL);
-      }, 1500);
-    });
+    navigator.clipboard
+      .writeText(getText())
+      .then(() => {
+        icon?.setAttribute('name', 'check');
+        setLabel(CODE_COPIED_LABEL);
+        announceCopyStatus(host, 'Code copied to clipboard');
+        // A click inside the show delay cancels the pending show; open it now.
+        void tooltip.show();
+      })
+      .catch(() => {
+        setLabel('Copy failed');
+        announceCopyStatus(host, 'Copy failed');
+      })
+      .then(() =>
+        setTimeout(() => {
+          icon?.setAttribute('name', 'copy');
+          setLabel(COPY_CODE_LABEL);
+          clearCopyStatus(host);
+        }, 1500),
+      );
   });
 }
 
@@ -298,6 +309,7 @@ function addCodeTab(igcTabs: HTMLElement, file: SampleFile, useFileName = false)
   wrapper.className = 'code-wrapper';
 
   const pre = document.createElement('pre');
+  pre.className = 'igd-code';
   const code = document.createElement('code');
   code.className = `language-${lang}`;
   code.textContent = file.content;

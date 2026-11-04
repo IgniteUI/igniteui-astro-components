@@ -60,13 +60,16 @@ for (const platform of ['winui', 'uno', 'uno-platform']) {
       context.require = (name) => {
         if (name === 'igniteui-webcomponents') return new Proxy({}, { get: () => () => {} });
         if (name === './icon-registry' || name.endsWith('?raw')) return {};
+        if (name === './copy-status') return { announceCopyStatus() {}, clearCopyStatus() {} };
         if (name === '../lib/ultimate-ui-platforms') return platformsModule.exports;
+        if (name === '../code-theme') return { igCodeTheme: { name: 'ig-dark' } };
         if (name === 'shiki')
           return {
             createHighlighter: async ({ langs }) => {
               eagerLangs.push(...langs);
               return {
                 getLoadedLanguages: () => [...langs, ...lazyLoads],
+                getLoadedThemes: () => ['ig-dark'],
                 loadLanguage: async (lang) => {
                   lazyLoads.push(lang);
                 },
