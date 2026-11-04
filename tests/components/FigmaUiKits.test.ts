@@ -68,6 +68,13 @@ describe('FigmaUiKits', () => {
     expect(text(dom.querySelector('.igd-figma-kits__description'))).toBe('Explore our UI kits');
   });
 
+  it('keeps list semantics on the markerless kit list', async () => {
+    const list = (await render()).querySelector('ul.igd-figma-kits__list');
+
+    expect(list?.getAttribute('role')).toBe('list');
+    expect(list?.querySelectorAll(':scope > li')).toHaveLength(4);
+  });
+
   it('renders the logo and link icons from the shared assets, hidden from screen readers', async () => {
     const dom = await render({ kits: KITS });
     const logo = dom.querySelector('.igd-figma-kits__logo');

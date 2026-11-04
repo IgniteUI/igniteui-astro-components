@@ -75,7 +75,7 @@ The default `title`, `compactTitle` and `description`, and the hidden link text,
 ## Accessibility
 
 - Every link opens in a new tab and says so in visually hidden text. Each link also names what it opens, so "Material Figma UI kit (opens in a new tab)" makes sense in a screen reader's links list. The external-link icon and the Figma logo are `aria-hidden`.
-- The links are a real `<ul>`, so assistive tech announces how many there are.
+- The links are a real `<ul>` with `role="list"`, so assistive tech announces how many there are. The explicit role is needed because Safari drops list semantics from a list styled with `list-style: none`.
 - The banner is a plain `<div>`, not an `<aside>` or `<nav>`. It repeats on every topic, and a landmark on every page would clutter the landmark list.
 - Links meet the WCAG 2.2 target size and have a visible `:focus-visible` outline. They use the same colours as markdown links (`--igd-link-color`: 5.25:1 on the page and 4.77:1 on the banner in light mode, 12.5:1 or more in dark mode).
 - In forced-colors mode the frame keeps a `CanvasText` border.

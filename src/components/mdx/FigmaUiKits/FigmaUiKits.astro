@@ -118,7 +118,8 @@ for (const kit of kits) {
       </span>
     </p>
 
-    <ul class="igd-figma-kits__list">
+    {/* role="list" keeps the list announced in Safari VoiceOver. */}
+    <ul class="igd-figma-kits__list" role="list">
       {kits.map((kit) => (
         <li class="igd-figma-kits__item">
           <a class="igd-figma-kits__link" href={kit.href} target="_blank" rel="noopener noreferrer">
