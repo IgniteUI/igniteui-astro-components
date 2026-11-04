@@ -20,6 +20,7 @@ import {
   IgcIconButtonComponent,
   IgcIconComponent,
   IgcCircularProgressComponent,
+  IgcTooltipComponent,
   registerIconFromText,
 } from 'igniteui-webcomponents';
 defineComponents(
@@ -28,6 +29,7 @@ defineComponents(
   IgcIconButtonComponent,
   IgcIconComponent,
   IgcCircularProgressComponent,
+  IgcTooltipComponent,
 );
 
 import './icon-registry';
@@ -71,9 +73,6 @@ const SANDBOX_UNSUPPORTED_PLATFORMS = new Set(['blazor', 'winui', 'uno']);
 
 const DV_PATHS = ['gauges/', 'maps/', 'excel/', 'charts/'];
 const ASSETS_RE = /([.]{0,2}\/)*assets\//g;
-const DEFAULT_CODE_THEME = 'dark-plus';
-
-declare const __IGD_SAMPLE_CODE_THEME__: string | undefined;
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -187,17 +186,12 @@ const HIGHLIGHT_LANGS: ReadonlySet<string> = new Set([...SHIKI_LANGS, ...SHIKI_L
 
 let _highlighterPromise: Promise<Highlighter> | null = null;
 
-function getCodeTheme(): string {
-  return typeof __IGD_SAMPLE_CODE_THEME__ === 'string' && __IGD_SAMPLE_CODE_THEME__.trim()
-    ? __IGD_SAMPLE_CODE_THEME__
-    : DEFAULT_CODE_THEME;
-}
-
+// Shiki and the brand theme load lazily, only once a code tab exists.
 function getHighlighter(): Promise<Highlighter> {
   if (!_highlighterPromise) {
-    _highlighterPromise = import('shiki')
-      .then(({ createHighlighter }) =>
-        createHighlighter({ themes: [getCodeTheme()], langs: [...SHIKI_LANGS] }),
+    _highlighterPromise = Promise.all([import('shiki'), import('../code-theme')])
+      .then(([{ createHighlighter }, { igCodeTheme }]) =>
+        createHighlighter({ themes: [igCodeTheme], langs: [...SHIKI_LANGS] }),
       )
       .catch((err) => {
         _highlighterPromise = null;
@@ -207,6 +201,7 @@ function getHighlighter(): Promise<Highlighter> {
   return _highlighterPromise;
 }
 
+/** Highlight a code tab with the brand theme the page's fenced blocks use. */
 function highlightCode(codeEl: HTMLElement, lang: string): void {
   const safeLang = HIGHLIGHT_LANGS.has(lang) ? lang : 'text';
   getHighlighter()
@@ -217,13 +212,17 @@ function highlightCode(codeEl: HTMLElement, lang: string): void {
       const tmp = document.createElement('div');
       tmp.innerHTML = h.codeToHtml(codeEl.textContent ?? '', {
         lang: safeLang,
-        theme: getCodeTheme(),
+        theme: h.getLoadedThemes()[0],
       });
       const shikiPre = tmp.firstElementChild as HTMLElement | null;
       const shikiCode = shikiPre?.querySelector('code');
       if (!shikiPre || !shikiCode) return;
       const parentPre = codeEl.parentElement;
-      if (parentPre) parentPre.style.cssText = shikiPre.style.cssText;
+      if (parentPre) {
+        // Shiki's inline background and text colour.
+        parentPre.style.cssText = shikiPre.style.cssText;
+        parentPre.classList.add('igd-code');
+      }
       codeEl.innerHTML = shikiCode.innerHTML;
     })
     .catch(console.warn);
@@ -231,6 +230,57 @@ function highlightCode(codeEl: HTMLElement, lang: string): void {
 
 function normalizeCodeLang(lang: string | undefined): string {
   return LANG_MAP[lang ?? ''] ?? lang ?? 'text';
+}
+
+// ─── Action Tooltips ──────────────────────────────────────────────────────────
+
+const COPY_CODE_LABEL = 'Copy code';
+const CODE_COPIED_LABEL = 'Code copied';
+
+/**
+ * Give an icon-only action button a hover/focus tooltip that names its action.
+ * The text is the button's `aria-label`, so the visible and accessible names
+ * stay the same. Call after the button is in the DOM: the tooltip is inserted
+ * as its next sibling.
+ */
+function addActionTooltip(btn: HTMLElement): IgcTooltipComponent {
+  const tooltip = document.createElement('igc-tooltip') as IgcTooltipComponent;
+  tooltip.className = 'igd-sample-action-tooltip';
+  tooltip.withArrow = true;
+  tooltip.message = btn.getAttribute('aria-label') ?? '';
+  tooltip.anchor = btn;
+  btn.after(tooltip);
+  return tooltip;
+}
+
+/**
+ * Wire a code-tab copy button: copy on click, then switch its icon,
+ * `aria-label` and tooltip to the "copied" state for a moment.
+ */
+function wireCopyButton(btn: HTMLElement, getText: () => string): void {
+  const icon = btn.querySelector<HTMLElement>('igc-icon');
+  const tooltip = addActionTooltip(btn);
+  // `click` is a default hide trigger; drop it so the tooltip stays open to
+  // confirm the copy.
+  tooltip.hideTriggers = 'pointerleave,focusout';
+
+  const setLabel = (label: string) => {
+    btn.setAttribute('aria-label', label);
+    tooltip.message = label;
+  };
+
+  btn.addEventListener('click', () => {
+    navigator.clipboard.writeText(getText()).then(() => {
+      icon?.setAttribute('name', 'check');
+      setLabel(CODE_COPIED_LABEL);
+      // A click inside the show delay cancels the pending show; open it now.
+      void tooltip.show();
+      setTimeout(() => {
+        icon?.setAttribute('name', 'copy');
+        setLabel(COPY_CODE_LABEL);
+      }, 1500);
+    });
+  });
 }
 
 // ─── Code Tab Rendering ───────────────────────────────────────────────────────
@@ -245,6 +295,7 @@ function addCodeTab(igcTabs: HTMLElement, file: SampleFile, useFileName = false)
   wrapper.className = 'code-wrapper';
 
   const pre = document.createElement('pre');
+  pre.className = 'igd-code';
   const code = document.createElement('code');
   code.className = `language-${lang}`;
   code.textContent = file.content;
@@ -254,7 +305,7 @@ function addCodeTab(igcTabs: HTMLElement, file: SampleFile, useFileName = false)
   // affordances look identical.
   const copyBtn = document.createElement('igc-icon-button') as HTMLElement;
   copyBtn.setAttribute('variant', 'flat');
-  copyBtn.setAttribute('aria-label', 'Copy code');
+  copyBtn.setAttribute('aria-label', COPY_CODE_LABEL);
   copyBtn.className = 'cv-hljs-code-copy';
 
   const copyIcon = document.createElement('igc-icon');
@@ -262,19 +313,9 @@ function addCodeTab(igcTabs: HTMLElement, file: SampleFile, useFileName = false)
   copyIcon.setAttribute('collection', 'docs');
   copyBtn.appendChild(copyIcon);
 
-  copyBtn.addEventListener('click', () => {
-    navigator.clipboard.writeText(file.content).then(() => {
-      copyIcon.setAttribute('name', 'check');
-      copyBtn.setAttribute('aria-label', 'Code copied');
-      setTimeout(() => {
-        copyIcon.setAttribute('name', 'copy');
-        copyBtn.setAttribute('aria-label', 'Copy code');
-      }, 1500);
-    });
-  });
-
   wrapper.appendChild(pre);
   wrapper.appendChild(copyBtn);
+  wireCopyButton(copyBtn, () => file.content);
   tab.appendChild(wrapper);
   igcTabs.appendChild(tab);
 
@@ -314,6 +355,7 @@ function addFooter(
     btn.className = 'stackblitz-btn igd-edit-in-btn';
     btn.addEventListener('click', onStackblitz);
     actions.appendChild(btn);
+    addActionTooltip(btn);
   }
 
   // CodeSandbox hidden, re-enable when https://github.com/codesandbox/codesandbox-client/issues/8884 is fixed.
@@ -341,6 +383,7 @@ function addFooter(
       fsBtn.setAttribute('target', '_blank');
     }
     actions.appendChild(fsBtn);
+    addActionTooltip(fsBtn);
   }
   if (actions.childElementCount) footer.appendChild(actions);
 
@@ -1046,19 +1089,11 @@ export function initSampleWidgets(): void {
       // Wire copy buttons for pre-rendered code tabs (e.g. MockSample in playground).
       widget.querySelectorAll<HTMLElement>('.code-wrapper').forEach((pre) => {
         const btn = pre.querySelector<HTMLElement>('.cv-hljs-code-copy');
-        const icon = btn?.querySelector<HTMLElement>('igc-icon');
         const code = pre.querySelector<HTMLElement>('code');
         if (!btn || !code) return;
         const codeLang = (code.className.match(/language-(\S+)/) ?? [])[1] ?? 'text';
         highlightCode(code, normalizeCodeLang(codeLang));
-        btn.addEventListener('click', () => {
-          navigator.clipboard.writeText(code.textContent ?? '').then(() => {
-            icon?.setAttribute('name', 'check');
-            setTimeout(() => {
-              icon?.setAttribute('name', 'copy');
-            }, 1500);
-          });
-        });
+        wireCopyButton(btn, () => code.textContent ?? '');
       });
 
       // Enqueue iframe loading.

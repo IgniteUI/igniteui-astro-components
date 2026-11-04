@@ -83,13 +83,11 @@ const items = types.map((t) => {
 ---
 
 <ul>
-  {
-    items.map(({ label, url }) => (
-      <li>
-        <a href={url}>
-          <code>{label}</code>
-        </a>
-      </li>
-    ))
-  }
+  {items.map(({ label, url }) => (
+    <li>
+      <a href={url}>
+        <code>{label}</code>
+      </a>
+    </li>
+  ))}
 </ul>

@@ -40,9 +40,10 @@
 5. Callout: `<DocsAside type="info" title="...">...</DocsAside>`; `type` is `note`, `info` or `warning`.
 6. Platform-specific MDX: `<PlatformBlock for="Angular, React">...</PlatformBlock>`; names are exactly `Angular`, `React`, `WebComponents`, `Blazor`.
 7. Build a page: `DocsLayout` with `DocsSidebar` in `slot="sidebar"`, `DocsToc` in `slot="toc"`, `MobileTocToggle` in `slot="mobile-toc"` ([DocsLayout](src/layouts/DocsLayout/README.md)).
-8. Change colours, fonts or spacing: override `--igd-*` custom properties in the host stylesheet; no Sass variables are configurable.
-9. Sidebar data: `SidebarEntry[]` from `igniteui-astro-components/lib/sidebar/types`; groups have `items`, links have `slug` and optional `badges`.
-10. Report a problem with the package: [CONTRIBUTING.md](CONTRIBUTING.md#filing-issues). Problems with docs *content* belong in IgniteUI/igniteui-documentation.
+8. Highlight code in the brand theme: `markdown: { shikiConfig: igShikiConfig }` in `astro.config`, or `<Code theme={igCodeTheme} wrap />`, both from `igniteui-astro-components/code-theme` ([Code theme](src/code-theme/README.md)). `createDocsSite()` sets it already.
+9. Change colours, fonts or spacing: override `--igd-*` custom properties in the host stylesheet; no Sass variables are configurable.
+10. Sidebar data: `SidebarEntry[]` from `igniteui-astro-components/lib/sidebar/types`; groups have `items`, links have `slug` and optional `badges`.
+11. Report a problem with the package: [CONTRIBUTING.md](CONTRIBUTING.md#filing-issues). Problems with docs *content* belong in IgniteUI/igniteui-documentation.
 
 ### MDX components
 
@@ -86,10 +87,14 @@
 - `igniteui-astro-components/content` — `createDocsCollection(sourceDir, { exclude, extendSchema })`; `igniteui-astro-components/content-config` — default content collections.
 - `igniteui-astro-components` (bare) — barrel of the runtime helpers above (`integration`, `sidebar`, `platform`, `content`, sidebar types and helpers); never `.astro` files.
 
+### Code theme
+
+- [Code theme](src/code-theme/README.md): `igniteui-astro-components/code-theme` — `igCodeTheme` (Shiki theme `ig-dark`: Rosé Pine Moon recoloured with `colorReplacements`) and `igShikiConfig` (`{ theme: igCodeTheme, wrap: true }`) for `markdown.shikiConfig`. Shiki writes colours inline; the surface comes from `--igd-code-*` tokens.
+
 ### Styles
 
 - `igniteui-astro-components/styles/theme.scss` — igniteui-theming setup (`--ig-theme: fluent`), cascade layers, `--font-mono`, and the `global/` partials: palette, variables, type scale, markdown, code blocks (always dark), copy button, component overrides.
-- Tokens on `:root` in [src/styles/global/_variables.scss](src/styles/global/_variables.scss): fonts `--igd-font-sans`, `--igd-font-mono`; brand `--igd-accent`, `--igd-on-accent`, `--igd-logo-type`, `--igd-illustration`; surfaces `--igd-app-bg`, `--igd-on-app-bg`, `--igd-layout-sections-bg`, `--igd-app-outline*`; shape `--igd-border-radius`, `--igd-border-radius-xl`, `--igd-padding-{sm,md,lg}`, `--igd-page-padding`, `--igd-sidebar-spacing`; layout `--igd-header-height`, `--igd-page-layout-grid`, `--igd-toc-*`; badges `--igd-{preview,new,updated,premium,opensource}-{bg,color,border}`; asides `--igd-aside-*`; FAQ `--igd-faq-*`; tables `--igd-table-*`.
+- Tokens on `:root` in [src/styles/global/_variables.scss](src/styles/global/_variables.scss): fonts `--igd-font-sans`, `--igd-font-mono`; brand `--igd-accent`, `--igd-on-accent`, `--igd-logo-type`, `--igd-illustration`; surfaces `--igd-app-bg`, `--igd-on-app-bg`, `--igd-layout-sections-bg`, `--igd-app-outline*`; shape `--igd-border-radius`, `--igd-border-radius-xl`, `--igd-padding-{sm,md,lg}`, `--igd-page-padding`, `--igd-sidebar-spacing`; layout `--igd-header-height`, `--igd-page-layout-grid`, `--igd-toc-*`; badges `--igd-{preview,new,updated,premium,opensource}-{bg,color,border}`; asides `--igd-aside-*`; FAQ `--igd-faq-*`; tables `--igd-table-*`; code snippets `--igd-code-*` (border, radius, padding, font, copy button).
 - Component-scoped tokens: `--igd-theming-*` (ThemingWidget), `--igd-anatomy-*` (Anatomy), `--igd-dodont-*` (DoDont), `--docs-tree-*` (DocsTree), `--ig-toc-width` (DocsToc), `--docs-global-nav-height` / `--docs-subheader-height` (DocsSubHeader).
 
 ### Contributing
@@ -118,6 +123,7 @@
 | `igniteui-astro-components/content` | `src/content-helper.ts` | module |
 | `igniteui-astro-components/content-config` | `src/content.config.ts` | module |
 | `igniteui-astro-components/llms` | `src/llms.ts` | module |
+| `igniteui-astro-components/code-theme` | `src/code-theme/index.ts` | module |
 | `igniteui-astro-components/layouts/DocsLayout.astro` | `src/layouts/DocsLayout/DocsLayout.astro` | layout |
 | `igniteui-astro-components/chrome` | `src/chrome/integration.ts` | module |
 | `igniteui-astro-components/chrome/contract` | `src/chrome/contract.mjs` | module |
@@ -469,6 +475,12 @@ not exported yet.
 | `…/components/mdx/FaqItem.astro`       | One question/answer panel                                 | [README](src/components/mdx/Faq/README.md)           |
 | `…/components/mdx/Faq/types`           | `FaqEntry`, `FaqIndicatorPosition`                        | [README](src/components/mdx/Faq/README.md)           |
 
+#### Code snippets
+
+| Export         | Purpose                                                                          | Docs                               |
+| -------------- | -------------------------------------------------------------------------------- | ---------------------------------- |
+| `…/code-theme` | Brand Shiki theme (Rosé Pine Moon recoloured) and the ready-made `igShikiConfig` | [README](src/code-theme/README.md) |
+
 #### Build helpers
 
 | Export                             | Purpose                                                                          |
@@ -492,7 +504,8 @@ not exported yet.
 
 Design tokens are CSS custom properties prefixed `--igd-` and defined on
 `:root` in [src/styles/global/\_variables.scss](src/styles/global/_variables.scss)
-(fonts, accent, surfaces, spacing, radius, badges, asides, FAQ, tables).
+(fonts, accent, surfaces, spacing, radius, badges, asides, FAQ, tables, and
+`--igd-code-*` for code snippets, see [src/code-theme/README.md](src/code-theme/README.md)).
 Override them in the host's own stylesheet; there are no Sass `!default`
 variables to configure.
 
@@ -1225,22 +1238,31 @@ import DocsSubHeader from 'igniteui-astro-components/components/DocsSubHeader.as
 
 ### Props
 
-| Prop              | Type                                                                | Default        | Description                                                                                               |
-| ----------------- | ------------------------------------------------------------------- | -------------- | --------------------------------------------------------------------------------------------------------- |
-| `siteTitle`       | `string`                                                            | virtual module | Site name shown on the left. Set it when not running `siteMetaIntegration`.                               |
-| `pageTitle`       | `string \| null`                                                    | —              | Fallback page title when `currentSlug` is not found in the sidebar tree.                                  |
-| `currentSlug`     | `string`                                                            | —              | Current page slug, matched against the sidebar tree.                                                      |
-| `logoText`        | `string`                                                            | by platform    | Text shown in the logo area while `GlobalNavBar` is visible; `'Ignite UI'` or `'Ultimate UI'` by default. |
-| `productLinks`    | `{ label: string; href: string; platform?: string }[]`              | virtual module | Override the cross-product navigation links.                                                              |
-| `sidebarItems`    | `SidebarEntry[]`                                                    | virtual module | Override the sidebar tree used to resolve the page title.                                                 |
-| `packages`        | `Array<string \| { label: string; value?: string; href?: string }>` | —              | Entries for the package selector. A string is both label and value; `href` navigates on selection.        |
-| `selectedPackage` | `string`                                                            | —              | Currently selected package (must match one of `packages`).                                                |
-| `packageLabel`    | `string`                                                            | `'Package'`    | Label rendered before the package selector.                                                               |
-| `versions`        | `string[]`                                                          | —              | Version labels for the version selector dropdown. Hidden when omitted.                                    |
-| `selectedVersion` | `string`                                                            | —              | Currently selected version (must match one of `versions`).                                                |
-| `versionLabel`    | `string`                                                            | `'Version'`    | Label rendered before the version selector.                                                               |
-| `showThemeToggle` | `boolean`                                                           | `false`        | Show a light/dark theme toggle button.                                                                    |
-| `themeStorageKey` | `string`                                                            | `'docs-theme'` | `localStorage` key for persisting the theme preference.                                                   |
+| Prop              | Type                                                                               | Default        | Description                                                                                                                                             |
+| ----------------- | ---------------------------------------------------------------------------------- | -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `siteTitle`       | `string`                                                                           | virtual module | Site name shown on the left. Set it when not running `siteMetaIntegration`.                                                                             |
+| `pageTitle`       | `string \| null`                                                                   | —              | Fallback page title when `currentSlug` is not found in the sidebar tree.                                                                                |
+| `currentSlug`     | `string`                                                                           | —              | Current page slug, matched against the sidebar tree.                                                                                                    |
+| `logoText`        | `string`                                                                           | by platform    | Text shown in the logo area while `GlobalNavBar` is visible; `'Ignite UI'` or `'Ultimate UI'` by default.                                               |
+| `productLinks`    | `{ label: string; href: string; platform?: string }[]`                             | virtual module | Override the cross-product navigation links.                                                                                                            |
+| `sidebarItems`    | `SidebarEntry[]`                                                                   | virtual module | Override the sidebar tree used to resolve the page title.                                                                                               |
+| `packages`        | `Array<string \| { label: string; value?: string; href?: string; base?: string }>` | virtual module | Entries for the package selector. A string is both label and value; `href` navigates on selection; `base` swaps the site base to keep the current page. |
+| `selectedPackage` | `string`                                                                           | —              | Currently selected package (must match one of `packages`).                                                                                              |
+| `packageLabel`    | `string`                                                                           | `'Package'`    | Label rendered before the package selector.                                                                                                             |
+| `versions`        | `string[]`                                                                         | —              | Version labels for the version selector dropdown. Hidden when omitted.                                                                                  |
+| `selectedVersion` | `string`                                                                           | —              | Currently selected version (must match one of `versions`).                                                                                              |
+| `versionLabel`    | `string`                                                                           | `'Version'`    | Label rendered before the version selector.                                                                                                             |
+| `showThemeToggle` | `boolean`                                                                          | `false`        | Show a light/dark theme toggle button.                                                                                                                  |
+| `themeStorageKey` | `string`                                                                           | `'docs-theme'` | `localStorage` key for persisting the theme preference.                                                                                                 |
+
+`PackageEntry` is `{ label: string; value?: string; href?: string; base?: string }`:
+
+| Field   | Description                                                                      |
+| ------- | -------------------------------------------------------------------------------- |
+| `label` | Text shown in the dropdown.                                                      |
+| `value` | Value matched against `selectedPackage`. Defaults to `label`.                    |
+| `href`  | Where selecting the entry navigates, e.g. the platform's getting started page.   |
+| `base`  | Root URL of the entry's docs site. Switching keeps the current page (see below). |
 
 ### Slots
 
@@ -1250,6 +1272,10 @@ import DocsSubHeader from 'igniteui-astro-components/components/DocsSubHeader.as
 
 ### Behaviour
 
+- Selecting a package navigates to its `href`. When the entry also has a `base`, it goes to the same
+  page on that site instead: the current URL with this site's base (`import.meta.env.BASE_URL`)
+  swapped for `base`, keeping the query and `#hash`. Nothing checks that the page exists there, so
+  the server should redirect missing pages, e.g. to the platform's getting started page.
 - Product links from the virtual module are shown; the currently active platform link is hidden.
 - The search button opens the Pagefind dialog (see `Search` component).
 - CSS custom properties used for positioning:
@@ -2827,20 +2853,7 @@ Outside the Web Components site, a `wc` sample needs `wcDemosBaseUrl`: without i
 
 Code tabs are syntax-highlighted client-side using [Shiki](https://shiki.style/) (lazy-loaded via dynamic import and pre-warmed at widget init). Supported languages: `typescript`, `tsx`, `javascript`, `html`, `css`, `scss`, `csharp`, `razor`.
 
-The theme defaults to `dark-plus` and can be overridden per project via a Vite define in `astro.config.mjs`:
-
-```js
-// astro.config.mjs
-export default defineConfig({
-  vite: {
-    define: {
-      __IGD_SAMPLE_CODE_THEME__: JSON.stringify('github-dark'),
-    },
-  },
-});
-```
-
-Any [Shiki bundled theme](https://shiki.style/themes) name is accepted. If the define is absent the default `dark-plus` is used.
+The tabs use the package's brand code theme (`igCodeTheme`, the same one `createDocsSite()` applies to fenced blocks), so a code tab and a fenced block look identical. See [`src/code-theme/README.md`](src/code-theme/README.md).
 
 > **Note:** highlight.js is not required for code tabs. `createDocsSite()` still injects it into `<head>` for inline code; if you wire your own head entries you can leave it out.
 
@@ -2855,3 +2868,79 @@ import Sample from 'igniteui-astro-components/components/mdx/Sample.astro';
 
 or pass it through the `components` map of a `<Content />` render when the MDX
 is authored without imports (CMS content, for example).
+
+
+## src/code-theme/README.md
+
+## Code theme
+
+Brand syntax-highlighting theme for code snippets: Shiki's bundled **Rosé Pine
+Moon** recoloured with Shiki's `colorReplacements` to match the API Docs Figma
+design (`api-snippet`, dark). Fenced Markdown/MDX blocks, Astro's `<Code>` and
+the Sample component's code tabs all use it.
+
+| Export          | What it is                                                   |
+| --------------- | ------------------------------------------------------------ |
+| `igCodeTheme`   | The Shiki theme object (`ig-dark`).                          |
+| `igShikiConfig` | Drop-in Astro `markdown.shikiConfig`: `igCodeTheme`, `wrap`. |
+
+Import them from `igniteui-astro-components/code-theme`.
+
+### Quick start
+
+Sites built with `createDocsSite()` get it automatically. Any other Astro site:
+
+```js
+// astro.config.mjs
+import { defineConfig } from 'astro/config';
+import { igShikiConfig } from 'igniteui-astro-components/code-theme';
+
+export default defineConfig({
+  markdown: { shikiConfig: igShikiConfig },
+});
+```
+
+`<Code>` component:
+
+```astro
+---
+import { Code } from 'astro:components';
+import { igCodeTheme } from 'igniteui-astro-components/code-theme';
+---
+
+<Code code={snippet} lang="ts" theme={igCodeTheme} wrap />
+```
+
+Shiki directly:
+
+```ts
+import { createHighlighter } from 'shiki';
+import { igCodeTheme } from 'igniteui-astro-components/code-theme';
+
+const highlighter = await createHighlighter({ themes: [igCodeTheme], langs: ['ts'] });
+const html = highlighter.codeToHtml(code, { lang: 'ts', theme: igCodeTheme.name });
+```
+
+Shiki writes the background, default text and token colours inline. The
+surface (border, radius, padding, font, copy button) comes from the package
+stylesheet (`igniteui-astro-components/styles/theme.scss`).
+
+### Tokens
+
+Set on `:root` in `src/styles/global/_variables.scss`; override them from any
+stylesheet loaded after the package theme.
+
+| Token                           | Default                    | Purpose                                  |
+| ------------------------------- | -------------------------- | ---------------------------------------- |
+| `--igd-code-border`             | `1px solid #002b5c`        | Snippet border.                          |
+| `--igd-code-radius`             | `var(--igd-border-radius)` | Corner radius.                           |
+| `--igd-code-padding`            | `36px` (`20px` on mobile)  | Inner padding.                           |
+| `--igd-code-font-family`        | `var(--font-mono)`         | Code font.                               |
+| `--igd-code-font-size`          | `14px`                     | Code font size.                          |
+| `--igd-code-line-height`        | `24px`                     | Code line height.                        |
+| `--igd-code-margin-bottom`      | `26px`                     | Space below a snippet.                   |
+| `--igd-code-copy-color`         | `#d2dbe8`                  | Copy button icon.                        |
+| `--igd-code-copy-hover-color`   | `#0176ff`                  | Copy button icon on hover / focus.       |
+| `--igd-code-copy-hover-bg`      | `#002b5c`                  | Copy button background on hover / focus. |
+| `--igd-code-copy-success-color` | `var(--ig-success-500)`    | Icon colour after a successful copy.     |
+| `--igd-code-copy-inset`         | `12px`                     | Copy button offset from the corner.      |

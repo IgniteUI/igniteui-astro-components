@@ -28,9 +28,10 @@
 5. Callout: `<DocsAside type="info" title="...">...</DocsAside>`; `type` is `note`, `info` or `warning`.
 6. Platform-specific MDX: `<PlatformBlock for="Angular, React">...</PlatformBlock>`; names are exactly `Angular`, `React`, `WebComponents`, `Blazor`.
 7. Build a page: `DocsLayout` with `DocsSidebar` in `slot="sidebar"`, `DocsToc` in `slot="toc"`, `MobileTocToggle` in `slot="mobile-toc"` ([DocsLayout](src/layouts/DocsLayout/README.md)).
-8. Change colours, fonts or spacing: override `--igd-*` custom properties in the host stylesheet; no Sass variables are configurable.
-9. Sidebar data: `SidebarEntry[]` from `igniteui-astro-components/lib/sidebar/types`; groups have `items`, links have `slug` and optional `badges`.
-10. Report a problem with the package: [CONTRIBUTING.md](CONTRIBUTING.md#filing-issues). Problems with docs *content* belong in IgniteUI/igniteui-documentation.
+8. Highlight code in the brand theme: `markdown: { shikiConfig: igShikiConfig }` in `astro.config`, or `<Code theme={igCodeTheme} wrap />`, both from `igniteui-astro-components/code-theme` ([Code theme](src/code-theme/README.md)). `createDocsSite()` sets it already.
+9. Change colours, fonts or spacing: override `--igd-*` custom properties in the host stylesheet; no Sass variables are configurable.
+10. Sidebar data: `SidebarEntry[]` from `igniteui-astro-components/lib/sidebar/types`; groups have `items`, links have `slug` and optional `badges`.
+11. Report a problem with the package: [CONTRIBUTING.md](CONTRIBUTING.md#filing-issues). Problems with docs *content* belong in IgniteUI/igniteui-documentation.
 
 ## MDX components
 
@@ -74,10 +75,14 @@
 - `igniteui-astro-components/content` — `createDocsCollection(sourceDir, { exclude, extendSchema })`; `igniteui-astro-components/content-config` — default content collections.
 - `igniteui-astro-components` (bare) — barrel of the runtime helpers above (`integration`, `sidebar`, `platform`, `content`, sidebar types and helpers); never `.astro` files.
 
+## Code theme
+
+- [Code theme](src/code-theme/README.md): `igniteui-astro-components/code-theme` — `igCodeTheme` (Shiki theme `ig-dark`: Rosé Pine Moon recoloured with `colorReplacements`) and `igShikiConfig` (`{ theme: igCodeTheme, wrap: true }`) for `markdown.shikiConfig`. Shiki writes colours inline; the surface comes from `--igd-code-*` tokens.
+
 ## Styles
 
 - `igniteui-astro-components/styles/theme.scss` — igniteui-theming setup (`--ig-theme: fluent`), cascade layers, `--font-mono`, and the `global/` partials: palette, variables, type scale, markdown, code blocks (always dark), copy button, component overrides.
-- Tokens on `:root` in [src/styles/global/_variables.scss](src/styles/global/_variables.scss): fonts `--igd-font-sans`, `--igd-font-mono`; brand `--igd-accent`, `--igd-on-accent`, `--igd-logo-type`, `--igd-illustration`; surfaces `--igd-app-bg`, `--igd-on-app-bg`, `--igd-layout-sections-bg`, `--igd-app-outline*`; shape `--igd-border-radius`, `--igd-border-radius-xl`, `--igd-padding-{sm,md,lg}`, `--igd-page-padding`, `--igd-sidebar-spacing`; layout `--igd-header-height`, `--igd-page-layout-grid`, `--igd-toc-*`; badges `--igd-{preview,new,updated,premium,opensource}-{bg,color,border}`; asides `--igd-aside-*`; FAQ `--igd-faq-*`; tables `--igd-table-*`.
+- Tokens on `:root` in [src/styles/global/_variables.scss](src/styles/global/_variables.scss): fonts `--igd-font-sans`, `--igd-font-mono`; brand `--igd-accent`, `--igd-on-accent`, `--igd-logo-type`, `--igd-illustration`; surfaces `--igd-app-bg`, `--igd-on-app-bg`, `--igd-layout-sections-bg`, `--igd-app-outline*`; shape `--igd-border-radius`, `--igd-border-radius-xl`, `--igd-padding-{sm,md,lg}`, `--igd-page-padding`, `--igd-sidebar-spacing`; layout `--igd-header-height`, `--igd-page-layout-grid`, `--igd-toc-*`; badges `--igd-{preview,new,updated,premium,opensource}-{bg,color,border}`; asides `--igd-aside-*`; FAQ `--igd-faq-*`; tables `--igd-table-*`; code snippets `--igd-code-*` (border, radius, padding, font, copy button).
 - Component-scoped tokens: `--igd-theming-*` (ThemingWidget), `--igd-anatomy-*` (Anatomy), `--igd-dodont-*` (DoDont), `--docs-tree-*` (DocsTree), `--ig-toc-width` (DocsToc), `--docs-global-nav-height` / `--docs-subheader-height` (DocsSubHeader).
 
 ## Contributing

@@ -301,6 +301,12 @@ not exported yet.
 | `…/components/mdx/FaqItem.astro`       | One question/answer panel                                 | [README](src/components/mdx/Faq/README.md)           |
 | `…/components/mdx/Faq/types`           | `FaqEntry`, `FaqIndicatorPosition`                        | [README](src/components/mdx/Faq/README.md)           |
 
+### Code snippets
+
+| Export         | Purpose                                                                          | Docs                               |
+| -------------- | -------------------------------------------------------------------------------- | ---------------------------------- |
+| `…/code-theme` | Brand Shiki theme (Rosé Pine Moon recoloured) and the ready-made `igShikiConfig` | [README](src/code-theme/README.md) |
+
 ### Build helpers
 
 | Export                             | Purpose                                                                          |
@@ -324,7 +330,8 @@ not exported yet.
 
 Design tokens are CSS custom properties prefixed `--igd-` and defined on
 `:root` in [src/styles/global/\_variables.scss](src/styles/global/_variables.scss)
-(fonts, accent, surfaces, spacing, radius, badges, asides, FAQ, tables).
+(fonts, accent, surfaces, spacing, radius, badges, asides, FAQ, tables, and
+`--igd-code-*` for code snippets, see [src/code-theme/README.md](src/code-theme/README.md)).
 Override them in the host's own stylesheet; there are no Sass `!default`
 variables to configure.
 
