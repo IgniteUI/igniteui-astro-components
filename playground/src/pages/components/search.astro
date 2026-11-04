@@ -37,37 +37,38 @@ const headings = [
 
   <h1>Search</h1>
   <DocsAside type="note">
-    The subheader on this page uses the <code>Search</code> component instead of <code
-      >SearchAdvanced</code
-    >. Click the search button above to see it in action.
+    The subheader on this page uses the <code>Search</code> component instead of{' '}
+    <code>SearchAdvanced</code>. Click the search button above to see it in action.
   </DocsAside>
   <p>
     The <code>Search</code> component provides a full-text search modal powered by
-    <a href="https://pagefind.app" target="_blank" rel="noopener">Pagefind</a>. The trigger button
-    (visible in the subheader above) opens a dialog that renders the Pagefind UI against a pre-built <code
-      >/pagefind/</code
-    > index.
+    <a href="https://pagefind.app" target="_blank" rel="noopener">
+      Pagefind
+    </a>
+    . The trigger button (visible in the subheader above) opens a dialog that renders the Pagefind
+    UI against a pre-built <code>/pagefind/</code> index.
   </p>
 
   <h2 id="overview">Overview</h2>
   <p>
     Unlike <code>SearchAdvanced</code>, this component searches <em>page body content</em>
-    (full-text) rather than a structured API index. It is best suited for documentation sites where every
-    page has prose content that should be discoverable.
+    (full-text) rather than a structured API index. It is best suited for documentation sites where
+    every page has prose content that should be discoverable.
   </p>
 
   <h2 id="pagefind">Pagefind index</h2>
   <p>
     The <code>/pagefind/</code> directory is produced by running
-    <code>pagefind --site &lt;outDir&gt;</code> after a production build. In the playground the index
-    is absent, so the dialog opens but shows no results — this is expected behaviour in development.
+    <code>pagefind --site &lt;outDir&gt;</code> after a production build. In the playground the
+    index is absent, so the dialog opens but shows no results — this is expected behaviour in
+    development.
   </p>
 
   <h2 id="keyboard">Keyboard shortcut</h2>
   <p>
-    The trigger button shows a <kbd>Ctrl</kbd>&nbsp;<kbd>K</kbd> hint (or <kbd>⌘</kbd>&nbsp;<kbd
-      >K</kbd
-    > on macOS). Pressing that combination opens or closes the search dialog from anywhere on the page.
+    The trigger button shows a <kbd>Ctrl</kbd>&nbsp;<kbd>K</kbd> hint (or <kbd>⌘</kbd>&nbsp;
+    <kbd>K</kbd> on macOS). Pressing that combination opens or closes the search dialog from
+    anywhere on the page.
   </p>
 
   <h2 id="usage">Usage</h2>
