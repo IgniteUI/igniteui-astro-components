@@ -193,8 +193,9 @@ interface Section {
   examples: Example[];
 }
 
+// `false` must be an expression: `noBorder="false"` passes the string, which is truthy.
 const attr = (key: string, value: string | number | boolean): string =>
-  value === true ? key : typeof value === 'number' ? `${key}={${value}}` : `${key}="${value}"`;
+  value === true ? key : typeof value === 'string' ? `${key}="${value}"` : `${key}={${value}}`;
 
 const snippetFor = (ex: Example): string =>
   [
@@ -216,6 +217,68 @@ const spacingDemo: Example = {
     spacing: 'md',
   },
 };
+
+// Interactive chrome demo: the same demo in each of the three chromes, one shown
+// at a time and switched by the button group rendered above them (wired by the
+// inline script below). Every prop but `chrome` and the modifiers that need it
+// stays the same, so only what the chrome draws changes.
+interface ChromeDemo extends Example {
+  chrome: 'widget' | 'demo' | 'bare';
+}
+
+const chromeDemos: ChromeDemo[] = [
+  {
+    chrome: 'widget',
+    intro: `The default. The EXAMPLE tab with the demo, a tab for each of the demo's
+            source files, and a footer with the live-edit and full-screen buttons.
+            <code>showThemePicker</code> adds the theme picker to the footer.`,
+    note: ['chrome="widget" is the default, so you can leave it out.'],
+    props: {
+      src: '/mock-demo',
+      height: 240,
+      alt: 'Grid Example',
+      chrome: 'widget',
+      showThemePicker: true,
+      noBorder: false,
+      spacing: 'md',
+    },
+  },
+  {
+    chrome: 'demo',
+    intro: `The widget's frame and the demo, without the tabs and the code. The footer
+            carries only the theme picker, and without <code>showThemePicker</code>
+            there is no footer. For demos whose code isn't a usage example, such as an
+            interaction-states demo.`,
+    props: {
+      src: '/mock-demo',
+      height: 240,
+      alt: 'Grid Example',
+      chrome: 'demo',
+      showThemePicker: true,
+      noBorder: false,
+      spacing: 'md',
+    },
+  },
+  {
+    chrome: 'bare',
+    intro: `Just the iframe, in a plain container: no tabs, no code, and no footer. For
+            demos that sit inline in the text. <code>fullscreenBtn</code> adds a "View
+            in full screen" button below it.`,
+    props: {
+      src: '/mock-demo',
+      height: 240,
+      alt: 'Grid Example',
+      chrome: 'bare',
+      noBorder: false,
+      spacing: 'md',
+    },
+  },
+];
+
+// The live samples add the chrome to `src` as a query: a widget's element id is
+// derived from `src`, and the "Without the code viewer" example below renders
+// /mock-demo with chrome="demo" too.
+const liveSrc = (demo: ChromeDemo): string => `${demo.props.src}?chrome=${demo.chrome}`;
 
 const sections: Section[] = [
   {
@@ -585,6 +648,7 @@ const sections: Section[] = [
 
 const headings = [
   { depth: 2, slug: 'quick-start', text: 'Quick start' },
+  { depth: 2, slug: 'chrome', text: 'Chrome' },
   { depth: 2, slug: 'choosing-mode', text: 'Which mode do I need?' },
   { depth: 2, slug: 'props', text: 'Props (API reference)' },
   { depth: 2, slug: 'full-widget', text: 'Default behavior' },
@@ -660,6 +724,38 @@ const usageServers = `<!-- Load from the LOB demos server instead of the default
     and let the demo size itself; set a fixed <code>height</code> only to restrict a very tall demo
     (it then scrolls inside the iframe).
   </DocsAside>
+
+  <h2 id="chrome">Chrome</h2>
+  <p>
+    <code>chrome</code> sets what the Sample draws around the demo. Switch between its three values
+    to compare them on the same demo. The snippet above each sample is its markup.
+  </p>
+  <div id="chrome-switcher">
+    <igc-button-group selection="single-required" aria-label="Sample chrome">
+      {chromeDemos.map((demo, i) => (
+        <igc-toggle-button value={demo.chrome} selected={i === 0 ? true : undefined}>
+          {demo.chrome}
+        </igc-toggle-button>
+      ))}
+    </igc-button-group>
+    {chromeDemos.map((demo, i) => (
+      <div data-chrome-pane={demo.chrome} hidden={i !== 0}>
+        <p set:html={demo.intro} />
+        <Code code={snippetFor(demo)} lang="astro" theme="dark-plus" wrap />
+        {demo.chrome === 'widget' ? (
+          <MockSample
+            id="mock-sample-chrome"
+            src={demo.props.src as string}
+            height={demo.props.height as number}
+            alt={demo.props.alt as string}
+            showThemePicker
+          />
+        ) : (
+          <SampleWidget {...(demo.props as any)} src={liveSrc(demo)} />
+        )}
+      </div>
+    ))}
+  </div>
 
   <h2 id="choosing-mode">Which mode do I need?</h2>
   <div class="igd-table-wrapper" role="region" aria-labelledby="mode-table-caption" tabindex="0">
@@ -892,6 +988,7 @@ const usageServers = `<!-- Load from the LOB demos server instead of the default
 </DocsLayout>
 
 <style>
+  #chrome-switcher igc-button-group,
   #spacing-demo igc-button-group {
     margin-block-end: 12px;
     display: flex;
@@ -915,4 +1012,19 @@ const usageServers = `<!-- Load from the LOB demos server instead of the default
   }
 
   document.addEventListener('astro:page-load', initSpacingDemo);
+
+  // Wire the chrome demo's button group: show the pane of the selected chrome.
+  // All three are rendered up front; a hidden pane's iframe loads the first
+  // time the pane is shown.
+  function initChromeDemo() {
+    const switcher = document.getElementById('chrome-switcher');
+    const panes = switcher?.querySelectorAll<HTMLElement>('[data-chrome-pane]');
+    switcher?.querySelector('igc-button-group')?.addEventListener('igcSelect', (e) => {
+      const chrome = (e as CustomEvent<string | undefined>).detail;
+      if (!chrome) return;
+      panes?.forEach((pane) => (pane.hidden = pane.dataset.chromePane !== chrome));
+    });
+  }
+
+  document.addEventListener('astro:page-load', initChromeDemo);
 </script>
