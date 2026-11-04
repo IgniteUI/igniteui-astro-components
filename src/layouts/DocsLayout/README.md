@@ -17,17 +17,17 @@ import DocsLayout from 'igniteui-astro-components/layouts/DocsLayout.astro';
 | `keywords`        | `string \| null` | —              | `<meta name="keywords">` value.                                                                               |
 | `hasSidebar`      | `boolean`        | `true`         | Renders the sidebar rail when `true`. Provide content via `<… slot="sidebar">`.                               |
 | `currentSlug`     | `string`         | `''`           | Slug of the current page — used for the breadcrumb above the content.                                         |
-| `siteTitle`       | `string`         | virtual module | Override the site name used in `<title>` and the sub-header. Use this when not running `siteMetaIntegration`. |
+| `siteTitle`       | `string`         | virtual module | Override the site name used in `<title>` and the breadcrumb. Use this when not running `siteMetaIntegration`. |
 | `license`         | `string`         | —              | `license` frontmatter value. `'commercial'` shows a Premium badge, `'MIT'` an Open Source badge.              |
 | `is404`           | `boolean`        | `false`        | Adds the `igd-page-layout--404` modifier class on 404 pages.                                                  |
 | `packages`        | `string[]`       | —              | Entries for the sub-header package selector. Hidden when omitted.                                             |
 | `selectedPackage` | `string`         | —              | Currently selected package (must match one of `packages`).                                                    |
-| `packageLabel`    | `string`         | `'Package'`    | Label rendered before the package selector.                                                                   |
+| `packageLabel`    | `string`         | `'Package'`    | `aria-label` of the sub-header package selector (not a visible label).                                        |
 | `versions`        | `string[]`       | —              | Entries for the sub-header version selector. Hidden when omitted.                                             |
 | `selectedVersion` | `string`         | —              | Currently selected version (must match one of `versions`).                                                    |
-| `versionLabel`    | `string`         | `'Version'`    | Label rendered before the version selector.                                                                   |
-| `showThemeToggle` | `boolean`        | `false`        | Show a light/dark toggle in the sub-header.                                                                   |
-| `themeStorageKey` | `string`         | `'docs-theme'` | `localStorage` key the theme toggle persists to.                                                              |
+| `versionLabel`    | `string`         | `'Version'`    | `aria-label` of the sub-header version selector (not a visible label).                                        |
+| `showThemeToggle` | `boolean`        | `false`        | Forwarded to `DocsSubHeader`, which does not render a toggle; no effect today.                                |
+| `themeStorageKey` | `string`         | `'docs-theme'` | Forwarded to `DocsSubHeader` and unused; the layout's restore script reads the `'docs-theme'` key only.       |
 
 `hasToc` (`boolean`, default `true`) is also read at runtime and hides the `toc`
 slot when `false`, but it is not yet declared in the `Props` interface (issue #161), so
@@ -61,8 +61,7 @@ TypeScript consumers must spread it in (`{...{ hasToc: false }}`).
 - Components rendered inside the layout that read
   `Astro.locals.platformContext` or `Astro.locals.envVars` (`ApiLink`,
   `ApiRef`, `PlatformBlock`, `Sample`, `ThemingWidget`) need a middleware that
-  sets them — see
-  [playground/src/middleware.ts](../../../playground/src/middleware.ts).
+  sets them — see [Quick start](../../../README.md#quick-start) step 3.
 
 ## Example
 
@@ -70,7 +69,7 @@ TypeScript consumers must spread it in (`{...{ hasToc: false }}`).
 
 Pass all data directly as props. The `virtual:docs-template/site-meta` module
 still needs to be resolvable at Vite build time — supply a minimal stub (see
-[playground/astro.config.mjs](../../../playground/astro.config.mjs)).
+[Quick start](../../../README.md#quick-start) step 2).
 
 ```astro
 ---
@@ -91,7 +90,7 @@ const sidebar: SidebarEntry[] = [
 
 <DocsLayout title="Toast" siteTitle="My Library" hasSidebar currentSlug={slug}>
   <DocsSidebar slot="sidebar" items={sidebar} currentSlug={slug} />
-  <DocsToc slot="toc" headings={headings} offsetTarget=".docs-subheader" />
+  <DocsToc slot="toc" headings={headings} />
   <slot />
 </DocsLayout>
 ```
@@ -131,7 +130,7 @@ const slug = Astro.params.slug ?? '';
 
 <DocsLayout title="Toast" description="Toast component documentation" hasSidebar currentSlug={slug}>
   <DocsSidebar slot="sidebar" currentSlug={slug} />
-  <DocsToc slot="toc" headings={headings} offsetTarget=".docs-subheader" />
+  <DocsToc slot="toc" headings={headings} />
   <slot />
 </DocsLayout>
 ```
@@ -155,12 +154,12 @@ with `data-igd-footer`, persisted across navigations. See
 
 ## Virtual module dependencies
 
-`DocsLayout` imports from two virtual modules. When using `siteMetaIntegration`
-they are provided automatically. When not, supply minimal stubs via a Vite
-plugin (see [playground/astro.config.mjs](../../../playground/astro.config.mjs)
-for a reference implementation):
+`DocsLayout` imports from two virtual modules. Supply them with a Vite plugin
+(see [Quick start](../../../README.md#quick-start) step 2; `siteMetaIntegration`
+does not emit `packages` and `selectedPackage`, so it cannot provide them
+today):
 
-| Module                            | Used for                                                        | Can be overridden by prop                                                                               |
-| --------------------------------- | --------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
-| `virtual:docs-template/site-meta` | Site title, sidebar tree, product links, extra `<head>` entries | `siteTitle` on `DocsLayout`, `items` on `DocsSidebar`, `productLinks`/`sidebarItems` on `DocsSubHeader` |
-| `virtual:docs-template/nav-html`  | Pre-fetched nav/footer HTML, widget script URL, platform key    | — (not yet prop-overridable)                                                                            |
+| Module                            | Used for                                                                                                     | Can be overridden by prop                                                                                              |
+| --------------------------------- | ------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------- |
+| `virtual:docs-template/site-meta` | `title`, `sidebar`, `productLinks`, `headEntries`, `trailingSlash`, `navLang`, `packages`, `selectedPackage` | `siteTitle` on `DocsLayout`, `items`/`trailingSlash` on `DocsSidebar`, `packages`/`selectedPackage` on `DocsSubHeader` |
+| `virtual:docs-template/nav-html`  | Pre-fetched nav/footer HTML, widget script URL, platform key                                                 | — (not yet prop-overridable)                                                                                           |

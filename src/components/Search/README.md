@@ -1,6 +1,6 @@
 # Search
 
-Pagefind-powered full-text search modal. Renders a trigger button (`Ctrl+K`) and a `<dialog>` container that is populated client-side by the Pagefind UI library.
+Pagefind-powered full-text search modal. Renders a trigger button (`Ctrl+K`) and an `<igc-dialog>` whose results are rendered client-side from the Pagefind JS API (`/pagefind/pagefind.js`), not the Pagefind UI library.
 
 ## Import
 

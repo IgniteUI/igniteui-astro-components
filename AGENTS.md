@@ -13,15 +13,15 @@ is published as-is and consumers compile it. Node >= 22.12, npm only.
 
 ```sh
 npm ci                      # install (husky hooks via `prepare`)
-npm test                    # node --test scripts/**/*.test.mjs (includes the llms drift test)
+npm test                    # test:scripts (node --test scripts/**/*.test.mjs) + test:components (vitest, tests/**/*.test.ts)
 npm run lint                # oxlint
 npm run format:check        # prettier
 npm run playground          # dev site on http://localhost:4567 rendering every component
-npm run playground:check    # astro check over src/ through the playground
-npm run build:llms          # regenerate llms-full.txt after touching any README or exports
+npm run playground:check    # astro check over playground/ only; nothing type-checks src/ yet
+npm run build:llms          # write llms-full.txt locally (generated at prepack, not committed)
 ```
 
-Run `npm test`, `npm run lint` and `npm run playground:check` before opening a PR.
+Before opening a PR run what CI runs: `npm run format:check`, `npm test`, `npm run lint`, `npm run playground:check` and `npm run playground:build`.
 
 ## Layout
 
@@ -29,11 +29,12 @@ Run `npm test`, `npm run lint` and `npm run playground:check` before opening a P
 - `src/layouts/DocsLayout/` — the page shell. `src/lib/` — shared types and helpers. `src/plugins/` — remark/rehype plugins. `src/scripts/` — client scripts. `src/chrome/` — marketing header/footer snapshot integration. `src/styles/theme.scss` — the only stylesheet; tokens in `src/styles/global/_variables.scss`.
 - `package.json#exports` is the public surface. A file not listed there is private.
 - `playground/` — in-repo Astro site; `playground/src/middleware.ts` and `playground/astro.config.mjs` show what a host must provide.
-- `scripts/` — tests (`*.test.mjs`) and `build-llms.mjs`.
+- `tests/` — Vitest component tests (`tests/components/**/*.test.ts`, one file per component, rendered with the Astro container API).
+- `scripts/` — `node --test` tests for script-level modules (`*.test.mjs`) and `build-llms.mjs`.
 
 ## Conventions
 
-- `export interface Props` at the top of every `.astro` file, with a JSDoc line per prop. The README beside it must list the same props.
+- A component you add or change gets `interface Props` at the top of its `.astro` file with a JSDoc line per prop, and its README lists the same props. Leave other files as they are (6 of 28 have it today).
 - Colours, spacing and fonts come from `--igd-*` custom properties; never hard-code them.
 - Formatting is Prettier's; the pre-commit hook formats staged files, so do not reformat files you did not change.
 - Commits: Conventional Commits with a scope, e.g. `feat(sample): …`, `fix(styles): …`, `docs: …`, `chore(github): …`. Branches: `<user>/<topic>`. Base branch: `master`.
@@ -45,8 +46,7 @@ Run `npm test`, `npm run lint` and `npm run playground:check` before opening a P
 2. Add the subpath to `package.json#exports`.
 3. Add a row to the tables in `README.md` and a line to `llms.txt`.
 4. Add or update a playground page under `playground/src/pages/components/` and the entry in `playground/src/site-config.ts`.
-5. `npm run build:llms`, then commit `llms-full.txt` with the change.
-6. Logic that lives in a `.ts` file gets a test in `scripts/`.
+5. Add a test in `tests/components/<Name>.test.ts`; logic in a standalone `.ts` module gets a `scripts/*.test.mjs` test.
 
 ## Filing issues
 
@@ -77,6 +77,6 @@ None.
 
 ## Do not
 
-- Edit `llms-full.txt` by hand (generated), or commit `playground/public/api-search-index/*.json`.
+- Commit `llms-full.txt` (generated at `prepack`, gitignored), or replace the fixtures `playground/public/api-search-index/{data,manifest}.json` with a real regenerated index.
 - Publish to npm or bump `package.json#version`: a GitHub Release with tag `X.Y.Z` (no `v`) runs the release workflow, which sets the version from the tag.
 - Touch consumer repos from here; they pin a published version and upgrade on their own schedule.

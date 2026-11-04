@@ -35,56 +35,197 @@ Peer dependencies: `astro@^7.3.5`, `igniteui-theming@^29`,
 ## Quick start
 
 This is the setup every current consumer uses: the package as a component
-library, with the host owning its Astro config.
+library, with the host owning its Astro config. The playground in this repo is
+the same wiring, but it is not published, so every snippet below is complete.
 
-**1. Astro config.** Enable MDX and let Sass resolve the package's bare
-`@use 'igniteui-theming/...'` imports:
+**1. Astro config.** Enable MDX, run the package's Markdown plugins through
+Sätteri, and resolve the package's bare `@use 'igniteui-theming/...'` imports.
+Two details matter:
+
+- Astro 7 renders Markdown with Sätteri and the package's plugins are Sätteri
+  plugins (`defineHastPlugin`), so `markdown.rehypePlugins` rejects them. Pass
+  them to `satteri()`: remark-style plugins go in `mdastPlugins`, rehype-style
+  plugins in `hastPlugins`. Add `@astrojs/markdown-satteri` to the host's
+  dependencies (it is already a dependency of this package).
+- `loadPaths: ['node_modules']` alone is not enough. Vite 8 enforces
+  igniteui-theming's export map, which does not resolve extensionless Sass
+  subpaths, so `@use 'igniteui-theming/sass/typography'` fails with `is not
+exported under the conditions`. The importer below maps them to files.
 
 ```ts
 // astro.config.ts
+import fs from 'node:fs';
+import path from 'node:path';
+import { createRequire } from 'node:module';
+import { pathToFileURL } from 'node:url';
 import { defineConfig } from 'astro/config';
 import mdx from '@astrojs/mdx';
+import { satteri } from '@astrojs/markdown-satteri';
 import { rehypeHeadingAnchors } from 'igniteui-astro-components/plugins/rehype-heading-anchors';
+
+const themingDir = path.dirname(
+  createRequire(import.meta.url).resolve('igniteui-theming/package.json'),
+);
+
+// Resolves `igniteui-theming/sass/...` to files inside the package.
+const themingSassImporter = {
+  findFileUrl(url: string) {
+    if (!url.startsWith('igniteui-theming/')) return null;
+    const candidate = path.join(themingDir, url.slice('igniteui-theming/'.length));
+    return fs.existsSync(candidate) || fs.existsSync(path.dirname(candidate))
+      ? pathToFileURL(candidate)
+      : null;
+  },
+};
 
 export default defineConfig({
   integrations: [mdx()],
-  markdown: { rehypePlugins: [rehypeHeadingAnchors] },
-  vite: { css: { preprocessorOptions: { scss: { loadPaths: ['node_modules'] } } } },
+  markdown: {
+    processor: satteri({ hastPlugins: [rehypeHeadingAnchors] }),
+  },
+  vite: {
+    plugins: [virtualDocsModules()], // step 2
+    css: {
+      preprocessorOptions: {
+        scss: { importers: [themingSassImporter], loadPaths: ['node_modules'] },
+      },
+    },
+  },
 });
 ```
 
 **2. Virtual modules.** `DocsLayout`, `DocsSidebar`, `DocsSubHeader`,
-`GlobalNavBar` and `GlobalFooter` import `virtual:docs-template/site-meta` and
-`virtual:docs-template/nav-html` at module level, so both must resolve. Either
-run `siteMetaIntegration()` or stub them with a small Vite plugin — copy
-`virtualDocsModules()` from [playground/astro.config.mjs](playground/astro.config.mjs).
-The contract is in [src/virtual-modules.d.ts](src/virtual-modules.d.ts).
+`DocsBreadcrumb` and `DoDont` import `virtual:docs-template/site-meta` at
+module level, and the first three also import `virtual:docs-template/nav-html`,
+so both modules must resolve wherever those components appear (an MDX page
+that uses `<DoDont>` included). Stub them with a Vite plugin. Every name below
+must be exported: `DocsSubHeader` imports `packages` and `selectedPackage`,
+which `siteMetaIntegration()` does not emit, so the integration cannot provide
+these modules today (see [The reference integration](#the-reference-integration)).
 
-**3. Middleware.** `ApiLink`, `ApiRef`, `PlatformBlock`, `Sample` and
-`ThemingWidget` read `Astro.locals.platformContext` and
-`Astro.locals.envVars`. Set them in `src/middleware.ts`; see
-[playground/src/middleware.ts](playground/src/middleware.ts) for the shape
-(`PlatformContext` is exported from `igniteui-astro-components/lib/types`).
+```ts
+// astro.config.ts (continued)
+function virtualDocsModules() {
+  const modules: Record<string, string> = {
+    'virtual:docs-template/site-meta': `
+      export const title = 'My Library';
+      export const sidebar = [];
+      export const productLinks = [];
+      export const headEntries = [];
+      export const trailingSlash = 'ignore';
+      export const navLang = 'en';
+      export const packages = [];
+      export const selectedPackage = undefined;
+    `,
+    // platform: 'angular' | 'react' | 'blazor' | 'web-components' | 'winui' | 'uno' | null
+    'virtual:docs-template/nav-html': `export const platform = 'angular';`,
+  };
+  return {
+    name: 'virtual-docs-modules',
+    resolveId: (id: string) => (id in modules ? '\0' + id : null),
+    load: (id: string) => modules[id.slice(1)] ?? null,
+  };
+}
+```
 
-**4. A page.** `DocsLayout` imports `styles/theme.scss` and the JetBrains Mono
+The module contract, and the `App.Locals` typing for step 3, are declared in
+[src/virtual-modules.d.ts](src/virtual-modules.d.ts). Add
+`node_modules/igniteui-astro-components/src/virtual-modules.d.ts` to your
+`tsconfig` `include` so the imports type-check.
+
+**3. Middleware.** `ApiLink`, `ApiRef`, `PlatformBlock` and `Sample` read
+`Astro.locals.platformContext` and throw without it. `Sample` and
+`ThemingWidget` also read `Astro.locals.envVars`, which is optional and treated
+as `{}` when missing. Set both in `src/middleware.ts`:
+
+```ts
+// src/middleware.ts
+import { defineMiddleware } from 'astro:middleware';
+import type { PlatformContext } from 'igniteui-astro-components/lib/types';
+
+const platformContext: PlatformContext = {
+  name: 'React', // 'Angular' | 'React' | 'WebComponents' | 'Blazor' | 'WinUI' | 'Uno'
+  lower: 'react',
+  prefix: 'Igr',
+  productName: 'Ignite UI for React',
+  productSpinal: 'ignite-ui-react',
+  apiPackages: {
+    core: {
+      docRoot: 'https://www.infragistics.com/react-apis-new/react/igniteui-react/latest',
+      packageId: 'igniteui-react',
+      noPackagePrefix: true,
+      preserveCase: true,
+    },
+  },
+  packages: {
+    common: 'igniteui-react',
+    charts: 'igniteui-react-charts',
+    grids: 'igniteui-react-grids',
+    gauges: 'igniteui-react-gauges',
+    maps: 'igniteui-react-maps',
+  },
+  links: {
+    github: 'https://github.com/IgniteUI/igniteui-react',
+    forums: 'https://www.infragistics.com/community/forums/f/ignite-ui-for-react',
+    repoSamples: 'https://github.com/IgniteUI/igniteui-react-examples/tree/master/samples',
+  },
+};
+
+export const onRequest = defineMiddleware((context, next) => {
+  context.locals.platformContext = platformContext;
+  context.locals.envVars = {
+    demosBaseUrl: 'https://www.infragistics.com/react-demos',
+    defaultSampleTheme: 'bootstrap',
+  };
+  return next();
+});
+```
+
+`envVars` keys: `demosBaseUrl`, `dvDemosBaseUrl`, `lobDemosBaseUrl`,
+`crmDemoBaseUrl` and `wcDemosBaseUrl` (`Sample`, see its README),
+`defaultSampleTheme` (`Sample` and `ThemingWidget`) and `defaultSampleMode`
+(`ThemingWidget`). Leave unused keys out rather than setting them to `""`.
+
+**4. A layout.** `DocsLayout` imports `styles/theme.scss` and the JetBrains Mono
 font itself, so nothing else is needed:
 
 ```astro
 ---
+// src/layouts/MyDocsLayout.astro
 import DocsLayout from 'igniteui-astro-components/layouts/DocsLayout.astro';
 import DocsSidebar from 'igniteui-astro-components/components/DocsSidebar/DocsSidebar.astro';
 import DocsToc from 'igniteui-astro-components/components/DocsToc.astro';
+import type { SidebarEntry } from 'igniteui-astro-components/lib/sidebar/types';
+import type { MarkdownHeading } from 'astro';
 
-const { slug } = Astro.params;
-const { headings } = Astro.props;
+interface Props {
+  title: string;
+  currentSlug: string;
+  headings?: MarkdownHeading[];
+}
+
+const { title, currentSlug, headings = [] } = Astro.props;
+
+const sidebar: SidebarEntry[] = [
+  {
+    label: 'Getting started',
+    items: [
+      { label: 'Introduction', slug: '' },
+      { label: 'Installation', slug: 'installation' },
+    ],
+  },
+];
 ---
 
-<DocsLayout title="Hello" siteTitle="My Library" hasSidebar currentSlug={slug}>
-  <DocsSidebar slot="sidebar" items={sidebar} currentSlug={slug} />
-  <DocsToc slot="toc" headings={headings} offsetTarget=".docs-subheader" />
+<DocsLayout title={title} siteTitle="My Library" hasSidebar currentSlug={currentSlug}>
+  <DocsSidebar slot="sidebar" items={sidebar} currentSlug={currentSlug} />
+  <DocsToc slot="toc" headings={headings} />
   <slot />
 </DocsLayout>
 ```
+
+`DocsToc` measures the sub-header on its own, so `offsetTarget` is only needed outside `DocsLayout`. A page renders its content inside it:
+`<MyDocsLayout title={entry.data.title} currentSlug={slug} headings={headings}><Content /></MyDocsLayout>`.
 
 **5. MDX components.** Nothing is auto-registered. Import what a topic uses at
 the top of the MDX file (the convention in the docs repos):
@@ -106,9 +247,10 @@ authored without imports.
 sidebar from a JSON TOC, static images, remark/rehype pipeline, Pagefind index,
 `llms.txt` generation, the Infragistics chrome). It is the origin of the docs
 repo's integration, but it is **not usable as-is today**: it injects route files
-that are not in this package, it imports `pagefind` without declaring it, and it
-registers no middleware. Treat it as reference code until those issues are
-closed.
+that are not in this package (#158), it imports `pagefind` without declaring it
+(#157), its `site-meta` module lacks the `packages` and `selectedPackage`
+exports `DocsSubHeader` imports, and it registers no middleware. Treat it as
+reference code until those issues are closed.
 
 ---
 
@@ -125,7 +267,7 @@ property to change the fonts site-wide.
 
 ## Prop-driven usage (without `siteMetaIntegration`)
 
-By default, `DocsLayout`, `DocsSidebar`, and `DocsSubHeader` read their data (site title, sidebar tree, product links) from the `virtual:docs-template/site-meta` virtual module that is provided by `siteMetaIntegration` / `createDocsSite`.
+By default, `DocsLayout`, `DocsSidebar`, and `DocsSubHeader` read their data (site title, sidebar tree, package list) from the `virtual:docs-template/site-meta` virtual module, which the host stubs in its Astro config ([Quick start](#quick-start) step 2).
 
 If you are not using the integration — for example when consuming the package via a GitHub dependency in a project that builds its own config — every piece of data can be passed directly as a prop instead.
 
@@ -178,57 +320,33 @@ const sidebar: SidebarEntry[] = [
 
 ### DocsSubHeader
 
-| Prop           | Overrides                                                           |
-| -------------- | ------------------------------------------------------------------- |
-| `siteTitle`    | `virtual:docs-template/site-meta` → `title`                         |
-| `productLinks` | `virtual:docs-template/site-meta` → `productLinks`                  |
-| `sidebarItems` | `virtual:docs-template/site-meta` → `sidebar` (used for breadcrumb) |
+| Prop              | Overrides                                             |
+| ----------------- | ----------------------------------------------------- |
+| `packages`        | `virtual:docs-template/site-meta` → `packages`        |
+| `selectedPackage` | `virtual:docs-template/site-meta` → `selectedPackage` |
+
+`siteTitle`, `productLinks` and `sidebarItems` are accepted and read from the
+virtual module as fallbacks, but nothing in the sub-header renders them any
+more (the breadcrumb moved to `DocsBreadcrumb`, the product links markup is
+commented out). See the [DocsSubHeader README](src/components/DocsSubHeader/README.md).
 
 ```astro
 ---
 import DocsSubHeader from 'igniteui-astro-components/components/DocsSubHeader.astro';
-
-const productLinks = [
-  { label: 'Angular', href: '/angular/', platform: 'angular' },
-  { label: 'React', href: '/react/', platform: 'react' },
-];
 ---
 
-<DocsSubHeader siteTitle="My Library" productLinks={productLinks} currentSlug="components/toast" />
+<DocsSubHeader
+  packages={['igniteui-angular', 'igniteui-charts']}
+  selectedPackage="igniteui-angular"
+/>
 ```
 
 ### Combining prop-driven components without the integration
 
-A minimal setup that needs no virtual modules or Astro integration:
-
-```astro
----
-// src/layouts/MyDocsLayout.astro
-import DocsLayout from 'igniteui-astro-components/layouts/DocsLayout.astro';
-import DocsSidebar from 'igniteui-astro-components/components/DocsSidebar/DocsSidebar.astro';
-import DocsToc from 'igniteui-astro-components/components/DocsToc.astro';
-import type { SidebarEntry } from 'igniteui-astro-components/lib/sidebar/types';
-import type { MarkdownHeading } from 'astro';
-
-interface Props {
-  title: string;
-  currentSlug: string;
-  headings?: MarkdownHeading[];
-}
-
-const { title, currentSlug, headings } = Astro.props;
-
-const sidebar: SidebarEntry[] = [/* … your tree … */];
----
-
-<DocsLayout title={title} siteTitle="My Library" hasSidebar currentSlug={currentSlug}>
-  <DocsSidebar slot="sidebar" items={sidebar} currentSlug={currentSlug} />
-  {headings && <DocsToc slot="toc" headings={headings} offsetTarget=".docs-subheader" />}
-  <slot />
-</DocsLayout>
-```
-
-> The virtual modules still need to be resolvable at build time (they are declared in `src/virtual-modules.d.ts`). When not using `siteMetaIntegration`, add stub exports to your `astro.config.ts` using the playground's `virtualDocsModules` pattern — see [playground/astro.config.mjs](playground/astro.config.mjs) for a reference implementation.
+The layout in [Quick start](#quick-start) step 4 is the minimal setup: every
+piece of data arrives as a prop. The virtual modules must still resolve at
+build time, because the components import them at module level; step 2 shows
+the stub.
 
 ---
 
@@ -248,21 +366,21 @@ const sidebar: SidebarEntry[] = [/* … your tree … */];
 
 ### Chrome components
 
-| Export                                   | Purpose                                                                            | Docs                                                   |
-| ---------------------------------------- | ---------------------------------------------------------------------------------- | ------------------------------------------------------ |
-| `…/components/GlobalNavBar.astro`        | IG global navigation bar — legacy, fetched from `/navigation`                      | [README](src/components/GlobalNavBar/README.md)        |
-| `…/components/GlobalFooter.astro`        | IG global footer — legacy, fetched from `/navigation`                              | [README](src/components/GlobalFooter/README.md)        |
-| `…/chrome`                               | `igChrome()` — render the header/footer from a synced snapshot                     | [below](#the-infragistics-header-and-footer)           |
-| `…/chrome/contract`                      | `parseFragment()` — the `ig-chrome` contract checks, for sync scripts              | [below](#the-infragistics-header-and-footer)           |
-| `…/components/DocsSubHeader.astro`       | Secondary fixed bar — site title, product links, package/version selectors, search | [README](src/components/DocsSubHeader/README.md)       |
-| `…/components/Search.astro`              | Pagefind-powered full-text search modal                                            | [README](src/components/Search/README.md)              |
-| `…/components/SearchAdvanced.astro`      | Client-side API symbol search over a JSON index (api-docs)                         | [README](src/components/SearchAdvanced/README.md)      |
-| `…/components/ThemingWidget.astro`       | Theme / colour-mode picker                                                         | [README](src/components/ThemingWidget/README.md)       |
-| `…/components/CopyCode.astro`            | Adds a copy button to every Shiki code block                                       | [README](src/components/CopyCode/README.md)            |
-| `…/components/MobileSidebarToggle.astro` | Mobile-only sidebar disclosure button                                              | [README](src/components/MobileSidebarToggle/README.md) |
-| `…/components/MobileTocToggle.astro`     | Mobile-only "On this page" dropdown                                                | [README](src/components/MobileTocToggle/README.md)     |
-| `…/components/DocsToc.astro`             | "On this page" table of contents with scroll-spy                                   | [README](src/components/DocsToc/README.md)             |
-| `…/components/DocsToc/toTreeNodes`       | `headingsToTreeNodes()`, `TocConfig` — headings → `TreeNode[]`                     | [README](src/components/DocsToc/README.md)             |
+| Export                                   | Purpose                                                               | Docs                                                   |
+| ---------------------------------------- | --------------------------------------------------------------------- | ------------------------------------------------------ |
+| `…/components/GlobalNavBar.astro`        | IG global navigation bar — legacy, fetched from `/navigation`         | [README](src/components/GlobalNavBar/README.md)        |
+| `…/components/GlobalFooter.astro`        | IG global footer — legacy, fetched from `/navigation`                 | [README](src/components/GlobalFooter/README.md)        |
+| `…/chrome`                               | `igChrome()` — render the header/footer from a synced snapshot        | [below](#the-infragistics-header-and-footer)           |
+| `…/chrome/contract`                      | `parseFragment()` — the `ig-chrome` contract checks, for sync scripts | [below](#the-infragistics-header-and-footer)           |
+| `…/components/DocsSubHeader.astro`       | Secondary fixed bar — package/version selectors, search               | [README](src/components/DocsSubHeader/README.md)       |
+| `…/components/Search.astro`              | Pagefind-powered full-text search modal                               | [README](src/components/Search/README.md)              |
+| `…/components/SearchAdvanced.astro`      | Client-side API symbol search over a JSON index (api-docs)            | [README](src/components/SearchAdvanced/README.md)      |
+| `…/components/ThemingWidget.astro`       | Theme / colour-mode picker                                            | [README](src/components/ThemingWidget/README.md)       |
+| `…/components/CopyCode.astro`            | Adds a copy button to every Shiki code block                          | [README](src/components/CopyCode/README.md)            |
+| `…/components/MobileSidebarToggle.astro` | Mobile-only sidebar disclosure button                                 | [README](src/components/MobileSidebarToggle/README.md) |
+| `…/components/MobileTocToggle.astro`     | Mobile-only "On this page" dropdown                                   | [README](src/components/MobileTocToggle/README.md)     |
+| `…/components/DocsToc.astro`             | "On this page" table of contents with scroll-spy                      | [README](src/components/DocsToc/README.md)             |
+| `…/components/DocsToc/toTreeNodes`       | `headingsToTreeNodes()`, `TocConfig` — headings → `TreeNode[]`        | [README](src/components/DocsToc/README.md)             |
 
 `DocsBreadcrumb` and `LicenseIndicator` are rendered by `DocsLayout` but are
 not exported yet.
@@ -452,7 +570,11 @@ Every component is reachable through an explicit subpath in
 (`igniteui-astro-components`) resolve to the JS/TS barrel
 [`src/index.ts`](./src/index.ts) which re-exports the runtime helpers only —
 `.astro` files must always be imported via their full subpath because Astro
-components are not plain ES modules.
+components are not plain ES modules. The barrel re-exports `./integration`,
+which imports `pagefind` (not a declared dependency, #157), so a bare import
+fails to resolve unless the host installs `pagefind`. Import the subpaths you
+need (`igniteui-astro-components/sidebar`, `.../platform`, `.../lib/types`, …)
+instead of the bare package.
 
 ---
 
@@ -546,7 +668,7 @@ lint/format, how to add a component, and how releases work. The short version:
 ```sh
 npm ci
 npm run playground        # http://localhost:4567
-npm test && npm run lint && npm run playground:check
+npm run format:check && npm test && npm run lint && npm run playground:check && npm run playground:build
 ```
 
 ---

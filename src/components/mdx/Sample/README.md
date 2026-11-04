@@ -65,15 +65,16 @@ import Sample from 'igniteui-astro-components/components/mdx/Sample.astro';
 
 ## Environment configuration
 
-The base URLs are read from `Astro.locals.envVars`, a plain `Record<string, string>` that the host site's middleware must set (the docs sites load it from their `environment.json`; see [playground/src/middleware.ts](../../../../playground/src/middleware.ts) for a minimal version). The platform (`Astro.locals.platformContext`) comes from the same middleware:
+The base URLs are read from `Astro.locals.envVars`, a plain `Record<string, string>` that the host site's middleware must set (the docs sites load it from their `environment.json`; the root README's Quick start step 3 shows a minimal version). The platform (`Astro.locals.platformContext`) comes from the same middleware:
 
-| Key               | Used by                        |
-| ----------------- | ------------------------------ |
-| `demosBaseUrl`    | Default demos                  |
-| `dvDemosBaseUrl`  | Charts / gauges / maps / excel |
-| `lobDemosBaseUrl` | LOB / grids                    |
-| `crmDemoBaseUrl`  | CRM demos                      |
-| `wcDemosBaseUrl`  | `wc` samples, on any platform  |
+| Key                  | Used by                                                                              |
+| -------------------- | ------------------------------------------------------------------------------------ |
+| `demosBaseUrl`       | Default demos                                                                        |
+| `dvDemosBaseUrl`     | Charts / gauges / maps / excel                                                       |
+| `lobDemosBaseUrl`    | LOB / grids                                                                          |
+| `crmDemoBaseUrl`     | CRM demos                                                                            |
+| `wcDemosBaseUrl`     | `wc` samples, on any platform                                                        |
+| `defaultSampleTheme` | Starting theme of the code tabs and theme picker; falls back to the platform default |
 
 Outside the Web Components site, a `wc` sample needs `wcDemosBaseUrl`: without it the sample falls back to `demosBaseUrl`, the page's own platform browser, and the build logs a warning. Leave unused keys out rather than setting them to `""`: an empty string doesn't fall back, it produces a relative URL.
 
@@ -82,8 +83,6 @@ Outside the Web Components site, a `wc` sample needs `wcDemosBaseUrl`: without i
 Code tabs are syntax-highlighted client-side using [Shiki](https://shiki.style/) (lazy-loaded via dynamic import and pre-warmed at widget init). Supported languages: `typescript`, `tsx`, `javascript`, `html`, `css`, `scss`, `csharp`, `razor`.
 
 The tabs use the package's brand code theme (`igCodeTheme`, the same one `createDocsSite()` applies to fenced blocks), so a code tab and a fenced block look identical. See [`src/code-theme/README.md`](../../../code-theme/README.md).
-
-> **Note:** highlight.js is not required for code tabs. `createDocsSite()` still injects it into `<head>` for inline code; if you wire your own head entries you can leave it out.
 
 ## Registering in MDX
 

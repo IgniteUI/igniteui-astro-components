@@ -26,14 +26,15 @@ import DocsSidebar from 'igniteui-astro-components/components/DocsSidebar/DocsSi
 
 ### Props
 
-| Prop            | Type             | Default             | Description                                                                                                                                       |
-| --------------- | ---------------- | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `currentSlug`   | `string`         | `''`                | Slug of the active page. Highlights the matching link and auto-expands ancestor groups.                                                           |
-| `items`         | `SidebarEntry[]` | virtual module      | Sidebar tree to render. **Overrides** the `virtual:docs-template/site-meta` value when provided. Use this when not running `siteMetaIntegration`. |
-| `showFilter`    | `boolean`        | `true`              | Render the filter input above the tree.                                                                                                           |
-| `trailingSlash` | `boolean`        | from Astro config   | Append a trailing slash to generated links. Derived from the site's `trailingSlash` setting via the virtual module; `true` when unknown.          |
-| `logoText`      | `string`         | product family      | Text in the slide-in sidebar's logo area.                                                                                                         |
-| `platformLabel` | `string \| null` | from virtual module | Platform label under the logo text (for example `'Angular'`). Pass `null` to hide it.                                                             |
+| Prop                 | Type             | Default             | Description                                                                                                                                                                                                                            |
+| -------------------- | ---------------- | ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `currentSlug`        | `string`         | `''`                | Slug of the active page. Highlights the matching link and auto-expands ancestor groups.                                                                                                                                                |
+| `items`              | `SidebarEntry[]` | virtual module      | Sidebar tree to render. **Overrides** the `virtual:docs-template/site-meta` value when provided. Use this when not running `siteMetaIntegration`.                                                                                      |
+| `showFilter`         | `boolean`        | `true`              | Render the filter input above the tree.                                                                                                                                                                                                |
+| `trailingSlash`      | `boolean`        | from Astro config   | Append a trailing slash to generated links. Derived from the site's `trailingSlash` setting via the virtual module; `true` when unknown.                                                                                               |
+| `logoText`           | `string`         | product family      | Text in the slide-in sidebar's logo area.                                                                                                                                                                                              |
+| `platformLabel`      | `string \| null` | from virtual module | Platform label under the logo text (for example `'Angular'`). Pass `null` to hide it.                                                                                                                                                  |
+| `singleBranchExpand` | `boolean`        | `true`              | Keep one branch open: only the current page's groups start open and expanding a group collapses the others. The filter still opens every match. With the default, a group's `collapsed` is ignored; set `false` to honour `collapsed`. |
 
 ### Example
 
@@ -48,7 +49,6 @@ import type { SidebarEntry } from 'igniteui-astro-components/lib/sidebar/types';
 const sidebar: SidebarEntry[] = [
   {
     label: 'Getting Started',
-    collapsed: false,
     items: [
       { label: 'Introduction', slug: '' },
       { label: 'Installation', slug: 'installation' },
@@ -56,7 +56,6 @@ const sidebar: SidebarEntry[] = [
   },
   {
     label: 'Components',
-    collapsed: false,
     items: [
       { label: 'Toast', slug: 'components/toast' },
       {
@@ -149,7 +148,7 @@ type SidebarLink = {
 
 type SidebarGroup = {
   label: string;
-  collapsed?: boolean; // false = open by default; true = closed by default
+  collapsed?: boolean; // closed by default when true; read only with singleBranchExpand={false}
   items: SidebarEntry[];
 };
 
@@ -193,6 +192,7 @@ To build your own layout, reuse those pieces:
 import DocsTree from 'igniteui-astro-components/components/DocsTree/DocsTree.astro';
 import SidebarLabel from 'igniteui-astro-components/components/DocsSidebar/SidebarLabel.astro';
 import { toTreeNodes } from 'igniteui-astro-components/components/DocsSidebar/toTreeNodes';
+import { normalizeSlug } from 'igniteui-astro-components/lib/sidebar/helpers';
 
 const nodes = toTreeNodes(sidebar, currentSlug, { trailingSlash: true });
 ---
@@ -200,7 +200,7 @@ const nodes = toTreeNodes(sidebar, currentSlug, { trailingSlash: true });
 <DocsTree
   nodes={nodes}
   variant="sidebar"
-  activeId={currentSlug}
+  activeId={normalizeSlug(currentSlug)}
   toggleNodeOnClick
   renderLabel={SidebarLabel}
 />

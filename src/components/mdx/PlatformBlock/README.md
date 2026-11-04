@@ -32,7 +32,7 @@ Valid platform names: `Angular`, `React`, `WebComponents`, `Blazor`
 
 ## Platform context
 
-The active platform is `Astro.locals.platformContext.name`, set by the host site's middleware (see [playground/src/middleware.ts](../../../../playground/src/middleware.ts)). Names in `for` must match `platformContext.name` exactly (`Angular`, `React`, `WebComponents`, `Blazor`). Without the middleware the render throws, because the component destructures the context.
+The active platform is `Astro.locals.platformContext.name`, set by the host site's middleware (see the root README, Quick start step 3). Names in `for` must match `platformContext.name` exactly (`Angular`, `React`, `WebComponents`, `Blazor`, `WinUI`, `Uno`). Without the middleware the render throws, because the component destructures the context.
 
 The xplat docs build additionally inlines and strips `<PlatformBlock>` at build time (a Vite plugin in that repo), so the component never reaches the browser there.
 

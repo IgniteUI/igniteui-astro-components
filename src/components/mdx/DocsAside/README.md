@@ -76,7 +76,9 @@ Per-variant colour tokens, one set each for `note`, `info` and `warning`:
 
 ```
 --igd-aside-{type}-bg        --igd-aside-{type}-border  --igd-aside-{type}-title
---igd-aside-{type}-content   --igd-aside-{type}-icon    --igd-aside-{type}-code-background
+--igd-aside-{type}-content   --igd-aside-{type}-icon
 ```
+
+`--igd-aside-{type}-code-background` is declared in `_variables.scss` but no stylesheet reads it yet.
 
 Each colour token uses `light-dark()` so it follows the page's `data-theme`.

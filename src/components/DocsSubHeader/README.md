@@ -1,6 +1,6 @@
 # DocsSubHeader
 
-Secondary fixed header bar rendered below the `GlobalNavBar`. Contains the Pagefind search button and platform product-switch links.
+Secondary fixed header bar rendered below the `GlobalNavBar`. Contains the logo, the search button and the package and version selectors.
 
 > **Note:** The breadcrumb trail was extracted into the standalone [`DocsBreadcrumb`](../DocsBreadcrumb/README.md) component and is now rendered inside the main content frame, above the page body — not in this bar.
 
@@ -12,22 +12,23 @@ import DocsSubHeader from 'igniteui-astro-components/components/DocsSubHeader.as
 
 ## Props
 
-| Prop              | Type                                                                               | Default        | Description                                                                                                                                             |
-| ----------------- | ---------------------------------------------------------------------------------- | -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `siteTitle`       | `string`                                                                           | virtual module | Site name shown on the left. Set it when not running `siteMetaIntegration`.                                                                             |
-| `pageTitle`       | `string \| null`                                                                   | —              | Fallback page title when `currentSlug` is not found in the sidebar tree.                                                                                |
-| `currentSlug`     | `string`                                                                           | —              | Current page slug, matched against the sidebar tree.                                                                                                    |
-| `logoText`        | `string`                                                                           | by platform    | Text shown in the logo area while `GlobalNavBar` is visible; `'Ignite UI'` or `'Ultimate UI'` by default.                                               |
-| `productLinks`    | `{ label: string; href: string; platform?: string }[]`                             | virtual module | Override the cross-product navigation links.                                                                                                            |
-| `sidebarItems`    | `SidebarEntry[]`                                                                   | virtual module | Override the sidebar tree used to resolve the page title.                                                                                               |
-| `packages`        | `Array<string \| { label: string; value?: string; href?: string; base?: string }>` | virtual module | Entries for the package selector. A string is both label and value; `href` navigates on selection; `base` swaps the site base to keep the current page. |
-| `selectedPackage` | `string`                                                                           | —              | Currently selected package (must match one of `packages`).                                                                                              |
-| `packageLabel`    | `string`                                                                           | `'Package'`    | Label rendered before the package selector.                                                                                                             |
-| `versions`        | `string[]`                                                                         | —              | Version labels for the version selector dropdown. Hidden when omitted.                                                                                  |
-| `selectedVersion` | `string`                                                                           | —              | Currently selected version (must match one of `versions`).                                                                                              |
-| `versionLabel`    | `string`                                                                           | `'Version'`    | Label rendered before the version selector.                                                                                                             |
-| `showThemeToggle` | `boolean`                                                                          | `false`        | Show a light/dark theme toggle button.                                                                                                                  |
-| `themeStorageKey` | `string`                                                                           | `'docs-theme'` | `localStorage` key for persisting the theme preference.                                                                                                 |
+| Prop              | Type                                                                               | Default        | Description                                                                                                                                                                                                                                             |
+| ----------------- | ---------------------------------------------------------------------------------- | -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `logoText`        | `string`                                                                           | by platform    | Text shown in the logo area while `GlobalNavBar` is visible; `'Ignite UI'` or `'Ultimate UI'` by default.                                                                                                                                               |
+| `packages`        | `Array<string \| { label: string; value?: string; href?: string; base?: string }>` | virtual module | Entries for the package selector. A string is both label and value; `href` navigates on selection; `base` swaps the site base to keep the current page. Falls back to the virtual module's `packages`; the selector is hidden only when both are empty. |
+| `selectedPackage` | `string`                                                                           | virtual module | Currently selected package (must match one of `packages`). Falls back to the virtual module's `selectedPackage`, then to the first entry.                                                                                                               |
+| `packageLabel`    | `string`                                                                           | `'Package'`    | `aria-label` of the package selector (not a visible label).                                                                                                                                                                                             |
+| `versions`        | `string[]`                                                                         | —              | Version labels for the version selector dropdown. Hidden when omitted.                                                                                                                                                                                  |
+| `selectedVersion` | `string`                                                                           | —              | Currently selected version (must match one of `versions`).                                                                                                                                                                                              |
+| `versionLabel`    | `string`                                                                           | `'Version'`    | `aria-label` of the version selector (not a visible label).                                                                                                                                                                                             |
+
+Accepted but not rendered (kept for compatibility; see the DocsSubHeader dead-props issue):
+
+| Prop                                                    | Why it has no effect                                                                                               |
+| ------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| `siteTitle`, `pageTitle`, `currentSlug`, `sidebarItems` | Breadcrumb inputs. The breadcrumb moved to `DocsBreadcrumb`; the sub-header computes the crumbs and discards them. |
+| `productLinks`                                          | The product-links markup is commented out.                                                                         |
+| `showThemeToggle`, `themeStorageKey`                    | Destructured and never used. No toggle is rendered; `DocsLayout` hard-codes the `'docs-theme'` storage key.        |
 
 `PackageEntry` is `{ label: string; value?: string; href?: string; base?: string }`:
 
@@ -50,32 +51,23 @@ import DocsSubHeader from 'igniteui-astro-components/components/DocsSubHeader.as
   page on that site instead: the current URL with this site's base (`import.meta.env.BASE_URL`)
   swapped for `base`, keeping the query and `#hash`. Nothing checks that the page exists there, so
   the server should redirect missing pages, e.g. to the platform's getting started page.
-- Product links from the virtual module are shown; the currently active platform link is hidden.
 - The search button opens the Pagefind dialog (see `Search` component).
-- CSS custom properties used for positioning:
-  - `--docs-global-nav-height` (default `4.7rem`) — height of the `GlobalNavBar` above
-  - `--docs-subheader-height` (default `2.5rem`) — height of this bar
+- `DocsLayout` sets `--docs-global-nav-height` on the wrapper from the measured nav height; no stylesheet in this package reads it or `--docs-subheader-height`.
 
 ## Example
 
 ```astro
 ---
 import DocsSubHeader from 'igniteui-astro-components/components/DocsSubHeader.astro';
-
-const productLinks = [
-  { label: 'Angular', href: '/angular/', platform: 'angular' },
-  { label: 'React', href: '/react/', platform: 'react' },
-  { label: 'Web Components', href: '/web-components/', platform: 'web-components' },
-];
 ---
 
-<DocsSubHeader productLinks={productLinks} />
+<DocsSubHeader />
 ```
 
 This component is used automatically inside `DocsLayout` — you only need to
 mount it directly when building a custom page shell.
 
-### With package/version selectors and theme toggle
+### With package/version selectors
 
 ```astro
 ---
@@ -84,20 +76,17 @@ import SearchAdvanced from 'igniteui-astro-components/components/SearchAdvanced.
 ---
 
 <DocsSubHeader
-  siteTitle="Ignite UI for Angular"
   packages={['igniteui-angular', 'igniteui-charts']}
   selectedPackage="igniteui-angular"
   packageLabel="Package"
   versions={['19.1 (latest)', '18.2', '18.1']}
   selectedVersion="19.1 (latest)"
   versionLabel="Version"
-  showThemeToggle
-  themeStorageKey="api-docs-theme"
-  productLinks={[]}
 >
   <SearchAdvanced slot="search" showScope tabs={[]} />
 </DocsSubHeader>
 ```
 
-The `#package-select` and `#version-select` elements emit native `change`
-events — attach your own navigation logic via `document.getElementById`.
+`#package-select` and `#version-select` are `igc-select` elements and emit
+`igcChange` (not a native `change` event); attach your own navigation logic
+via `document.getElementById`.

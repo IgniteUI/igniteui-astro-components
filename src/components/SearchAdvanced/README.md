@@ -10,15 +10,15 @@ import SearchAdvanced from 'igniteui-astro-components/components/SearchAdvanced.
 
 ## Props
 
-| Prop          | Type          | Default                                     | Description                                                                    |
-| ------------- | ------------- | ------------------------------------------- | ------------------------------------------------------------------------------ |
-| `class`       | `string`      | —                                           | CSS class for the outer element                                                |
-| `indexUrl`    | `string`      | `${BASE_URL}api-search-index/manifest.json` | URL of the search index: a single JSON file or a manifest (see "Index format") |
-| `placeholder` | `string`      | `"Search"`                                  | Search input placeholder text                                                  |
-| `showScope`   | `boolean`     | `false`                                     | Show scope selector (current package / all packages)                           |
-| `tabs`        | `SearchTab[]` | `[]`                                        | Tab categories (besides the always-present "All" tab)                          |
-| `allTabLimit` | `number`      | `10`                                        | Max results per category in the "All" tab                                      |
-| `platform`    | `string`      | —                                           | Platform key used to scope results when `showScope` is on                      |
+| Prop          | Type          | Default                                     | Description                                                                                                                                                                                                                                                         |
+| ------------- | ------------- | ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `class`       | `string`      | —                                           | CSS class for the outer element                                                                                                                                                                                                                                     |
+| `indexUrl`    | `string`      | `${BASE_URL}api-search-index/manifest.json` | URL of the search index: a single JSON file or a manifest (see "Index format")                                                                                                                                                                                      |
+| `placeholder` | `string`      | `"Search"`                                  | Search input placeholder text                                                                                                                                                                                                                                       |
+| `showScope`   | `boolean`     | `false`                                     | Show scope selector (current package / all packages)                                                                                                                                                                                                                |
+| `tabs`        | `SearchTab[]` | `[]`                                        | Tab categories (besides the always-present "All" tab)                                                                                                                                                                                                               |
+| `allTabLimit` | `number`      | `10`                                        | Max results per category in the "All" tab                                                                                                                                                                                                                           |
+| `platform`    | `string`      | —                                           | Platform key (`angular`, `react`, `blazor`, `web-components`) for the logo icon in the scope selector; auto-detected from the enclosing `DocsSubHeader` when omitted. The scope itself comes from the URL path under `BASE_URL` (`<platform>/<package>/<version>`). |
 
 `indexUrl` accepts two shapes. A **single file** is a JSON document with
 `{ pages: [...] }`. A **manifest** is `{ files: ["pkg/version.json", ...] }`;

@@ -32,7 +32,7 @@ const { headings } = Astro.props;
 
 <DocsLayout title="Grid">
   <MobileTocToggle slot="mobile-toc" headings={headings} />
-  <DocsToc slot="toc" headings={headings} offsetTarget=".docs-subheader" />
+  <DocsToc slot="toc" headings={headings} />
   <slot />
 </DocsLayout>
 ```

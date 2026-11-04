@@ -30,7 +30,7 @@ import Anatomy from 'igniteui-astro-components/components/mdx/Anatomy.astro';
 
 ## Styling
 
-Tokens are declared on `.igd-anatomy` and can be retuned from any ancestor:
+Tokens are declared on `.igd-anatomy` itself, so a value set on `:root` or another ancestor is overridden. Retune them on `.igd-anatomy` (or a more specific selector):
 
 ```
 --igd-anatomy-padding        (60px 24px)

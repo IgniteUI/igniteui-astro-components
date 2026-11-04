@@ -10,7 +10,7 @@ From the repo root:
 ```sh
 npm install
 npm run playground        # astro sync + astro dev on http://localhost:4567
-npm run playground:check  # astro check (type-checks ../src through the playground)
+npm run playground:check  # astro check over the playground only (does not type-check ../src)
 npm run playground:build  # production build, then `npm run playground:preview`
 ```
 
@@ -20,12 +20,11 @@ npm run playground:build  # production build, then `npm run playground:preview`
   implementations of `virtual:docs-template/site-meta` and
   `virtual:docs-template/nav-html` — the two virtual modules normally
   produced by `siteMetaIntegration()`. This lets `DocsLayout`,
-  `GlobalNavBar`, `GlobalFooter`, `DocsSidebar`, `ThemingWidget`, etc.
-  run without the full integration. `createDocsSite()` is deliberately not
-  called.
-- Components are imported directly via relative paths (`../../../src/...`)
-  rather than through the package name, so no npm link / `file:` install
-  is required.
+  `DocsSidebar`, `DocsSubHeader`, `DocsBreadcrumb` and `DoDont` run without
+  the full integration. `createDocsSite()` is deliberately not called.
+- Components are imported directly via relative paths (`../../../../src/...`
+  from `src/pages/components/`) rather than through the package name, so no
+  npm link / `file:` install is required.
 - Site title, product links, sidebar tree, search tabs, packages and
   versions come from `src/site-config.ts` and are passed as props
   (prop-driven usage).
@@ -48,6 +47,7 @@ npm run playground:build  # production build, then `npm run playground:preview`
 | `/components/api-link`        | `ApiLink`                                                                                                                                    |
 | `/components/api-ref`         | `ApiRef`                                                                                                                                     |
 | `/components/badge`           | `Badge`                                                                                                                                      |
+| `/components/code-block`      | Fenced code blocks and `<Code>` in the brand theme, `CopyCode`, `Sample` code tabs                                                           |
 | `/components/do-dont`         | `DoDont`                                                                                                                                     |
 | `/components/docs-aside`      | `DocsAside`                                                                                                                                  |
 | `/components/docs-subheader`  | `DocsSubHeader` with package/version selectors                                                                                               |
@@ -67,8 +67,8 @@ npm run playground:build  # production build, then `npm run playground:preview`
 
 1. Create `src/pages/components/<name>.astro` (or `.mdx` under `src/pages/styles/`
    using `PlaygroundMdxLayout`).
-2. Import the component from `../../../src/...` and render every variant and
-   state worth looking at.
+2. Import the component from `../../../../src/...` and render every variant
+   and state worth looking at.
 3. Add the route to the `SIDEBAR` tree in `src/site-config.ts` so it shows up
    in the navigation, and to the table above.
 
