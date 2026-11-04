@@ -1,5 +1,5 @@
 # Checks the PR body: Summary, Related issue and one Type of change are required;
-# Consumer impact is required when Breaking change is ticked.
+# Consumer impact is required when Breaking change is ticked. Skips bot PRs.
 name: PR template
 
 on:
@@ -12,6 +12,7 @@ permissions:
 jobs:
   check:
     name: PR template
+    if: github.event.pull_request.user.type != 'Bot'
     runs-on: ubuntu-latest
     steps:
       - name: Validate pull request body
