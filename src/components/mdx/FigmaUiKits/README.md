@@ -2,7 +2,7 @@
 
 Renders the "Design in Figma" call-to-action banner that links a component topic to the Ignite UI kits in the Figma Community — one link per theme: Material, Fluent, Bootstrap and Indigo. It belongs between a topic's description and its live demo.
 
-The banner is one row on a wide column — the Figma logo and title at the start, the kit links at the end — and wraps as the space runs out: first the links drop below the title, then the links themselves wrap. It is always 100% of its container and responds to the space it is given rather than to the viewport.
+The banner is always 100% of its container. Above 760px it is one row — the Figma logo and title at the start, the kit links at the end. At 760px or narrower it switches to the **compact** layout from the mobile design: the title shortens to "Design:", the links stack under it and wrap, and the padding and gaps tighten to 12px. The switch is a container query on the banner, so it follows the width the banner is given rather than the viewport. Pass `variant` to pin either layout.
 
 ## Import
 
@@ -12,12 +12,14 @@ import FigmaUiKits from 'igniteui-astro-components/components/mdx/FigmaUiKits.as
 
 ## Props
 
-| Prop          | Type           | Default                 | Description                                                                       |
-| ------------- | -------------- | ----------------------- | --------------------------------------------------------------------------------- |
-| `kits`        | `FigmaUiKit[]` | `DEFAULT_FIGMA_UI_KITS` | The kits to link to, in display order. Each is `{ label: string; href: string }`. |
-| `title`       | `string`       | `'Design in Figma:'`    | Bold lead-in before the description. Localized by default — see below.            |
-| `description` | `string`       | `'Explore our UI kits'` | Text after the title. Localized by default.                                       |
-| `class`       | `string`       | —                       | Extra CSS classes forwarded to the container.                                     |
+| Prop           | Type                               | Default                 | Description                                                                                            |
+| -------------- | ---------------------------------- | ----------------------- | ------------------------------------------------------------------------------------------------------ |
+| `kits`         | `FigmaUiKit[]`                     | `DEFAULT_FIGMA_UI_KITS` | The kits to link to, in display order. Each is `{ label: string; href: string }`.                      |
+| `title`        | `string`                           | `'Design in Figma:'`    | Bold lead-in before the description. Localized by default — see below.                                 |
+| `compactTitle` | `string`                           | `'Design:'`             | Title used by the compact layout. Falls back to `title` when that is overridden. Localized by default. |
+| `variant`      | `'auto' \| 'regular' \| 'compact'` | `'auto'`                | `'auto'` switches to compact at 760px or narrower; the others pin one layout.                          |
+| `description`  | `string`                           | `'Explore our UI kits'` | Text after the title. Localized by default.                                                            |
+| `class`        | `string`                           | —                       | Extra CSS classes forwarded to the container.                                                          |
 
 A kit with an empty `label` or `href` throws at build time.
 
@@ -39,6 +41,10 @@ import { DEFAULT_FIGMA_UI_KITS } from 'igniteui-astro-components/components/mdx/
 
 <FigmaUiKits />
 
+{/* Always compact, whatever the width */}
+
+<FigmaUiKits variant="compact" />
+
 {/* Custom wording */}
 
 <FigmaUiKits title="Prototype it:" description="Start from a ready-made kit" />
@@ -55,13 +61,13 @@ import { DEFAULT_FIGMA_UI_KITS } from 'igniteui-astro-components/components/mdx/
 
 ## Localization
 
-The default `title`, `description` and the screen-reader "(opens in a new tab)" hint follow the site language — the docs integration's `navLang` (from `virtual:docs-template/site-meta`), then `Astro.currentLocale`, then English. Kit names are product names and are not translated.
+The default `title`, `compactTitle`, `description` and the screen-reader "(opens in a new tab)" hint follow the site language — the docs integration's `navLang` (from `virtual:docs-template/site-meta`), then `Astro.currentLocale`, then English. Kit names are product names and are not translated.
 
-| Language       | `title`           | `description`       |
-| -------------- | ----------------- | ------------------- |
-| `en` (default) | Design in Figma:  | Explore our UI kits |
-| `jp` / `ja`    | Figma でデザイン: | UI キットを見る     |
-| `kr` / `ko`    | Figma에서 디자인: | UI 키트 살펴보기    |
+| Language       | `title`           | `compactTitle` | `description`       |
+| -------------- | ----------------- | -------------- | ------------------- |
+| `en` (default) | Design in Figma:  | Design:        | Explore our UI kits |
+| `jp` / `ja`    | Figma でデザイン: | デザイン:      | UI キットを見る     |
+| `kr` / `ko`    | Figma에서 디자인: | 디자인:        | UI 키트 살펴보기    |
 
 ## Accessibility
 
@@ -77,8 +83,8 @@ The container reads these custom properties; set them on an ancestor or through 
 
 | Token                             | Default                                   |
 | --------------------------------- | ----------------------------------------- |
-| `--igd-figma-kits-padding-block`  | `8px`                                     |
-| `--igd-figma-kits-padding-inline` | `16px`                                    |
+| `--igd-figma-kits-padding-block`  | `8px` (compact: `12px`)                   |
+| `--igd-figma-kits-padding-inline` | `16px` (compact: `12px`)                  |
 | `--igd-figma-kits-gap`            | `24px` (between links, and title ↔ links) |
 | `--igd-figma-kits-radius`         | `4px`                                     |
 | `--igd-figma-kits-bg`             | `gray-100` (light) / `gray-50` (dark)     |

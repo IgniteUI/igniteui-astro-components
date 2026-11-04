@@ -39,6 +39,21 @@ const propRows: PropRow[] = [
             (see <a href="#localization">Localization</a>).`,
   },
   {
+    name: 'compactTitle',
+    type: 'string',
+    def: "'Design:'",
+    description: `Title used by the compact layout. Falls back to <code>title</code> when that is
+            overridden, so custom wording is never swapped for the default short one.`,
+  },
+  {
+    name: 'variant',
+    type: "'auto' | 'regular' | 'compact'",
+    def: "'auto'",
+    description: `Layout. <code>'auto'</code> is the regular row on a wide container and the
+            compact stack at 760px or narrower (see <a href="#responsive">Responsive layout</a>);
+            <code>'regular'</code> and <code>'compact'</code> pin one layout.`,
+  },
+  {
     name: 'description',
     type: 'string',
     def: "'Explore our UI kits'",
@@ -80,6 +95,9 @@ The Ignite UI for Angular Button is a directive that turns any element into a bu
 <Sample src="/inputs/button/overview" height={200} />`;
 
 const usageDefault = `<FigmaUiKits />`;
+
+const usageVariants = `<FigmaUiKits variant="regular" />
+<FigmaUiKits variant="compact" />`;
 
 const usageWording = `<FigmaUiKits title="Prototype it:" description="Start from a ready-made kit" />`;
 
@@ -156,14 +174,20 @@ const usageTokens = `.my-topic .igd-figma-kits {
 
   <h2 id="responsive">Responsive layout</h2>
   <p>
-    The banner is always 100% of its container and wraps as the space runs out, with no media
-    queries: first the links drop below the title, then the links themselves wrap onto further rows.
-    It responds to the width it is given rather than to the viewport, so the same markup fits the
-    main column, a narrow aside or a phone screen. The frames below are fixed-width containers that
-    show the layout at common breakpoints.
+    The banner is always 100% of its container and has two layouts. The <strong>regular</strong>
+    layout is one row: logo and title at the start, links at the end. The
+    <strong>compact</strong> layout, from the mobile design, shortens the title to "Design:", stacks
+    the links under it so they wrap, and tightens the padding and gaps to 12px.
+  </p>
+  <p>
+    With the default <code>variant="auto"</code> the banner shows the regular row when it is wider
+    than 760px — enough for that row to fit on one line — and the compact layout at 760px or
+    narrower. The switch is a container query on the banner, not a media query, so it follows the
+    width the banner is given: a docs column between a sidebar and a table of contents can be
+    compact on a laptop and regular on a wide monitor. The frames below are fixed-width containers.
   </p>
   <div class="figma-kits-demo">
-    {[720, 480, 320].map((width) => (
+    {[480, 320].map((width) => (
       <figure class="figma-kits-demo__frame" style={`--demo-width: ${width}px`}>
         <figcaption class="figma-kits-demo__caption">{width}px container</figcaption>
         <FigmaUiKits />
@@ -171,10 +195,20 @@ const usageTokens = `.my-topic .igd-figma-kits {
     ))}
   </div>
 
+  <p>
+    Pass <code>variant="regular"</code> or <code>variant="compact"</code> to pin a layout regardless
+    of width. The two banners below are pinned, so they look the same at any window size. A pinned
+    regular banner still wraps its links if the row runs out of space.
+  </p>
+  <Code code={usageVariants} lang="astro" theme="dark-plus" wrap />
+  <FigmaUiKits variant="regular" />
+  <FigmaUiKits variant="compact" />
+
   <h2 id="wording">Custom wording</h2>
   <p>
     <code>title</code> and <code>description</code> override the default copy. Keep the title short
-    and ending in a colon — it reads as a lead-in to the description.
+    and ending in a colon — it reads as a lead-in to the description. A custom <code>title</code> is
+    also used by the compact layout unless you pass a <code>compactTitle</code> as well.
   </p>
   <Code code={usageWording} lang="astro" theme="dark-plus" wrap />
   <FigmaUiKits title="Prototype it:" description="Start from a ready-made kit" />
@@ -194,8 +228,8 @@ const usageTokens = `.my-topic .igd-figma-kits {
 
   <h2 id="localization">Localization</h2>
   <p>
-    The default title, description and the screen-reader "(opens in a new tab)" hint follow the site
-    language — the docs integration's <code>navLang</code>, read from
+    The default title, compact title, description and the screen-reader "(opens in a new tab)" hint
+    follow the site language — the docs integration's <code>navLang</code>, read from
     <code>virtual:docs-template/site-meta</code>, then <code>Astro.currentLocale</code> and finally
     English. Kit names are product names and are not translated.
   </p>
@@ -211,6 +245,9 @@ const usageTokens = `.my-topic .igd-figma-kits {
             <code>title</code>
           </th>
           <th>
+            <code>compactTitle</code>
+          </th>
+          <th>
             <code>description</code>
           </th>
         </tr>
@@ -221,6 +258,7 @@ const usageTokens = `.my-topic .igd-figma-kits {
             <code>en</code> (default)
           </td>
           <td>Design in Figma:</td>
+          <td>Design:</td>
           <td>Explore our UI kits</td>
         </tr>
         <tr>
@@ -228,6 +266,7 @@ const usageTokens = `.my-topic .igd-figma-kits {
             <code>jp</code> / <code>ja</code>
           </td>
           <td>Figma でデザイン:</td>
+          <td>デザイン:</td>
           <td>UI キットを見る</td>
         </tr>
         <tr>
@@ -235,6 +274,7 @@ const usageTokens = `.my-topic .igd-figma-kits {
             <code>kr</code> / <code>ko</code>
           </td>
           <td>Figma에서 디자인:</td>
+          <td>디자인:</td>
           <td>UI 키트 살펴보기</td>
         </tr>
       </tbody>
