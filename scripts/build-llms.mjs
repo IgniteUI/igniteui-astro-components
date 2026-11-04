@@ -1,23 +1,11 @@
 #!/usr/bin/env node
 /**
- * build-llms.mjs
- *
- * Generates `llms-full.txt`: a single file an AI agent (or a hosted indexer)
- * can read to learn the whole public surface of this package without opening
- * the sources. It concatenates, in a fixed order:
- *
- *   1. `llms.txt` (the hand-written index)
- *   2. a table of every `package.json#exports` subpath
- *   3. the root `README.md`
- *   4. every `src/∗∗/README.md`
- *
- * The output is deterministic (no version, date or git SHA) so that the
- * committed file can be diffed against a fresh build in `scripts/llms.test.mjs`.
+ * Builds `llms-full.txt` from `llms.txt`, the package exports, the root README
+ * and every README under `src/`.
  *
  *   node scripts/build-llms.mjs          # write llms-full.txt
- *   node scripts/build-llms.mjs --check  # exit 1 when the committed file is stale
+ *   node scripts/build-llms.mjs --check  # exit 1 when llms-full.txt is out of date
  */
-
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -31,7 +19,7 @@ const HEADER = `# igniteui-astro-components — full reference
 > Paths are relative to the package root (in a consumer:
 > \`node_modules/igniteui-astro-components/\`).`;
 
-/** Order READMEs so the file reads top-down: layout, chrome, sidebar, MDX. */
+/** Sorts READMEs: layout, chrome, sidebar, then MDX components. */
 function readmeRank(rel) {
   if (rel.startsWith('src/layouts/')) return 0;
   if (rel.startsWith('src/components/mdx/')) return 2;
@@ -51,7 +39,7 @@ export function listReadmes(rootDir) {
     }
   };
   walk(srcDir);
-  // Byte-order sort inside each rank keeps the output identical on every OS.
+  // Byte-order sort within each group.
   return found.sort((a, b) => readmeRank(a) - readmeRank(b) || (a < b ? -1 : a > b ? 1 : 0));
 }
 
@@ -73,7 +61,7 @@ export function exportsTable(pkg) {
   return ['| Subpath | Source | Kind |', '| --- | --- | --- |', ...rows].join('\n');
 }
 
-/** Demote ATX headings by one level, leaving fenced code blocks untouched. */
+/** Demotes headings by one level, skipping fenced code blocks. */
 function demote(markdown) {
   let inFence = false;
   let fenceMarker = '';
@@ -97,7 +85,7 @@ function demote(markdown) {
     .join('\n');
 }
 
-/** Rewrite relative Markdown link targets so they resolve from the package root. */
+/** Rewrites relative Markdown links to resolve from the package root. */
 function rebaseLinks(markdown, fromDir) {
   return markdown.replace(/\]\(([^)\s]+)(\s+"[^"]*")?\)/g, (match, target, title = '') => {
     if (/^(https?:|mailto:|#|\/)/.test(target)) return match;

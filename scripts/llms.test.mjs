@@ -1,10 +1,7 @@
 /**
- * Guards the agent-facing docs:
- *   - llms-full.txt is the output of scripts/build-llms.mjs (no manual edits, no drift)
- *   - llms.txt mentions every package.json#exports subpath
- *   - llms.txt links every src/∗∗/README.md and every link it contains resolves
- *   - every exported .astro component has a README beside it
- *   - both files are published with the package
+ * Checks that llms-full.txt matches the build output, llms.txt covers every
+ * export and README with working links, every exported component has a README,
+ * and both files are published.
  */
 
 import { test } from 'node:test';
