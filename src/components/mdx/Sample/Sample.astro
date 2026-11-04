@@ -221,6 +221,9 @@ const githubSrc = srcNoSlash;
 // Stable, unique element ID derived from the sample path.
 const widgetId = 'cw' + src.replace(/[^a-z0-9]/gi, '-');
 const exampleTabId = `${widgetId}-example`;
+// Anchor for the iframeOnly fullscreen button's tooltip. The random suffix keeps
+// it unique when the same demo is embedded more than once on a page.
+const fullscreenBtnId = `${widgetId}-fullscreen-${Math.random().toString(36).slice(2, 9)}`;
 
 // The full widget's demo pane, shared by its two layouts: inside the EXAMPLE
 // tab, or on its own when `hideCode` drops the tabs.
@@ -295,6 +298,7 @@ const sampleIframeAttrs = {
       {fullscreenBtn && (
         <div class="igd-code-view__header-actions">
           <igc-icon-button
+            id={fullscreenBtnId}
             name="open-link-blank"
             collection="docs"
             variant="outlined"
@@ -303,6 +307,9 @@ const sampleIframeAttrs = {
             target="_blank"
             aria-label="Open in full screen"
           />
+          <igc-tooltip anchor={fullscreenBtnId} class="igd-sample-action-tooltip" with-arrow>
+            Open in full screen
+          </igc-tooltip>
         </div>
       )}
     </div>
