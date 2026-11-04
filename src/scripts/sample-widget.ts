@@ -34,6 +34,7 @@ defineComponents(
 
 import './icon-registry';
 import type { BundledLanguage, Highlighter } from 'shiki';
+import { announceCopyStatus, clearCopyStatus } from './copy-status';
 import { ULTIMATE_UI_PLATFORMS } from '../lib/ultimate-ui-platforms';
 import footerStackblitzIcon from '../components/mdx/Sample/assets/stackblitz.svg?raw';
 import footerOpenExternalIcon from '../components/mdx/Sample/assets/open-external.svg?raw';
@@ -269,17 +270,30 @@ function wireCopyButton(btn: HTMLElement, getText: () => string): void {
     tooltip.message = label;
   };
 
+  // Live region next to the button; a changed `aria-label` is not announced while focused.
+  const host = btn.parentElement ?? btn;
+
   btn.addEventListener('click', () => {
-    navigator.clipboard.writeText(getText()).then(() => {
-      icon?.setAttribute('name', 'check');
-      setLabel(CODE_COPIED_LABEL);
-      // A click inside the show delay cancels the pending show; open it now.
-      void tooltip.show();
-      setTimeout(() => {
-        icon?.setAttribute('name', 'copy');
-        setLabel(COPY_CODE_LABEL);
-      }, 1500);
-    });
+    navigator.clipboard
+      .writeText(getText())
+      .then(() => {
+        icon?.setAttribute('name', 'check');
+        setLabel(CODE_COPIED_LABEL);
+        announceCopyStatus(host, 'Code copied to clipboard');
+        // A click inside the show delay cancels the pending show; open it now.
+        void tooltip.show();
+      })
+      .catch(() => {
+        setLabel('Copy failed');
+        announceCopyStatus(host, 'Copy failed');
+      })
+      .then(() =>
+        setTimeout(() => {
+          icon?.setAttribute('name', 'copy');
+          setLabel(COPY_CODE_LABEL);
+          clearCopyStatus(host);
+        }, 1500),
+      );
   });
 }
 
