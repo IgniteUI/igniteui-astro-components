@@ -143,16 +143,17 @@ const propRows: PropRow[] = [
   {
     name: 'noBackground',
     type: 'boolean',
-    def: 'true (false with a theme picker)',
+    def: 'true (false with bare or a theme picker)',
     description: `Hide the grid-pattern backdrop drawn behind the iframe — on by
             default, so the container is transparent and a demo with no background of
             its own sits directly on the page. Pass
             <code>noBackground={false}</code> to show the grid (see
-            <a href="#no-background">No background</a>). When a theme picker renders
-            (<code>showThemePicker</code> with the <code>widget</code> or
-            <code>demo</code> chrome), the default flips to <code>false</code>: a
-            reader-switchable theme (and mode) needs a surface of its own to switch
-            against.`,
+            <a href="#no-background">No background</a>). With
+            <code>chrome="bare"</code> the default flips to <code>false</code>, so a
+            bare demo keeps the same gray surface as the widget. It flips too when a
+            theme picker renders (<code>showThemePicker</code> with the
+            <code>widget</code> or <code>demo</code> chrome): a reader-switchable
+            theme (and mode) needs a surface of its own to switch against.`,
   },
   {
     name: 'whiteBackground',
@@ -164,6 +165,22 @@ const propRows: PropRow[] = [
             widget's) keeps its own surface. It implies a painted background, so
             it also overrides the transparency <code>noBackground</code> leaves
             behind in light mode.`,
+  },
+  {
+    name: 'iframeOnly',
+    type: 'boolean',
+    def: 'false',
+    description: `<strong>Deprecated</strong>, removed in 2.0.0. Use
+            <code>chrome="bare"</code>. It still works, and each usage logs a build
+            warning that names the replacement.`,
+  },
+  {
+    name: 'hideCode',
+    type: 'boolean',
+    def: 'false',
+    description: `<strong>Deprecated</strong>, removed in 2.0.0. Use
+            <code>chrome="demo"</code>. It still works, and each usage logs a build
+            warning that names the replacement.`,
   },
 ];
 
@@ -590,10 +607,13 @@ const sections: Section[] = [
     title: 'No background',
     description: `<p>The container can draw a subtle grid pattern behind the iframe — it
             gives demos with a transparent page a visible canvas, so they don't look
-            like a hole in the docs. It is hidden by default
-            (<code>noBackground</code> is <code>true</code>): the container is
-            transparent, and a demo with no background of its own sits directly on the
-            page. Pass <code>noBackground={false}</code> to show the grid.</p>
+            like a hole in the docs. <code>chrome="bare"</code> shows it by default;
+            the <code>widget</code> and <code>demo</code> chromes show it only with a
+            theme picker. Otherwise it is hidden (<code>noBackground</code> is
+            <code>true</code>): the container is transparent, and a demo with no
+            background of its own sits directly on the page. Pass
+            <code>noBackground</code> to hide the grid, or
+            <code>noBackground={false}</code> to show it.</p>
             <p>Compare with the avatar samples in
             <a href="#fit-content">Fit to content</a>, where the grid shows through the
             transparent demo page. It pairs naturally with the inline form
