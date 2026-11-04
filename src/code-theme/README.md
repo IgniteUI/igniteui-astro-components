@@ -27,7 +27,7 @@ Any other Astro site uses it in two steps:
 
 ```js
 // astro.config.mjs
-import { defineConfig } from 'astro';
+import { defineConfig } from 'astro/config';
 import { igShikiConfig } from 'igniteui-astro-components/code-theme';
 
 export default defineConfig({

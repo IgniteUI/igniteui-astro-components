@@ -81,12 +81,20 @@ export function remapTheme(
     editor[key] = swap(value) as string;
   Object.assign(editor, editorColors);
 
+  // A resolved theme (e.g. from `highlighter.getTheme()`) carries `fg`/`bg`, which Shiki prefers over `colors`.
+  const fg =
+    editorColors['editor.foreground'] ?? (theme.fg ? (swap(theme.fg) as string) : undefined);
+  const bg =
+    editorColors['editor.background'] ?? (theme.bg ? (swap(theme.bg) as string) : undefined);
+
   return {
     ...theme,
     name,
     displayName,
     colors: editor,
+    ...(theme.fg !== undefined && fg ? { fg } : {}),
+    ...(theme.bg !== undefined && bg ? { bg } : {}),
     ...(tokenColors ? { tokenColors: [...tokenColors, ...extraTokenColors] } : {}),
-    ...(settings ? { settings: [...settings, ...(tokenColors ? [] : extraTokenColors)] } : {}),
+    ...(settings ? { settings: [...settings, ...extraTokenColors] } : {}),
   };
 }
