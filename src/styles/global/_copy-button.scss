@@ -12,7 +12,9 @@
   --active-background: var(--igd-code-copy-hover-bg);
   --border-color: transparent;
   --border-color-hover: transparent;
-  --border-color-focus: transparent;
+  // Keyboard focus ring.
+  --focus-border-color: var(--igd-code-copy-hover-color);
+  --focus-visible-border-color: var(--igd-code-copy-hover-color);
 
   &:has([name='check']) {
     --foreground: var(--igd-code-copy-success-color);

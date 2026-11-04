@@ -68,3 +68,10 @@ pre.igd-code {
     opacity: 1;
   }
 }
+
+// Always shows the copy button on touch devices.
+@media (hover: none) {
+  .copy-code-wrapper > .copy-btn {
+    opacity: 1;
+  }
+}
