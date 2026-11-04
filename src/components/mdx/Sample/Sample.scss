@@ -85,6 +85,14 @@ igc-tab {
       opacity: 1;
       pointer-events: auto;
     }
+
+    // Always shows the copy button on touch devices.
+    @media (hover: none) {
+      .cv-hljs-code-copy {
+        opacity: 1;
+        pointer-events: auto;
+      }
+    }
   }
 }
 
