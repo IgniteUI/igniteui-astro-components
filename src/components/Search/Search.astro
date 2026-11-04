@@ -35,9 +35,10 @@ import './Search.scss';
     title="Search (Ctrl+K)"
   >
     <igc-icon name="search" collection="docs" slot="prefix" aria-hidden="true"></igc-icon>
-    <kbd class="search-trigger__hint" slot="suffix" style="display:none;"
-      ><kbd>Ctrl</kbd><kbd>K</kbd></kbd
-    >
+    <kbd class="search-trigger__hint" slot="suffix" style="display:none;">
+      <kbd>Ctrl</kbd>
+      <kbd>K</kbd>
+    </kbd>
   </igc-input>
 </div>
 
@@ -63,7 +64,8 @@ import './Search.scss';
           name="search"
           collection="docs"
           slot="prefix"
-          aria-hidden="true"></igc-icon>
+          aria-hidden="true"
+        ></igc-icon>
         <igc-icon-button
           slot="suffix"
           class="igd-search-clear"
@@ -72,7 +74,8 @@ import './Search.scss';
           aria-label="Clear search"
           name="clear"
           collection="docs"
-          hidden></igc-icon-button>
+          hidden
+        ></igc-icon-button>
       </igc-input>
     </header>
     <div class="igd-search-content">
@@ -83,7 +86,10 @@ import './Search.scss';
       </igc-button>
     </div>
     <footer class="igd-search-footer">
-      <igc-button class="search-close" variant="outlined"> Close </igc-button>
+      <igc-button class="search-close" variant="outlined">
+        {' '}
+        Close{' '}
+      </igc-button>
     </footer>
   </div>
 </igc-dialog>

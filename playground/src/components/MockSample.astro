@@ -150,9 +150,8 @@ function tabId(index: number) {
       {resolvedTabs.map((tab, i) => (
         <igc-tab id={tabId(i)} label={tab.label}>
           <div class="code-wrapper">
-            <pre class="igd-code">
-                <code class={`language-${tab.lang}`}>{tab.content}</code>
-              </pre>
+            {/* prettier-ignore */}
+            <pre class="igd-code"><code class={`language-${tab.lang}`}>{tab.content}</code></pre>
             <igc-icon-button variant="flat" aria-label="Copy code" class="cv-hljs-code-copy">
               <igc-icon name="copy" collection="docs" />
             </igc-icon-button>

@@ -44,17 +44,15 @@ const { nodes, variant, activeId, toggleNodeOnClick, ariaLabel, renderLabel } = 
   aria-label={ariaLabel}
   toggle-node-on-click={toggleNodeOnClick ? '' : undefined}
 >
-  {
-    nodes.map((node) => (
-      <DocsTreeItem
-        node={node}
-        depth={0}
-        variant={variant}
-        activeId={activeId}
-        renderLabel={renderLabel}
-      />
-    ))
-  }
+  {nodes.map((node) => (
+    <DocsTreeItem
+      node={node}
+      depth={0}
+      variant={variant}
+      activeId={activeId}
+      renderLabel={renderLabel}
+    />
+  ))}
 </igc-tree>
 
 <script>

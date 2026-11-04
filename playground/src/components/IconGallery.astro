@@ -58,54 +58,54 @@ const safeIllJson = buildJsonPayload(ILLUSTRATION_LIST);
     {/* ── UI Icons tab ────────────────────────────────────────────────── */}
     <igc-tab label={`UI Icons (${uiIcons.length})`}>
       <div class="icon-gallery__grid" id="grid-ui" data-total={uiIcons.length}>
-        {
-          uiIcons.map(({ name }) => (
-            <div class="icon-card" data-icon-name={name} data-kind="icon">
-              <div class="icon-card__preview">
-                <igc-icon name={name} collection="docs" />
-              </div>
-              <span class="icon-card__name" title={name}>
-                {name}
-              </span>
-              <div class="icon-card__actions">
-                <igc-button variant="outlined" data-action="copy" title="Copy HTML">
-                  Copy HTML
-                </igc-button>
-                <igc-button variant="outlined" data-action="download" title="Download SVG">
-                  Download SVG
-                </igc-button>
-              </div>
+        {uiIcons.map(({ name }) => (
+          <div class="icon-card" data-icon-name={name} data-kind="icon">
+            <div class="icon-card__preview">
+              <igc-icon name={name} collection="docs" />
             </div>
-          ))
-        }
-        <p class="icon-gallery__empty" hidden>No matching icons</p>
+            <span class="icon-card__name" title={name}>
+              {name}
+            </span>
+            <div class="icon-card__actions">
+              <igc-button variant="outlined" data-action="copy" title="Copy HTML">
+                Copy HTML
+              </igc-button>
+              <igc-button variant="outlined" data-action="download" title="Download SVG">
+                Download SVG
+              </igc-button>
+            </div>
+          </div>
+        ))}
+        <p class="icon-gallery__empty" hidden>
+          No matching icons
+        </p>
       </div>
     </igc-tab>
 
     {/* ── Brand Icons tab ─────────────────────────────────────────────── */}
     <igc-tab label={`Brand (${brandIcons.length})`}>
       <div class="icon-gallery__grid" id="grid-brand" data-total={brandIcons.length}>
-        {
-          brandIcons.map(({ name }) => (
-            <div class="icon-card" data-icon-name={name} data-kind="icon">
-              <div class="icon-card__preview">
-                <igc-icon name={name} collection="docs" />
-              </div>
-              <span class="icon-card__name" title={name}>
-                {name}
-              </span>
-              <div class="icon-card__actions">
-                <igc-button variant="outlined" data-action="copy" title="Copy HTML">
-                  Copy HTML
-                </igc-button>
-                <igc-button variant="outlined" data-action="download" title="Download SVG">
-                  Download SVG
-                </igc-button>
-              </div>
+        {brandIcons.map(({ name }) => (
+          <div class="icon-card" data-icon-name={name} data-kind="icon">
+            <div class="icon-card__preview">
+              <igc-icon name={name} collection="docs" />
             </div>
-          ))
-        }
-        <p class="icon-gallery__empty" hidden>No matching icons</p>
+            <span class="icon-card__name" title={name}>
+              {name}
+            </span>
+            <div class="icon-card__actions">
+              <igc-button variant="outlined" data-action="copy" title="Copy HTML">
+                Copy HTML
+              </igc-button>
+              <igc-button variant="outlined" data-action="download" title="Download SVG">
+                Download SVG
+              </igc-button>
+            </div>
+          </div>
+        ))}
+        <p class="icon-gallery__empty" hidden>
+          No matching icons
+        </p>
       </div>
     </igc-tab>
 
@@ -116,29 +116,29 @@ const safeIllJson = buildJsonPayload(ILLUSTRATION_LIST);
         id="grid-illustrations"
         data-total={ILLUSTRATION_LIST.length}
       >
-        {
-          ILLUSTRATION_LIST.map(({ name, svg }) => (
-            <div
-              class="icon-card icon-card--illustration"
-              data-icon-name={name}
-              data-kind="illustration"
-            >
-              <div class="icon-card__preview icon-card__preview--illustration" set:html={svg} />
-              <span class="icon-card__name" title={name}>
-                {name}
-              </span>
-              <div class="icon-card__actions">
-                <igc-button variant="outlined" data-action="copy" title="Copy SVG markup">
-                  Copy SVG
-                </igc-button>
-                <igc-button variant="outlined" data-action="download" title="Download SVG">
-                  Download SVG
-                </igc-button>
-              </div>
+        {ILLUSTRATION_LIST.map(({ name, svg }) => (
+          <div
+            class="icon-card icon-card--illustration"
+            data-icon-name={name}
+            data-kind="illustration"
+          >
+            <div class="icon-card__preview icon-card__preview--illustration" set:html={svg} />
+            <span class="icon-card__name" title={name}>
+              {name}
+            </span>
+            <div class="icon-card__actions">
+              <igc-button variant="outlined" data-action="copy" title="Copy SVG markup">
+                Copy SVG
+              </igc-button>
+              <igc-button variant="outlined" data-action="download" title="Download SVG">
+                Download SVG
+              </igc-button>
             </div>
-          ))
-        }
-        <p class="icon-gallery__empty" hidden>No matching illustrations</p>
+          </div>
+        ))}
+        <p class="icon-gallery__empty" hidden>
+          No matching illustrations
+        </p>
       </div>
     </igc-tab>
   </igc-tabs>
@@ -147,7 +147,6 @@ const safeIllJson = buildJsonPayload(ILLUSTRATION_LIST);
 {/* JSON payloads — safe for inline script context */}
 <script type="application/json" id="icon-svg-map" set:html={safeIconJson} />
 <script type="application/json" id="ill-svg-map" set:html={safeIllJson} />
-
 <script>
   import {
     defineComponents,
