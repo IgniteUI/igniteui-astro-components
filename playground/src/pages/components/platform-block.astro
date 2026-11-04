@@ -40,24 +40,36 @@ const headings = [
   <DocsSidebar slot="sidebar" items={SIDEBAR} currentSlug={slug} />
   <DocsToc slot="toc" headings={headings} offsetTarget=".docs-subheader" />
   <h1>PlatformBlock</h1>
-  <p>Only the block matching the current <code>PLATFORM</code> env var renders.</p>
+  <p>
+    Only the block matching the current <code>PLATFORM</code> env var renders.
+  </p>
 
   <h2 id="single-platform">Single platform</h2>
   <PlatformBlock for="Angular">
-    <p><strong>Angular</strong> only.</p>
+    <p>
+      <strong>Angular</strong> only.
+    </p>
   </PlatformBlock>
   <PlatformBlock for="React">
-    <p><strong>React</strong> only.</p>
+    <p>
+      <strong>React</strong> only.
+    </p>
   </PlatformBlock>
   <PlatformBlock for="WebComponents">
-    <p><strong>Web Components</strong> only.</p>
+    <p>
+      <strong>Web Components</strong> only.
+    </p>
   </PlatformBlock>
   <PlatformBlock for="Blazor">
-    <p><strong>Blazor</strong> only.</p>
+    <p>
+      <strong>Blazor</strong> only.
+    </p>
   </PlatformBlock>
 
   <h2 id="multi-platform">Multi-platform</h2>
   <PlatformBlock for="Angular, React">
-    <p>Visible to <strong>Angular</strong> and <strong>React</strong>.</p>
+    <p>
+      Visible to <strong>Angular</strong> and <strong>React</strong>.
+    </p>
   </PlatformBlock>
 </DocsLayout>

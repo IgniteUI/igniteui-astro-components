@@ -56,45 +56,41 @@ if (node.itemData) {
   expanded={node.expanded ? '' : undefined}
   {...dataAttrs}
 >
-  {
-    node.href ? (
-      <div slot="label">
-        {/* The anchor is used only for navigation purpose it behave as an overlay on the ::part(wrapper) */}
-        <a
-          href={node.href}
-          aria-current={isActive ? 'page' : undefined}
-          class="docs-tree-link"
-          {...node.linkAttrs}
-        />
-        {hasChildren && <igc-icon name="chevron" collection="docs" class="tree-expand-icon" />}
-        {RenderLabel ? (
-          <RenderLabel node={node} depth={depth} isLeaf={isLeaf} isActive={isActive} />
-        ) : (
-          <span class="docs-tree-label">{node.label}</span>
-        )}
-      </div>
-    ) : (
-      <div slot="label" class="docs-tree-group">
-        <igc-icon name="chevron" collection="docs" class="tree-expand-icon" />
-        {RenderLabel ? (
-          <RenderLabel node={node} depth={depth} isLeaf={isLeaf} isActive={isActive} />
-        ) : (
-          <span class="docs-tree-label">{node.label}</span>
-        )}
-      </div>
-    )
-  }
+  {node.href ? (
+    <div slot="label">
+      {/* The anchor is used only for navigation purpose it behave as an overlay on the ::part(wrapper) */}
+      <a
+        href={node.href}
+        aria-current={isActive ? 'page' : undefined}
+        class="docs-tree-link"
+        {...node.linkAttrs}
+      />
+      {hasChildren && <igc-icon name="chevron" collection="docs" class="tree-expand-icon" />}
+      {RenderLabel ? (
+        <RenderLabel node={node} depth={depth} isLeaf={isLeaf} isActive={isActive} />
+      ) : (
+        <span class="docs-tree-label">{node.label}</span>
+      )}
+    </div>
+  ) : (
+    <div slot="label" class="docs-tree-group">
+      <igc-icon name="chevron" collection="docs" class="tree-expand-icon" />
+      {RenderLabel ? (
+        <RenderLabel node={node} depth={depth} isLeaf={isLeaf} isActive={isActive} />
+      ) : (
+        <span class="docs-tree-label">{node.label}</span>
+      )}
+    </div>
+  )}
 
-  {
-    hasChildren &&
-      node.children!.map((child) => (
-        <Astro.self
-          node={child}
-          depth={depth + 1}
-          variant={variant}
-          activeId={activeId}
-          renderLabel={RenderLabel}
-        />
-      ))
-  }
+  {hasChildren &&
+    node.children!.map((child) => (
+      <Astro.self
+        node={child}
+        depth={depth + 1}
+        variant={variant}
+        activeId={activeId}
+        renderLabel={RenderLabel}
+      />
+    ))}
 </igc-tree-item>

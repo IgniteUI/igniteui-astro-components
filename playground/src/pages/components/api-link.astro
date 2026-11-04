@@ -50,53 +50,45 @@ const headings = [
   </p>
 
   <h2 id="class-link">Class link</h2>
-  <p>Default: <ApiLink type="Toast" /></p>
+  <p>
+    Default: <ApiLink type="Toast" />
+  </p>
 
   <h2 id="class-member">Class member</h2>
-  <p><ApiLink type="Toast" member="show" label="Show" /></p>
+  <p>
+    <ApiLink type="Toast" member="show" label="Show" />
+  </p>
 
   <h2 id="function">Function</h2>
   <p>
-    Functions render without a class prefix: <ApiLink
-      kind="function"
-      type="configureTheme"
-      prefixed={false}
-    />
+    Functions render without a class prefix:{' '}
+    <ApiLink kind="function" type="configureTheme" prefixed={false} />
   </p>
 
   <h2 id="type-alias">Type alias</h2>
-  <p><ApiLink kind="type" type="AbsolutePosition" prefixed={false} /></p>
+  <p>
+    <ApiLink kind="type" type="AbsolutePosition" prefixed={false} />
+  </p>
 
   <h2 id="sub-package">Sub-package</h2>
   <p>
-    Use the <code>pkg</code> prop to target a sub-package: <ApiLink
-      pkg="charts"
-      type="CategoryChart"
-    />
+    Use the <code>pkg</code> prop to target a sub-package:{' '}
+    <ApiLink pkg="charts" type="CategoryChart" />
   </p>
 
   <h2 id="sass-links">Sass links</h2>
   <p>
-    Sass module page with prose label: <ApiLink
-      kind="sass"
-      module="animations"
-      label="animations Sass module"
-      code={false}
-    />
+    Sass module page with prose label:{' '}
+    <ApiLink kind="sass" module="animations" label="animations Sass module" code={false} />
   </p>
   <p>
-    Sass API anchor with code label: <ApiLink
-      kind="sass"
-      module="animations"
-      type="mixin-slide-in-left"
-      label="slide-in-left"
-    />
+    Sass API anchor with code label:{' '}
+    <ApiLink kind="sass" module="animations" type="mixin-slide-in-left" label="slide-in-left" />
   </p>
 
   <h2 id="platform-env">Platform env var</h2>
   <p>
-    Platform is set via <code>PLATFORM</code> env var in <code>astro.config.mjs</code> (defaults to <code
-      >React</code
-    >).
+    Platform is set via <code>PLATFORM</code> env var in <code>astro.config.mjs</code> (defaults to{' '}
+    <code>React</code>).
   </p>
 </DocsLayout>

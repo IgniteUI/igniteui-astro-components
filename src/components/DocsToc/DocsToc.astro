@@ -26,20 +26,18 @@ const { headings = [], tocConfig, label = 'On this page', offsetTarget } = Astro
 const nodes = headingsToTreeNodes(headings, tocConfig);
 ---
 
-{
-  nodes.length > 0 && (
-    <aside class="toc-wrapper" data-pagefind-ignore="all">
-      <docs-toc class="toc-sidebar" data-offset-target={offsetTarget}>
-        <h2 class="toc-sidebar__heading" id="toc-heading">
-          {label}
-        </h2>
-        <nav aria-labelledby="toc-heading">
-          <DocsTree nodes={nodes} variant="toc" />
-        </nav>
-      </docs-toc>
-    </aside>
-  )
-}
+{nodes.length > 0 && (
+  <aside class="toc-wrapper" data-pagefind-ignore="all">
+    <docs-toc class="toc-sidebar" data-offset-target={offsetTarget}>
+      <h2 class="toc-sidebar__heading" id="toc-heading">
+        {label}
+      </h2>
+      <nav aria-labelledby="toc-heading">
+        <DocsTree nodes={nodes} variant="toc" />
+      </nav>
+    </docs-toc>
+  </aside>
+)}
 
 <script>
   type ExpandableEl = HTMLElement & { expanded: boolean };
