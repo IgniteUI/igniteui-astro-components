@@ -86,7 +86,7 @@ igc-tab {
       pointer-events: auto;
     }
 
-    // No hover on touch devices: keep the button visible and clickable.
+    // Always shows the copy button on touch devices.
     @media (hover: none) {
       .cv-hljs-code-copy {
         opacity: 1;

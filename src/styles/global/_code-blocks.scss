@@ -69,7 +69,7 @@ pre.igd-code {
   }
 }
 
-// No hover on touch devices: keep the button visible.
+// Always shows the copy button on touch devices.
 @media (hover: none) {
   .copy-code-wrapper > .copy-btn {
     opacity: 1;

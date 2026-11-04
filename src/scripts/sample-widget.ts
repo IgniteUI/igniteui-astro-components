@@ -270,7 +270,7 @@ function wireCopyButton(btn: HTMLElement, getText: () => string): void {
     tooltip.message = label;
   };
 
-  // Live region next to the button; a changed `aria-label` is not announced while focused.
+  // Element that holds the copy-status live region.
   const host = btn.parentElement ?? btn;
 
   btn.addEventListener('click', () => {
