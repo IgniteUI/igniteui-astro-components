@@ -21,7 +21,9 @@ const defaultText =
 ---
 
 <igc-badge class:list={['igd-badge', variant, className]} {...rest}>
-  <slot><span>{defaultText}</span></slot>
+  <slot>
+    <span>{defaultText}</span>
+  </slot>
 </igc-badge>
 
 <script>

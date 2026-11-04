@@ -26,41 +26,39 @@ const { node, isLeaf } = Astro.props;
 const badges = (node.meta?.badges ?? []) as SidebarBadge[];
 ---
 
-{
-  isLeaf ? (
-    <>
-      <div class="igd-label-and-badge">
-        <span class="docs-tree-label">{node.label}</span>
-        {badges.length > 0 && (
-          <div class="igd-badge-container">
-            {badges
-              .filter((b) => b.variant !== 'premium')
-              .map((badge) => (
-                <>
-                  <Badge variant={badge.variant} class="sidebar-badge" aria-hidden="true">
-                    <span>{badge.text}</span>
-                  </Badge>
-                  <span class="visually-hidden">, {badge.text}</span>
-                </>
-              ))}
-            {badges.some((b) => b.variant === 'premium') && (
+{isLeaf ? (
+  <>
+    <div class="igd-label-and-badge">
+      <span class="docs-tree-label">{node.label}</span>
+      {badges.length > 0 && (
+        <div class="igd-badge-container">
+          {badges
+            .filter((b) => b.variant !== 'premium')
+            .map((badge) => (
               <>
-                <igc-icon
-                  name="premium"
-                  collection="docs"
-                  class="sidebar-premium-icon"
-                  aria-hidden="true"
-                />
-                <span class="visually-hidden">, Premium</span>
+                <Badge variant={badge.variant} class="sidebar-badge" aria-hidden="true">
+                  <span>{badge.text}</span>
+                </Badge>
+                <span class="visually-hidden">, {badge.text}</span>
               </>
-            )}
-          </div>
-        )}
-      </div>
-    </>
-  ) : (
-    <span class="group-label-text">
-      <span>{node.label}</span>
-    </span>
-  )
-}
+            ))}
+          {badges.some((b) => b.variant === 'premium') && (
+            <>
+              <igc-icon
+                name="premium"
+                collection="docs"
+                class="sidebar-premium-icon"
+                aria-hidden="true"
+              />
+              <span class="visually-hidden">, Premium</span>
+            </>
+          )}
+        </div>
+      )}
+    </div>
+  </>
+) : (
+  <span class="group-label-text">
+    <span>{node.label}</span>
+  </span>
+)}

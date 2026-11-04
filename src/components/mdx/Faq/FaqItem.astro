@@ -69,38 +69,32 @@ const {
   indicator-position={indicatorPosition ?? 'end'}
   {...rest}
 >
-  <span slot="title" class="igd-faq__question">{question}</span>
-  {
-    subtitle && (
-      <span slot="subtitle" class="igd-faq__subtitle">
-        {subtitle}
-      </span>
-    )
-  }
+  <span slot="title" class="igd-faq__question">
+    {question}
+  </span>
+  {subtitle && (
+    <span slot="subtitle" class="igd-faq__subtitle">
+      {subtitle}
+    </span>
+  )}
 
-  {
-    /*
+  {/*
     Forward the panel's indicator slots so callers can swap the chevron.
     The wrapper is required: `slot=` on an Astro <slot> only forwards to another
     Astro component, not to a custom element's light DOM. It is rendered only
     when content was passed — an empty wrapper would count as assigned content
     and suppress the panel's default indicator.
-  */
-  }
-  {
-    Astro.slots.has('indicator') && (
-      <div slot="indicator" class="igd-faq__indicator">
-        <slot name="indicator" />
-      </div>
-    )
-  }
-  {
-    Astro.slots.has('indicator-expanded') && (
-      <div slot="indicator-expanded" class="igd-faq__indicator">
-        <slot name="indicator-expanded" />
-      </div>
-    )
-  }
+  */}
+  {Astro.slots.has('indicator') && (
+    <div slot="indicator" class="igd-faq__indicator">
+      <slot name="indicator" />
+    </div>
+  )}
+  {Astro.slots.has('indicator-expanded') && (
+    <div slot="indicator-expanded" class="igd-faq__indicator">
+      <slot name="indicator-expanded" />
+    </div>
+  )}
 
   {/* Slot content wins; `answer` is the fallback the data-driven API renders. */}
   <div class="igd-faq__answer">
