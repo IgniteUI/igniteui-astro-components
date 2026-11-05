@@ -130,6 +130,24 @@ describe('Sample', () => {
     }
   });
 
+  it('warns once when the same usage renders again', async () => {
+    // A src of its own: the warnings are deduplicated for the whole test file.
+    const props = { src: '/components/warn-once', iframeOnly: true } as const;
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    try {
+      const container = await AstroContainer.create();
+      await container.renderToString(Sample, { props, locals });
+      await container.renderToString(Sample, { props, locals });
+
+      expect(warn).toHaveBeenCalledOnce();
+      expect(warn).toHaveBeenCalledWith(
+        expect.stringContaining('/components/warn-once: iframeOnly is deprecated'),
+      );
+    } finally {
+      warn.mockRestore();
+    }
+  });
+
   it('applies the custom height', async () => {
     const container = await AstroContainer.create();
     const html = await container.renderToString(Sample, {

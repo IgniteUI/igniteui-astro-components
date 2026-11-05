@@ -15,6 +15,7 @@
  * when a separate demosBaseUrl is present in the environment config.
  */
 import type { PlatformContext } from '../../../lib/types.ts';
+import { warnOnce } from '../../../lib/warn-once.ts';
 import ThemingWidget from '../../ThemingWidget/ThemingWidget.astro';
 import './Sample.scss';
 
@@ -178,9 +179,9 @@ const {
 
 // `iframeOnly` and `hideCode` are the deprecated 1.x spellings of
 // `chrome="bare"` and `chrome="demo"`. They keep working until 2.0.0 removes
-// them, with a build warning for each usage, so the docs can move at their own
-// pace. `iframeOnly` comes first so that it wins over `hideCode`, as in 1.x, and
-// an explicit `chrome` wins over both.
+// them, with a build warning for each sample that uses them, so the docs can
+// move at their own pace. `iframeOnly` comes first so that it wins over
+// `hideCode`, as in 1.x, and an explicit `chrome` wins over both.
 const DEPRECATED_PROPS = { iframeOnly: 'bare', hideCode: 'demo' } as const;
 let deprecatedChrome: SampleChrome | undefined;
 for (const prop of ['iframeOnly', 'hideCode'] as const) {
@@ -189,7 +190,7 @@ for (const prop of ['iframeOnly', 'hideCode'] as const) {
   const ignored = Astro.props.chrome
     ? ` chrome="${Astro.props.chrome}" is set, so ${prop} is ignored.`
     : '';
-  console.warn(
+  warnOnce(
     `[Sample] ${src}: ${prop} is deprecated and will be removed in igniteui-astro-components 2.0.0. Use chrome="${replacement}" instead.${ignored}`,
   );
   deprecatedChrome ??= replacement;
@@ -199,7 +200,7 @@ const CHROMES: SampleChrome[] = ['widget', 'demo', 'bare'];
 const requestedChrome = Astro.props.chrome ?? deprecatedChrome ?? 'widget';
 const chrome: SampleChrome = CHROMES.includes(requestedChrome) ? requestedChrome : 'widget';
 if (chrome !== requestedChrome) {
-  console.warn(
+  warnOnce(
     `[Sample] ${src}: chrome="${requestedChrome}" is not one of ${CHROMES.join(', ')}, so the widget renders.`,
   );
 }
@@ -209,12 +210,12 @@ const isDemo = chrome === 'demo';
 // A modifier that doesn't apply to the chosen chrome would do nothing without a
 // word, so say so at build time.
 if (showThemePicker && isBare) {
-  console.warn(
+  warnOnce(
     `[Sample] ${src}: showThemePicker has no effect with chrome="bare", which renders no footer for the picker.`,
   );
 }
 if (fullscreenBtn && !isBare) {
-  console.warn(
+  warnOnce(
     `[Sample] ${src}: fullscreenBtn only applies to chrome="bare". ${
       isDemo
         ? 'chrome="demo" leaves full screen out on purpose.'
@@ -301,7 +302,7 @@ const baseUrl = wc
 // Outside the Web Components site, `demosBaseUrl` is the page's own platform
 // browser, so a `wc` sample without `wcDemosBaseUrl` silently loads the wrong one.
 if (wc && !env.wcDemosBaseUrl && name !== 'WebComponents') {
-  console.warn(
+  warnOnce(
     `[Sample] ${src}: wc is set but wcDemosBaseUrl is not configured, so this sample won't load from the Web Components samples browser.`,
   );
 }

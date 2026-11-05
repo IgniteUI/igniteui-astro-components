@@ -46,7 +46,7 @@ A modifier the chrome ignores, or a `chrome` value that is not one of the three,
 
 ### Deprecated props
 
-`iframeOnly` and `hideCode`, the 1.x spellings of `chrome="bare"` and `chrome="demo"`, still work, but they are deprecated and 2.0.0 removes them. Editors strike them through, and each usage logs a build warning that names the replacement:
+`iframeOnly` and `hideCode`, the 1.x spellings of `chrome="bare"` and `chrome="demo"`, still work, but they are deprecated and 2.0.0 removes them. Editors strike them through, and each sample that uses one logs a build warning, once per build, that names the replacement:
 
 | Deprecated                 | Use instead                   |
 | -------------------------- | ----------------------------- |
