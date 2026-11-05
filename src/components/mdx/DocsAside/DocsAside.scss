@@ -57,7 +57,7 @@ blockquote {
   }
 
   // Inline code is tinted per variant below; fenced blocks keep the Shiki theme.
-  :not(pre) > code {
+  code:not(pre code) {
     padding-inline: 0.25em;
     border-radius: 0.25em;
   }
@@ -79,7 +79,7 @@ blockquote {
   .igd-aside__content {
     color: var(--igd-aside-info-content);
 
-    :not(pre) > code {
+    code:not(pre code) {
       background: var(--igd-aside-info-code-background);
     }
   }
@@ -100,7 +100,7 @@ blockquote {
   .igd-aside__content {
     color: var(--igd-aside-warning-content);
 
-    :not(pre) > code {
+    code:not(pre code) {
       background: var(--igd-aside-warning-code-background);
     }
   }
@@ -121,7 +121,7 @@ blockquote {
   .igd-aside__content {
     color: var(--igd-aside-note-content);
 
-    :not(pre) > code {
+    code:not(pre code) {
       background: var(--igd-aside-note-code-background);
     }
   }
