@@ -431,7 +431,8 @@ igc-tree[data-variant='toc'] {
   .docs-tree-link[aria-current='true'] {
     color: var(--igd-accent);
 
-    + .docs-tree-label {
+    /* General sibling: a heading with children has the expand icon between the link and the label. */
+    ~ .docs-tree-label {
       color: var(--igd-accent);
     }
   }

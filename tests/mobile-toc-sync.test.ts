@@ -89,6 +89,15 @@ describe('syncActiveHeading', () => {
   });
 });
 
+describe('TOC item markup', () => {
+  it('puts the expand icon between the link and the label of a heading with children', async () => {
+    const { dropdown } = await renderedPage();
+    const link = dropdown.querySelector('a[href="#usage"]')!;
+    expect(link.nextElementSibling?.tagName.toLowerCase()).toBe('igc-icon');
+    expect(link.parentElement?.querySelector('.docs-tree-label')?.textContent).toBe('Usage');
+  });
+});
+
 describe('observeActiveHeading', () => {
   it('follows aria-current changes inside the desktop TOC', async () => {
     const { source, dropdown, label } = await renderedPage();
