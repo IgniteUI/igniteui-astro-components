@@ -78,7 +78,7 @@ interface Props {
    * page: selecting the entry goes to the current URL with this site's base swapped for `base`.
    * Nothing checks that the page exists there; redirect missing pages on the server.
    */
-  packages?: Array<string | { label: string; value?: string; href?: string; base?: string }>;
+  packages?: PackageEntry[];
   /** Currently selected package value (must match one of `packages`). */
   selectedPackage?: string;
   /** Label rendered before the package selector. Defaults to `'Package'`. */
