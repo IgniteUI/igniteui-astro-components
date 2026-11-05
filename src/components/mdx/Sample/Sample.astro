@@ -97,12 +97,11 @@ interface BaseProps {
    * container is fully transparent, so a demo without a background of its own
    * sits directly on the page.
    *
-   * Defaults to `false` with the `bare` chrome, so a bare demo keeps the same
-   * gray surface as the widget, and when a theme picker renders
-   * (`showThemePicker` with the `widget` or `demo` chrome): a sample whose
-   * theme — and mode — the reader can switch needs a surface of its own to
-   * switch against, otherwise a dark-mode demo would sit on the page's own
-   * light background. An explicit value always wins.
+   * Defaults to `false` when a theme picker renders (`showThemePicker` with the
+   * `widget` or `demo` chrome): a sample whose theme — and mode — the reader
+   * can switch needs a surface of its own to switch against, otherwise a
+   * dark-mode demo would sit on the page's own light background. An explicit
+   * value always wins.
    */
   noBackground?: boolean;
   /**
@@ -226,9 +225,9 @@ if (fullscreenBtn && !isBare) {
 const hasThemePicker = showThemePicker && !isBare;
 const hasFullscreenBtn = fullscreenBtn && isBare;
 
-// The bare chrome and the theme picker imply a painted backdrop (see the prop's
-// doc), so the default flips for them. An explicitly passed value still wins.
-const noBackground = Astro.props.noBackground ?? !(isBare || hasThemePicker);
+// The theme picker implies a painted backdrop (see the prop's doc), so the
+// default flips when a picker renders. An explicitly passed value still wins.
+const noBackground = Astro.props.noBackground ?? !hasThemePicker;
 
 // Fixed samples default to 150px. In fitContent mode `height` is only the
 // loading placeholder, so an unspecified one defaults lower (50px) to avoid

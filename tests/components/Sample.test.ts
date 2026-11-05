@@ -61,19 +61,19 @@ describe('Sample', () => {
     expect(html).not.toContain('igd-code-view');
   });
 
-  it('paints the backdrop by default with chrome="bare", unless noBackground is set', async () => {
+  it('keeps the bare backdrop transparent by default, and paints it with noBackground={false}', async () => {
     const container = await AstroContainer.create();
-    const painted = await container.renderToString(Sample, {
+    const transparent = await container.renderToString(Sample, {
       props: { src: '/components/button', chrome: 'bare' },
       locals,
     });
-    const transparent = await container.renderToString(Sample, {
-      props: { src: '/components/button', chrome: 'bare', noBackground: true },
+    const painted = await container.renderToString(Sample, {
+      props: { src: '/components/button', chrome: 'bare', noBackground: false },
       locals,
     });
 
-    expect(painted).not.toContain('igd-sample-container--no-background');
     expect(transparent).toContain('igd-sample-container--no-background');
+    expect(painted).not.toContain('igd-sample-container--no-background');
   });
 
   it('keeps the widget backdrop transparent by default without a theme picker', async () => {
