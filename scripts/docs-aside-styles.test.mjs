@@ -26,15 +26,21 @@ test('a code element that is a direct child of the aside body is tinted too', ()
   assert.match(css, /\.igd-aside__content code:not\(pre code\) \{/);
 });
 
-test('every aside code-background token resolves to a palette token that exists', () => {
+test('every aside code-background token references a palette property the theme declares', () => {
+  const theme = sass.compile(`${root}src/styles/theme.scss`, {
+    loadPaths: [`${root}node_modules`],
+    quietDeps: true,
+    silenceDeprecations: ['if-function', 'import', 'global-builtin'],
+  }).css;
+  const declared = new Set([...theme.matchAll(/(--ig-[\w-]+)\s*:/g)].map((m) => m[1]));
   const variables = readFileSync(`${root}src/styles/global/_variables.scss`, 'utf8');
   const declarations = variables.match(/--igd-aside-\w+-code-background: .*;/g);
   assert.equal(declarations.length, 3);
   for (const line of declarations) {
-    assert.match(
-      line,
-      /light-dark\(var\(--ig-(primary|secondary|gray)-\d{2,3}\), var\(--ig-(primary|secondary|gray)-\d{2,3}\)\);$/,
-    );
+    const refs = [...line.matchAll(/var\((--ig-[\w-]+)\)/g)].map((m) => m[1]);
+    assert.equal(refs.length, 2, line);
+    for (const ref of refs)
+      assert.ok(declared.has(ref), `${ref} is not declared by the theme (${line})`);
   }
 });
 
