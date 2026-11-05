@@ -79,6 +79,7 @@ export { igChrome, type IgChromeOptions } from './chrome/integration';
 import { remarkMdLinks } from './plugins/remark-md-links';
 import { remarkHtmlTransforms } from './plugins/remark-html-transforms';
 import { igShikiConfig } from './code-theme';
+import { buildSiteMetaModule, type PackageEntry, type ProductLink } from './site-meta';
 
 /** Build / deployment mode. Drives env-var `DOCS_BUILD_MODE`. */
 export type DocsMode = 'development' | 'staging' | 'production';
@@ -87,17 +88,7 @@ export type DocsMode = 'development' | 'staging' | 'production';
 // Site meta virtual module
 // ---------------------------------------------------------------------------
 
-export interface ProductLink {
-  /** Display label shown in the DocsSubHeader, e.g. `"Angular"`. */
-  label: string;
-  /** Absolute or root-relative href to the sibling docs site. */
-  href: string;
-  /**
-   * Optional platform key (matches `PlatformKey`).
-   * When it equals the current build's platform the link is omitted from the DocsSubHeader.
-   */
-  platform?: PlatformKey;
-}
+export type { ProductLink, PackageEntry } from './site-meta';
 
 export interface SiteMetaOptions {
   title: string;
@@ -118,6 +109,10 @@ export interface SiteMetaOptions {
    * module and rendered by `DocsLayout.astro`.
    */
   head?: HeadEntry[];
+  /** Entries of the DocsSubHeader package selector. Omit to hide the selector. */
+  packages?: PackageEntry[];
+  /** Value of the selected `packages` entry. Defaults to the first entry. */
+  selectedPackage?: string;
 }
 
 /**
@@ -163,6 +158,8 @@ export function siteMetaIntegration(
     llmsSets = [],
     productLinks = [],
     head = [],
+    packages,
+    selectedPackage,
   }: SiteMetaOptions = {} as SiteMetaOptions,
 ): AstroIntegration {
   const llmsMetaMap = docsDir
@@ -188,13 +185,16 @@ export function siteMetaIntegration(
     hooks: {
       'astro:config:done'({ config }) {
         configuredSite = (config.site?.toString() ?? '').replace(/\/$/, '');
-        siteMetaCode = `export const title = ${JSON.stringify(title)};
-export const sidebar = ${JSON.stringify(sidebar ?? [])};
-export const productLinks = ${JSON.stringify(productLinks)};
-export const headEntries = ${JSON.stringify(head ?? [])};
-export const trailingSlash = ${JSON.stringify(config.trailingSlash)};
-export const navLang = ${JSON.stringify(navLang)};
-`;
+        siteMetaCode = buildSiteMetaModule({
+          title,
+          sidebar: sidebar ?? [],
+          productLinks,
+          headEntries: head ?? [],
+          trailingSlash: config.trailingSlash,
+          navLang,
+          packages,
+          selectedPackage,
+        });
       },
       'astro:config:setup'({ updateConfig, injectRoute }) {
         injectRoute({
@@ -590,6 +590,10 @@ export interface CreateDocsSiteOptions {
   llmsSets?: LlmsSet[];
   /** Cross-product navigation links rendered in the DocsSubHeader. */
   productLinks?: ProductLink[];
+  /** Entries of the DocsSubHeader package selector. Omit to hide the selector. */
+  packages?: PackageEntry[];
+  /** Value of the selected `packages` entry. Defaults to the first entry. */
+  selectedPackage?: string;
   /** Extra Astro integrations appended after the built-in ones. */
   integrations?: AstroIntegration[];
   /** Any remaining keys are spread into `defineConfig` (markdown, image, build, …). */
@@ -628,6 +632,8 @@ export function createDocsSite(
     mode = 'development',
     productLinks = [],
     head = [],
+    packages,
+    selectedPackage,
     llmsSets = [] as LlmsSet[],
     integrations: extraIntegrations = [],
     chrome,
@@ -750,6 +756,8 @@ export function createDocsSite(
         llmsSets,
         productLinks,
         head: [...platformHead, ...head],
+        packages,
+        selectedPackage,
       }),
       mdx(),
       ...(chrome ? [igChrome(chrome)] : []),

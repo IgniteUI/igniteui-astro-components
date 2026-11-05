@@ -98,10 +98,9 @@ export default defineConfig({
 `DocsBreadcrumb` and `DoDont` import `virtual:docs-template/site-meta` at
 module level, and the first three also import `virtual:docs-template/nav-html`,
 so both modules must resolve wherever those components appear (an MDX page
-that uses `<DoDont>` included). Stub them with a Vite plugin. Every name below
-must be exported: `DocsSubHeader` imports `packages` and `selectedPackage`,
-which `siteMetaIntegration()` does not emit, so the integration cannot provide
-these modules today (see [The reference integration](#the-reference-integration)).
+that uses `<DoDont>` included). Stub them with a Vite plugin, or let
+`siteMetaIntegration()` provide them (it emits every name below; `packages` and
+`selectedPackage` come from its options). Every name below must be exported.
 
 ```ts
 // astro.config.ts (continued)
@@ -248,9 +247,8 @@ sidebar from a JSON TOC, static images, remark/rehype pipeline, Pagefind index,
 `llms.txt` generation, the Infragistics chrome). It is the origin of the docs
 repo's integration, but it is **not usable as-is today**: it injects route files
 that are not in this package (#158), it imports `pagefind` without declaring it
-(#157), its `site-meta` module lacks the `packages` and `selectedPackage`
-exports `DocsSubHeader` imports, and it registers no middleware. Treat it as
-reference code until those issues are closed.
+(#157), and it registers no middleware. Treat it as reference code until those
+issues are closed.
 
 ---
 
