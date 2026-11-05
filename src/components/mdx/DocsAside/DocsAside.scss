@@ -55,12 +55,6 @@ blockquote {
   > p:last-child {
     margin-block-end: 0;
   }
-
-  // Inline code is tinted per variant below; fenced blocks keep the Shiki theme.
-  code:not(pre code) {
-    padding-inline: 0.25em;
-    border-radius: 0.25em;
-  }
 }
 
 // THEME STYLES

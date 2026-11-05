@@ -79,6 +79,6 @@ Per-variant colour tokens, one set each for `note`, `info` and `warning`:
 --igd-aside-{type}-content   --igd-aside-{type}-icon
 ```
 
-`--igd-aside-{type}-code-background` is the background of inline `code` inside the aside body. Fenced blocks keep the code theme.
+`--igd-aside-{type}-code-background` replaces the page's inline-`code` background inside the aside body (the radius and border from the markdown styles stay). Fenced blocks keep the code theme.
 
 Each colour token uses `light-dark()` so it follows the page's `data-theme`.
