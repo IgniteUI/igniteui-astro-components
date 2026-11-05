@@ -325,10 +325,9 @@ const sidebar: SidebarEntry[] = [
 | `packages`        | `virtual:docs-template/site-meta` → `packages`        |
 | `selectedPackage` | `virtual:docs-template/site-meta` → `selectedPackage` |
 
-`siteTitle`, `productLinks` and `sidebarItems` are accepted and read from the
-virtual module as fallbacks, but nothing in the sub-header renders them any
-more (the breadcrumb moved to `DocsBreadcrumb`, the product links markup is
-commented out). See the [DocsSubHeader README](src/components/DocsSubHeader/README.md).
+The sub-header takes no breadcrumb or product-link props; the breadcrumb is
+`DocsBreadcrumb`, rendered by `DocsLayout` from its `currentSlug` and `siteTitle`.
+See the [DocsSubHeader README](src/components/DocsSubHeader/README.md).
 
 ```astro
 ---

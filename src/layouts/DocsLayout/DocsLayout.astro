@@ -49,10 +49,6 @@ export interface Props {
   selectedVersion?: string;
   /** Label rendered before the version selector. Defaults to `'Version'`. */
   versionLabel?: string;
-  /** Show a light/dark theme toggle button in the subheader. */
-  showThemeToggle?: boolean;
-  /** `localStorage` key for persisting the theme. Defaults to `'docs-theme'`. */
-  themeStorageKey?: string;
 }
 
 const {
@@ -71,8 +67,6 @@ const {
   versions,
   selectedVersion,
   versionLabel,
-  showThemeToggle,
-  themeStorageKey,
 } = Astro.props;
 const resolvedSiteTitle = siteTitleProp ?? siteTitle;
 const licenseType = license === 'commercial' ? 'premium' : license === 'MIT' ? 'opensource' : false;
@@ -310,17 +304,12 @@ type HeadEntry = {
       <!-- <DocsSubHeader style={ `--docs-global-nav-height: ${ showGlobalNav ? '4.7rem': '0' }` } data-nav-height-wrapper/> -->
       <slot name="subheader">
         <DocsSubHeader
-          pageTitle={title}
-          currentSlug={currentSlug}
-          siteTitle={siteTitleProp}
           packages={packages}
           selectedPackage={selectedPackage}
           packageLabel={packageLabel}
           versions={versions}
           selectedVersion={selectedVersion}
           versionLabel={versionLabel}
-          showThemeToggle={showThemeToggle}
-          themeStorageKey={themeStorageKey}
         />
       </slot>
 
