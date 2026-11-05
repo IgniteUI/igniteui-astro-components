@@ -1,0 +1,6 @@
+# Hides the blank-issue option; issues use the forms.
+blank_issues_enabled: false
+contact_links:
+  - name: Ignite UI documentation site issues
+    url: https://github.com/IgniteUI/igniteui-documentation/issues/new/choose
+    about: Problems with the content of a docs site (not with the shared components) belong in the docs repository.
