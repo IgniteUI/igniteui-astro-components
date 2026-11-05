@@ -6,7 +6,7 @@
 // because the image's max-width is 100% of the content box (inside the padding)
 // and there is no negative margin to break out of it.
 .igd-anatomy {
-  // Retunable from any ancestor, e.g. :root { --igd-anatomy-padding: 32px; }
+  // Declared here, so overrides target .igd-anatomy: .igd-anatomy { --igd-anatomy-padding: 32px; }
   --igd-anatomy-padding: #{rem(60px)} #{rem(24px)};
   --igd-anatomy-bg: light-dark(
     #{color($color: gray, $variant: 100, $opacity: 0.8)},

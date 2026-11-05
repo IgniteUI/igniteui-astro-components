@@ -27,7 +27,8 @@ import Sample from 'igniteui-astro-components/components/mdx/Sample.astro';
 | `position`        | `string`                         | —                            | Where the iframe sits inside the container when it doesn't fill it. Accepts a horizontal token (`start`, `center`, `end`) and/or a vertical token (`top`, `center`, `bottom`), space-separated in any order — e.g. `"center"`, `"start top"`, `"end bottom"`.                                                      |
 | `resizable`       | `boolean`                        | `false`                      | Show a drag handle on the right edge that resizes the iframe's width so responsive demos can be previewed at different widths. Left/right arrow keys resize it when focused. Combines with `fitContent`: the drag owns the width, the content keeps dictating the height.                                          |
 | `noBorder`        | `boolean`                        | `true`                       | Drop the 1px border drawn around the iframe/container. Pass `noBorder={false}` to draw it — recommended whenever chrome (code tabs or `fullscreenBtn`) is visible.                                                                                                                                                 |
-| `noBackground`    | `boolean`                        | `true`                       | Hide the grid-pattern backdrop drawn behind the iframe, keeping the container fully transparent. Pass `noBackground={false}` to show it.                                                                                                                                                                           |
+| `showThemePicker` | `boolean`                        | `false`                      | Opt in to the in-sample theme picker in the widget footer. Its initial theme comes from the site, not from the usage.                                                                                                                                                                                              |
+| `noBackground`    | `boolean`                        | `!showThemePicker`           | Hide the grid-pattern backdrop drawn behind the iframe, keeping the container fully transparent. Defaults to `false` when `showThemePicker` is on, so a theme-switched demo has a surface of its own. An explicit value always wins.                                                                               |
 | `whiteBackground` | `boolean`                        | `false`                      | Paint the backdrop behind the iframe pure white (`#fff`) instead of the default light gray. Only the light side changes — dark mode (the site's, or the in-sample theming widget's) is left as is. Implies a painted background, so it also overrides the transparency `noBackground` leaves behind in light mode. |
 
 ## Examples
@@ -64,15 +65,16 @@ import Sample from 'igniteui-astro-components/components/mdx/Sample.astro';
 
 ## Environment configuration
 
-The base URLs are resolved from `environment.json` at build time via `siteMetaIntegration` and exposed through `getPlatformContext().getEnvVars()`:
+The base URLs are read from `Astro.locals.envVars`, a plain `Record<string, string>` that the host site's middleware must set (the docs sites load it from their `environment.json`; the root README's Quick start step 3 shows a minimal version). The platform (`Astro.locals.platformContext`) comes from the same middleware:
 
-| Key               | Used by                        |
-| ----------------- | ------------------------------ |
-| `demosBaseUrl`    | Default demos                  |
-| `dvDemosBaseUrl`  | Charts / gauges / maps / excel |
-| `lobDemosBaseUrl` | LOB / grids                    |
-| `crmDemoBaseUrl`  | CRM demos                      |
-| `wcDemosBaseUrl`  | `wc` samples, on any platform  |
+| Key                  | Used by                                                                              |
+| -------------------- | ------------------------------------------------------------------------------------ |
+| `demosBaseUrl`       | Default demos                                                                        |
+| `dvDemosBaseUrl`     | Charts / gauges / maps / excel                                                       |
+| `lobDemosBaseUrl`    | LOB / grids                                                                          |
+| `crmDemoBaseUrl`     | CRM demos                                                                            |
+| `wcDemosBaseUrl`     | `wc` samples, on any platform                                                        |
+| `defaultSampleTheme` | Starting theme of the code tabs and theme picker; falls back to the platform default |
 
 Outside the Web Components site, a `wc` sample needs `wcDemosBaseUrl`: without it the sample falls back to `demosBaseUrl`, the page's own platform browser, and the build logs a warning. Leave unused keys out rather than setting them to `""`: an empty string doesn't fall back, it produces a relative URL.
 
@@ -82,11 +84,14 @@ Code tabs are syntax-highlighted client-side using [Shiki](https://shiki.style/)
 
 The tabs use the package's brand code theme (`igCodeTheme`, the same one `createDocsSite()` applies to fenced blocks), so a code tab and a fenced block look identical. See [`src/code-theme/README.md`](../../../code-theme/README.md).
 
-> **Note:** highlight.js is no longer required. Remove any hljs `<script>` / `<link>` head entries from your integration config if they were added solely for code tabs.
+## Registering in MDX
 
-## MDX global registration
+Nothing is registered automatically. Either import the component at the top of
+each MDX file (the convention in the docs repos):
 
-```ts
-// src/mdx-components.ts
-export { default as Sample } from 'igniteui-astro-components/components/mdx/Sample.astro';
+```mdx
+import Sample from 'igniteui-astro-components/components/mdx/Sample.astro';
 ```
+
+or pass it through the `components` map of a `<Content />` render when the MDX
+is authored without imports (CMS content, for example).
