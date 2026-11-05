@@ -40,11 +40,14 @@ describe('buildSidebarFromToc badges', () => {
     expect(byLabel.Plain.badges).toBeUndefined();
   });
 
-  it('shows Premium as a badge only when no status badge is present, and always as an attribute', () => {
+  it('keeps Premium beside a status badge, so the star and the pill both render', () => {
     const byLabel = Object.fromEntries(links().map((l) => [l.label, l]));
     expect(byLabel.Premium.badges).toEqual([{ text: 'Premium', variant: 'premium' }]);
     expect(byLabel.Premium.attrs).toEqual({ 'data-premium': 'true' });
-    expect(byLabel.Both.badges).toEqual([{ text: 'New', variant: 'new' }]);
+    expect(byLabel.Both.badges).toEqual([
+      { text: 'New', variant: 'new' },
+      { text: 'Premium', variant: 'premium' },
+    ]);
     expect(byLabel.Both.attrs).toEqual({ 'data-premium': 'true' });
   });
 
