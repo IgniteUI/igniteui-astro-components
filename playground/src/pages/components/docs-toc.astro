@@ -2,6 +2,7 @@
 import DocsLayout from '../../../../src/layouts/DocsLayout/DocsLayout.astro';
 import DocsSidebar from '../../../../src/components/DocsSidebar/DocsSidebar.astro';
 import DocsToc from '../../../../src/components/DocsToc/DocsToc.astro';
+import MobileTocToggle from '../../../../src/components/MobileTocToggle/MobileTocToggle.astro';
 import DocsSubHeader from '../../../../src/components/DocsSubHeader/DocsSubHeader.astro';
 import SearchAdvanced from '../../../../src/components/SearchAdvanced/SearchAdvanced.astro';
 import {
@@ -54,6 +55,7 @@ const headings = [
   </DocsSubHeader>
   <DocsSidebar slot="sidebar" items={SIDEBAR} currentSlug={slug} />
   <DocsToc slot="toc" headings={headings} offsetTarget=".docs-subheader" />
+  <MobileTocToggle slot="mobile-toc" headings={headings} />
 
   <h1>DocsToc</h1>
 
