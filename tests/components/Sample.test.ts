@@ -8,6 +8,22 @@ const locals = {
   envVars: MOCK_ENV,
 };
 
+/**
+ * Renders a Sample and returns its HTML with every build warning it logged.
+ * The warnings are deduplicated for the whole test file, so each caller passes
+ * a `src` of its own.
+ */
+async function renderWithWarnings(props: Record<string, unknown>) {
+  const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+  try {
+    const container = await AstroContainer.create();
+    const html = await container.renderToString(Sample, { props, locals });
+    return { html, warnings: warn.mock.calls.map(([message]) => message) };
+  } finally {
+    warn.mockRestore();
+  }
+}
+
 describe('Sample', () => {
   it('renders the demo widget container', async () => {
     const container = await AstroContainer.create();
@@ -146,6 +162,78 @@ describe('Sample', () => {
     } finally {
       warn.mockRestore();
     }
+  });
+
+  it('renders no full-screen button for fullscreenBtn with chrome="widget", and warns', async () => {
+    const { html, warnings } = await renderWithWarnings({
+      src: '/components/fullscreen-widget',
+      chrome: 'widget',
+      fullscreenBtn: true,
+    });
+
+    expect(html).toContain('data-chrome="widget"');
+    expect(html).not.toContain('igd-full-screen-btn');
+    expect(warnings).toEqual([
+      '[Sample] /components/fullscreen-widget: fullscreenBtn only applies to chrome="bare". The widget footer already has a full-screen button.',
+    ]);
+  });
+
+  it('renders no theme picker for showThemePicker with chrome="bare", and warns', async () => {
+    const { html, warnings } = await renderWithWarnings({
+      src: '/components/picker-bare',
+      chrome: 'bare',
+      showThemePicker: true,
+    });
+
+    expect(html).toContain('igd-sample-container');
+    expect(html).not.toContain('igd-sample-theming');
+    expect(warnings).toEqual([
+      '[Sample] /components/picker-bare: showThemePicker has no effect with chrome="bare", which renders no footer for the picker.',
+    ]);
+  });
+
+  it('falls back to the widget for an unknown chrome, and warns', async () => {
+    const { html, warnings } = await renderWithWarnings({
+      src: '/components/unknown-chrome',
+      chrome: 'fancy',
+    });
+
+    expect(html).toContain('data-chrome="widget"');
+    expect(html).toContain('<igc-tabs');
+    expect(warnings).toEqual([
+      '[Sample] /components/unknown-chrome: chrome="fancy" is not one of widget, demo, bare, so the widget renders.',
+    ]);
+  });
+
+  it('lets the deprecated iframeOnly win over hideCode, and warns about both', async () => {
+    const { html, warnings } = await renderWithWarnings({
+      src: '/components/iframe-only-and-hide-code',
+      iframeOnly: true,
+      hideCode: true,
+    });
+
+    expect(html).toContain('igd-sample-container');
+    expect(html).not.toContain('igd-code-view');
+    expect(warnings).toEqual([
+      '[Sample] /components/iframe-only-and-hide-code: iframeOnly is deprecated and will be removed in igniteui-astro-components 2.0.0. Use chrome="bare" instead.',
+      '[Sample] /components/iframe-only-and-hide-code: hideCode is deprecated and will be removed in igniteui-astro-components 2.0.0. Use chrome="demo" instead.',
+    ]);
+  });
+
+  it('lets an explicit chrome win over both deprecated props, and says they are ignored', async () => {
+    const { html, warnings } = await renderWithWarnings({
+      src: '/components/explicit-chrome',
+      chrome: 'widget',
+      iframeOnly: true,
+      hideCode: true,
+    });
+
+    expect(html).toContain('data-chrome="widget"');
+    expect(html).toContain('<igc-tabs');
+    expect(warnings).toEqual([
+      '[Sample] /components/explicit-chrome: iframeOnly is deprecated and will be removed in igniteui-astro-components 2.0.0. Use chrome="bare" instead. chrome="widget" is set, so iframeOnly is ignored.',
+      '[Sample] /components/explicit-chrome: hideCode is deprecated and will be removed in igniteui-astro-components 2.0.0. Use chrome="demo" instead. chrome="widget" is set, so hideCode is ignored.',
+    ]);
   });
 
   it('applies the custom height', async () => {
