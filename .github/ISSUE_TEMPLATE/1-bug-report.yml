@@ -1,0 +1,110 @@
+name: 🐛 Bug report
+description: Something in a component, style, integration or the playground does not behave as documented.
+title: '[Bug]: '
+labels: [':bug: bug']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Three fields are required: what happened, how to reproduce it, and where you saw it. The rest helps us fix it faster but is optional.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+      description: What you did, what you saw, and what you expected instead. A screenshot or short recording is worth a lot here.
+      placeholder: |
+        Opening the TSX tab of a Sample on a phone, the copy button never appears. I expected it to be visible like on desktop hover.
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: A page we can open plus the steps. A playground page or a docs URL is ideal.
+      placeholder: |
+        1. `npm run playground`
+        2. Open http://localhost:4567/components/sample/
+        3. …
+    validations:
+      required: true
+
+  - type: dropdown
+    id: site
+    attributes:
+      label: Where did you see it?
+      multiple: true
+      options:
+        - Playground (this repo)
+        - Angular docs
+        - React docs
+        - Web Components docs
+        - Blazor docs
+        - API docs
+        - Blog
+        - Other consumer (say which above)
+    validations:
+      required: true
+
+  - type: dropdown
+    id: component
+    attributes:
+      label: Component
+      description: Optional. Names match the `Component:` labels.
+      options:
+        - Not a component / don't know
+        - Anatomy
+        - ApiLink
+        - ApiRef
+        - Badge
+        - CopyCode
+        - DocsAside
+        - DocsBreadcrumb
+        - DocsLayout
+        - DocsSidebar
+        - DocsSubHeader
+        - DocsToc
+        - DocsTree
+        - DoDont
+        - Faq
+        - GlobalFooter
+        - GlobalNavBar
+        - LicenseIndicator
+        - MobileSidebarToggle
+        - MobileTocToggle
+        - PlatformBlock
+        - Sample
+        - Search
+        - SearchAdvanced
+        - ThemingWidget
+
+  - type: input
+    id: version
+    attributes:
+      label: Package version
+      description: Optional. Output of `npm ls igniteui-astro-components`, or a commit SHA.
+      placeholder: '1.6.0'
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Optional. Browser and OS, page theme, viewport or device if it matters; Node and Astro versions for build issues.
+      placeholder: Chrome 141 / macOS 26, dark theme, 600px viewport
+
+  - type: dropdown
+    id: regression
+    attributes:
+      label: Did it work before?
+      description: Optional.
+      options:
+        - Not sure
+        - 'No, it never worked'
+        - 'Yes, it worked in a previous version (say which below)'
+
+  - type: textarea
+    id: extra
+    attributes:
+      label: Anything else?
+      description: Optional. Related issues, workarounds, the version it last worked in.
