@@ -79,6 +79,6 @@ Per-variant colour tokens, one set each for `note`, `info` and `warning`:
 --igd-aside-{type}-content   --igd-aside-{type}-icon
 ```
 
-`--igd-aside-{type}-code-background` is declared in `_variables.scss` but no stylesheet reads it yet.
+`--igd-aside-{type}-code-background` is the background of inline `code` inside the aside body. Fenced blocks keep the code theme.
 
 Each colour token uses `light-dark()` so it follows the page's `data-theme`.
