@@ -103,16 +103,16 @@ function convertTocItem(
   if (item.href) {
     if (!docExists(docsDir, item.href, exclude)) return null;
     const entry: SidebarLink = { label: item.name, slug: hrefToSlug(item.href) };
-    // Status badge — only one slot available, priority order:
-    if (item.new) entry.badge = { text: 'New', variant: 'success' };
-    else if (item.preview) entry.badge = { text: 'Preview', variant: 'caution' };
-    else if (item.updated) entry.badge = { text: 'Updated', variant: 'note' };
+    // One status badge, in priority order.
+    if (item.new) entry.badges = [{ text: 'New', variant: 'new' }];
+    else if (item.preview) entry.badges = [{ text: 'Preview', variant: 'preview' }];
+    else if (item.updated) entry.badges = [{ text: 'Updated', variant: 'updated' }];
     // Premium is rendered via data-premium attr so it can coexist with a
     // status badge (CSS ::after pseudo-element adds the star icon).
     if (item.premium) {
       entry.attrs = { 'data-premium': 'true' };
       // Only use the badge slot for premium when no status badge is shown.
-      if (!entry.badge) entry.badge = { text: 'Premium', variant: 'tip' };
+      if (!entry.badges) entry.badges = [{ text: 'Premium', variant: 'premium' }];
     }
     return entry;
   }
