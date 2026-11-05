@@ -1,13 +1,13 @@
 @use 'igniteui-theming/sass/typography' as *;
 
 a:has(code) {
-	text-decoration: none;
-	color: inherit;
-	
-	&:hover {
-		code {
-			color: var(--igd-accent);
-			border-color: var(--ig-primary-100);
-		}
-	}
+  text-decoration: none;
+  color: inherit;
+
+  &:hover {
+    code {
+      color: var(--igd-accent);
+      border-color: var(--ig-primary-100);
+    }
+  }
 }

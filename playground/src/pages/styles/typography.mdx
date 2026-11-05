@@ -12,23 +12,28 @@ The type scale and text styling applied by the documentation theme. All examples
 
 Six levels of section headings. Choose the level based on document structure — not visual size.
 
-| Element | Use when |
-|---|---|
-| `<h1>` | The single top-level title of the page. One per page. |
-| `<h2>` | Major sections directly beneath the page title. |
-| `<h3>` | Sub-sections within an `<h2>` section. |
-| `<h4>` | Sub-sections within an `<h3>`, for deeper nesting. |
-| `<h5>` | Rarely needed — deep nesting usually signals restructuring. |
-| `<h6>` | Deepest level; use only when six distinct levels are genuinely required. |
+| Element | Use when                                                                 |
+| ------- | ------------------------------------------------------------------------ |
+| `<h1>`  | The single top-level title of the page. One per page.                    |
+| `<h2>`  | Major sections directly beneath the page title.                          |
+| `<h3>`  | Sub-sections within an `<h2>` section.                                   |
+| `<h4>`  | Sub-sections within an `<h3>`, for deeper nesting.                       |
+| `<h5>`  | Rarely needed — deep nesting usually signals restructuring.              |
+| `<h6>`  | Deepest level; use only when six distinct levels are genuinely required. |
 
 **Markdown syntax:**
 
 ```md
 # Heading level 1 — page title, one per page
+
 ## Heading level 2 — major section
+
 ### Heading level 3 — sub-section
+
 #### Heading level 4 — deeper sub-section
+
 ##### Heading level 5 — avoid unless strictly necessary
+
 ###### Heading level 6 — deepest level
 ```
 
@@ -45,17 +50,17 @@ Six levels of section headings. Choose the level based on document structure —
 
 ## Heading utility classes
 
-When you need the *visual style* of a heading level on a different element — for example, making an `<h2>` look like an `<h5>` without breaking the document outline — use the `.igd-h1` – `.igd-h6` and `.igd-p` utility classes.
+When you need the _visual style_ of a heading level on a different element — for example, making an `<h2>` look like an `<h5>` without breaking the document outline — use the `.igd-h1` – `.igd-h6` and `.igd-p` utility classes.
 
-| Class | Applies the visual style of |
-|---|---|
-| `.igd-h1` | `<h1>` |
-| `.igd-h2` | `<h2>` |
-| `.igd-h3` | `<h3>` |
-| `.igd-h4` | `<h4>` |
-| `.igd-h5` | `<h5>` |
-| `.igd-h6` | `<h6>` |
-| `.igd-p` | `<p>` (body text) |
+| Class     | Applies the visual style of |
+| --------- | --------------------------- |
+| `.igd-h1` | `<h1>`                      |
+| `.igd-h2` | `<h2>`                      |
+| `.igd-h3` | `<h3>`                      |
+| `.igd-h4` | `<h4>`                      |
+| `.igd-h5` | `<h5>`                      |
+| `.igd-h6` | `<h6>`                      |
+| `.igd-p`  | `<p>` (body text)           |
 
 ```html
 <!-- Semantically an h2, styled like an h5 -->
@@ -90,36 +95,35 @@ A second paragraph, separated from the first by a blank line.
 
 Use these inside sentences to add meaning or visual emphasis.
 
-| Element | Renders as | Use when |
-|---|---|---|
-| `<strong>` or `**text**` | <strong>Bold importance</strong> | Content has strong importance or urgency |
-| `<b>` | <b>Bold without semantics</b> | Style-only bold, no extra meaning |
-| `<em>` or `*text*` | <em>Emphasised text</em> | Stress emphasis that changes sentence meaning |
-| `<i>` | <i>Italic without semantics</i> | Technical terms, foreign phrases, thoughts |
-| `<u>` | <u>Underlined text</u> | Annotations, misspellings (non-link underline) |
-| `<s>` or `~~text~~` | <s>Strikethrough</s> | Content no longer accurate or relevant |
-| `<del>` | <del>Deleted content</del> | Editorial deletion (pairs with `<ins>`) |
-| `<ins>` | <ins>Inserted content</ins> | Editorial insertion (pairs with `<del>`) |
-| `<mark>` | <mark>Highlighted text</mark> | Highlighted / search result match |
-| `<small>` | <small>Small print</small> | Side comments, legal text, fine print |
-| `<sub>` | H<sub>2</sub>O | Subscript — chemical formulas, footnotes |
-| `<sup>` | E=mc<sup>2</sup> | Superscript — exponents, ordinals |
-| `<abbr title="Cascading Style Sheets">` | <abbr title="Cascading Style Sheets">CSS</abbr> | Abbreviations — shows expansion on hover |
-| `<dfn>` | <dfn>Single-page application</dfn> | Defining instance of a term |
-| `<time dateTime="2026-05-15">` | <time dateTime="2026-05-15">15 May 2026</time> | Machine-readable dates and times |
-| `<a href>` | [this link](#) | Hyperlinks |
-| `<a href target="_blank">` | <a href="https://www.infragistics.com" target="_blank" rel="noopener">Infragistics website</a> | External links — opens in a new tab, gets the external link icon |
+| Element                                 | Renders as                                                                                     | Use when                                                         |
+| --------------------------------------- | ---------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- |
+| `<strong>` or `**text**`                | <strong>Bold importance</strong>                                                               | Content has strong importance or urgency                         |
+| `<b>`                                   | <b>Bold without semantics</b>                                                                  | Style-only bold, no extra meaning                                |
+| `<em>` or `*text*`                      | <em>Emphasised text</em>                                                                       | Stress emphasis that changes sentence meaning                    |
+| `<i>`                                   | <i>Italic without semantics</i>                                                                | Technical terms, foreign phrases, thoughts                       |
+| `<u>`                                   | <u>Underlined text</u>                                                                         | Annotations, misspellings (non-link underline)                   |
+| `<s>` or `~~text~~`                     | <s>Strikethrough</s>                                                                           | Content no longer accurate or relevant                           |
+| `<del>`                                 | <del>Deleted content</del>                                                                     | Editorial deletion (pairs with `<ins>`)                          |
+| `<ins>`                                 | <ins>Inserted content</ins>                                                                    | Editorial insertion (pairs with `<del>`)                         |
+| `<mark>`                                | <mark>Highlighted text</mark>                                                                  | Highlighted / search result match                                |
+| `<small>`                               | <small>Small print</small>                                                                     | Side comments, legal text, fine print                            |
+| `<sub>`                                 | H<sub>2</sub>O                                                                                 | Subscript — chemical formulas, footnotes                         |
+| `<sup>`                                 | E=mc<sup>2</sup>                                                                               | Superscript — exponents, ordinals                                |
+| `<abbr title="Cascading Style Sheets">` | <abbr title="Cascading Style Sheets">CSS</abbr>                                                | Abbreviations — shows expansion on hover                         |
+| `<dfn>`                                 | <dfn>Single-page application</dfn>                                                             | Defining instance of a term                                      |
+| `<time dateTime="2026-05-15">`          | <time dateTime="2026-05-15">15 May 2026</time>                                                 | Machine-readable dates and times                                 |
+| `<a href>`                              | [this link](#)                                                                                 | Hyperlinks                                                       |
+| `<a href target="_blank">`              | <a href="https://www.infragistics.com" target="_blank" rel="noopener">Infragistics website</a> | External links — opens in a new tab, gets the external link icon |
 
 ```md
-**Bold importance**, *emphasised text*, ~~strikethrough~~,
+**Bold importance**, _emphasised text_, ~~strikethrough~~,
 `inline code`, [link text](https://example.com)
 ```
 
 ```html
-<strong>Bold importance</strong>, <b>bold without semantics</b>,
-<em>emphasised</em>, <i>italic</i>, <u>underlined</u>, <s>strikethrough</s>,
-<del>deleted</del> and <ins>inserted</ins> content, <mark>highlighted</mark>,
-<small>small print</small>, H<sub>2</sub>O, E=mc<sup>2</sup>,
+<strong>Bold importance</strong>, <b>bold without semantics</b>, <em>emphasised</em>, <i>italic</i>,
+<u>underlined</u>, <s>strikethrough</s>, <del>deleted</del> and <ins>inserted</ins> content,
+<mark>highlighted</mark>, <small>small print</small>, H<sub>2</sub>O, E=mc<sup>2</sup>,
 <abbr title="Cascading Style Sheets">CSS</abbr>, <dfn>a defined term</dfn>,
 <time datetime="2026-05-15">15 May 2026</time>,
 <a href="https://example.com" target="_blank" rel="noopener">an external link</a>
@@ -131,18 +135,22 @@ Use these inside sentences to add meaning or visual emphasis.
 
 ```html
 <blockquote cite="https://developer.mozilla.org/en-US/docs/Web/HTML">
-    <q>HTML is the most basic building block of the Web.</q>
+  <q>HTML is the most basic building block of the Web.</q>
 </blockquote>
 
-<p>As the spec states: <q cite="https://html.spec.whatwg.org/">a language for
-interactive documents</q>.</p>
+<p>
+  As the spec states:
+  <q cite="https://html.spec.whatwg.org/">a language for interactive documents</q>.
+</p>
 
 <cite>Design Patterns: Elements of Reusable Object-Oriented Software</cite>
 ```
 
 <blockquote cite="https://developer.mozilla.org/en-US/docs/Web/HTML">
-    <q>HTML (HyperText Markup Language) is the most basic building block of the Web.
-        It defines the meaning and structure of web content.</q>
+  <q>
+    HTML (HyperText Markup Language) is the most basic building block of the Web. It defines the
+    meaning and structure of web content.
+  </q>
 </blockquote>
 
 As the spec states: <q cite="https://html.spec.whatwg.org/">the purpose of this specification
@@ -157,4 +165,3 @@ document processing.</q> — inline quote via `<q>`.
 ## Icons
 
 See the dedicated [Icons page](/styles/icons) for the full icon gallery with copy, download, and upload actions.
-

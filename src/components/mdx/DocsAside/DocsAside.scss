@@ -3,110 +3,110 @@
 // STRUCTURE STYLES
 
 blockquote {
-	border-inline-start-width: var(--igd-aside-border-width);
-	border-inline-start-style: var(--igd-aside-border-style);
-	padding: var(--igd-aside-padding);
-	border-radius: var(--igd-aside-border-radius);
-	margin-block-end: var(--igd-aside-margin-bottom);
+  border-inline-start-width: var(--igd-aside-border-width);
+  border-inline-start-style: var(--igd-aside-border-style);
+  padding: var(--igd-aside-padding);
+  border-radius: var(--igd-aside-border-radius);
+  margin-block-end: var(--igd-aside-margin-bottom);
 }
 
 .igd-aside {
-	display: grid;
-	grid-template-columns: auto 1fr;
-	align-items: start;
-	row-gap: var(--igd-aside-row-gap);
-	column-gap: var(--igd-aside-column-gap);
-	border-inline-start-width: var(--igd-aside-border-width);
-	border-inline-start-style: var(--igd-aside-border-style);
-	padding: var(--igd-aside-padding);
-	border-radius: var(--igd-aside-border-radius);
-	margin-block-end: var(--igd-aside-margin-bottom);
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: start;
+  row-gap: var(--igd-aside-row-gap);
+  column-gap: var(--igd-aside-column-gap);
+  border-inline-start-width: var(--igd-aside-border-width);
+  border-inline-start-style: var(--igd-aside-border-style);
+  padding: var(--igd-aside-padding);
+  border-radius: var(--igd-aside-border-radius);
+  margin-block-end: var(--igd-aside-margin-bottom);
 }
 
 .igd-aside__title {
-	@include type-style('h5') {
-		font-weight: bold;
-		margin: 0;
-	};
-	
-	grid-row: 1;
-	grid-column: 2;
-	align-self: center;
+  @include type-style('h5') {
+    font-weight: bold;
+    margin: 0;
+  }
+
+  grid-row: 1;
+  grid-column: 2;
+  align-self: center;
 }
 
 .igd-aside__icon {
-	grid-column: 1;
-	grid-row: 1;
+  grid-column: 1;
+  grid-row: 1;
 }
 
 .igd-aside__content {
-	@include type-style('body-1') {
-		margin: 0;
-		font-weight: 400;
-	}
-	
-	grid-column: 2;
-	grid-row: 2;
-	
-	// Make sure that if there is a super long link inside, it won’t break the layout.
-	overflow: auto;
-	
-	> p:only-child,
-	> p:last-child {
-		margin-block-end: 0;
-	}
+  @include type-style('body-1') {
+    margin: 0;
+    font-weight: 400;
+  }
+
+  grid-column: 2;
+  grid-row: 2;
+
+  // Make sure that if there is a super long link inside, it won’t break the layout.
+  overflow: auto;
+
+  > p:only-child,
+  > p:last-child {
+    margin-block-end: 0;
+  }
 }
 
 // THEME STYLES
 .igd-aside--info {
-	border-inline-start-color: var(--igd-aside-info-border);
-	background: var(--igd-aside-info-bg);
-	
-	.igd-aside__title {
-		color: var(--igd-aside-info-title);
-	}
-	
-	.igd-aside__icon {
-		color: var(--igd-aside-info-icon);
-	}
-	
-	.igd-aside__content {
-		color: var(--igd-aside-info-content);
-	}
+  border-inline-start-color: var(--igd-aside-info-border);
+  background: var(--igd-aside-info-bg);
+
+  .igd-aside__title {
+    color: var(--igd-aside-info-title);
+  }
+
+  .igd-aside__icon {
+    color: var(--igd-aside-info-icon);
+  }
+
+  .igd-aside__content {
+    color: var(--igd-aside-info-content);
+  }
 }
 
 .igd-aside--warning {
-	border-inline-start-color: var(--igd-aside-warning-border);
-	background: var(--igd-aside-warning-bg);
-	
-	.igd-aside__title {
-		color: var(--igd-aside-warning-title);
-	}
-	
-	.igd-aside__icon {
-		color: var(--igd-aside-warning-icon);
-	}
-	
-	.igd-aside__content {
-		color: var(--igd-aside-warning-content);
-	}
+  border-inline-start-color: var(--igd-aside-warning-border);
+  background: var(--igd-aside-warning-bg);
+
+  .igd-aside__title {
+    color: var(--igd-aside-warning-title);
+  }
+
+  .igd-aside__icon {
+    color: var(--igd-aside-warning-icon);
+  }
+
+  .igd-aside__content {
+    color: var(--igd-aside-warning-content);
+  }
 }
 
 .igd-aside--note {
-	border-inline-start-color: var(--igd-aside-note-border);
-	background: var(--igd-aside-note-bg);
-	
-	.igd-aside__title {
-		color: var(--igd-aside-note-title);
-	}
-	
-	.igd-aside__icon {
-		color: var(--igd-aside-note-icon);
-	}
-	
-	.igd-aside__content {
-		color: var(--igd-aside-note-content);
-	}
+  border-inline-start-color: var(--igd-aside-note-border);
+  background: var(--igd-aside-note-bg);
+
+  .igd-aside__title {
+    color: var(--igd-aside-note-title);
+  }
+
+  .igd-aside__icon {
+    color: var(--igd-aside-note-icon);
+  }
+
+  .igd-aside__content {
+    color: var(--igd-aside-note-content);
+  }
 }
 
 // TYPOGRAPHY STYLES

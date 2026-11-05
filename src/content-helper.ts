@@ -41,18 +41,18 @@ const SKIP_TITLE = '\x00skip';
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function withTitleFilter(baseLoader: any): any {
-    return {
-        ...baseLoader,
-        load: async (ctx: any) => {
-            await baseLoader.load(ctx);
-            for (const id of [...ctx.store.keys()]) {
-                const entry = ctx.store.get(id);
-                if (!entry?.data?.title || entry.data.title === SKIP_TITLE) {
-                    ctx.store.delete(id);
-                }
-            }
-        },
-    };
+  return {
+    ...baseLoader,
+    load: async (ctx: any) => {
+      await baseLoader.load(ctx);
+      for (const id of ctx.store.keys()) {
+        const entry = ctx.store.get(id);
+        if (!entry?.data?.title || entry.data.title === SKIP_TITLE) {
+          ctx.store.delete(id);
+        }
+      }
+    },
+  };
 }
 
 /**
@@ -61,41 +61,38 @@ function withTitleFilter(baseLoader: any): any {
  * missing one so the glob loader doesn't throw InvalidContentEntryDataError.
  */
 function makeDocsSchema(extend?: z.ZodObject<z.ZodRawShape>) {
-    const base = z.object({
-        title: z.string(),
-        description: z.string().optional().nullable(),
-        keywords: z.string().optional().nullable(),
-        draft: z.boolean().optional(),
-        license: z.string().optional(),
-    });
+  const base = z.object({
+    title: z.string(),
+    description: z.string().optional().nullable(),
+    keywords: z.string().optional().nullable(),
+    draft: z.boolean().optional(),
+    license: z.string().optional(),
+  });
 
-    const schema = extend ? base.merge(extend) : base;
+  const schema = extend ? base.merge(extend) : base;
 
-    return z.preprocess(
-        (data: unknown) => {
-            if (typeof data === 'object' && data !== null) {
-                const d = data as Record<string, unknown>;
-                if (d['description'] === null) delete d['description'];
-                if (!d['title']) return { ...d, title: SKIP_TITLE };
-            }
-            return data;
-        },
-        schema,
-    );
+  return z.preprocess((data: unknown) => {
+    if (typeof data === 'object' && data !== null) {
+      const d = data as Record<string, unknown>;
+      if (d['description'] === null) delete d['description'];
+      if (!d['title']) return { ...d, title: SKIP_TITLE };
+    }
+    return data;
+  }, schema);
 }
 
 interface CreateDocsCollectionOptions {
-    /**
-     * Glob patterns to exclude (relative to `sourceDir`). A leading `!` is
-     * added automatically when missing, so `'internal/**'` and
-     * `'!internal/**'` are both accepted.
-     */
-    exclude?: string[];
-    /**
-     * Additional Zod object fields merged into the docs schema.
-     * Useful for repo-specific frontmatter fields.
-     */
-    extendSchema?: z.ZodObject<z.ZodRawShape>;
+  /**
+   * Glob patterns to exclude (relative to `sourceDir`). A leading `!` is
+   * added automatically when missing, so `'internal/**'` and
+   * `'!internal/**'` are both accepted.
+   */
+  exclude?: string[];
+  /**
+   * Additional Zod object fields merged into the docs schema.
+   * Useful for repo-specific frontmatter fields.
+   */
+  extendSchema?: z.ZodObject<z.ZodRawShape>;
 }
 
 /**
@@ -107,38 +104,40 @@ interface CreateDocsCollectionOptions {
  * @param options - Optional exclude patterns and schema extension.
  */
 export function createDocsCollection(
-    sourceDir?: string,
-    { exclude = [], extendSchema }: CreateDocsCollectionOptions = {},
+  sourceDir?: string,
+  { exclude = [], extendSchema }: CreateDocsCollectionOptions = {},
 ) {
-    const dir = sourceDir ?? process.env.DOCS_SOURCE_PATH;
-    if (!dir) {
-        throw new Error(
-            '[docs-template] createDocsCollection: no source directory provided. ' +
-            'Pass a path as the first argument or set the DOCS_SOURCE_PATH env variable.'
-        );
-    }
+  const dir = sourceDir ?? process.env.DOCS_SOURCE_PATH;
+  if (!dir) {
+    throw new Error(
+      '[docs-template] createDocsCollection: no source directory provided. ' +
+        'Pass a path as the first argument or set the DOCS_SOURCE_PATH env variable.',
+    );
+  }
 
-    const excludePatterns = exclude.map(p => (p.startsWith('!') ? p : `!${p}`));
+  const excludePatterns = exclude.map((p) => (p.startsWith('!') ? p : `!${p}`));
 
-    return defineCollection({
-        loader: withTitleFilter(glob({
-            base: pathToFileURL(dir.endsWith('/') ? dir : dir + '/'),
-            pattern: [
-                '*.{md,mdx}',
-                '**/*.{md,mdx}',
-                '!**/_*.{md,mdx}',
-                '!**/toc.yml',
-                '!**/*.json',
-                '!readme.md',
-                '!README.md',
-                '!CHANGELOG.md',
-                '!LICENSE.md',
-                ...excludePatterns,
-            ],
-        })),
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        schema: makeDocsSchema(extendSchema) as any,
-    });
+  return defineCollection({
+    loader: withTitleFilter(
+      glob({
+        base: pathToFileURL(dir.endsWith('/') ? dir : dir + '/'),
+        pattern: [
+          '*.{md,mdx}',
+          '**/*.{md,mdx}',
+          '!**/_*.{md,mdx}',
+          '!**/toc.yml',
+          '!**/*.json',
+          '!readme.md',
+          '!README.md',
+          '!CHANGELOG.md',
+          '!LICENSE.md',
+          ...excludePatterns,
+        ],
+      }),
+    ),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    schema: makeDocsSchema(extendSchema) as any,
+  });
 }
 
 // ---------------------------------------------------------------------------
@@ -155,5 +154,5 @@ export function createDocsCollection(
  *   export { collections };
  */
 export const collections = {
-    docs: createDocsCollection(process.env.DOCS_SOURCE_PATH),
+  docs: createDocsCollection(process.env.DOCS_SOURCE_PATH),
 };

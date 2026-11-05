@@ -2,157 +2,156 @@
 @use '../../styles/global/search-shared' as *;
 
 @layer components {
-	.igd-search-shell {
-		grid-template-rows: auto calc(100% - (var(--search-header-footer-height) * 1));
-	}
-	
-	api-search-advanced {
-		display: contents;
-		
-		#search-scope-trigger-icon {
-			margin-inline-start: rem(16px);
-		}
-	}
-	
-	// TODO BUG IN THE TAB COMPONENT
-	igc-tabs::part(inner) {
-		flex-grow: 1;
-	}
-	
-	igc-tabs {
-		igc-divider {
-			margin-block: rem(16px) rem(24px);
-			
-			&:last-of-type {
-				display: none;
-			}
-		}
-	}
-	
-	// TODO Log issue in the component this is not suppose to be affected by the ig-typography
-	igc-tab::part(content) {
-		@include type-style('subtitle-1') {
-			margin: 0;
-		}
-	}
-	
-	.igd-search-tabs {
-		--item-background: var(--igd-layout-sections-bg);
-		--button-color: var(--igd-accent);
-		--button-hover-color: var(--igd-accent);
-		--button-background: var(--igd-layout-sections-bg);
-		--button-hover-background: var(--igd-layout-sections-bg);
-		--border-color: var(--igd-layout-sections-bg);
-		--border-color--hover: var(--igd-layout-sections-bg);
-		--border-radius: 0;
-		
-		flex: 1 1 auto;
-		min-height: 0;
-		overflow: hidden;
-		display: flex;
-		flex-direction: column;
-		
-		&::part(base) {
-			display: flex;
-			flex-direction: column;
-			height: 100%;
-			min-height: 0;
-		}
-		
-		igc-tab {
-			--item-text-color: light-dark(var(--ig-gray-900), var(--ig-gray-700));
-			--item-background: var(--igd-layout-sections-bg);
-			--item-hover-background: var(--igd-layout-sections-bg);
-			--item-hover-color: var(--igd-accent);
-			--item-active-color: var(--igd-accent);
-			--item-active-hover-color: var(--igd-accent);
-			--item-icon-color: var(--igd-accent);
-			--item-active-icon-color: var(--igd-accent);
-			--item-active-hover-icon-color: var(--igd-accent);
-			--item-hover-icon-color: var(--igd-accent);
-			--item-active-background: var(--igd-layout-sections-bg);
-			--item-active-hover-background: var(--igd-layout-sections-bg);
-		}
-		
-		igc-tab::part(content),
-		igc-tab::part(base) {
-			@include type-style('body-2') {
-				margin: 0;
-			}
-		}
-		
-		igc-tab::part(base) {
-			gap: rem(4px);
-		}
-		
-		igc-tab::part(tab-body) {
-			overflow-y: auto;
-			flex: 1 1 auto;
-			min-height: 0;
-			padding-block: rem(16px);
-			padding-inline: 0;
-			border-block-start: var(--igd-app-outline);
-		}
-	}
-	
-	.igd-search-tab-count {
-		color: light-dark(var(--ig-gray-400), var(--ig-gray-300));
-		
-		&::before {
-			content: '(';
-		}
-		&::after {
-			content: ')';
-		}
-	}
+  .igd-search-shell {
+    grid-template-rows: auto calc(100% - (var(--search-header-footer-height) * 1));
+  }
 
-	.igd-search-refine-hint {
-		@include type-style('caption') {
-			margin: 0;
-		}
+  api-search-advanced {
+    display: contents;
 
-		padding-inline-start: calc(#{rem(26px)} + #{rem(16px)});
-		margin-block-start: rem(16px);
-		color: light-dark(var(--ig-gray-600), var(--ig-gray-400));
-	}
+    #search-scope-trigger-icon {
+      margin-inline-start: rem(16px);
+    }
+  }
 
-	.igd-search-refine-hint {
-		@include type-style('caption') {
-			margin: 0;
-		}
+  // TODO BUG IN THE TAB COMPONENT
+  igc-tabs::part(inner) {
+    flex-grow: 1;
+  }
 
-		padding-inline-start: calc(#{rem(26px)} + #{rem(16px)});
-		margin-block-start: rem(16px);
-		color: light-dark(var(--ig-gray-600), var(--ig-gray-400));
-	}
-	
-	igc-divider {
-		--color: light-dark(var(--ig-gray-200), var(--ig-gray-300));
-	}
+  igc-tabs {
+    igc-divider {
+      margin-block: rem(16px) rem(24px);
 
-	.igd-search-scope {
-		max-width: rem(250px);
+      &:last-of-type {
+        display: none;
+      }
+    }
+  }
 
-		&::part(native-input) {
-			min-width: 0;
-			overflow: hidden;
-			text-overflow: ellipsis;
-			white-space: nowrap;
-		}
-	}
+  // TODO Log issue in the component this is not suppose to be affected by the ig-typography
+  igc-tab::part(content) {
+    @include type-style('subtitle-1') {
+      margin: 0;
+    }
+  }
 
-	.igd-search-scope-tooltip {
-		--ig-tooltip-background: #D2DBE8;
-		--ig-tooltip-text-color: #112031;
-		--ig-tooltip-border-radius: #{rem(4px)};
+  .igd-search-tabs {
+    --item-background: var(--igd-layout-sections-bg);
+    --button-color: var(--igd-accent);
+    --button-hover-color: var(--igd-accent);
+    --button-background: var(--igd-layout-sections-bg);
+    --button-hover-background: var(--igd-layout-sections-bg);
+    --border-color: var(--igd-layout-sections-bg);
+    --border-color--hover: var(--igd-layout-sections-bg);
+    --border-radius: 0;
 
-		&::part(base) {
-			font-family: var(--igd-font-sans);
-			font-size: #{rem(12px)};
-			font-weight: 500;
-			line-height: #{rem(18px)};
-			letter-spacing: 0;
-		}
-	}
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+
+    &::part(base) {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      min-height: 0;
+    }
+
+    igc-tab {
+      --item-text-color: light-dark(var(--ig-gray-900), var(--ig-gray-700));
+      --item-background: var(--igd-layout-sections-bg);
+      --item-hover-background: var(--igd-layout-sections-bg);
+      --item-hover-color: var(--igd-accent);
+      --item-active-color: var(--igd-accent);
+      --item-active-hover-color: var(--igd-accent);
+      --item-icon-color: var(--igd-accent);
+      --item-active-icon-color: var(--igd-accent);
+      --item-active-hover-icon-color: var(--igd-accent);
+      --item-hover-icon-color: var(--igd-accent);
+      --item-active-background: var(--igd-layout-sections-bg);
+      --item-active-hover-background: var(--igd-layout-sections-bg);
+    }
+
+    igc-tab::part(content),
+    igc-tab::part(base) {
+      @include type-style('body-2') {
+        margin: 0;
+      }
+    }
+
+    igc-tab::part(base) {
+      gap: rem(4px);
+    }
+
+    igc-tab::part(tab-body) {
+      overflow-y: auto;
+      flex: 1 1 auto;
+      min-height: 0;
+      padding-block: rem(16px);
+      padding-inline: 0;
+      border-block-start: var(--igd-app-outline);
+    }
+  }
+
+  .igd-search-tab-count {
+    color: light-dark(var(--ig-gray-400), var(--ig-gray-300));
+
+    &::before {
+      content: '(';
+    }
+    &::after {
+      content: ')';
+    }
+  }
+
+  .igd-search-refine-hint {
+    @include type-style('caption') {
+      margin: 0;
+    }
+
+    padding-inline-start: calc(#{rem(26px)} + #{rem(16px)});
+    margin-block-start: rem(16px);
+    color: light-dark(var(--ig-gray-600), var(--ig-gray-400));
+  }
+
+  .igd-search-refine-hint {
+    @include type-style('caption') {
+      margin: 0;
+    }
+
+    padding-inline-start: calc(#{rem(26px)} + #{rem(16px)});
+    margin-block-start: rem(16px);
+    color: light-dark(var(--ig-gray-600), var(--ig-gray-400));
+  }
+
+  igc-divider {
+    --color: light-dark(var(--ig-gray-200), var(--ig-gray-300));
+  }
+
+  .igd-search-scope {
+    max-width: rem(250px);
+
+    &::part(native-input) {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
+
+  .igd-search-scope-tooltip {
+    --ig-tooltip-background: #d2dbe8;
+    --ig-tooltip-text-color: #112031;
+    --ig-tooltip-border-radius: #{rem(4px)};
+
+    &::part(base) {
+      font-family: var(--igd-font-sans);
+      font-size: #{rem(12px)};
+      font-weight: 500;
+      line-height: #{rem(18px)};
+      letter-spacing: 0;
+    }
+  }
 }
-

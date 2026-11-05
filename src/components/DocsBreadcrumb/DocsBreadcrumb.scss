@@ -1,69 +1,70 @@
 @use 'igniteui-theming/sass/typography' as *;
 
 .docs-breadcrumb {
-	width: 100%;
-	padding: 0;
-	margin-block-end: rem(16px);
-	
-	ul, ol {
-		margin-block-end: 0 !important;
-	}
+  width: 100%;
+  padding: 0;
+  margin-block-end: rem(16px);
+
+  ul,
+  ol {
+    margin-block-end: 0 !important;
+  }
 }
 
 .docs-breadcrumb-list {
-	@include type-style('body-2') {
-		margin: 0;
-	};
-	
-	display: flex;
-	flex-wrap: wrap;
-	align-items: center;
-	list-style: none;
-	padding: 0;
-	gap: 6px;
-	color: light-dark(var(--ig-gray-700), var(--ig-gray-400));
+  @include type-style('body-2') {
+    margin: 0;
+  }
+
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  list-style: none;
+  padding: 0;
+  gap: 6px;
+  color: light-dark(var(--ig-gray-700), var(--ig-gray-400));
 }
 
 [data-theme='dark'] {
-	.docs-breadcrumb-list {
-		color: var(--ig-gray-600);
-	}
-	
-	.docs-breadcrumb-home {
-		color: var(--ig-gray-400);
-	}
+  .docs-breadcrumb-list {
+    color: var(--ig-gray-600);
+  }
+
+  .docs-breadcrumb-home {
+    color: var(--ig-gray-400);
+  }
 }
 
 .docs-breadcrumb-item {
-	display: flex;
-	align-items: center;
-	gap: rem(4px);
-	white-space: nowrap;
-	overflow: hidden;
-	padding: 0;
+  display: flex;
+  align-items: center;
+  gap: rem(4px);
+  white-space: nowrap;
+  overflow: hidden;
+  padding: 0;
 }
 
 .docs-breadcrumb-home {
-	color: light-dark(var(--ig-gray-500), var(--ig-gray-600));
-	flex-shrink: 0;
+  color: light-dark(var(--ig-gray-500), var(--ig-gray-600));
+  flex-shrink: 0;
 }
 
 .docs-breadcrumb-sep {
-	--size: #{rem(16px)};
-	
-	flex-shrink: 0;
-	user-select: none;
-	rotate: -90deg;
-	color: light-dark(var(--ig-gray-500), var(--ig-gray-600));
+  --size: #{rem(16px)};
+
+  flex-shrink: 0;
+  user-select: none;
+  rotate: -90deg;
+  color: light-dark(var(--ig-gray-500), var(--ig-gray-600));
 }
 
 .docs-breadcrumb-crumb {
-	overflow: hidden;
-	text-overflow: ellipsis;
-	max-width: 18rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 18rem;
 }
 
 /* Last crumb = current page — emphasise slightly */
 .docs-breadcrumb-item:last-child .docs-breadcrumb-crumb {
-	font-weight: 500;
+  font-weight: 500;
 }

@@ -14,7 +14,7 @@
  * DOCS_ENV (or NODE_ENV) selects the env block: development | staging | production.
  */
 
-import { visit } from 'unist-util-visit';
+import { defineMdastPlugin } from 'satteri';
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -25,6 +25,8 @@ const DOCCONFIG_PLATFORM_MAP: Record<string, string> = {
   react: 'React',
   'web-components': 'WebComponents',
   blazor: 'Blazor',
+  winui: 'WinUI',
+  uno: 'Uno',
 };
 
 // Lazy-loaded, cached per DOCS_SOURCE_PATH value.
@@ -37,7 +39,10 @@ function loadEnv(): Record<string, string> {
   _envSourcePath = currentPath;
   _env = null;
 
-  if (!currentPath) { _env = {}; return _env; }
+  if (!currentPath) {
+    _env = {};
+    return _env;
+  }
   const sourceRoot = path.resolve(currentPath);
   const parent = path.dirname(sourceRoot);
 
@@ -48,7 +53,7 @@ function loadEnv(): Record<string, string> {
     path.join(parent, 'en', 'environment.json'),
   ];
 
-  const envPath = candidates.find(c => fs.existsSync(c));
+  const envPath = candidates.find((c) => fs.existsSync(c));
 
   if (!envPath) {
     try {
@@ -59,8 +64,13 @@ function loadEnv(): Record<string, string> {
         const docConfig = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
         const demosUrl: string =
           docConfig[platform]?.samplesBrowsers?.[envKey] ??
-          docConfig[platform]?.samplesBrowsers?.['development'] ?? '';
-        _env = { dvDemosBaseUrl: demosUrl, demosBaseUrl: demosUrl, infragisticsBaseUrl: 'https://www.infragistics.com' };
+          docConfig[platform]?.samplesBrowsers?.['development'] ??
+          '';
+        _env = {
+          dvDemosBaseUrl: demosUrl,
+          demosBaseUrl: demosUrl,
+          infragisticsBaseUrl: 'https://www.infragistics.com',
+        };
       } else {
         _env = {};
       }
@@ -87,24 +97,30 @@ export function replaceEnvVars(str: string): string {
   return str.replace(ENV_PATTERN, (_match, key) => env[key] ?? `{environment:${key}}`);
 }
 
-/** Remark plugin that substitutes `{environment:key}` tokens in the markdown AST. */
+/**
+ * Sätteri MDAST plugin that substitutes `{environment:key}` tokens.
+ *
+ * Exported as a factory so Sätteri calls it once per compile; the `loadEnv()`
+ * cache is module-level and intentionally shared across documents.
+ */
 export function remarkEnvVars() {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return (tree: any) => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    visit(tree, (node: any) => {
-      if (node.type === 'text' && node.value) {
-        node.value = replaceEnvVars(node.value);
-      }
-      if (node.type === 'link' && node.url) {
-        node.url = replaceEnvVars(node.url);
-      }
-      if (node.type === 'image' && node.url) {
-        node.url = replaceEnvVars(node.url);
-      }
-      if (node.type === 'html' && node.value) {
-        node.value = replaceEnvVars(node.value);
-      }
-    });
-  };
+  return defineMdastPlugin({
+    name: 'env-vars',
+    text(node, ctx) {
+      const value = replaceEnvVars(node.value);
+      if (value !== node.value) ctx.setProperty(node, 'value', value);
+    },
+    html(node, ctx) {
+      const value = replaceEnvVars(node.value);
+      if (value !== node.value) ctx.setProperty(node, 'value', value);
+    },
+    link(node, ctx) {
+      const url = replaceEnvVars(node.url);
+      if (url !== node.url) ctx.setProperty(node, 'url', url);
+    },
+    image(node, ctx) {
+      const url = replaceEnvVars(node.url);
+      if (url !== node.url) ctx.setProperty(node, 'url', url);
+    },
+  });
 }

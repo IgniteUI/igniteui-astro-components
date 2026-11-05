@@ -1,0 +1,6 @@
+node_modules
+dist
+.astro
+package-lock.json
+playground/public/api-search-index/data.json
+playground/public/api-search-index/manifest.json
