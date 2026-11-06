@@ -1,12 +1,18 @@
 <script>
   import '../../scripts/icon-registry';
-  import { defineComponents, IgcIconButtonComponent, IgcIconComponent } from 'igniteui-webcomponents';
+  import { announceCopyStatus, clearCopyStatus } from '../../scripts/copy-status';
+  import {
+    defineComponents,
+    IgcIconButtonComponent,
+    IgcIconComponent,
+  } from 'igniteui-webcomponents';
 
   defineComponents(IgcIconButtonComponent, IgcIconComponent);
 
   function initCopyButtons(): void {
+    // Adds a copy button to fenced blocks and <Code>; skips Sample code tabs.
     document.querySelectorAll<HTMLPreElement>('pre.astro-code, pre.shiki').forEach((pre) => {
-      if (pre.closest('.copy-code-wrapper')) return;
+      if (pre.closest('.copy-code-wrapper, .code-wrapper')) return;
 
       const wrapper = document.createElement('div');
       wrapper.className = 'copy-code-wrapper';
@@ -30,16 +36,19 @@
         const resetState = () => {
           icon.setAttribute('name', 'copy');
           btn.setAttribute('aria-label', 'Copy code');
+          clearCopyStatus(wrapper);
         };
 
         const showCopied = () => {
           icon.setAttribute('name', 'check');
           btn.setAttribute('aria-label', 'Copied!');
+          announceCopyStatus(wrapper, 'Code copied to clipboard');
           setTimeout(resetState, 1500);
         };
 
         const showFailed = () => {
           btn.setAttribute('aria-label', 'Copy failed');
+          announceCopyStatus(wrapper, 'Copy failed');
           setTimeout(resetState, 1500);
         };
 
@@ -51,16 +60,26 @@
           document.body.appendChild(ta);
           ta.select();
           ta.setSelectionRange(0, value.length);
-          try { return document.execCommand('copy'); } catch { return false; }
-          finally { document.body.removeChild(ta); }
+          try {
+            return document.execCommand('copy');
+          } catch {
+            return false;
+          } finally {
+            document.body.removeChild(ta);
+          }
         };
 
         if (navigator.clipboard?.writeText) {
-          navigator.clipboard.writeText(text).then(showCopied).catch(() => {
-            fallback(text) ? showCopied() : showFailed();
-          });
+          navigator.clipboard
+            .writeText(text)
+            .then(showCopied)
+            .catch(() => {
+              if (fallback(text)) showCopied();
+              else showFailed();
+            });
         } else {
-          fallback(text) ? showCopied() : showFailed();
+          if (fallback(text)) showCopied();
+          else showFailed();
         }
       });
 

@@ -1,77 +1,77 @@
-@use 'igniteui-theming' as *;
+@use 'copy-button' as *;
 
 /* ============================================================
-   Code Blocks (Shiki dual-theme)
-   Shiki emits CSS variables per span:
-     --shiki-light / --shiki-light-bg  (default, inline style)
-     --shiki-dark  / --shiki-dark-bg   (need CSS to activate)
+   Code snippets: fenced blocks and <Code> (`pre.astro-code`), direct
+   `codeToHtml()` output (`pre.shiki`) and Sample code tabs (`pre.igd-code`).
+   Shiki writes the background, default text and token colours inline
+   (src/code-theme); these rules only shape the surface.
+   Surface tokens (`--igd-code-*`) live in _variables.scss.
    ============================================================ */
 
-.shiki {
-	border: 1px solid var(--ig-gray-200);
-	margin-bottom: rem(26px);
+pre.astro-code,
+pre.shiki,
+pre.igd-code {
+  // Snippets are always dark: dark scrollbars and form-control colours.
+  color-scheme: dark;
+  border: var(--igd-code-border);
+  border-radius: var(--igd-code-radius);
+  padding: var(--igd-code-padding);
+  margin-block: 0 var(--igd-code-margin-bottom);
+  font-family: var(--igd-code-font-family);
+  font-size: var(--igd-code-font-size);
+  line-height: var(--igd-code-line-height);
+  font-weight: 400;
+  tab-size: 2;
+  max-width: 100%;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+  word-break: break-word;
+
+  code {
+    display: block;
+    font: inherit;
+    white-space: inherit;
+    overflow-wrap: inherit;
+    word-break: inherit;
+    background: none;
+    border: 0;
+    padding: 0;
+    margin: 0;
+  }
 }
 
-pre.shiki {
-    overflow-x: auto;
-    max-width: 100%;
-    word-wrap: break-word;
-    white-space: pre-wrap;
-	border-radius: var(--igd-border-radius);
-	padding: rem(32px);
-}
-
-pre.shiki code {
-    white-space: pre-wrap;
-    word-break: break-word;
-}
-
-/* ── Always use the dark theme ──────────────────────────────
-   Single dark theme — Shiki outputs colors directly, no CSS
-   variable switching required.                               */
-pre.shiki {
-    background-color: var(--shiki-color-background) !important;
-}
+/* ── Copy button (added by CopyCode.astro around every pre.astro-code / pre.shiki) ── */
 
 .copy-code-wrapper {
-	position: relative;
-	z-index: 0;
+  position: relative;
+  z-index: 0;
+  margin-block-end: var(--igd-code-margin-bottom);
+
+  > pre {
+    margin-block-end: 0;
+  }
+
+  > .copy-btn {
+    position: absolute;
+    inset-block-start: var(--igd-code-copy-inset);
+    inset-inline-end: var(--igd-code-copy-inset);
+    z-index: 1;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+
+    @include copy-button-colors;
+  }
+
+  &:hover > .copy-btn,
+  &:focus-within > .copy-btn {
+    opacity: 1;
+  }
 }
 
-.copy-code-wrapper > .copy-btn {
-	position: absolute;
-	inset-block-start: rem(8px);
-	inset-inline-end: rem(8px);
-	opacity: 0;
-	z-index: 1;
-	
-	--foreground: var(--ig-primary-600-contrast);
-	--hover-foreground: var(--ig-primary-600-contrast);
-	--focus-foreground: var(--ig-primary-600-contrast);
-	--active-foreground: var(--ig-primary-600-contrast);
-	--background: var(--ig-primary-500);
-	--hover-background: var(--ig-primary-500);
-	--focus-background: var(--ig-primary-500);
-	--active-background: var(--ig-primary-500);
-	--border-color: transparent;
-	--border-color-hover: transparent;
-	--border-color-focus: transparent;
-	
-	&:has([name="check"]) {
-		--foreground: var(--ig-success-300-contrast);
-		--hover-foreground: var(--ig-success-300-contrast);
-		--focus-foreground: var(--ig-success-300-contrast);
-		--active-foreground: var(--ig-success-300-contrast);
-		
-		--background: var(--ig-success-300);
-		--hover-background: var(--ig-success-300);
-		--focus-background: var(--ig-success-300);
-		--active-background: var(--ig-success-300);
-	}
+// Always shows the copy button on touch devices.
+@media (hover: none) {
+  .copy-code-wrapper > .copy-btn {
+    opacity: 1;
+  }
 }
-
-.copy-code-wrapper:hover > .copy-btn,
-.copy-code-wrapper:focus-within > .copy-btn {
-	opacity: 1;
-}
-

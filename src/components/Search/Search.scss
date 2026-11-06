@@ -2,24 +2,24 @@
 @use '../../styles/global/search-shared' as *;
 
 @layer components {
-	.igd-search-result-excerpt {
-		@include type-style('body-2') {
-			margin: 0;
-		}
-		
-		color: light-dark(var(--ig-gray-600), var(--ig-gray-400));
-		
-		mark {
-			background: transparent;
-			color: var(--igd-accent);
-			// No padding/margin: a global `mark` rule adds horizontal padding that
-			// shows as a gap once we split a word into <mark>prefix</mark>rest.
-			padding: 0;
-			margin: 0;
-		}
-	}
-	
-	.igd-search-shell {
-		grid-template-rows: auto 1fr auto;
-	}
+  .igd-search-result-excerpt {
+    @include type-style('body-2') {
+      margin: 0;
+    }
+
+    color: light-dark(var(--ig-gray-600), var(--ig-gray-400));
+
+    mark {
+      background: transparent;
+      color: var(--igd-accent);
+      // No padding/margin: a global `mark` rule adds horizontal padding that
+      // shows as a gap once we split a word into <mark>prefix</mark>rest.
+      padding: 0;
+      margin: 0;
+    }
+  }
+
+  .igd-search-shell {
+    grid-template-rows: auto 1fr auto;
+  }
 }

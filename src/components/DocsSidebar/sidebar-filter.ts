@@ -30,13 +30,30 @@ const SCROLL_SELECTOR = '[data-sidebar-scroll]';
 const ITEM_SELECTOR = 'igc-tree-item[data-path]';
 const GROUP_SELECTOR = 'igc-tree-item[data-group-key]';
 
-
 // ── Storage helpers ────────────────────────────────────────────────────────
-const safeGet = (k: string): string => { try { return sessionStorage.getItem(k) ?? ''; } catch { return ''; } };
-const safeSet = (k: string, v: string) => { try { sessionStorage.setItem(k, v); } catch { /* quota */ } };
-const safeRemove = (k: string) => { try { sessionStorage.removeItem(k); } catch { /* */ } };
+const safeGet = (k: string): string => {
+  try {
+    return sessionStorage.getItem(k) ?? '';
+  } catch {
+    return '';
+  }
+};
+const safeSet = (k: string, v: string) => {
+  try {
+    sessionStorage.setItem(k, v);
+  } catch {
+    /* quota */
+  }
+};
+const safeRemove = (k: string) => {
+  try {
+    sessionStorage.removeItem(k);
+  } catch {
+    /* */
+  }
+};
 
-const parseKeys  = (raw: string): Set<string> => new Set(raw ? raw.split('\n').filter(Boolean) : []);
+const parseKeys = (raw: string): Set<string> => new Set(raw ? raw.split('\n').filter(Boolean) : []);
 const serializeKeys = (keys: Set<string>): string => [...keys].join('\n');
 
 // ── Helpers ────────────────────────────────────────────────────────────────
@@ -58,18 +75,27 @@ const collectExpandedKeys = (root: ParentNode): string[] => {
 /**
  * Apply expanded state using setAttribute / removeAttribute.
  * Used ONLY in astro:before-swap on not-yet-upgraded DOM nodes.
+ * With `onlyActiveBranch`, the saved keys are ignored.
  */
-const applyExpandedAttr = (root: ParentNode, openKeys: Set<string>): void => {
+const applyExpandedAttr = (
+  root: ParentNode,
+  openKeys: Set<string>,
+  onlyActiveBranch: boolean,
+): void => {
   root.querySelectorAll<HTMLElement>(GROUP_SELECTOR).forEach((el) => {
-    if (el.querySelector(ACTIVE_LINK_SELECTOR)) { el.setAttribute('expanded', ''); return; }
+    if (el.querySelector(ACTIVE_LINK_SELECTOR)) {
+      el.setAttribute('expanded', '');
+      return;
+    }
     const key = el.dataset.groupKey;
-    if (key && openKeys.has(key)) el.setAttribute('expanded', '');
+    if (!onlyActiveBranch && key && openKeys.has(key)) el.setAttribute('expanded', '');
     else el.removeAttribute('expanded');
   });
 };
 
 const tokenize = (q: string): string[] => q.toLowerCase().split(/\s+/).filter(Boolean);
-const itemPath = (el: HTMLElement): string => (el.dataset.path ?? el.dataset.label ?? '').toLowerCase();
+const itemPath = (el: HTMLElement): string =>
+  (el.dataset.path ?? el.dataset.label ?? '').toLowerCase();
 
 // ── Page-lifecycle hooks ───────────────────────────────────────────────────
 // Registered once at most, regardless of how many sidebar-filter instances connect.
@@ -102,7 +128,14 @@ function registerPageHooks(): void {
     const newScroll = newDoc.querySelector<HTMLElement>(SCROLL_SELECTOR);
     if (newScroll) newScroll.style.visibility = 'hidden';
 
-    applyExpandedAttr(newDoc, parseKeys(safeGet(DETAILS_KEY)));
+    // Single-branch: the new page's branch replaces the saved one, unless the
+    // filter carries over and keeps every group it opened.
+    const onlyActiveBranch =
+      !!newDoc.querySelector('sidebar-filter[data-single-branch-expand]') &&
+      !!newDoc.querySelector(`${GROUP_SELECTOR} ${ACTIVE_LINK_SELECTOR}`) &&
+      !safeGet(FILTER_KEY);
+
+    applyExpandedAttr(newDoc, parseKeys(safeGet(DETAILS_KEY)), onlyActiveBranch);
   });
 }
 
@@ -182,6 +215,7 @@ class SidebarFilter extends LitElement {
 
     this.addEventListener('igcItemExpanded', (e) => this.onItemToggle(e), opts);
     this.addEventListener('igcItemCollapsed', (e) => this.onItemToggle(e), opts);
+    this.addEventListener('igcItemExpanding', (e) => this.onItemExpanding(e), opts);
 
     this.restoreOnConnect();
   }
@@ -237,6 +271,23 @@ class SidebarFilter extends LitElement {
     safeSet(DETAILS_KEY, serializeKeys(keys));
   }
 
+  /**
+   * Single-branch: a user expand collapses every open group outside the new
+   * branch. igc-tree's own `singleBranchExpand` isn't used: turning it on
+   * collapses every group, the current page's included, and while filtering
+   * the next expand would collapse the groups the filter opened.
+   */
+  private onItemExpanding(e: Event): void {
+    // While filtering, every group with a match stays open.
+    if (!this.singleBranch || this.openSnapshot) return;
+
+    const item = (e as CustomEvent<HTMLElement>).detail;
+    for (const el of this.groups) {
+      const group = el as IgcTreeItemComponent;
+      if (group.expanded && !group.contains(item)) void group.collapseWithEvent();
+    }
+  }
+
   private syncSnapshotAttr(): void {
     if (this.openSnapshot) this.dataset.openSnapshot = serializeKeys(this.openSnapshot);
     else delete this.dataset.openSnapshot;
@@ -258,7 +309,8 @@ class SidebarFilter extends LitElement {
       if (window.scrollY !== y) window.scrollTo({ top: y, behavior: 'instant' as ScrollBehavior });
       if (--this.pinFrames > 0) requestAnimationFrame(tick);
       else {
-        if (this.prevScrollBehavior) document.documentElement.style.setProperty('scroll-behavior', this.prevScrollBehavior);
+        if (this.prevScrollBehavior)
+          document.documentElement.style.setProperty('scroll-behavior', this.prevScrollBehavior);
         else document.documentElement.style.removeProperty('scroll-behavior');
         this.prevScrollBehavior = null;
       }
@@ -306,25 +358,30 @@ class SidebarFilter extends LitElement {
     } else {
       // On hard refresh, wait for astro:page-load (which scrolls the page
       // back to top and runs initSidebarHeights) before centering.
-      document.addEventListener('astro:page-load', () => {
-        requestAnimationFrame(() => {
-          if (!this.isConnected) return;
-          const sidebar = this.closest<HTMLElement>('.docs-sidebar');
-          if (sidebar) {
-            sidebar.style.maxHeight = Math.max(0, window.innerHeight - sidebar.getBoundingClientRect().top) + 'px';
-          }
-          sc.style.visibility = '';
-          const active = this.querySelector<HTMLAnchorElement>(ACTIVE_LINK_SELECTOR);
-          if (active) this.scrollToCenter(active, sc);
-        });
-      }, { once: true, signal: this.controller?.signal });
+      document.addEventListener(
+        'astro:page-load',
+        () => {
+          requestAnimationFrame(() => {
+            if (!this.isConnected) return;
+            const sidebar = this.closest<HTMLElement>('.docs-sidebar');
+            if (sidebar) {
+              sidebar.style.maxHeight =
+                Math.max(0, window.innerHeight - sidebar.getBoundingClientRect().top) + 'px';
+            }
+            sc.style.visibility = '';
+            const active = this.querySelector<HTMLAnchorElement>(ACTIVE_LINK_SELECTOR);
+            if (active) this.scrollToCenter(active, sc);
+          });
+        },
+        { once: true, signal: this.controller?.signal },
+      );
     }
   }
 
   private scrollToCenter(el: HTMLElement, container: HTMLElement): void {
     const elRect = el.getBoundingClientRect();
     const cRect = container.getBoundingClientRect();
-    container.scrollTop += (elRect.top + elRect.height / 2) - (cRect.top + cRect.height / 2);
+    container.scrollTop += elRect.top + elRect.height / 2 - (cRect.top + cRect.height / 2);
   }
 
   private isElementVisible(el: HTMLElement, container: HTMLElement): boolean {
@@ -339,7 +396,10 @@ class SidebarFilter extends LitElement {
     const trimmed = rawQuery.trim();
     this.syncClearButton(trimmed);
 
-    if (!trimmed) { this.exitFilterMode(); return; }
+    if (!trimmed) {
+      this.exitFilterMode();
+      return;
+    }
 
     if (!this.openSnapshot) {
       const current = new Set(collectExpandedKeys(this));
@@ -373,7 +433,11 @@ class SidebarFilter extends LitElement {
 
     for (const el of this.items) delete el.dataset.filterMatch;
 
-    const restore = this.preFilterSnapshot ?? this.openSnapshot;
+    // Single-branch: return to the current page's branch, not to the groups
+    // that were open before filtering, which may be a second branch.
+    const restore = this.singleBranch
+      ? this.activeBranchKeys()
+      : (this.preFilterSnapshot ?? this.openSnapshot);
     if (restore) {
       this.withSuppressed(() => this.setExpandedState(restore!));
       safeSet(DETAILS_KEY, serializeKeys(restore));
@@ -398,18 +462,26 @@ class SidebarFilter extends LitElement {
     }
 
     this.withSuppressed(() => {
-      toExpand.forEach(el => { el.expanded = true; });
-      toCollapse.forEach(el => { el.expanded = false; });
+      toExpand.forEach((el) => {
+        el.expanded = true;
+      });
+      toCollapse.forEach((el) => {
+        el.expanded = false;
+      });
     });
   }
 
   /** Run fn with event-driven persistence suppressed. */
   private withSuppressed(fn: () => void): void {
     this.suppressPersist = true;
-    try { fn(); } finally {
+    try {
+      fn();
+    } finally {
       // igcItem* events may fire after a render cycle; release the suppress
       // flag after the next task to be safe.
-      setTimeout(() => { this.suppressPersist = false; }, 0);
+      setTimeout(() => {
+        this.suppressPersist = false;
+      }, 0);
     }
   }
 
@@ -435,9 +507,9 @@ class SidebarFilter extends LitElement {
 
   private collectGroupDescendants(el: HTMLElement, out: Set<HTMLElement>): void {
     if (!el.dataset.groupKey) return;
-    (el as IgcTreeItemComponent)
-      .getChildren({ flatten: true })
-      .forEach((child) => { if (child.matches(ITEM_SELECTOR)) out.add(child); });
+    (el as IgcTreeItemComponent).getChildren({ flatten: true }).forEach((child) => {
+      if (child.matches(ITEM_SELECTOR)) out.add(child);
+    });
   }
 
   private markMatches(matches: Set<HTMLElement>): void {
@@ -445,6 +517,21 @@ class SidebarFilter extends LitElement {
       if (matches.has(el)) el.dataset.filterMatch = 'true';
       else delete el.dataset.filterMatch;
     }
+  }
+
+  private get singleBranch(): boolean {
+    return this.hasAttribute('data-single-branch-expand');
+  }
+
+  /** Keys of the groups that contain the active page. */
+  private activeBranchKeys(): Set<string> {
+    const keys = new Set<string>();
+    for (const el of this.groups) {
+      if (el.dataset.groupKey && el.querySelector(ACTIVE_LINK_SELECTOR)) {
+        keys.add(el.dataset.groupKey);
+      }
+    }
+    return keys;
   }
 
   private ensureActiveAncestorsExpanded(): void {
@@ -462,7 +549,8 @@ class SidebarFilter extends LitElement {
 
   private updateStatus(state: 'no-match' | null): void {
     if (!this.status) return;
-    this.status.textContent = state === 'no-match' ? (this.dataset.noResults ?? 'No topics match') : '';
+    this.status.textContent =
+      state === 'no-match' ? (this.dataset.noResults ?? 'No topics match') : '';
   }
 
   private syncClearButton(value: string): void {

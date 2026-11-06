@@ -12,14 +12,15 @@ import DocsToc from 'igniteui-astro-components/components/DocsToc.astro';
 
 ## Props
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `headings` | `MarkdownHeading[]` | `[]` | Array of headings from Astro's `getHeadings()` or MDX frontmatter. |
-| `tocConfig` | `false \| { minHeadingLevel?: number; maxHeadingLevel?: number }` | — | Pass `false` to disable the TOC entirely. |
-| `label` | `string` | `'On this page'` | Heading label rendered above the list. |
-| `offsetTarget` | `string` | — | CSS selector for a sticky element (e.g. a nav bar). Its bottom edge is used as the scroll-spy threshold and sets `scroll-padding-top` automatically. |
+| Prop           | Type                                                              | Default          | Description                                                                                                                                                                                                                                       |
+| -------------- | ----------------------------------------------------------------- | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `headings`     | `MarkdownHeading[]`                                               | `[]`             | Array of headings from Astro's `getHeadings()` or MDX frontmatter.                                                                                                                                                                                |
+| `tocConfig`    | `false \| { minHeadingLevel?: number; maxHeadingLevel?: number }` | —                | Pass `false` to disable the TOC entirely.                                                                                                                                                                                                         |
+| `label`        | `string`                                                          | `'On this page'` | Heading label rendered above the list.                                                                                                                                                                                                            |
+| `offsetTarget` | `string`                                                          | —                | CSS selector for a sticky element (e.g. a nav bar). Its bottom edge is used as the scroll-spy threshold and sets `scroll-padding-top` automatically. Falls back to the `DocsSubHeader` element (`docs-subheader-menu`) when omitted or not found. |
 
 `tocConfig` defaults:
+
 - `minHeadingLevel`: `2` (i.e. `##`)
 - `maxHeadingLevel`: `3` (i.e. `###`)
 
@@ -31,6 +32,7 @@ import DocsToc from 'igniteui-astro-components/components/DocsToc.astro';
 
 const { headings } = Astro.props;
 ---
+
 <DocsToc headings={headings} />
 
 <!-- Only h2 -->
@@ -47,7 +49,7 @@ Place it in the `toc` slot of `DocsLayout`: `<DocsToc slot="toc" headings={headi
 
 ## Scroll-spy behaviour
 
-- The active link is determined by comparing each heading's position to a threshold (the bottom of the `offsetTarget` element + 8 px, or 160 px when no offset target is set).
+- The active link is determined by comparing each heading's position to a threshold (the bottom of the `offsetTarget` element, or of the `DocsSubHeader`, + 8 px; 160 px when neither exists).
 - At the bottom of the page the last heading is always highlighted, even if its section is too short to ever cross the threshold.
 - **Click-pin**: clicking a TOC link immediately marks it active and suppresses the scroll-spy until the user interacts with the page via wheel, touch, or keyboard.
 - The component uses `requestAnimationFrame` batching so scroll and resize handlers are cheap.
@@ -61,8 +63,8 @@ Because bundled `<script>` modules run only once, the component listens for `ast
 
 The component ships global styles. Place the TOC inside an element with the `.toc-sidebar` class to get the built-in fixed sidebar layout (visible above `84rem`).
 
-| CSS custom property | Default | Description |
-|---------------------|---------|-------------|
-| `--ig-toc-width` | `24rem` | Width of the fixed TOC sidebar. |
+| CSS custom property | Default | Description                     |
+| ------------------- | ------- | ------------------------------- |
+| `--ig-toc-width`    | `24rem` | Width of the fixed TOC sidebar. |
 
 `.toc-sidebar:not(:has(docs-toc))` is set to `display: none` so the sidebar collapses automatically when the TOC has no items to render.

@@ -1,0 +1,275 @@
+@use 'igniteui-theming/sass/typography' as *;
+
+@layer components {
+  .igd-theming {
+    --igd-theming-radius: #{rem(4px)};
+    --igd-theming-border: var(--ig-gray-300);
+    --igd-theming-bg: light-dark(#fff, var(--ig-gray-100));
+    --igd-theming-fg: var(--ig-gray-900);
+    --igd-theming-muted: var(--ig-gray-500);
+    --igd-theming-hover-bg: var(--ig-gray-100);
+    --igd-theming-accent: var(--igd-accent, var(--ig-primary-500));
+
+    position: relative;
+    display: inline-block;
+    width: rem(203px);
+    max-width: 100%;
+    color: var(--igd-theming-fg);
+    font-family: var(--ig-font-family, 'Aktiv Grotesk', var(--igd-font-sans, sans-serif));
+  }
+
+  .igd-theming__select {
+    width: 100%;
+    --ig-input-group-border-color: var(--igd-theming-border);
+    --ig-input-group-hover-border-color: var(--ig-gray-400);
+    --ig-input-group-focused-border-color: var(--igd-theming-accent);
+    --ig-input-group-border-border-radius: var(--igd-theming-radius);
+    --ig-input-group-input-prefix-background: transparent;
+    --ig-input-group-input-prefix-background--filled: transparent;
+    --ig-input-group-input-prefix-color--filled: var(--igd-theming-fg);
+    --ig-input-group-input-suffix-background: transparent;
+    --ig-input-group-input-suffix-background--filled: transparent;
+    --ig-input-group-idle-text-color: transparent;
+    --ig-input-group-filled-text-color: transparent;
+    --ig-input-group-filled-text-hover-color: transparent;
+    --ig-input-group-focused-text-color: transparent;
+    --ig-select-toggle-button-background: transparent;
+    --ig-select-toggle-button-foreground: var(--ig-gray-600);
+    --ig-drop-down-background-color: var(--igd-theming-bg);
+    --ig-drop-down-border-color: var(--igd-theming-border);
+    --ig-drop-down-border-width: #{rem(1px)};
+    --ig-drop-down-border-radius: var(--igd-theming-radius);
+    --ig-drop-down-size: #{rem(40px)};
+    --ig-drop-down-hover-item-background: var(--igd-theming-hover-bg);
+    --ig-drop-down-item-text-color: var(--igd-theming-fg);
+    --ig-drop-down-item-icon-color: var(--igd-theming-fg);
+    --ig-drop-down-hover-item-text-color: var(--igd-theming-fg);
+    --ig-drop-down-hover-item-icon-color: var(--igd-theming-fg);
+    --ig-drop-down-focused-item-background: var(--igd-theming-hover-bg);
+    --ig-drop-down-focused-item-text-color: var(--igd-theming-fg);
+    --ig-drop-down-focused-item-icon-color: var(--igd-theming-fg);
+    --ig-drop-down-focused-item-border-color: transparent;
+    --ig-drop-down-selected-item-background: transparent;
+    --ig-drop-down-selected-item-text-color: var(--igd-theming-fg);
+    --ig-drop-down-selected-item-icon-color: var(--igd-theming-accent);
+    --ig-drop-down-selected-hover-item-background: var(--igd-theming-hover-bg);
+    --ig-drop-down-selected-hover-item-text-color: var(--igd-theming-fg);
+    --ig-drop-down-selected-hover-item-icon-color: var(--igd-theming-accent);
+    --ig-drop-down-selected-focus-item-background: transparent;
+    --ig-drop-down-selected-focus-item-text-color: var(--igd-theming-fg);
+    --ig-drop-down-selected-focus-item-icon-color: var(--igd-theming-accent);
+
+    &::part(input) {
+      min-height: rem(40px);
+      color: transparent;
+      font-family: inherit;
+      font-size: rem(14px);
+      font-weight: 500;
+      letter-spacing: rem(0.25px);
+      line-height: rem(20px);
+    }
+
+    &::part(base) {
+      padding-block: 0;
+      border: rem(1px) solid var(--igd-theming-border);
+      border-radius: var(--igd-theming-radius);
+      box-shadow:
+        0 rem(10px) rem(15px) rem(-3px) rgb(0 0 0 / 10%),
+        0 rem(4px) rem(6px) rem(-4px) rgb(0 0 0 / 10%);
+    }
+  }
+
+  .igd-theming__selected-value {
+    position: absolute;
+    z-index: 1;
+    top: 50%;
+    left: rem(48px);
+    display: inline-flex;
+    align-items: baseline;
+    gap: rem(4px);
+    max-width: calc(100% - #{rem(88px)});
+    pointer-events: none;
+    transform: translateY(-50%);
+    white-space: nowrap;
+  }
+
+  // Dark mode displays all three swatch dots. Reserve space for the extra dot
+  // before the absolutely positioned label so the two never overlap.
+  .igd-theming[data-resolved-mode='dark'] .igd-theming__selected-value {
+    left: rem(56px);
+    max-width: calc(100% - #{rem(96px)});
+  }
+
+  .igd-theming__selected-theme,
+  .igd-theming__selected-mode {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: rem(14px);
+    letter-spacing: rem(0.25px);
+  }
+
+  .igd-theming__selected-theme {
+    color: var(--igd-theming-fg);
+    font-weight: 500;
+    line-height: rem(20px);
+  }
+
+  .igd-theming__selected-mode {
+    color: var(--igd-theming-muted);
+    font-size: rem(12px);
+    font-weight: 400;
+    line-height: rem(16px);
+  }
+
+  .igd-theming__swatch {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    gap: rem(2px);
+  }
+
+  // Bootstrap's medium select prefix inset is 10px; the Figma trigger uses 16px.
+  .igd-theming__select > .igd-theming__swatch {
+    margin-inline-start: rem(6px);
+  }
+
+  .igd-theming__dot {
+    display: inline-block;
+    width: rem(12px);
+    height: rem(12px);
+    border-radius: 50%;
+    background: var(--dot);
+  }
+
+  .igd-theming__dot:not(:last-child) {
+    width: rem(10.123px);
+    border-radius: 0;
+    mask: url('./assets/swatch-leading.svg') center / contain no-repeat;
+  }
+
+  .igd-theming[data-mode='light'] .igd-theming__dot:first-child {
+    display: none;
+  }
+
+  @media (prefers-color-scheme: light) {
+    .igd-theming[data-mode='system'] .igd-theming__dot:first-child {
+      display: none;
+    }
+  }
+
+  .igd-theming__mode-row {
+    // igc-select-header is non-interactive by default. This header contains
+    // the color-mode controls, so restore hit testing only for this widget.
+    pointer-events: auto !important;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 0;
+    min-height: rem(40px);
+    padding-inline: rem(16px);
+  }
+
+  .igd-theming__section-label {
+    @include type-style('overline');
+
+    color: var(--igd-theming-muted);
+    font-size: rem(10px);
+    letter-spacing: rem(1.5px);
+    text-transform: uppercase;
+  }
+
+  .igd-theming__mode-buttons {
+    display: inline-flex;
+    align-items: center;
+    pointer-events: auto;
+  }
+
+  .igd-theming__mode-btn {
+    width: rem(24px);
+    height: rem(24px);
+    pointer-events: auto;
+    --foreground: var(--igd-theming-muted);
+    --hover-foreground: var(--igd-theming-fg);
+    --focus-foreground: var(--igd-theming-fg);
+    --hover-background: var(--igd-theming-hover-bg);
+    --focus-background: var(--igd-theming-hover-bg);
+    --active-background: var(--igd-theming-hover-bg);
+    --border-radius: 50%;
+
+    &::part(base) {
+      width: rem(24px);
+      height: rem(24px);
+      padding: rem(3px);
+    }
+
+    &::part(icon) {
+      --size: #{rem(18px)};
+    }
+
+    &[aria-pressed='true'] {
+      --foreground: var(--igd-theming-fg);
+      --background: rgb(0 20 43 / 8%);
+      --hover-background: rgb(0 20 43 / 8%);
+      --focus-background: rgb(0 20 43 / 8%);
+    }
+  }
+
+  .igd-theming__mode-tooltip {
+    --ig-tooltip-background: rgb(52 75 101 / 90%);
+    --ig-tooltip-text-color: var(--ig-gray-50);
+    --ig-tooltip-border-radius: var(--igd-theming-radius);
+
+    &::part(base) {
+      min-height: rem(24px);
+      padding: rem(4px) rem(8px);
+      font-family: inherit;
+      font-size: rem(10px);
+      font-weight: 500;
+      letter-spacing: rem(0.33px);
+      line-height: rem(16px);
+    }
+  }
+
+  .igd-theming__toggle-icon {
+    --size: #{rem(18px)};
+  }
+
+  // The exported Figma chevron points upward; the collapsed select state
+  // uses the same glyph rotated to point down.
+  .igd-theming__toggle-icon--collapsed {
+    transform: rotate(180deg);
+  }
+
+  .igd-theming__option {
+    border: 0;
+    outline: none;
+    min-height: rem(40px);
+    padding-inline: rem(24px) rem(18px);
+    font-family: inherit;
+    font-size: rem(14px);
+    font-weight: 500;
+    letter-spacing: rem(0.25px);
+    line-height: rem(20px);
+
+    &::part(prefix) {
+      margin-inline-end: rem(8px);
+    }
+
+    &:not([selected]) igc-icon {
+      visibility: hidden;
+    }
+
+    igc-icon {
+      --size: #{rem(20px)};
+    }
+
+    &[active],
+    &[selected] {
+      outline: none;
+    }
+  }
+
+  .igd-theming__option-name {
+    color: var(--igd-theming-fg);
+  }
+}

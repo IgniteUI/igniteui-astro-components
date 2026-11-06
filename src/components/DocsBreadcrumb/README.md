@@ -14,12 +14,12 @@ import DocsBreadcrumb from 'igniteui-astro-components/components/DocsBreadcrumb.
 
 ## Props
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `currentSlug` | `string` | `''` | Slug of the current page — used to derive the crumb path from the sidebar tree. |
-| `pageTitle` | `string \| null` | — | Fallback label shown as the last crumb when `currentSlug` is not found in the tree. |
-| `siteTitle` | `string` | virtual module | Override the site name shown as the first crumb. |
-| `sidebarItems` | `SidebarEntry[]` | virtual module | Override the sidebar tree used for crumb generation. |
+| Prop           | Type             | Default        | Description                                                                         |
+| -------------- | ---------------- | -------------- | ----------------------------------------------------------------------------------- |
+| `currentSlug`  | `string`         | `''`           | Slug of the current page — used to derive the crumb path from the sidebar tree.     |
+| `pageTitle`    | `string \| null` | —              | Fallback label shown as the last crumb when `currentSlug` is not found in the tree. |
+| `siteTitle`    | `string`         | virtual module | Override the site name shown as the first crumb.                                    |
+| `sidebarItems` | `SidebarEntry[]` | virtual module | Override the sidebar tree used for crumb generation.                                |
 
 ## Behaviour
 
@@ -39,16 +39,11 @@ import DocsBreadcrumb from 'igniteui-astro-components/components/DocsBreadcrumb.
 import type { SidebarEntry } from 'igniteui-astro-components/lib/sidebar/types';
 
 const sidebar: SidebarEntry[] = [
-  { label: 'Components', collapsed: false, items: [
-    { label: 'Toast', slug: 'components/toast' },
-  ]},
+  { label: 'Components', collapsed: false, items: [{ label: 'Toast', slug: 'components/toast' }] },
 ];
 ---
-<DocsBreadcrumb
-  siteTitle="My Library"
-  currentSlug="components/toast"
-  sidebarItems={sidebar}
-/>
+
+<DocsBreadcrumb siteTitle="My Library" currentSlug="components/toast" sidebarItems={sidebar} />
 ```
 
 ### With `siteMetaIntegration` (integration-driven)
@@ -59,6 +54,7 @@ All props are optional when the virtual module provides the data:
 ---
 import DocsBreadcrumb from 'igniteui-astro-components/components/DocsBreadcrumb.astro';
 ---
+
 <DocsBreadcrumb currentSlug="components/toast" pageTitle="Toast" />
 ```
 
