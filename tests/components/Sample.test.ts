@@ -215,9 +215,30 @@ describe('Sample', () => {
     expect(html).toContain('data-chrome="widget"');
     expect(html).toContain('<igc-tabs');
     expect(warnings).toEqual([
-      '[Sample] /components/unknown-chrome: chrome="fancy" is not one of widget, demo, bare, so the widget renders.',
+      '[Sample] /components/unknown-chrome: chrome="fancy" is not one of widget, demo, bare, so it is ignored, and the sample renders as chrome="widget".',
     ]);
   });
+
+  it.each([
+    ['a mistyped', 'Bare', '/components/mistyped-chrome-iframe-only'],
+    ['an empty', '', '/components/empty-chrome-iframe-only'],
+  ])(
+    'ignores %s chrome, so the deprecated iframeOnly still applies',
+    async (_, chromeValue, src) => {
+      const { html, warnings } = await renderWithWarnings({
+        src,
+        chrome: chromeValue,
+        iframeOnly: true,
+      });
+
+      expect(html).toContain('igd-sample-container');
+      expect(html).not.toContain('igd-code-view');
+      expect(warnings).toEqual([
+        `[Sample] ${src}: iframeOnly is deprecated and will be removed in igniteui-astro-components 2.0.0. Use chrome="bare" instead.`,
+        `[Sample] ${src}: chrome="${chromeValue}" is not one of widget, demo, bare, so it is ignored, and the sample renders as chrome="bare".`,
+      ]);
+    },
+  );
 
   it('lets the deprecated iframeOnly win over hideCode, and warns about both', async () => {
     const { html, warnings } = await renderWithWarnings({

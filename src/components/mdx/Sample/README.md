@@ -54,7 +54,7 @@ A modifier the chrome ignores, or a `chrome` value that is not one of the three,
 | `iframeOnly fullscreenBtn` | `chrome="bare" fullscreenBtn` |
 | `hideCode`                 | `chrome="demo"`               |
 
-As in 1.x, `iframeOnly` wins over `hideCode`. An explicit `chrome` wins over both, and the warning says the deprecated prop is ignored.
+As in 1.x, `iframeOnly` wins over `hideCode`. A valid `chrome` wins over both, and the warning says the deprecated prop is ignored. A `chrome` that is not one of the three is ignored itself, so the deprecated prop still applies.
 
 ## Examples
 

@@ -149,18 +149,24 @@ const {
   whiteBackground = false,
 } = Astro.props;
 
+// `chrome` is checked first. A value that is not one of the three is ignored,
+// as if it were not set, so a deprecated prop next to a mistyped `chrome` still
+// applies.
+const CHROMES: SampleChrome[] = ['widget', 'demo', 'bare'];
+const explicitChrome = CHROMES.find((value) => value === Astro.props.chrome);
+
 // `iframeOnly` and `hideCode` are the deprecated 1.x spellings of
 // `chrome="bare"` and `chrome="demo"`. They keep working until 2.0.0 removes
 // them, with a build warning for each sample that uses them, so the docs can
 // move at their own pace. `iframeOnly` comes first so that it wins over
-// `hideCode`, as in 1.x, and an explicit `chrome` wins over both.
+// `hideCode`, as in 1.x, and a valid `chrome` wins over both.
 const DEPRECATED_PROPS = { iframeOnly: 'bare', hideCode: 'demo' } as const;
 let deprecatedChrome: SampleChrome | undefined;
 for (const prop of ['iframeOnly', 'hideCode'] as const) {
   if (!Astro.props[prop]) continue;
   const replacement = DEPRECATED_PROPS[prop];
-  const ignored = Astro.props.chrome
-    ? ` chrome="${Astro.props.chrome}" is set, so ${prop} is ignored.`
+  const ignored = explicitChrome
+    ? ` chrome="${explicitChrome}" is set, so ${prop} is ignored.`
     : '';
   warnOnce(
     `[Sample] ${src}: ${prop} is deprecated and will be removed in igniteui-astro-components 2.0.0. Use chrome="${replacement}" instead.${ignored}`,
@@ -168,12 +174,10 @@ for (const prop of ['iframeOnly', 'hideCode'] as const) {
   deprecatedChrome ??= replacement;
 }
 
-const CHROMES: SampleChrome[] = ['widget', 'demo', 'bare'];
-const requestedChrome = Astro.props.chrome ?? deprecatedChrome ?? 'widget';
-const chrome: SampleChrome = CHROMES.includes(requestedChrome) ? requestedChrome : 'widget';
-if (chrome !== requestedChrome) {
+const chrome = explicitChrome ?? deprecatedChrome ?? 'widget';
+if (Astro.props.chrome != null && !explicitChrome) {
   warnOnce(
-    `[Sample] ${src}: chrome="${requestedChrome}" is not one of ${CHROMES.join(', ')}, so the widget renders.`,
+    `[Sample] ${src}: chrome="${Astro.props.chrome}" is not one of ${CHROMES.join(', ')}, so it is ignored, and the sample renders as chrome="${chrome}".`,
   );
 }
 const isBare = chrome === 'bare';
