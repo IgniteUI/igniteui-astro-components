@@ -4,7 +4,7 @@ Base tree component shared by `DocsSidebar` and `DocsToc`. Wraps
 `<igc-tree>` from `igniteui-webcomponents` and recursively renders
 `<igc-tree-item>`s from a generic `TreeNode[]`.
 
-The single styling locus is [`docs-tree.css`](./docs-tree.css). Designers
+The single styling locus is [`docs-tree.scss`](./docs-tree.scss). Designers
 tune values via the `--docs-tree-*` CSS custom properties; per-variant
 tweaks live at the bottom of the file under `[data-variant="sidebar"]`
 and `[data-variant="toc"]` selectors.
@@ -31,13 +31,16 @@ const nodes: TreeNode[] = [/* your tree */];
 
 ## Props
 
-| Prop                | Type                 | Notes                                                                                                                   |
-| ------------------- | -------------------- | ----------------------------------------------------------------------------------------------------------------------- |
-| `nodes`             | `TreeNode[]`         | Required. Root of the tree.                                                                                             |
-| `variant`           | `'sidebar' \| 'toc'` | Required. Drives variant CSS rules.                                                                                     |
-| `activeId`          | `string`             | Optional. SSR-time match against `TreeNode.id`. **See active-state contract below.**                                    |
-| `toggleNodeOnClick` | `boolean`            | Optional. Forwarded to `<igc-tree>`.                                                                                    |
-| `renderLabel`       | Astro component      | Optional. Receives `{ node, depth, isLeaf, isActive }`. Falls back to a plain `<span>{node.label}</span>` when omitted. |
+| Prop                | Type                 | Notes                                                                                                                        |
+| ------------------- | -------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| `nodes`             | `TreeNode[]`         | Required. Root of the tree.                                                                                                  |
+| `variant`           | `'sidebar' \| 'toc'` | Required. Drives variant CSS rules.                                                                                          |
+| `activeId`          | `string`             | Optional. SSR-time match against `TreeNode.id`. **See active-state contract below.**                                         |
+| `toggleNodeOnClick` | `boolean`            | Optional. Forwarded to `<igc-tree>`.                                                                                         |
+| `renderLabel`       | Astro component      | Optional. Receives `{ node, depth, isLeaf, isActive }`. Falls back to a plain `<span>{node.label}</span>` when omitted.      |
+| `ariaLabel`         | `string`             | Optional. Accessible name for the tree's `nav` role. Skip it when an outer `<nav aria-labelledby>` already names the region. |
+
+`DocsTreeItem.astro` (also exported) renders one `<igc-tree-item>` and recurses into `children`. Props: `node: TreeNode`, `depth: number`, `variant: TreeVariant`, `activeId?: string`, `renderLabel?`. You normally never mount it directly.
 
 ## TreeNode shape
 
@@ -77,7 +80,7 @@ flicker.
 ## Styling
 
 All structural and per-variant rules are in
-[`docs-tree.css`](./docs-tree.css). The file is imported once by
+[`docs-tree.scss`](./docs-tree.scss). The file is imported once by
 `DocsTree.astro`; Astro hoists and dedupes it.
 
 Sidebar layout tokens (set on `igc-tree[data-variant="sidebar"]`):

@@ -32,7 +32,7 @@ import { rehypeHeadingAnchors } from '../src/plugins/rehype-heading-anchors.ts';
 import { rehypeTableWrapper } from '../src/plugins/rehype-table-wrapper.ts';
 import { igShikiConfig } from '../src/code-theme/index.ts';
 
-// Default the platform context used by ApiLink / ApiRef / PlatformBlock.
+// The platform context comes from src/middleware.ts (MOCK_PLATFORM); nothing reads PLATFORM.
 process.env.PLATFORM ??= 'React';
 process.env.DOCS_BUILD_MODE ??= 'development';
 process.env.DOCS_ENV ??= 'development';
