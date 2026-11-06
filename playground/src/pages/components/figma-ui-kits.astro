@@ -33,16 +33,9 @@ const propRows: PropRow[] = [
   {
     name: 'title',
     type: 'string',
-    def: "'Design in Figma:'",
-    description: `Bold lead-in before the description. The default follows the site language
+    def: "'Explore our free Figma UI kits'",
+    description: `Bold text before the links, the same at every width. The default follows the site language
             (see <a href="#localization">Localization</a>).`,
-  },
-  {
-    name: 'compactTitle',
-    type: 'string',
-    def: "'Design:'",
-    description: `Short title for the compact layout. Defaults to <code>title</code> when that is
-            set, so custom wording is never swapped for the default short one.`,
   },
   {
     name: 'variant',
@@ -50,12 +43,6 @@ const propRows: PropRow[] = [
     def: "'auto'",
     description: `<code>'auto'</code> wraps to fit and uses the compact layout below 480px (see
             <a href="#responsive">Responsive layout</a>); <code>'compact'</code> always does.`,
-  },
-  {
-    name: 'description',
-    type: 'string',
-    def: "'Explore our free Figma UI kits'",
-    description: `Text after the title. The default follows the site language.`,
   },
   {
     name: 'class',
@@ -98,7 +85,7 @@ const usageDefault = `<FigmaUiKits />`;
 
 const usageVariants = `<FigmaUiKits variant="compact" />`;
 
-const usageWording = `<FigmaUiKits title="Prototype it:" description="Start from a ready-made kit" />`;
+const usageWording = `<FigmaUiKits title="Start from a ready-made kit" />`;
 
 const usageKits = `${'---'}
 import { DEFAULT_FIGMA_UI_KITS } from 'igniteui-astro-components/components/mdx/FigmaUiKits/kits';
@@ -120,9 +107,10 @@ const usageTokens = `.my-topic .igd-figma-kits {
 
   <h1>FigmaUiKits</h1>
   <p>
-    <code>FigmaUiKits</code> is the <strong>"Design in Figma" call-to-action banner</strong> that
-    links a component topic to the Ignite UI kits in Figma. It belongs in every component topic,
-    between the component description and the live demo, so designers can jump straight to the kits.
+    <code>FigmaUiKits</code> is the{' '}
+    <strong>"Explore our free Figma UI kits" call-to-action banner</strong> that links a component
+    topic to the Ignite UI kits in Figma. It belongs in every component topic, between the component
+    description and the live demo, so designers can jump straight to the kits.
   </p>
   <FigmaUiKits />
 
@@ -177,9 +165,9 @@ const usageTokens = `.my-topic .igd-figma-kits {
     The banner is always 100% of its container. Nothing switches at a fixed desktop width: when the
     title and the links don't fit on one row, flexbox moves the whole link list to a second row,
     wherever that happens for the current copy, font and language. Below 480px (a phone) the banner
-    uses the <strong>compact</strong> layout from the mobile design: the title shortens to
-    "Design:", the links stack under it, and the padding tightens. That switch is a container query,
-    so it follows the banner's own width, not the viewport.
+    uses the <strong>compact</strong> layout from the mobile design: the links stack under the
+    title, and the padding tightens. That switch is a container query, so it follows the banner's
+    own width, not the viewport.
   </p>
   <p>The frames below are fixed-width containers.</p>
   <div class="figma-kits-demo">
@@ -200,12 +188,11 @@ const usageTokens = `.my-topic .igd-figma-kits {
 
   <h2 id="wording">Custom wording</h2>
   <p>
-    <code>title</code> and <code>description</code> override the default copy. Keep the title short
-    and ending in a colon — it reads as a lead-in to the description. A custom <code>title</code> is
-    also used by the compact layout unless you pass a <code>compactTitle</code> as well.
+    <code>title</code> overrides the default text. It is the same at every width, so keep it short
+    enough to read well on a phone.
   </p>
   <Code code={usageWording} lang="astro" theme="dark-plus" wrap />
-  <FigmaUiKits title="Prototype it:" description="Start from a ready-made kit" />
+  <FigmaUiKits title="Start from a ready-made kit" />
 
   <h2 id="kits">Kit links</h2>
   <p>
@@ -222,8 +209,8 @@ const usageTokens = `.my-topic .igd-figma-kits {
 
   <h2 id="localization">Localization</h2>
   <p>
-    The default title, compact title and description, and the hidden link text, follow the site
-    language: the docs integration's <code>navLang</code> from
+    The default title and the hidden link text follow the site language: the docs integration's{' '}
+    <code>navLang</code> from
     <code>virtual:docs-template/site-meta</code>, then <code>Astro.currentLocale</code>, then
     English. Kit names are product names and are not translated.
   </p>
@@ -238,12 +225,6 @@ const usageTokens = `.my-topic .igd-figma-kits {
           <th>
             <code>title</code>
           </th>
-          <th>
-            <code>compactTitle</code>
-          </th>
-          <th>
-            <code>description</code>
-          </th>
         </tr>
       </thead>
       <tbody>
@@ -251,24 +232,18 @@ const usageTokens = `.my-topic .igd-figma-kits {
           <td>
             <code>en</code> (default)
           </td>
-          <td>Design in Figma:</td>
-          <td>Design:</td>
           <td>Explore our free Figma UI kits</td>
         </tr>
         <tr>
           <td>
             <code>jp</code> / <code>ja</code>
           </td>
-          <td>Figma でデザイン:</td>
-          <td>デザイン:</td>
           <td>無料の Figma UI キットを見る</td>
         </tr>
         <tr>
           <td>
             <code>kr</code> / <code>ko</code>
           </td>
-          <td>Figma에서 디자인:</td>
-          <td>디자인:</td>
           <td>무료 Figma UI 키트 살펴보기</td>
         </tr>
       </tbody>

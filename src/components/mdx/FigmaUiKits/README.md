@@ -1,6 +1,6 @@
 # FigmaUiKits
 
-Renders the "Design in Figma" call-to-action banner that links a component topic to the Ignite UI kits in Figma. It belongs between a topic's description and its live demo.
+Renders the "Explore our free Figma UI kits" call-to-action banner that links a component topic to the Ignite UI kits in Figma. It belongs between a topic's description and its live demo.
 
 It links to the Indigo.Design UI kits for Material, Fluent, Bootstrap and Indigo out of the box, so a topic only needs `<FigmaUiKits />`. When a kit is republished, update its URL once in `kits.ts` (`DEFAULT_FIGMA_UI_KITS`) and every topic picks it up.
 
@@ -12,14 +12,12 @@ import FigmaUiKits from 'igniteui-astro-components/components/mdx/FigmaUiKits.as
 
 ## Props
 
-| Prop           | Type                  | Default                            | Description                                                                                      |
-| -------------- | --------------------- | ---------------------------------- | ------------------------------------------------------------------------------------------------ |
-| `kits`         | `FigmaUiKit[]`        | `DEFAULT_FIGMA_UI_KITS`            | One link per kit, in display order. Each is `{ label: string; href: string }`.                   |
-| `title`        | `string`              | `'Design in Figma:'`               | Bold lead-in before the description. Localized by default.                                       |
-| `compactTitle` | `string`              | `'Design:'`                        | Short title for the compact layout. Defaults to `title` when that is set. Localized by default.  |
-| `variant`      | `'auto' \| 'compact'` | `'auto'`                           | `'auto'` wraps to fit and uses the compact layout on narrow containers; `'compact'` always does. |
-| `description`  | `string`              | `'Explore our free Figma UI kits'` | Text after the title. Localized by default.                                                      |
-| `class`        | `string`              | —                                  | Extra CSS classes for the container.                                                             |
+| Prop      | Type                  | Default                            | Description                                                                                      |
+| --------- | --------------------- | ---------------------------------- | ------------------------------------------------------------------------------------------------ |
+| `kits`    | `FigmaUiKit[]`        | `DEFAULT_FIGMA_UI_KITS`            | One link per kit, in display order. Each is `{ label: string; href: string }`.                   |
+| `title`   | `string`              | `'Explore our free Figma UI kits'` | Bold text before the links, the same at every width. Localized by default.                       |
+| `variant` | `'auto' \| 'compact'` | `'auto'`                           | `'auto'` wraps to fit and uses the compact layout on narrow containers; `'compact'` always does. |
+| `class`   | `string`              | —                                  | Extra CSS classes for the container.                                                             |
 
 It throws at build time when `kits` is an empty array or a kit has an empty `label` or `href`.
 
@@ -42,7 +40,7 @@ Give every kit its own URL: several links with different names but the same dest
 
 - **One row** when it fits: the Figma logo and title at the start, the links at the end.
 - **Wrapped** when it doesn't: flexbox moves the whole link list to a second row. Nothing switches at a fixed width, so the banner adapts to the copy, the font and the language. For example, the English row needs about 744px, Japanese 737px and Korean 717px.
-- **Compact** below 480px (a phone): the title shortens to "Design:", the links stack under it, and the padding tightens. This is a container query on the banner, so it follows the width the banner is given, not the viewport. `variant="compact"` uses this layout at any width.
+- **Compact** below 480px (a phone): the links stack under the title and the padding tightens. The title text is the same at every width and wraps if it needs to. This is a container query on the banner, so it follows the width the banner is given, not the viewport. `variant="compact"` uses this layout at any width.
 
 The outer `.igd-figma-kits` element is the query container and the inner `.igd-figma-kits__banner` is the visible frame, because a container can't restyle itself from its own query. The container has `inline-size: 100%` because size containment ignores its content's width, so it would otherwise collapse inside a shrink-to-fit parent.
 
@@ -59,18 +57,18 @@ The outer `.igd-figma-kits` element is the query container and the inner `.igd-f
 
 {/* Custom wording */}
 
-<FigmaUiKits title="Prototype it:" description="Start from a ready-made kit" />
+<FigmaUiKits title="Start from a ready-made kit" />
 ```
 
 ## Localization
 
-The default `title`, `compactTitle` and `description`, and the hidden link text, follow the site language. The language comes from the docs integration's `navLang` (from `virtual:docs-template/site-meta`), then `Astro.currentLocale`, then English. Kit names are product names and are not translated.
+The default `title` and the hidden link text follow the site language. The language comes from the docs integration's `navLang` (from `virtual:docs-template/site-meta`), then `Astro.currentLocale`, then English. Kit names are product names and are not translated.
 
-| Language       | `title`           | `compactTitle` | `description`                  | Kit link name read out                          |
-| -------------- | ----------------- | -------------- | ------------------------------ | ----------------------------------------------- |
-| `en` (default) | Design in Figma:  | Design:        | Explore our free Figma UI kits | Material Figma UI kit (opens in a new tab)      |
-| `jp` / `ja`    | Figma でデザイン: | デザイン:      | 無料の Figma UI キットを見る   | Material Figma UI キット (新しいタブで開きます) |
-| `kr` / `ko`    | Figma에서 디자인: | 디자인:        | 무료 Figma UI 키트 살펴보기    | Material Figma UI 키트 (새 탭에서 열림)         |
+| Language       | `title`                        | Kit link name read out                          |
+| -------------- | ------------------------------ | ----------------------------------------------- |
+| `en` (default) | Explore our free Figma UI kits | Material Figma UI kit (opens in a new tab)      |
+| `jp` / `ja`    | 無料の Figma UI キットを見る   | Material Figma UI キット (新しいタブで開きます) |
+| `kr` / `ko`    | 무료 Figma UI 키트 살펴보기    | Material Figma UI 키트 (새 탭에서 열림)         |
 
 ## Accessibility
 

@@ -1,5 +1,5 @@
 ---
-/** "Design in Figma" banner that links a topic to the Ignite UI kits in Figma. */
+/** "Explore our free Figma UI kits" banner that links a topic to the Ignite UI kits in Figma. */
 import { navLang } from 'virtual:docs-template/site-meta';
 import figmaLogo from '../../../assets/icons/figma-logo.svg?raw';
 import openLinkIcon from '../../../assets/icons/open-link-blank.svg?raw';
@@ -13,49 +13,33 @@ interface Props {
    */
   kits?: FigmaUiKit[];
   /**
-   * Bold lead-in before the description.
-   * @default 'Design in Figma:' (localized for jp / kr)
+   * Bold text before the links, the same at every width.
+   * @default 'Explore our free Figma UI kits' (localized for jp / kr)
    */
   title?: string;
-  /**
-   * Short title for the compact layout. Defaults to `title` when that is set.
-   * @default 'Design:' (localized for jp / kr)
-   */
-  compactTitle?: string;
   /**
    * `'auto'` wraps to fit and uses the compact layout below 480px; `'compact'` always does.
    * @default 'auto'
    */
   variant?: 'auto' | 'compact';
-  /**
-   * Text after the title.
-   * @default 'Explore our free Figma UI kits' (localized for jp / kr)
-   */
-  description?: string;
   /** Extra class(es) for the container. */
   class?: string;
 }
 
 interface Text {
   title: string;
-  compactTitle: string;
-  description: string;
   kit: string;
   newTab: string;
 }
 
 const JAPANESE: Text = {
-  title: 'Figma でデザイン:',
-  compactTitle: 'デザイン:',
-  description: '無料の Figma UI キットを見る',
+  title: '無料の Figma UI キットを見る',
   kit: 'Figma UI キット',
   newTab: '(新しいタブで開きます)',
 };
 
 const KOREAN: Text = {
-  title: 'Figma에서 디자인:',
-  compactTitle: '디자인:',
-  description: '무료 Figma UI 키트 살펴보기',
+  title: '무료 Figma UI 키트 살펴보기',
   kit: 'Figma UI 키트',
   newTab: '(새 탭에서 열림)',
 };
@@ -63,9 +47,7 @@ const KOREAN: Text = {
 // Default copy per site language; unknown languages use English.
 const DEFAULT_TEXT: Record<string, Text> = {
   en: {
-    title: 'Design in Figma:',
-    compactTitle: 'Design:',
-    description: 'Explore our free Figma UI kits',
+    title: 'Explore our free Figma UI kits',
     kit: 'Figma UI kit',
     newTab: '(opens in a new tab)',
   },
@@ -81,12 +63,9 @@ const defaults = DEFAULT_TEXT[lang] ?? DEFAULT_TEXT.en;
 const {
   kits = DEFAULT_FIGMA_UI_KITS,
   title = defaults.title,
-  description = defaults.description,
   variant = 'auto',
   class: className,
 } = Astro.props;
-const compactTitle =
-  Astro.props.compactTitle ?? (Astro.props.title === undefined ? defaults.compactTitle : title);
 
 if (kits.length === 0) {
   throw new Error('<FigmaUiKits> requires at least one kit.');
@@ -103,18 +82,7 @@ for (const kit of kits) {
     <p class="igd-figma-kits__heading">
       <span class="igd-figma-kits__logo" aria-hidden="true" set:html={figmaLogo} />
       <span class="igd-figma-kits__text">
-        {/* Both titles render when they differ; CSS shows one per layout. */}
-        <strong class="igd-figma-kits__title">
-          {compactTitle === title ? (
-            title
-          ) : (
-            <>
-              <span class="igd-figma-kits__title-full">{title}</span>
-              <span class="igd-figma-kits__title-compact">{compactTitle}</span>
-            </>
-          )}
-        </strong>{' '}
-        <span class="igd-figma-kits__description">{description}</span>
+        <strong class="igd-figma-kits__title">{title}</strong>
       </span>
     </p>
 

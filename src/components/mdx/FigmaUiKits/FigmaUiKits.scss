@@ -107,11 +107,7 @@
   border: 0;
 }
 
-.igd-figma-kits__title-compact {
-  display: none;
-}
-
-// Compact layout: title over links, compact padding, short title.
+// Compact layout: title over links, compact padding.
 @mixin compact {
   .igd-figma-kits__banner {
     flex-direction: column;
@@ -119,21 +115,13 @@
     padding: var(--igd-figma-kits-compact-padding-block)
       var(--igd-figma-kits-compact-padding-inline);
   }
-
-  .igd-figma-kits__title-full {
-    display: none;
-  }
-
-  .igd-figma-kits__title-compact {
-    display: inline;
-  }
 }
 
 .igd-figma-kits[data-variant='compact'] {
   @include compact;
 }
 
-// Phone layout: short title and tighter padding.
+// Phone layout: title over links, tighter padding.
 @container igd-figma-kits (width < 480px) {
   .igd-figma-kits {
     @include compact;
@@ -149,14 +137,6 @@
   }
 
   color: var(--igd-figma-kits-title-color);
-}
-
-.igd-figma-kits__description {
-  @include type-style('body-1') {
-    margin: 0;
-  }
-
-  color: var(--igd-figma-kits-description-color);
 }
 
 .igd-figma-kits__link {
