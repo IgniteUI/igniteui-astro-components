@@ -4,3 +4,6 @@
 
 # chore: format codebase with Prettier
 771d5660f1931f7900bef66a13cec644581b7c2f
+
+# chore: format the repo with Prettier and check formatting in CI (#172)
+31fab6d810427459349d0299c9ff7de9c88acf56

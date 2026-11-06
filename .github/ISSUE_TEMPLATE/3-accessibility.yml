@@ -1,0 +1,70 @@
+name: ♿ Accessibility issue
+description: A WCAG, keyboard, screen reader, contrast or motion problem in a component or style.
+title: '[A11y]: '
+labels: [':wheelchair: a11y', ':bug: bug']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Required: where, what is wrong, and how to reproduce it. The rest is optional.
+
+  - type: input
+    id: component
+    attributes:
+      label: Component or page
+      placeholder: CopyCode button on a code block
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: What is wrong and who does it affect?
+      description: Measured values help (contrast ratio, target size) and the tool you used (axe, Lighthouse, VoiceOver, NVDA…).
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open http://localhost:4567/components/code-block/ in the light theme
+        2. Tab from a code block to its copy button
+        3. …
+    validations:
+      required: true
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: Category
+      description: Optional.
+      multiple: true
+      options:
+        - Colour contrast
+        - Keyboard navigation / focus
+        - Screen reader (names, roles, announcements)
+        - Touch / pointer target size
+        - Motion / animation
+        - Structure (headings, landmarks, tables)
+        - Other
+
+  - type: input
+    id: criterion
+    attributes:
+      label: WCAG success criterion
+      description: Optional, if you know it.
+      placeholder: 1.4.3 Contrast (Minimum)
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Optional. Browser, OS, assistive technology and version, page theme.
+
+  - type: textarea
+    id: suggestion
+    attributes:
+      label: Suggested fix
+      description: Optional.
