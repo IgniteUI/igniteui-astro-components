@@ -77,6 +77,24 @@ describe('Sample', () => {
     expect(html).not.toContain('igd-code-view');
   });
 
+  it('renders a full-screen button below a bare iframe, and makes room for it', async () => {
+    const container = await AstroContainer.create();
+    const props = { src: '/components/button', chrome: 'bare', height: 300 };
+    const withButton = await container.renderToString(Sample, {
+      props: { ...props, fullscreenBtn: true },
+      locals,
+    });
+    const withoutButton = await container.renderToString(Sample, { props, locals });
+
+    expect(withButton).toContain('igd-full-screen-btn');
+    expect(withButton).toContain('href="https://demo.example.com/components/button"');
+    // The bar sits inside the container, so it is added on top of `height`.
+    expect(withButton).toContain('height: calc(300px + var(--sample-container-header-height))');
+    expect(withoutButton).not.toContain('igd-full-screen-btn');
+    expect(withoutButton).toContain('height: 300px');
+    expect(withoutButton).not.toContain('--sample-container-header-height');
+  });
+
   it('keeps the bare backdrop transparent by default, and paints it with noBackground={false}', async () => {
     const container = await AstroContainer.create();
     const transparent = await container.renderToString(Sample, {
@@ -101,6 +119,24 @@ describe('Sample', () => {
 
     expect(html).toContain('igd-sample-container--no-background');
   });
+
+  it.each(['widget', 'demo'])(
+    'paints the backdrop by default when a theme picker renders with chrome="%s"',
+    async (chrome) => {
+      const container = await AstroContainer.create();
+      const props = { src: '/components/button', chrome, showThemePicker: true };
+      const painted = await container.renderToString(Sample, { props, locals });
+      const transparent = await container.renderToString(Sample, {
+        props: { ...props, noBackground: true },
+        locals,
+      });
+
+      expect(painted).toContain('igd-sample-theming');
+      expect(painted).not.toContain('igd-sample-container--no-background');
+      // An explicit value still wins.
+      expect(transparent).toContain('igd-sample-container--no-background');
+    },
+  );
 
   it('renders the widget frame without the tabs with chrome="demo"', async () => {
     const container = await AstroContainer.create();

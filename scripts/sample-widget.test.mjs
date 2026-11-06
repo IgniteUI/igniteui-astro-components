@@ -128,3 +128,56 @@ for (const platform of ['winui', 'uno', 'uno-platform']) {
     }
   });
 }
+
+// What Sample.astro renders for chrome="demo" showThemePicker: no tabs, so the
+// widget must still load the iframe and build the footer from `data-chrome`.
+test('chrome="demo" loads the iframe and moves only the theme picker into the footer', async () => {
+  const base = 'https://demo.example.com';
+  const route = 'inputs/radio/interaction-state';
+  const dom = new JSDOM(
+    `<div id="cw-demo" class="igd-code-view igd-code-view--demo" data-platform="react"
+      data-demos-base-url="${base}" data-iframe-src="${base}/${route}"
+      data-github-src="${route}" data-chrome="demo">
+      <div class="igd-code-view__inner">
+        <div class="igd-sample-container loading" aria-busy="true">
+          <div class="igd-sample-frame"><iframe data-src="${base}/${route}" aria-hidden="true"></iframe></div>
+        </div>
+      </div>
+      <div class="igd-sample-theming" hidden><div class="igd-theming" data-theme="bootstrap"></div></div>
+    </div>`,
+    { url: 'https://www.infragistics.com/', runScripts: 'outside-only', pretendToBeVisual: true },
+  );
+  try {
+    const requests = [];
+    const context = dom.getInternalVMContext();
+    context.exports = {};
+    context.require = (name) => {
+      if (name === 'igniteui-webcomponents') return new Proxy({}, { get: () => () => {} });
+      if (name === './icon-registry' || name.endsWith('?raw')) return {};
+      if (name === './copy-status') return { announceCopyStatus() {}, clearCopyStatus() {} };
+      if (name === '../lib/ultimate-ui-platforms') return platformsModule.exports;
+      if (name === '../code-theme') return { igCodeTheme: { name: 'ig-dark' } };
+      if (name === 'shiki') return { createHighlighter: async () => ({}) };
+      throw new Error(`Unexpected dependency: ${name}`);
+    };
+    context.fetch = async (url) => {
+      requests.push(url);
+      return { ok: true, json: async () => ({}) };
+    };
+    context.requestIdleCallback = (callback) => callback();
+    vm.runInContext(script, context);
+    context.exports.initSampleWidgets();
+    // The first widget on the page enqueues its iframe on the next animation frame.
+    await new Promise((resolve) => dom.window.requestAnimationFrame(() => resolve()));
+
+    const doc = dom.window.document;
+    assert.equal(doc.querySelector('iframe').getAttribute('src'), `${base}/${route}`);
+    const footer = doc.querySelector('.igd-code-view__footer-actions');
+    assert.ok(footer, 'the footer renders');
+    assert.equal(footer.querySelector('.igd-sample-theming')?.hidden, false);
+    assert.equal(doc.querySelectorAll('igc-tab, .stackblitz-btn, .igd-full-screen-btn').length, 0);
+    assert.deepEqual(requests, [], 'no code-viewer fetch');
+  } finally {
+    dom.window.close();
+  }
+});
