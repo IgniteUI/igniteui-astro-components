@@ -28,6 +28,7 @@ import DocsLayout from 'igniteui-astro-components/layouts/DocsLayout.astro';
 | `versionLabel`    | `string`         | `'Version'`    | `aria-label` of the sub-header version selector (not a visible label).                                        |
 | `showThemeToggle` | `boolean`        | `false`        | Forwarded to `DocsSubHeader`, which does not render a toggle; no effect today.                                |
 | `themeStorageKey` | `string`         | `'docs-theme'` | Forwarded to `DocsSubHeader` and unused; the layout's restore script reads the `'docs-theme'` key only.       |
+| `lang`            | `string`         | from `navLang` | `<html lang>` as a BCP 47 tag. Defaults to the site's `navLang`: `jp` → `ja`, `kr` → `ko`, otherwise `en`.    |
 
 `hasToc` (`boolean`, default `true`) is also read at runtime and hides the `toc`
 slot when `false`, but it is not yet declared in the `Props` interface (issue #161), so
