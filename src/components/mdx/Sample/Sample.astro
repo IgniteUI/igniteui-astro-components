@@ -19,28 +19,17 @@ import { warnOnce } from '../../../lib/warn-once.ts';
 import ThemingWidget from '../../ThemingWidget/ThemingWidget.astro';
 import './Sample.scss';
 
-/**
- * What the widget draws around the demo:
- * - `widget`: the EXAMPLE and code tabs, and a footer with the live-edit and
- *   full-screen buttons (and the theme picker, with `showThemePicker`).
- * - `demo`: the widget's frame and the demo, without the tabs and the code
- *   viewer. The footer carries only the theme picker, and without one there is
- *   no footer. For demos whose code is not a usage example, e.g. ones that fake
- *   interaction states for display.
- * - `bare`: the iframe in a plain container (see `fullscreenBtn`).
- *
- * `iframeOnly` and `hideCode`, the 1.x spellings of `bare` and `demo`, still
- * work but are deprecated, and 2.0.0 removes them.
- */
 type SampleChrome = 'widget' | 'demo' | 'bare';
 
-interface BaseProps {
+interface Props {
+  /** Sample path relative to the demos base URL, e.g. `/charts/data-chart/axis-crossing`. */
   src: string;
   /**
    * Iframe height in px. Default 150. With `fitContent` it is only the
    * loading placeholder / cross-origin fallback and defaults to 50.
    */
   height?: number;
+  /** `title` of the iframe, for accessibility. Defaults to "<platform> Example". */
   alt?: string;
   /** Use lobDemosBaseUrl instead of demosBaseUrl (for LOB/grid-dynamic demos). */
   lob?: boolean;
@@ -55,6 +44,30 @@ interface BaseProps {
    * browser on the Web Components site. Code tabs and live editing follow it.
    */
   wc?: boolean;
+  /**
+   * What the widget draws around the demo. Defaults to `widget`.
+   * - `widget`: the EXAMPLE and code tabs, and a footer with the live-edit and
+   *   full-screen buttons (and the theme picker, with `showThemePicker`).
+   * - `demo`: the widget's frame and the demo, without the tabs and the code
+   *   viewer. The footer carries only the theme picker, and without one there is
+   *   no footer. For demos whose code is not a usage example, e.g. ones that fake
+   *   interaction states for display.
+   * - `bare`: the iframe in a plain container (see `fullscreenBtn`).
+   */
+  chrome?: SampleChrome;
+  /**
+   * Opt in to the in-sample theme picker for this sample. Its initial theme is
+   * resolved from the site (see `defaultTheme` below), not passed per usage.
+   * `widget` and `demo` only: `bare` has no footer to put it in, so there it is
+   * ignored, with a build warning.
+   */
+  showThemePicker?: boolean;
+  /**
+   * Render a "View in full screen" button below the iframe. `bare` only: the
+   * `widget` footer already has one and `demo` leaves full screen out on
+   * purpose, so there it is ignored, with a build warning.
+   */
+  fullscreenBtn?: boolean;
   /**
    * Size the iframe to fit its content: the embedded page dictates the
    * iframe's size. `height` serves only as the placeholder/fallback — shown
@@ -113,52 +126,11 @@ interface BaseProps {
    * overrides the transparency `noBackground` leaves behind (in light mode).
    */
   whiteBackground?: boolean;
-}
-
-/** The chrome values the theme picker can render in, the ones with a footer. */
-interface FooterChromeProps {
-  /** What the widget draws around the demo. Defaults to `widget`. */
-  chrome?: 'widget' | 'demo';
-  /**
-   * Opt in to the in-sample theme picker for this sample. Its initial theme is
-   * resolved from the site (see `defaultTheme` below), not passed per usage.
-   */
-  showThemePicker?: boolean;
-  /** Only with `chrome="bare"`: the widget footer already has full screen. */
-  fullscreenBtn?: never;
+  /** @deprecated Use `chrome="bare"` instead. Will be removed in 2.0.0. */
+  iframeOnly?: boolean;
   /** @deprecated Use `chrome="demo"` instead. Will be removed in 2.0.0. */
   hideCode?: boolean;
-  /** @deprecated Use `chrome="bare"` instead. Will be removed in 2.0.0. */
-  iframeOnly?: false;
 }
-
-interface BareChromeProps {
-  /** Render the iframe in a plain container: no tabs, no code, no footer. */
-  chrome: 'bare';
-  /** Render a "View in full screen" button below the iframe. */
-  fullscreenBtn?: boolean;
-  /** No footer renders, so there is nowhere to put the picker. */
-  showThemePicker?: never;
-  /** @deprecated `chrome` replaces it. */
-  hideCode?: never;
-  /** @deprecated `chrome` replaces it. */
-  iframeOnly?: never;
-}
-
-/** The 1.x spelling of `chrome="bare"`, kept so that 1.x markup still builds. */
-interface DeprecatedBareProps {
-  /** @deprecated Use `chrome="bare"` instead. Will be removed in 2.0.0. */
-  iframeOnly: true;
-  chrome?: never;
-  /** Render a "View in full screen" button below the iframe. */
-  fullscreenBtn?: boolean;
-  /** No effect, as in 1.x: no footer renders, so there is nowhere to put the picker. */
-  showThemePicker?: boolean;
-  /** @deprecated Ignored, as in 1.x: `iframeOnly` wins. */
-  hideCode?: boolean;
-}
-
-type Props = BaseProps & (FooterChromeProps | BareChromeProps | DeprecatedBareProps);
 
 const {
   src,

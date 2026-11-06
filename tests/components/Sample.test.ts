@@ -178,6 +178,20 @@ describe('Sample', () => {
     ]);
   });
 
+  it('renders no full-screen button for fullscreenBtn with chrome="demo", and warns', async () => {
+    const { html, warnings } = await renderWithWarnings({
+      src: '/components/fullscreen-demo',
+      chrome: 'demo',
+      fullscreenBtn: true,
+    });
+
+    expect(html).toContain('data-chrome="demo"');
+    expect(html).not.toContain('igd-full-screen-btn');
+    expect(warnings).toEqual([
+      '[Sample] /components/fullscreen-demo: fullscreenBtn only applies to chrome="bare". chrome="demo" leaves full screen out on purpose.',
+    ]);
+  });
+
   it('renders no theme picker for showThemePicker with chrome="bare", and warns', async () => {
     const { html, warnings } = await renderWithWarnings({
       src: '/components/picker-bare',

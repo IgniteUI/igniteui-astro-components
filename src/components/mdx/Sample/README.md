@@ -42,7 +42,7 @@ import Sample from 'igniteui-astro-components/components/mdx/Sample.astro';
 | `demo`               | No            | Only the theme picker, if there is one | Yes               | No              |
 | `bare`               | No            | None                                   | No                | Yes             |
 
-A modifier the chrome ignores, or a `chrome` value that is not one of the three, logs a build warning, and the types reject both.
+A modifier the chrome ignores, or a `chrome` value that is not one of the three, logs a build warning. The types only reject an unknown `chrome` value: they accept every modifier with every chrome, as MDX, where most samples live, is not type-checked anyway.
 
 ### Deprecated props
 
