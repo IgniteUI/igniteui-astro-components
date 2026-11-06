@@ -1,18 +1,17 @@
-import type { PlatformContext } from './lib/types.ts';
+// Global script (no top-level import), so every declaration here is ambient and
+// the `declare module` blocks resolve the virtual modules for `astro check`.
 
-declare global {
-  /**
-   * The synced marketing chrome, defined at build time by the igChrome()
-   * integration (src/chrome/integration.ts). Undeclared when it isn't
-   * registered: read it as `typeof __IG_CHROME__ !== 'undefined'`.
-   */
-  const __IG_CHROME__: import('./chrome/integration').IgChromeData;
+/**
+ * The synced marketing chrome, defined at build time by the igChrome()
+ * integration (src/chrome/integration.ts). Undeclared when it isn't
+ * registered: read it as `typeof __IG_CHROME__ !== 'undefined'`.
+ */
+declare const __IG_CHROME__: import('./chrome/integration').IgChromeData;
 
-  namespace App {
-    interface Locals {
-      platformContext?: PlatformContext;
-      envVars?: Record<string, string>;
-    }
+declare namespace App {
+  interface Locals {
+    platformContext?: import('./lib/types.ts').PlatformContext;
+    envVars?: Record<string, string>;
   }
 }
 

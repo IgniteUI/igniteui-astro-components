@@ -22,6 +22,8 @@ export interface Props {
   description?: string | null;
   keywords?: string | null;
   hasSidebar?: boolean;
+  /** Renders the `toc` slot when `true`. Defaults to `true`. */
+  hasToc?: boolean;
   /** Slug of the current page; used to compute breadcrumbs in DocsBreadcrumb. */
   currentSlug?: string;
   /**

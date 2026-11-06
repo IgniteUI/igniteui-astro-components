@@ -10,7 +10,7 @@ From the repo root:
 ```sh
 npm install
 npm run playground        # astro sync + astro dev on http://localhost:4567
-npm run playground:check  # astro check over the playground only (does not type-check ../src)
+npm run playground:check  # astro check over ../src and the playground
 npm run playground:build  # production build, then `npm run playground:preview`
 ```
 

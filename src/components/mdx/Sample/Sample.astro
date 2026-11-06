@@ -318,15 +318,14 @@ const samplePaneAttrs = {
     : undefined,
   'aria-busy': 'true',
   style: containerStyle,
-};
+} satisfies astroHTML.JSX.HTMLAttributes;
+// The stylesheet removes the iframe border; the obsolete frameborder/seamless attributes are not set.
 const sampleIframeAttrs = {
   'data-src': iframeSrc,
   title: alt || `${name} Example`,
   style: iframeStyle,
-  frameborder: '0',
-  seamless: true,
   'aria-hidden': 'true',
-};
+} satisfies astroHTML.JSX.IframeHTMLAttributes;
 ---
 
 {isBare ? (
@@ -354,13 +353,7 @@ const sampleIframeAttrs = {
       style={bareContainerStyle}
     >
       <div class="igd-sample-frame">
-        <iframe
-          src={iframeSrc}
-          title={alt || `${name} Example`}
-          style={iframeStyle}
-          frameborder="0"
-          seamless
-        />
+        <iframe src={iframeSrc} title={alt || `${name} Example`} style={iframeStyle} />
         {isResizable && <div class="igd-sample-resize-handle" aria-hidden="true" />}
       </div>
       {hasFullscreenBtn && (

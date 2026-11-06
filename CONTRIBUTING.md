@@ -38,10 +38,11 @@ page.
   (`scripts/sample-widget.test.mjs` is the pattern) and `scripts/llms.test.mjs`,
   which keeps the agent-facing docs honest (see below).
 
-`npm run playground:check` runs `astro check` over the playground only
-(`playground/tsconfig.json` includes `playground/src`, not `../src`). Nothing
-type-checks `src/` yet: widening the include reports 21 errors, among them
-#161, so it is a follow-up.
+`npm run playground:check` runs `astro check` over `src/` and the playground
+(`playground/tsconfig.json` includes both), so a type error in a component
+fails CI. The virtual modules resolve through `src/virtual-modules.d.ts`, which
+stays a global script (no top-level import) so its `declare module` blocks are
+ambient.
 
 ## Lint, format and the pre-commit hook
 
