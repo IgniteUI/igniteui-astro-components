@@ -20,7 +20,7 @@ npm run playground:build  # production build, then `npm run playground:preview`
   implementations of `virtual:docs-template/site-meta` and
   `virtual:docs-template/nav-html` — the two virtual modules normally
   produced by `siteMetaIntegration()`. This lets `DocsLayout`,
-  `DocsSidebar`, `DocsSubHeader`, `DocsBreadcrumb` and `DoDont` run without
+  `DocsSidebar`, `DocsSubHeader`, `DocsBreadcrumb`, `DoDont` and `FigmaUiKits` run without
   the full integration. `createDocsSite()` is deliberately not called.
 - Components are imported directly via relative paths (`../../../../src/...`
   from `src/pages/components/`) rather than through the package name, so no
@@ -53,6 +53,7 @@ npm run playground:build  # production build, then `npm run playground:preview`
 | `/components/docs-subheader`  | `DocsSubHeader` with package/version selectors                                                                                               |
 | `/components/docs-toc`        | `DocsToc`, `MobileTocToggle`                                                                                                                 |
 | `/components/faq`             | `Faq`, `FaqItem` (MDX page)                                                                                                                  |
+| `/components/figma-ui-kits`   | `FigmaUiKits`                                                                                                                                |
 | `/components/nav-bar`         | `GlobalNavBar`, `GlobalFooter`                                                                                                               |
 | `/components/platform-block`  | `PlatformBlock`                                                                                                                              |
 | `/components/sample`          | `Sample` (uses the `mock-demo*` pages as iframe targets)                                                                                     |
