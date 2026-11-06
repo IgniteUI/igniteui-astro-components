@@ -1,0 +1,126 @@
+---
+/** "Check it out in our free Figma UI kits" banner that links a topic to the Ignite UI kits in Figma. */
+import { navLang } from 'virtual:docs-template/site-meta';
+import figmaLogo from '../../../assets/icons/figma-logo.svg?raw';
+import openLinkIcon from '../../../assets/icons/open-link-blank.svg?raw';
+import { DEFAULT_FIGMA_UI_KITS, type FigmaUiKit } from './kits';
+import './FigmaUiKits.scss';
+
+interface Props {
+  /**
+   * One link per kit, in display order.
+   * @default the Material, Fluent, Bootstrap and Indigo kits (`DEFAULT_FIGMA_UI_KITS`)
+   */
+  kits?: FigmaUiKit[];
+  /**
+   * Text before the links.
+   * @default 'Check it out in our free Figma UI kits' (localized for jp / kr)
+   */
+  title?: string;
+  /**
+   * Text for the compact (mobile) layout. Defaults to `title` when that is set.
+   * @default 'Check it in our free Figma UI kits' (jp / kr: same as `title`)
+   */
+  compactTitle?: string;
+  /**
+   * `'auto'` wraps to fit and uses the compact layout below 480px; `'compact'` always does.
+   * @default 'auto'
+   */
+  variant?: 'auto' | 'compact';
+  /** Extra class(es) for the container. */
+  class?: string;
+}
+
+interface Text {
+  title: string;
+  compactTitle: string;
+  kit: string;
+  newTab: string;
+}
+
+const JAPANESE: Text = {
+  title: '無料の Figma UI キットでチェック',
+  compactTitle: '無料の Figma UI キットでチェック',
+  kit: 'Figma UI キット',
+  newTab: '(新しいタブで開きます)',
+};
+
+const KOREAN: Text = {
+  title: '무료 Figma UI 키트에서 확인하세요',
+  compactTitle: '무료 Figma UI 키트에서 확인하세요',
+  kit: 'Figma UI 키트',
+  newTab: '(새 탭에서 열림)',
+};
+
+// Default copy per site language; unknown languages use English.
+const DEFAULT_TEXT: Record<string, Text> = {
+  en: {
+    title: 'Check it out in our free Figma UI kits',
+    compactTitle: 'Check it in our free Figma UI kits',
+    kit: 'Figma UI kit',
+    newTab: '(opens in a new tab)',
+  },
+  jp: JAPANESE,
+  ja: JAPANESE,
+  kr: KOREAN,
+  ko: KOREAN,
+};
+
+const lang = (navLang ?? Astro.currentLocale ?? 'en').toLowerCase();
+const defaults = DEFAULT_TEXT[lang] ?? DEFAULT_TEXT.en;
+
+const {
+  kits = DEFAULT_FIGMA_UI_KITS,
+  title = defaults.title,
+  variant = 'auto',
+  class: className,
+} = Astro.props;
+const compactTitle =
+  Astro.props.compactTitle ?? (Astro.props.title === undefined ? defaults.compactTitle : title);
+
+if (kits.length === 0) {
+  throw new Error('<FigmaUiKits> requires at least one kit.');
+}
+for (const kit of kits) {
+  if (!kit.label?.trim() || !kit.href?.trim()) {
+    throw new Error('<FigmaUiKits> requires every kit to have a non-empty `label` and `href`.');
+  }
+}
+---
+
+<div class:list={['igd-figma-kits', className]} data-variant={variant}>
+  <div class="igd-figma-kits__banner">
+    <p class="igd-figma-kits__heading">
+      <span class="igd-figma-kits__logo" aria-hidden="true" set:html={figmaLogo} />
+      <span class="igd-figma-kits__text">
+        {/* Both texts render when they differ; CSS shows one per layout. */}
+        <span class="igd-figma-kits__title">
+          {compactTitle === title ? (
+            title
+          ) : (
+            <>
+              <span class="igd-figma-kits__title-full">{title}</span>
+              <span class="igd-figma-kits__title-compact">{compactTitle}</span>
+            </>
+          )}
+        </span>
+      </span>
+    </p>
+
+    {/* role="list" keeps the list announced in Safari VoiceOver. */}
+    <ul class="igd-figma-kits__list" role="list">
+      {kits.map((kit) => (
+        <li class="igd-figma-kits__item">
+          <a class="igd-figma-kits__link" href={kit.href} target="_blank" rel="noopener noreferrer">
+            {kit.label}
+            <span class="igd-figma-kits__sr-only">
+              {' '}
+              {defaults.kit} {defaults.newTab}
+            </span>
+            <span class="igd-figma-kits__icon" aria-hidden="true" set:html={openLinkIcon} />
+          </a>
+        </li>
+      ))}
+    </ul>
+  </div>
+</div>
