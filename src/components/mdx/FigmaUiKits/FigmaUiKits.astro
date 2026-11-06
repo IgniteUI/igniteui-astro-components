@@ -29,7 +29,7 @@ interface Props {
   variant?: 'auto' | 'compact';
   /**
    * Text after the title.
-   * @default 'Explore our UI kits' (localized for jp / kr)
+   * @default 'Explore our free Figma UI kits' (localized for jp / kr)
    */
   description?: string;
   /** Extra class(es) for the container. */
@@ -47,7 +47,7 @@ interface Text {
 const JAPANESE: Text = {
   title: 'Figma でデザイン:',
   compactTitle: 'デザイン:',
-  description: 'UI キットを見る',
+  description: '無料の Figma UI キットを見る',
   kit: 'Figma UI キット',
   newTab: '(新しいタブで開きます)',
 };
@@ -55,7 +55,7 @@ const JAPANESE: Text = {
 const KOREAN: Text = {
   title: 'Figma에서 디자인:',
   compactTitle: '디자인:',
-  description: 'UI 키트 살펴보기',
+  description: '무료 Figma UI 키트 살펴보기',
   kit: 'Figma UI 키트',
   newTab: '(새 탭에서 열림)',
 };
@@ -65,7 +65,7 @@ const DEFAULT_TEXT: Record<string, Text> = {
   en: {
     title: 'Design in Figma:',
     compactTitle: 'Design:',
-    description: 'Explore our UI kits',
+    description: 'Explore our free Figma UI kits',
     kit: 'Figma UI kit',
     newTab: '(opens in a new tab)',
   },

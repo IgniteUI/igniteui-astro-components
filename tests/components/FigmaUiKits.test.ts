@@ -65,7 +65,9 @@ describe('FigmaUiKits', () => {
       expect(link.querySelector('.igd-figma-kits__sr-only')).not.toBeNull();
       expect(text(link)).toBe(`${KITS[i].label} Figma UI kit (opens in a new tab)`);
     });
-    expect(text(dom.querySelector('.igd-figma-kits__description'))).toBe('Explore our UI kits');
+    expect(text(dom.querySelector('.igd-figma-kits__description'))).toBe(
+      'Explore our free Figma UI kits',
+    );
   });
 
   it('keeps list semantics on the markerless kit list', async () => {
@@ -89,19 +91,36 @@ describe('FigmaUiKits', () => {
     });
   });
 
-  it.each([
-    ['jp', 'Figma でデザイン:', 'デザイン:', 'Material Figma UI キット (新しいタブで開きます)'],
-    ['JP', 'Figma でデザイン:', 'デザイン:', 'Material Figma UI キット (新しいタブで開きます)'],
-    ['kr', 'Figma에서 디자인:', '디자인:', 'Material Figma UI 키트 (새 탭에서 열림)'],
-    ['KR', 'Figma에서 디자인:', '디자인:', 'Material Figma UI 키트 (새 탭에서 열림)'],
-  ])('localizes the copy for navLang %s', async (lang, title, compactTitle, linkName) => {
-    siteMeta.navLang = lang;
-    const dom = await render({ kits: KITS });
+  const JP = [
+    'Figma でデザイン:',
+    'デザイン:',
+    '無料の Figma UI キットを見る',
+    'Material Figma UI キット (新しいタブで開きます)',
+  ];
+  const KR = [
+    'Figma에서 디자인:',
+    '디자인:',
+    '무료 Figma UI 키트 살펴보기',
+    'Material Figma UI 키트 (새 탭에서 열림)',
+  ];
 
-    expect(text(dom.querySelector('.igd-figma-kits__title-full'))).toBe(title);
-    expect(text(dom.querySelector('.igd-figma-kits__title-compact'))).toBe(compactTitle);
-    expect(text(links(dom)[0])).toBe(linkName);
-  });
+  it.each([
+    ['jp', ...JP],
+    ['JP', ...JP],
+    ['kr', ...KR],
+    ['KR', ...KR],
+  ])(
+    'localizes the copy for navLang %s',
+    async (lang, title, compactTitle, description, linkName) => {
+      siteMeta.navLang = lang;
+      const dom = await render({ kits: KITS });
+
+      expect(text(dom.querySelector('.igd-figma-kits__title-full'))).toBe(title);
+      expect(text(dom.querySelector('.igd-figma-kits__title-compact'))).toBe(compactTitle);
+      expect(text(dom.querySelector('.igd-figma-kits__description'))).toBe(description);
+      expect(text(links(dom)[0])).toBe(linkName);
+    },
+  );
 
   it('falls back to English for an unknown language', async () => {
     siteMeta.navLang = 'de';

@@ -12,14 +12,14 @@ import FigmaUiKits from 'igniteui-astro-components/components/mdx/FigmaUiKits.as
 
 ## Props
 
-| Prop           | Type                  | Default                 | Description                                                                                      |
-| -------------- | --------------------- | ----------------------- | ------------------------------------------------------------------------------------------------ |
-| `kits`         | `FigmaUiKit[]`        | `DEFAULT_FIGMA_UI_KITS` | One link per kit, in display order. Each is `{ label: string; href: string }`.                   |
-| `title`        | `string`              | `'Design in Figma:'`    | Bold lead-in before the description. Localized by default.                                       |
-| `compactTitle` | `string`              | `'Design:'`             | Short title for the compact layout. Defaults to `title` when that is set. Localized by default.  |
-| `variant`      | `'auto' \| 'compact'` | `'auto'`                | `'auto'` wraps to fit and uses the compact layout on narrow containers; `'compact'` always does. |
-| `description`  | `string`              | `'Explore our UI kits'` | Text after the title. Localized by default.                                                      |
-| `class`        | `string`              | —                       | Extra CSS classes for the container.                                                             |
+| Prop           | Type                  | Default                            | Description                                                                                      |
+| -------------- | --------------------- | ---------------------------------- | ------------------------------------------------------------------------------------------------ |
+| `kits`         | `FigmaUiKit[]`        | `DEFAULT_FIGMA_UI_KITS`            | One link per kit, in display order. Each is `{ label: string; href: string }`.                   |
+| `title`        | `string`              | `'Design in Figma:'`               | Bold lead-in before the description. Localized by default.                                       |
+| `compactTitle` | `string`              | `'Design:'`                        | Short title for the compact layout. Defaults to `title` when that is set. Localized by default.  |
+| `variant`      | `'auto' \| 'compact'` | `'auto'`                           | `'auto'` wraps to fit and uses the compact layout on narrow containers; `'compact'` always does. |
+| `description`  | `string`              | `'Explore our free Figma UI kits'` | Text after the title. Localized by default.                                                      |
+| `class`        | `string`              | —                                  | Extra CSS classes for the container.                                                             |
 
 It throws at build time when `kits` is an empty array or a kit has an empty `label` or `href`.
 
@@ -66,11 +66,11 @@ The outer `.igd-figma-kits` element is the query container and the inner `.igd-f
 
 The default `title`, `compactTitle` and `description`, and the hidden link text, follow the site language. The language comes from the docs integration's `navLang` (from `virtual:docs-template/site-meta`), then `Astro.currentLocale`, then English. Kit names are product names and are not translated.
 
-| Language       | `title`           | `compactTitle` | `description`       | Kit link name read out                          |
-| -------------- | ----------------- | -------------- | ------------------- | ----------------------------------------------- |
-| `en` (default) | Design in Figma:  | Design:        | Explore our UI kits | Material Figma UI kit (opens in a new tab)      |
-| `jp` / `ja`    | Figma でデザイン: | デザイン:      | UI キットを見る     | Material Figma UI キット (新しいタブで開きます) |
-| `kr` / `ko`    | Figma에서 디자인: | 디자인:        | UI 키트 살펴보기    | Material Figma UI 키트 (새 탭에서 열림)         |
+| Language       | `title`           | `compactTitle` | `description`                  | Kit link name read out                          |
+| -------------- | ----------------- | -------------- | ------------------------------ | ----------------------------------------------- |
+| `en` (default) | Design in Figma:  | Design:        | Explore our free Figma UI kits | Material Figma UI kit (opens in a new tab)      |
+| `jp` / `ja`    | Figma でデザイン: | デザイン:      | 無料の Figma UI キットを見る   | Material Figma UI キット (新しいタブで開きます) |
+| `kr` / `ko`    | Figma에서 디자인: | 디자인:        | 무료 Figma UI 키트 살펴보기    | Material Figma UI 키트 (새 탭에서 열림)         |
 
 ## Accessibility
 
