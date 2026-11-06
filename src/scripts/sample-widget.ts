@@ -33,7 +33,7 @@ defineComponents(
 );
 
 import './icon-registry';
-import type { BundledLanguage, Highlighter } from 'shiki';
+import type { BundledLanguage, Highlighter, LanguageRegistration } from 'shiki';
 import { announceCopyStatus, clearCopyStatus } from './copy-status';
 import { ULTIMATE_UI_PLATFORMS } from '../lib/ultimate-ui-platforms';
 import footerStackblitzIcon from '../components/mdx/Sample/assets/stackblitz.svg?raw';
@@ -185,6 +185,38 @@ const SHIKI_LANGS = [
 const SHIKI_LAZY_LANGS = ['xml', 'json'] as const;
 const HIGHLIGHT_LANGS: ReadonlySet<string> = new Set([...SHIKI_LANGS, ...SHIKI_LAZY_LANGS]);
 
+/**
+ * Scopes Razor component tags (`<IgbGrid>`) the way VS Code's C# extension does.
+ *
+ * The razor grammar leaves those tags to the HTML grammar, which scopes any tag outside the
+ * HTML spec as `invalid.illegal.unrecognized-tag.html`, and themes style that as an error.
+ * VS Code recolors them from the language server; without one, the grammar has to.
+ */
+const RAZOR_COMPONENT_TAGS: LanguageRegistration = {
+  name: 'razor-component-tags',
+  scopeName: 'razor.component-tags',
+  injectTo: ['text.aspnetcorerazor'],
+  // Only markup handled by the HTML grammar: not code (`List<Product>` in `@code`), comments,
+  // attribute values, Razor expressions (`@(a <B)`), or `@if`/`@foreach` bodies, whose tags
+  // the razor grammar handles itself.
+  injectionSelector:
+    'L:text.aspnetcorerazor -source -comment -string -meta.expression -meta.structure.razor.csharp.codeblock',
+  repository: {},
+  patterns: [
+    {
+      begin: '(</?)([A-Z][A-Za-z0-9_.]*)(?=[ \\t\\n/>])',
+      beginCaptures: {
+        1: { name: 'punctuation.definition.tag.begin.html' },
+        2: { name: 'entity.name.class.element.component' },
+      },
+      end: '/?>',
+      endCaptures: { 0: { name: 'punctuation.definition.tag.end.html' } },
+      name: 'meta.tag.component.razor',
+      patterns: [{ include: 'text.html.basic#attribute' }],
+    },
+  ],
+};
+
 let _highlighterPromise: Promise<Highlighter> | null = null;
 
 // Shiki and the brand theme load lazily, only once a code tab exists.
@@ -192,7 +224,7 @@ function getHighlighter(): Promise<Highlighter> {
   if (!_highlighterPromise) {
     _highlighterPromise = Promise.all([import('shiki'), import('../code-theme')])
       .then(([{ createHighlighter }, { igCodeTheme }]) =>
-        createHighlighter({ themes: [igCodeTheme], langs: [...SHIKI_LANGS] }),
+        createHighlighter({ themes: [igCodeTheme], langs: [...SHIKI_LANGS, RAZOR_COMPONENT_TAGS] }),
       )
       .catch((err) => {
         _highlighterPromise = null;
