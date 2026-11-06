@@ -34,16 +34,16 @@ the index is unavailable, `ApiLink` renders code text and does not guess a URL.
 
 ## TypeDoc Props
 
-| Prop       | Type                                                                     | Default      | Description                                                                                                                             |
-| ---------- | ------------------------------------------------------------------------ | ------------ | --------------------------------------------------------------------------------------------------------------------------------------- |
-| `type`     | `string`                                                                 | _(required)_ | Short symbol name without platform prefix, e.g. `"Grid"` instead of `"IgrGrid"`.                                                        |
-| `member`   | `string`                                                                 | —            | Optional member name. Resolved through the generated member map when available.                                                         |
-| `label`    | `string`                                                                 | auto         | Override the display text.                                                                                                              |
-| `pkg`      | `string`                                                                 | —            | Ambiguity override only. Use when the same symbol exists in multiple packages and the combined index cannot choose safely.              |
-| `kind`     | `'class' \| 'interface' \| 'enum' \| 'type' \| 'variable' \| 'function'` | auto         | Optional narrowing. Usually unnecessary when the index is available.                                                                    |
-| `prefixed` | `boolean`                                                                | `true`       | Candidate-name override for symbols that are never platform-prefixed. Avoid for new docs when the index can resolve the symbol.         |
-| `suffix`   | `boolean`                                                                | `true`       | Candidate-name override for symbols that never use the platform class suffix. Avoid for new docs when the index can resolve the symbol. |
-| `raw`      | `boolean`                                                                | `false`      | Marks a deliberately authored raw link in strict xplat documentation, so tooling does not flag it.                                      |
+| Prop       | Type                                                                     | Default      | Description                                                                                                                                                                                                                                                                                |
+| ---------- | ------------------------------------------------------------------------ | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `type`     | `string`                                                                 | _(required)_ | Short symbol name without platform prefix, e.g. `"Grid"` instead of `"IgrGrid"`.                                                                                                                                                                                                           |
+| `member`   | `string`                                                                 | —            | Optional member name. Resolved through the generated member map when available.                                                                                                                                                                                                            |
+| `label`    | `string`                                                                 | auto         | Override the display text. When omitted and `member` is set, the label defaults to just the member name (not `Type.member`), cased per platform: camelCase for WebComponents/React/Angular, PascalCase for Blazor. When omitted with no `member`, it defaults to the resolved symbol name. |
+| `pkg`      | `string`                                                                 | —            | Ambiguity override only. Use when the same symbol exists in multiple packages and the combined index cannot choose safely.                                                                                                                                                                 |
+| `kind`     | `'class' \| 'interface' \| 'enum' \| 'type' \| 'variable' \| 'function'` | auto         | Optional narrowing. Usually unnecessary when the index is available.                                                                                                                                                                                                                       |
+| `prefixed` | `boolean`                                                                | `true`       | Candidate-name override for symbols that are never platform-prefixed. Avoid for new docs when the index can resolve the symbol.                                                                                                                                                            |
+| `suffix`   | `boolean`                                                                | `true`       | Candidate-name override for symbols that never use the platform class suffix. Avoid for new docs when the index can resolve the symbol.                                                                                                                                                    |
+| `raw`      | `boolean`                                                                | `false`      | Marks a deliberately authored raw link in strict xplat documentation, so tooling does not flag it.                                                                                                                                                                                         |
 
 Platform names use `PlatformContext.name`: `Angular`, `React`,
 `WebComponents`, or `Blazor`.
@@ -55,7 +55,7 @@ Platform names use `PlatformContext.name`: `Angular`, `React`,
 
 <ApiLink type="Grid" />
 
-{/* Member anchors are resolved from the generated member map. */}
+{/* Member anchors are resolved from the generated member map. Without `label` the text is the member name, cased per platform: `rowSelection` for WebComponents/React/Angular, `RowSelection` for Blazor. */}
 
 <ApiLink type="Grid" member="rowSelection" />
 
