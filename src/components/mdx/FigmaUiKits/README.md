@@ -1,6 +1,6 @@
 # FigmaUiKits
 
-Renders the "Explore our free Figma UI kits" call-to-action banner that links a component topic to the Ignite UI kits in Figma. It belongs between a topic's description and its live demo.
+Renders the "Check it out in our free Figma UI kits" call-to-action banner that links a component topic to the Ignite UI kits in Figma. It belongs between a topic's description and its live demo.
 
 It links to the Indigo.Design UI kits for Material, Fluent, Bootstrap and Indigo out of the box, so a topic only needs `<FigmaUiKits />`. When a kit is republished, update its URL once in `kits.ts` (`DEFAULT_FIGMA_UI_KITS`) and every topic picks it up.
 
@@ -12,12 +12,13 @@ import FigmaUiKits from 'igniteui-astro-components/components/mdx/FigmaUiKits.as
 
 ## Props
 
-| Prop      | Type                  | Default                            | Description                                                                                      |
-| --------- | --------------------- | ---------------------------------- | ------------------------------------------------------------------------------------------------ |
-| `kits`    | `FigmaUiKit[]`        | `DEFAULT_FIGMA_UI_KITS`            | One link per kit, in display order. Each is `{ label: string; href: string }`.                   |
-| `title`   | `string`              | `'Explore our free Figma UI kits'` | Bold text before the links, the same at every width. Localized by default.                       |
-| `variant` | `'auto' \| 'compact'` | `'auto'`                           | `'auto'` wraps to fit and uses the compact layout on narrow containers; `'compact'` always does. |
-| `class`   | `string`              | —                                  | Extra CSS classes for the container.                                                             |
+| Prop           | Type                  | Default                                    | Description                                                                                      |
+| -------------- | --------------------- | ------------------------------------------ | ------------------------------------------------------------------------------------------------ |
+| `kits`         | `FigmaUiKit[]`        | `DEFAULT_FIGMA_UI_KITS`                    | One link per kit, in display order. Each is `{ label: string; href: string }`.                   |
+| `title`        | `string`              | `'Check it out in our free Figma UI kits'` | Text before the links. Localized by default.                                                     |
+| `compactTitle` | `string`              | `'Check it in our free Figma UI kits'`     | Text for the compact (mobile) layout. Defaults to `title` when that is set.                      |
+| `variant`      | `'auto' \| 'compact'` | `'auto'`                                   | `'auto'` wraps to fit and uses the compact layout on narrow containers; `'compact'` always does. |
+| `class`        | `string`              | —                                          | Extra CSS classes for the container.                                                             |
 
 It throws at build time when `kits` is an empty array or a kit has an empty `label` or `href`.
 
@@ -40,7 +41,7 @@ Give every kit its own URL: several links with different names but the same dest
 
 - **One row** when it fits: the Figma logo and title at the start, the links at the end.
 - **Wrapped** when it doesn't: flexbox moves the whole link list to a second row. Nothing switches at a fixed width, so the banner adapts to the copy, the font and the language. For example, the English row needs about 744px, Japanese 737px and Korean 717px.
-- **Compact** below 480px (a phone): the links stack under the title and the padding tightens. The title text is the same at every width and wraps if it needs to. This is a container query on the banner, so it follows the width the banner is given, not the viewport. `variant="compact"` uses this layout at any width.
+- **Compact** below 480px (a phone): the text changes to "Check it in our free Figma UI kits", the links stack under it, and the padding tightens. This is a container query on the banner, so it follows the width the banner is given, not the viewport. `variant="compact"` uses this layout at any width.
 
 The outer `.igd-figma-kits` element is the query container and the inner `.igd-figma-kits__banner` is the visible frame, because a container can't restyle itself from its own query. The container has `inline-size: 100%` because size containment ignores its content's width, so it would otherwise collapse inside a shrink-to-fit parent.
 
@@ -62,13 +63,13 @@ The outer `.igd-figma-kits` element is the query container and the inner `.igd-f
 
 ## Localization
 
-The default `title` and the hidden link text follow the site language. The language comes from the docs integration's `navLang` (from `virtual:docs-template/site-meta`), then `Astro.currentLocale`, then English. Kit names are product names and are not translated.
+The default `title` and `compactTitle` and the hidden link text follow the site language. The language comes from the docs integration's `navLang` (from `virtual:docs-template/site-meta`), then `Astro.currentLocale`, then English. Kit names are product names and are not translated.
 
-| Language       | `title`                        | Kit link name read out                          |
-| -------------- | ------------------------------ | ----------------------------------------------- |
-| `en` (default) | Explore our free Figma UI kits | Material Figma UI kit (opens in a new tab)      |
-| `jp` / `ja`    | 無料の Figma UI キットを見る   | Material Figma UI キット (新しいタブで開きます) |
-| `kr` / `ko`    | 무료 Figma UI 키트 살펴보기    | Material Figma UI 키트 (새 탭에서 열림)         |
+| Language       | `title`                                | `compactTitle`                     | Kit link name read out                          |
+| -------------- | -------------------------------------- | ---------------------------------- | ----------------------------------------------- |
+| `en` (default) | Check it out in our free Figma UI kits | Check it in our free Figma UI kits | Material Figma UI kit (opens in a new tab)      |
+| `jp` / `ja`    | 無料の Figma UI キットでチェック       | Same as `title`                    | Material Figma UI キット (新しいタブで開きます) |
+| `kr` / `ko`    | 무료 Figma UI 키트에서 확인하세요      | Same as `title`                    | Material Figma UI 키트 (새 탭에서 열림)         |
 
 ## Accessibility
 
@@ -92,23 +93,23 @@ The styles are unlayered, so they win over the `@layer components` markdown styl
 
 All values are `--igd-figma-kits-*` tokens on `:root` in `src/styles/global/_variables.scss`. Override them on an ancestor or through `class`:
 
-| Token                                                 | Default                                                                   |
-| ----------------------------------------------------- | ------------------------------------------------------------------------- |
-| `--igd-figma-kits-padding-block` / `-inline`          | Regular padding; inline is `--igd-padding-sm`                             |
-| `--igd-figma-kits-compact-padding-block` / `-inline`  | Compact (phone) padding                                                   |
-| `--igd-figma-kits-gap`                                | `--igd-padding-md`, between links and title ↔ links                       |
-| `--igd-figma-kits-row-gap`                            | Gap between rows once the banner wraps                                    |
-| `--igd-figma-kits-item-gap`                           | Logo ↔ title and label ↔ icon                                             |
-| `--igd-figma-kits-margin-bottom`                      | Same as the other blocks (aside, FAQ, code)                               |
-| `--igd-figma-kits-radius`                             | `--igd-border-radius`                                                     |
-| `--igd-figma-kits-border-width` / `-style`            | `--igd-app-outline-size` / `-style`                                       |
-| `--igd-figma-kits-logo-size`                          | Logo height                                                               |
-| `--igd-figma-kits-target-size`                        | Minimum link height                                                       |
-| `--igd-figma-kits-underline-offset`                   | Hover underline offset                                                    |
-| `--igd-figma-kits-focus-width` / `-offset`            | Focus outline                                                             |
-| `--igd-figma-kits-title-weight` / `-link-weight`      | Font weights                                                              |
-| `--igd-figma-kits-bg` / `-border-color`               | `gray-100` / `gray-300` light, `gray-50` / `gray-200` dark                |
-| `--igd-figma-kits-title-color` / `-description-color` | `gray-900` / `gray-700`                                                   |
-| `--igd-figma-kits-link-color` / `-link-hover-color`   | `--igd-link-color` / `--igd-link-hover-color`, shared with markdown links |
+| Token                                                | Default                                                                   |
+| ---------------------------------------------------- | ------------------------------------------------------------------------- |
+| `--igd-figma-kits-padding-block` / `-inline`         | Regular padding; inline is `--igd-padding-sm`                             |
+| `--igd-figma-kits-compact-padding-block` / `-inline` | Compact (phone) padding                                                   |
+| `--igd-figma-kits-gap`                               | `--igd-padding-md`, between links and title ↔ links                       |
+| `--igd-figma-kits-row-gap`                           | Gap between rows once the banner wraps                                    |
+| `--igd-figma-kits-item-gap`                          | Logo ↔ title and label ↔ icon                                             |
+| `--igd-figma-kits-margin-bottom`                     | Same as the other blocks (aside, FAQ, code)                               |
+| `--igd-figma-kits-radius`                            | `--igd-border-radius`                                                     |
+| `--igd-figma-kits-border-width` / `-style`           | `--igd-app-outline-size` / `-style`                                       |
+| `--igd-figma-kits-logo-size`                         | Logo height                                                               |
+| `--igd-figma-kits-target-size`                       | Minimum link height                                                       |
+| `--igd-figma-kits-underline-offset`                  | Hover underline offset                                                    |
+| `--igd-figma-kits-focus-width` / `-offset`           | Focus outline                                                             |
+| `--igd-figma-kits-link-weight`                       | Link font weight                                                          |
+| `--igd-figma-kits-bg` / `-border-color`              | `gray-100` / `gray-300` light, `gray-50` / `gray-200` dark                |
+| `--igd-figma-kits-title-color`                       | `gray-600`                                                                |
+| `--igd-figma-kits-link-color` / `-link-hover-color`  | `--igd-link-color` / `--igd-link-hover-color`, shared with markdown links |
 
 The dark gray scale is inverted, so `gray-50` and `gray-200` are the dark counterparts of the light `gray-100` and `gray-300`.

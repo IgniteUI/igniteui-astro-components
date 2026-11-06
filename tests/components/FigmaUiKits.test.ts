@@ -67,14 +67,15 @@ describe('FigmaUiKits', () => {
     });
   });
 
-  it('shows one title, the same at every width', async () => {
+  it('renders the desktop and the mobile text', async () => {
     const dom = await render();
 
-    expect(dom.querySelectorAll('.igd-figma-kits__title')).toHaveLength(1);
-    expect(text(dom.querySelector('.igd-figma-kits__title'))).toBe(
-      'Explore our free Figma UI kits',
+    expect(text(dom.querySelector('.igd-figma-kits__title-full'))).toBe(
+      'Check it out in our free Figma UI kits',
     );
-    expect(text(dom.querySelector('.igd-figma-kits__text'))).toBe('Explore our free Figma UI kits');
+    expect(text(dom.querySelector('.igd-figma-kits__title-compact'))).toBe(
+      'Check it in our free Figma UI kits',
+    );
   });
 
   it('keeps list semantics on the markerless kit list', async () => {
@@ -99,14 +100,16 @@ describe('FigmaUiKits', () => {
   });
 
   it.each([
-    ['jp', '無料の Figma UI キットを見る', 'Material Figma UI キット (新しいタブで開きます)'],
-    ['JP', '無料の Figma UI キットを見る', 'Material Figma UI キット (新しいタブで開きます)'],
-    ['kr', '무료 Figma UI 키트 살펴보기', 'Material Figma UI 키트 (새 탭에서 열림)'],
-    ['KR', '무료 Figma UI 키트 살펴보기', 'Material Figma UI 키트 (새 탭에서 열림)'],
+    ['jp', '無料の Figma UI キットでチェック', 'Material Figma UI キット (新しいタブで開きます)'],
+    ['JP', '無料の Figma UI キットでチェック', 'Material Figma UI キット (新しいタブで開きます)'],
+    ['kr', '무료 Figma UI 키트에서 확인하세요', 'Material Figma UI 키트 (새 탭에서 열림)'],
+    ['KR', '무료 Figma UI 키트에서 확인하세요', 'Material Figma UI 키트 (새 탭에서 열림)'],
   ])('localizes the copy for navLang %s', async (lang, title, linkName) => {
     siteMeta.navLang = lang;
     const dom = await render({ kits: KITS });
 
+    // jp / kr use the same text in both layouts, so only one renders.
+    expect(dom.querySelector('.igd-figma-kits__title-compact')).toBeNull();
     expect(text(dom.querySelector('.igd-figma-kits__title'))).toBe(title);
     expect(text(links(dom)[0])).toBe(linkName);
   });
@@ -115,18 +118,28 @@ describe('FigmaUiKits', () => {
     siteMeta.navLang = 'de';
     const dom = await render();
 
-    expect(text(dom.querySelector('.igd-figma-kits__title'))).toBe(
-      'Explore our free Figma UI kits',
+    expect(text(dom.querySelector('.igd-figma-kits__title-full'))).toBe(
+      'Check it out in our free Figma UI kits',
     );
     expect(text(dom.querySelector('.igd-figma-kits__sr-only'))).toBe(
       'Figma UI kit (opens in a new tab)',
     );
   });
 
-  it('uses a custom title', async () => {
+  it('uses a custom title for both layouts', async () => {
     const dom = await render({ title: 'Figma kits:' });
 
+    expect(dom.querySelector('.igd-figma-kits__title-compact')).toBeNull();
     expect(text(dom.querySelector('.igd-figma-kits__title'))).toBe('Figma kits:');
+  });
+
+  it('renders both texts when only compactTitle is set', async () => {
+    const dom = await render({ compactTitle: 'Figma kits' });
+
+    expect(text(dom.querySelector('.igd-figma-kits__title-full'))).toBe(
+      'Check it out in our free Figma UI kits',
+    );
+    expect(text(dom.querySelector('.igd-figma-kits__title-compact'))).toBe('Figma kits');
   });
 
   it.each([[{ label: '', href: 'https://www.figma.com' }], [{ label: 'Material', href: ' ' }]])(

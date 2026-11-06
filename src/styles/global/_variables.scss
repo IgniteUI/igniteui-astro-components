@@ -169,12 +169,11 @@
   --igd-figma-kits-underline-offset: #{rem(3px)};
   --igd-figma-kits-focus-width: #{rem(2px)};
   --igd-figma-kits-focus-offset: #{rem(2px)};
-  --igd-figma-kits-title-weight: 700;
   --igd-figma-kits-link-weight: 700;
 
   --igd-figma-kits-bg: light-dark(var(--ig-gray-100), var(--ig-gray-50));
   --igd-figma-kits-border-color: light-dark(var(--ig-gray-300), var(--ig-gray-200));
-  --igd-figma-kits-title-color: var(--ig-gray-900);
+  --igd-figma-kits-title-color: var(--ig-gray-600);
   --igd-figma-kits-link-color: var(--igd-link-color);
   --igd-figma-kits-link-hover-color: var(--igd-link-hover-color);
 }
