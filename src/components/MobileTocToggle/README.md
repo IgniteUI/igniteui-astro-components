@@ -37,6 +37,16 @@ const { headings } = Astro.props;
 </DocsLayout>
 ```
 
+## Behaviour
+
+- The text after the label is the heading that the page's `DocsToc` marks active: its
+  scroll-spy sets `aria-current="true"` on a link in `<docs-toc>`, and the toggle mirrors that
+  link (by `href`) onto the dropdown and the trigger. The dropdown runs no scroll-spy of its own,
+  so without a `DocsToc` on the page (or with `hasToc={false}` on `DocsLayout`) the text stays
+  empty and no dropdown link is current.
+- The mirrored dropdown link carries `aria-current="true"` and takes the accent colour from
+  `DocsTree`'s TOC variant.
+
 ## Markup
 
 `.mobile-toc` → `button.mobile-toc__trigger#mobile-toc-trigger` (`aria-expanded`,
