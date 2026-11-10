@@ -1,570 +1,584 @@
-/**
- * sidebar-filter.ts
- *
- * Behavior-only custom element (`<sidebar-filter>`) that adds live filtering,
- * expand/collapse state persistence, and scroll restoration to the docs sidebar.
- *
- * Extends `LitElement` but renders into the light DOM (`createRenderRoot` returns
- * `this`) and never overrides `render()`, so the default `noChange` render leaves
- * Astro's fully server-rendered markup untouched.
- */
 import { LitElement } from 'lit';
-import { query, queryAll } from 'lit/decorators.js';
 import type {
-  IgcInputComponent,
   IgcIconButtonComponent,
+  IgcInputComponent,
   IgcTreeItemComponent,
 } from 'igniteui-webcomponents';
 
-// ── Selectors ──────────────────────────────────────────────────────────────
-const FILTER_INPUT_SELECTOR = '[data-sidebar-filter-input]';
-const FILTER_CLEAR_SELECTOR = '[data-sidebar-filter-clear]';
-const FILTER_STATUS_SELECTOR = '[data-sidebar-filter-status]';
-const ACTIVE_LINK_SELECTOR = 'a[aria-current="page"]';
-
-const FILTER_KEY = 'sidebar-filter-value';
-const DETAILS_KEY = 'sidebar-filter-details';
-const SCROLL_KEY = 'sidebar-filter-scroll';
+// sessionStorage keys
+const FILTER_KEY = 'sidebar-filter-value'; // current filter input value
+const DETAILS_KEY = 'sidebar-filter-details'; // newline-joined expanded group keys
+const SCROLL_KEY = 'sidebar-filter-scroll'; // scrollTop of the scroll container
 
 const SCROLL_SELECTOR = '[data-sidebar-scroll]';
 const ITEM_SELECTOR = 'igc-tree-item[data-path]';
 const GROUP_SELECTOR = 'igc-tree-item[data-group-key]';
+const ACTIVE_LINK_SELECTOR = 'a[aria-current="page"]';
 
-// ── Storage helpers ────────────────────────────────────────────────────────
-const safeGet = (k: string): string => {
+//#region Helpers
+
+const safeGet = (key: string): string => {
   try {
-    return sessionStorage.getItem(k) ?? '';
+    return sessionStorage.getItem(key) ?? '';
   } catch {
     return '';
   }
 };
-const safeSet = (k: string, v: string) => {
+
+const safeSet = (key: string, value: string): void => {
   try {
-    sessionStorage.setItem(k, v);
+    sessionStorage.setItem(key, value);
   } catch {
-    /* quota */
-  }
-};
-const safeRemove = (k: string) => {
-  try {
-    sessionStorage.removeItem(k);
-  } catch {
-    /* */
+    // Storage is full or unavailable.
   }
 };
 
-const parseKeys = (raw: string): Set<string> => new Set(raw ? raw.split('\n').filter(Boolean) : []);
+const safeRemove = (key: string): void => {
+  try {
+    sessionStorage.removeItem(key);
+  } catch {
+    // Storage is unavailable.
+  }
+};
+
+const parseKeys = (raw: string): Set<string> => new Set(raw.split('\n').filter(Boolean));
 const serializeKeys = (keys: Set<string>): string => [...keys].join('\n');
 
-// ── Helpers ────────────────────────────────────────────────────────────────
+const tokenize = (query: string): string[] => query.toLowerCase().split(/\s+/).filter(Boolean);
+const itemPath = (item: HTMLElement): string =>
+  (item.dataset.path ?? item.dataset.label ?? '').toLowerCase();
 
 /**
- * Read expanded keys by checking the `expanded` ATTRIBUTE.
- * Works on both upgraded custom elements and raw DOM nodes (astro:before-swap).
- * Note: only call this when Lit has had time to reflect properties → attributes
- * (i.e. not synchronously inside event handlers).
+ * Keys of the expanded groups, read from the `expanded` attribute so it also
+ * works on tree items that aren't upgraded yet.
  */
-const collectExpandedKeys = (root: ParentNode): string[] => {
-  const keys: string[] = [];
-  root.querySelectorAll<HTMLElement>(GROUP_SELECTOR).forEach((el) => {
-    if (el.hasAttribute('expanded') && el.dataset.groupKey) keys.push(el.dataset.groupKey);
-  });
+function collectExpandedKeys(root: ParentNode): Set<string> {
+  const keys = new Set<string>();
+  for (const group of root.querySelectorAll<HTMLElement>(GROUP_SELECTOR)) {
+    if (group.hasAttribute('expanded') && group.dataset.groupKey) {
+      keys.add(group.dataset.groupKey);
+    }
+  }
   return keys;
-};
+}
 
 /**
- * Apply expanded state using setAttribute / removeAttribute.
- * Used ONLY in astro:before-swap on not-yet-upgraded DOM nodes.
- * With `onlyActiveBranch`, the saved keys are ignored.
+ * Sets the `expanded` attribute on the incoming page's groups. Used only in
+ * `astro:before-swap`, before the elements are upgraded. Groups that hold the
+ * current page always stay open; with `onlyActiveBranch` the saved keys are ignored.
  */
-const applyExpandedAttr = (
+function applyExpandedAttr(
   root: ParentNode,
   openKeys: Set<string>,
   onlyActiveBranch: boolean,
-): void => {
-  root.querySelectorAll<HTMLElement>(GROUP_SELECTOR).forEach((el) => {
-    if (el.querySelector(ACTIVE_LINK_SELECTOR)) {
-      el.setAttribute('expanded', '');
-      return;
-    }
-    const key = el.dataset.groupKey;
-    if (!onlyActiveBranch && key && openKeys.has(key)) el.setAttribute('expanded', '');
-    else el.removeAttribute('expanded');
-  });
-};
+): void {
+  for (const group of root.querySelectorAll<HTMLElement>(GROUP_SELECTOR)) {
+    const key = group.dataset.groupKey;
+    const isOpen =
+      !!group.querySelector(ACTIVE_LINK_SELECTOR) ||
+      (!onlyActiveBranch && !!key && openKeys.has(key));
+    group.toggleAttribute('expanded', isOpen);
+  }
+}
 
-const tokenize = (q: string): string[] => q.toLowerCase().split(/\s+/).filter(Boolean);
-const itemPath = (el: HTMLElement): string =>
-  (el.dataset.path ?? el.dataset.label ?? '').toLowerCase();
+//#endregion
 
-// ── Page-lifecycle hooks ───────────────────────────────────────────────────
-// Registered once at most, regardless of how many sidebar-filter instances connect.
-// These must live at module level because astro:before-swap fires before the
-// element reconnects on the new page.
+//#region Page lifecycle hooks
 
-let _pageHooksRegistered = false;
-let _isClientSideNav = false;
+// Module-level because `astro:before-swap` fires before the new page's
+// element is connected. Registered once, however many instances connect.
+let pageHooksRegistered = false;
+let isClientSideNav = false;
 
 function registerPageHooks(): void {
-  if (_pageHooksRegistered) return;
-  _pageHooksRegistered = true;
+  if (pageHooksRegistered) return;
+  pageHooksRegistered = true;
 
   document.addEventListener('astro:before-preparation', () => {
-    _isClientSideNav = true;
+    isClientSideNav = true;
 
-    const sc = document.querySelector<HTMLElement>(SCROLL_SELECTOR);
-    if (sc) safeSet(SCROLL_KEY, String(sc.scrollTop));
+    const scrollContainer = document.querySelector<HTMLElement>(SCROLL_SELECTOR);
+    if (scrollContainer) safeSet(SCROLL_KEY, String(scrollContainer.scrollTop));
 
-    // When filtering is active, override DETAILS_KEY with the filter's openSnapshot
-    // (which tracks user-intent expand state including manual collapses during filter).
-    // When NOT filtering, DETAILS_KEY was already kept up-to-date by onItemToggle.
+    // While filtering, save the user-intent snapshot (it includes manual collapses).
+    // Otherwise DETAILS_KEY is already kept up to date by the toggle handler.
     const host = document.querySelector<HTMLElement>('sidebar-filter[data-filtering]');
-    const intended = host?.dataset.openSnapshot;
-    if (intended !== undefined) safeSet(DETAILS_KEY, intended);
+    const snapshot = host?.dataset.openSnapshot;
+    if (snapshot !== undefined) safeSet(DETAILS_KEY, snapshot);
   });
 
-  document.addEventListener('astro:before-swap', (e) => {
-    const newDoc = e.newDocument;
-    const newScroll = newDoc.querySelector<HTMLElement>(SCROLL_SELECTOR);
-    if (newScroll) newScroll.style.visibility = 'hidden';
+  document.addEventListener('astro:before-swap', ({ newDocument }) => {
+    const scrollContainer = newDocument.querySelector<HTMLElement>(SCROLL_SELECTOR);
+    if (scrollContainer) scrollContainer.style.visibility = 'hidden';
 
     // Single-branch: the new page's branch replaces the saved one, unless the
     // filter carries over and keeps every group it opened.
     const onlyActiveBranch =
-      !!newDoc.querySelector('sidebar-filter[data-single-branch-expand]') &&
-      !!newDoc.querySelector(`${GROUP_SELECTOR} ${ACTIVE_LINK_SELECTOR}`) &&
+      !!newDocument.querySelector('sidebar-filter[data-single-branch-expand]') &&
+      !!newDocument.querySelector(`${GROUP_SELECTOR} ${ACTIVE_LINK_SELECTOR}`) &&
       !safeGet(FILTER_KEY);
 
-    applyExpandedAttr(newDoc, parseKeys(safeGet(DETAILS_KEY)), onlyActiveBranch);
+    applyExpandedAttr(newDocument, parseKeys(safeGet(DETAILS_KEY)), onlyActiveBranch);
   });
 }
 
-// ── Custom element ─────────────────────────────────────────────────────────
+//#endregion
 
 /**
- * `<sidebar-filter>` — behavior-only wrapper around the Astro-rendered sidebar.
+ * Behavior-only wrapper around the server-rendered docs sidebar.
  *
- * Responsibilities:
- *  - Filter sidebar items by text as the user types (CSS-driven via `data-filter-match`).
- *  - Persist the filter value and the tree's expand/collapse state across SPA page transitions
- *    via sessionStorage so the sidebar feels stateful between pages.
- *  - Restore scroll position of the sidebar scroll container after each page transition.
- *  - Sync the tree expand state with the active filter (auto-expand groups with matches,
- *    restore pre-filter state when the filter is cleared).
+ * - Filters the tree as the user types. Visibility is CSS-driven: `data-filtering`
+ *   on the host and `data-filter-match` on each matching item.
+ * - Keeps the filter value, the expanded groups and the scroll position across
+ *   client-side navigation.
+ * - With `data-single-branch-expand`, keeps one branch of the tree open at a time.
  *
- * Built on `LitElement` for its lifecycle callbacks, but renders into the light DOM
- * (see `createRenderRoot`) and never overrides `render()`, so the default `noChange`
- * render leaves Astro's SSR-rendered children in the light DOM untouched.
+ * Renders into the light DOM and never overrides `render()`, so the default
+ * `noChange` render leaves Astro's markup untouched.
+ *
+ * @element sidebar-filter
  */
 class SidebarFilter extends LitElement {
-  @query(FILTER_INPUT_SELECTOR, true)
-  private readonly input?: IgcInputComponent;
+  //#region Internal state
 
-  @query(FILTER_CLEAR_SELECTOR, true)
-  private readonly clearBtn?: IgcIconButtonComponent;
+  /** Expanded group keys the user intends while a filter is active. */
+  private _openSnapshot: Set<string> | null = null;
+  /** Expanded group keys from before filtering; restored on clear when single-branch is off. */
+  private _preFilterSnapshot: Set<string> | null = null;
+  /** Set while the expand state is changed programmatically, so it isn't persisted. */
+  private _suppressPersist = false;
+  private _pinFrames = 0;
+  private _abortController?: AbortController;
 
-  @query(FILTER_STATUS_SELECTOR, true)
-  private readonly status?: HTMLElement;
+  private get _input() {
+    return this.querySelector<IgcInputComponent>('[data-sidebar-filter-input]');
+  }
 
-  @query(SCROLL_SELECTOR, true)
-  private readonly scrollEl?: HTMLElement;
+  private get _clearButton() {
+    return this.querySelector<IgcIconButtonComponent>('[data-sidebar-filter-clear]');
+  }
 
-  @queryAll(ITEM_SELECTOR)
-  private readonly items!: NodeListOf<HTMLElement>;
+  private get _status() {
+    return this.querySelector<HTMLElement>('[data-sidebar-filter-status]');
+  }
 
-  @queryAll(GROUP_SELECTOR)
-  private readonly groups!: NodeListOf<HTMLElement>;
+  private get _scrollContainer() {
+    return this.querySelector<HTMLElement>(SCROLL_SELECTOR);
+  }
 
-  /** User-intent expand state during active filter. */
-  private openSnapshot: Set<string> | null = null;
-  /** Pre-filter snapshot; restored on Esc / clear. */
-  private preFilterSnapshot: Set<string> | null = null;
-  /** Suppress event-driven persistence while programmatically changing state. */
-  private suppressPersist = false;
+  private get _items() {
+    return this.querySelectorAll<HTMLElement>(ITEM_SELECTOR);
+  }
 
-  private controller: AbortController | undefined;
+  private get _groups() {
+    return this.querySelectorAll<IgcTreeItemComponent>(GROUP_SELECTOR);
+  }
 
-  private pinFrames = 0;
-  private prevScrollBehavior: string | null = null;
+  private get _singleBranch(): boolean {
+    return this.hasAttribute('data-single-branch-expand');
+  }
 
-  // Render into the light DOM instead of a shadow root — this element wraps
-  // Astro-server-rendered light DOM children and must not hide them.
-  protected override createRenderRoot(): HTMLElement | ShadowRoot {
+  //#endregion
+
+  //#region Life-cycle hooks
+
+  protected override createRenderRoot(): HTMLElement {
+    // Keep Astro's server-rendered children in the light DOM.
     return this;
   }
 
-  override connectedCallback(): void {
+  public override connectedCallback(): void {
     super.connectedCallback();
     registerPageHooks();
 
-    // On a hard load (non-client-nav) DETAILS_KEY may be stale or empty.
-    // Prime it now from the SSR DOM attributes so onItemToggle can safely
-    // do incremental updates against it.
-    if (!_isClientSideNav) {
-      safeSet(DETAILS_KEY, serializeKeys(new Set(collectExpandedKeys(this))));
+    // On a hard load DETAILS_KEY may be stale or empty. Prime it from the
+    // server-rendered state so the toggle handler can update it incrementally.
+    if (!isClientSideNav) {
+      safeSet(DETAILS_KEY, serializeKeys(collectExpandedKeys(this)));
     }
 
-    this.controller = new AbortController();
-    const opts: AddEventListenerOptions = { signal: this.controller.signal };
+    // Listeners are replaced on reconnect rather than removed on disconnect:
+    // igc-tree emits igcItemCollapsed when its collapse animation ends, often
+    // after the client-side swap, and that change still has to be saved.
+    this._abortController?.abort();
+    this._abortController = new AbortController();
+    const options: AddEventListenerOptions = { signal: this._abortController.signal };
+    const input = this._input;
+    const clearButton = this._clearButton;
 
-    if (this.input && this.clearBtn) {
-      this.input.addEventListener('igcInput', () => this.onFilterInput(), opts);
-      this.input.addEventListener('keydown', (e: KeyboardEvent) => this.onFilterKeydown(e), opts);
-      this.clearBtn.addEventListener('click', () => this.onClearClick(), opts);
+    if (input && clearButton) {
+      input.addEventListener('igcInput', ({ detail }) => this._handleFilterInput(detail), options);
+      input.addEventListener('keydown', (event) => this._handleFilterKeydown(event), options);
+      clearButton.addEventListener('click', () => this._handleClearClick(), options);
     }
 
-    this.addEventListener('igcItemExpanded', (e) => this.onItemToggle(e), opts);
-    this.addEventListener('igcItemCollapsed', (e) => this.onItemToggle(e), opts);
-    this.addEventListener('igcItemExpanding', (e) => this.onItemExpanding(e), opts);
+    // The igcItem* events are dispatched on <igc-tree> with the item in `detail`.
+    this.addEventListener('igcItemExpanding', (event) => this._handleItemExpanding(event), options);
+    this.addEventListener('igcItemExpanded', (event) => this._handleItemToggle(event), options);
+    this.addEventListener('igcItemCollapsed', (event) => this._handleItemToggle(event), options);
 
-    this.restoreOnConnect();
+    this._restoreOnConnect();
   }
 
-  override disconnectedCallback(): void {
-    super.disconnectedCallback();
-    this.controller?.abort();
-    this.controller = undefined;
-  }
+  private _restoreOnConnect(): void {
+    const isClientNav = isClientSideNav;
+    isClientSideNav = false;
 
-  // ── Events ──────────────────────────────────────────────────────────────
-
-  private onFilterInput(): void {
-    this.pinScrollY();
-    safeSet(FILTER_KEY, this.input!.value);
-    this.applyFilter(this.input!.value, 'user');
-  }
-
-  private onFilterKeydown(e: KeyboardEvent): void {
-    this.pinScrollY();
-    if (e.key === 'Escape' && this.input!.value) this.resetFilter();
-  }
-
-  private onClearClick(): void {
-    this.resetFilter();
-    this.input!.focus();
-  }
-
-  private onItemToggle(e: Event): void {
-    if (this.suppressPersist) return;
-
-    // The events are dispatched on <igc-tree>; the actual item is in e.detail.
-    const item = (e as CustomEvent<HTMLElement>).detail;
-    const key = item?.dataset?.groupKey;
-    if (!key) return;
-
-    if (this.openSnapshot) {
-      // Filter active — update user-intent snapshot, not live state.
-      if (e.type === 'igcItemExpanded') this.openSnapshot.add(key);
-      else this.openSnapshot.delete(key);
-      this.syncSnapshotAttr();
-      safeSet(DETAILS_KEY, serializeKeys(this.openSnapshot));
-      return;
-    }
-
-    // Not filtering — update DETAILS_KEY incrementally.
-    // We CANNOT call collectExpandedKeys here because Lit reflects the
-    // `expanded` property to the attribute asynchronously; the attribute
-    // is still the old value at the time this synchronous event fires.
-    const keys = parseKeys(safeGet(DETAILS_KEY));
-    if (e.type === 'igcItemExpanded') keys.add(key);
-    else keys.delete(key);
-    safeSet(DETAILS_KEY, serializeKeys(keys));
-  }
-
-  /**
-   * Single-branch: a user expand collapses every open group outside the new
-   * branch. igc-tree's own `singleBranchExpand` isn't used: turning it on
-   * collapses every group, the current page's included, and while filtering
-   * the next expand would collapse the groups the filter opened.
-   */
-  private onItemExpanding(e: Event): void {
-    // While filtering, every group with a match stays open.
-    if (!this.singleBranch || this.openSnapshot) return;
-
-    const item = (e as CustomEvent<HTMLElement>).detail;
-    for (const el of this.groups) {
-      const group = el as IgcTreeItemComponent;
-      if (group.expanded && !group.contains(item)) void group.collapseWithEvent();
-    }
-  }
-
-  private syncSnapshotAttr(): void {
-    if (this.openSnapshot) this.dataset.openSnapshot = serializeKeys(this.openSnapshot);
-    else delete this.dataset.openSnapshot;
-  }
-
-  // ── pinScrollY ──────────────────────────────────────────────────────────
-  // Chrome: filter mutations trigger a browser-internal scroll. Pin scrollY
-  // via rAF for ~200ms and force `scroll-behavior: auto` so it's an instant
-  // jump. Prior inline value is restored at end.
-
-  private pinScrollY(): void {
-    const wasActive = this.pinFrames > 0;
-    const y = window.scrollY;
-    this.pinFrames = 10;
-    if (wasActive) return;
-    this.prevScrollBehavior = document.documentElement.style.getPropertyValue('scroll-behavior');
-    document.documentElement.style.setProperty('scroll-behavior', 'auto', 'important');
-    const tick = (): void => {
-      if (window.scrollY !== y) window.scrollTo({ top: y, behavior: 'instant' as ScrollBehavior });
-      if (--this.pinFrames > 0) requestAnimationFrame(tick);
-      else {
-        if (this.prevScrollBehavior)
-          document.documentElement.style.setProperty('scroll-behavior', this.prevScrollBehavior);
-        else document.documentElement.style.removeProperty('scroll-behavior');
-        this.prevScrollBehavior = null;
-      }
-    };
-    tick();
-  }
-
-  // ── Restore on connect ───────────────────────────────────────────────────
-
-  private restoreOnConnect(): void {
-    const isClientNav = _isClientSideNav;
-    _isClientSideNav = false;
-
-    if (this.input) {
+    const input = this._input;
+    if (input) {
+      // The filter carries over client-side navigation only.
       const saved = isClientNav ? safeGet(FILTER_KEY) : '';
       if (!isClientNav) safeRemove(FILTER_KEY);
 
       if (saved) {
-        this.input.value = saved;
-        this.applyFilter(saved, 'restore');
+        input.value = saved;
+        this._applyFilter(saved, 'restore');
       } else {
-        this.syncClearButton('');
+        this._syncClearButton('');
       }
     }
 
-    this.restoreScroll(isClientNav);
+    this._restoreScroll(isClientNav);
   }
 
-  private restoreScroll(isClientNav: boolean): void {
-    const sc = this.scrollEl;
-    if (!sc) return;
-    if (isClientNav) {
-      requestAnimationFrame(() => {
-        if (!this.isConnected) return;
-        sc.scrollTo({ top: parseInt(safeGet(SCROLL_KEY) || '0', 10) || 0, behavior: 'instant' });
-        sc.style.visibility = '';
-        requestAnimationFrame(() => {
-          if (!this.isConnected) return;
-          const active = this.querySelector<HTMLAnchorElement>(ACTIVE_LINK_SELECTOR);
-          if (active && !this.isElementVisible(active, sc)) {
-            this.scrollToCenter(active, sc);
-          }
-        });
-      });
-    } else {
-      // On hard refresh, wait for astro:page-load (which scrolls the page
-      // back to top and runs initSidebarHeights) before centering.
-      document.addEventListener(
-        'astro:page-load',
-        () => {
-          requestAnimationFrame(() => {
-            if (!this.isConnected) return;
-            const sidebar = this.closest<HTMLElement>('.docs-sidebar');
-            if (sidebar) {
-              sidebar.style.maxHeight =
-                Math.max(0, window.innerHeight - sidebar.getBoundingClientRect().top) + 'px';
-            }
-            sc.style.visibility = '';
-            const active = this.querySelector<HTMLAnchorElement>(ACTIVE_LINK_SELECTOR);
-            if (active) this.scrollToCenter(active, sc);
-          });
-        },
-        { once: true, signal: this.controller?.signal },
-      );
+  //#endregion
+
+  //#region Event handlers
+
+  private _handleFilterInput(value: string): void {
+    this._pinScrollY();
+    safeSet(FILTER_KEY, value);
+    this._applyFilter(value, 'user');
+  }
+
+  private _handleFilterKeydown(event: KeyboardEvent): void {
+    this._pinScrollY();
+    if (event.key === 'Escape' && this._input?.value) this._resetFilter();
+  }
+
+  private _handleClearClick(): void {
+    this._resetFilter();
+    this._input?.focus();
+  }
+
+  private _handleItemToggle(event: Event): void {
+    if (this._suppressPersist) return;
+
+    const { type, detail: item } = event as CustomEvent<IgcTreeItemComponent>;
+    const key = item.dataset.groupKey;
+    if (!key) return;
+
+    // While filtering, update the user-intent snapshot rather than the live
+    // state; otherwise update the saved keys in place.
+    const keys = this._openSnapshot ?? parseKeys(safeGet(DETAILS_KEY));
+    if (type === 'igcItemExpanded') keys.add(key);
+    else keys.delete(key);
+
+    this._syncSnapshotAttr();
+    safeSet(DETAILS_KEY, serializeKeys(keys));
+  }
+
+  /**
+   * Single-branch: expanding a group collapses every open group outside its branch.
+   * igc-tree's own `singleBranchExpand` isn't used: turning it on collapses every
+   * group, the current page's included, and while filtering the next expand would
+   * collapse the groups the filter opened.
+   */
+  private _handleItemExpanding(event: Event): void {
+    // While filtering, every group with a match stays open.
+    if (!this._singleBranch || this._openSnapshot) return;
+
+    const item = (event as CustomEvent<IgcTreeItemComponent>).detail;
+    for (const group of this._groups) {
+      if (group.expanded && !group.contains(item)) void group.collapseWithEvent();
     }
   }
 
-  private scrollToCenter(el: HTMLElement, container: HTMLElement): void {
-    const elRect = el.getBoundingClientRect();
-    const cRect = container.getBoundingClientRect();
-    container.scrollTop += elRect.top + elRect.height / 2 - (cRect.top + cRect.height / 2);
-  }
+  //#endregion
 
-  private isElementVisible(el: HTMLElement, container: HTMLElement): boolean {
-    const elRect = el.getBoundingClientRect();
-    const cRect = container.getBoundingClientRect();
-    return elRect.top >= cRect.top && elRect.bottom <= cRect.bottom;
-  }
+  //#region Filtering
 
-  // ── Filter ───────────────────────────────────────────────────────────────
+  private _applyFilter(rawQuery: string, source: 'user' | 'restore'): void {
+    const query = rawQuery.trim();
+    this._syncClearButton(query);
 
-  private applyFilter(rawQuery: string, source: 'user' | 'restore'): void {
-    const trimmed = rawQuery.trim();
-    this.syncClearButton(trimmed);
-
-    if (!trimmed) {
-      this.exitFilterMode();
+    if (!query) {
+      this._exitFilterMode();
       return;
     }
 
-    if (!this.openSnapshot) {
-      const current = new Set(collectExpandedKeys(this));
-      this.openSnapshot = new Set(current);
-      this.preFilterSnapshot = source === 'user' ? new Set(current) : null;
-      this.syncSnapshotAttr();
+    if (!this._openSnapshot) {
+      const expanded = collectExpandedKeys(this);
+      this._openSnapshot = new Set(expanded);
+      this._preFilterSnapshot = source === 'user' ? expanded : null;
     }
 
-    const matches = this.computeMatches(tokenize(trimmed));
-
-    // CSS-driven visibility: stamp data-filter-match; stylesheet hides the rest.
-    this.markMatches(matches);
+    const matches = this._computeMatches(tokenize(query));
+    // CSS-driven visibility: the stylesheet hides items without data-filter-match.
+    this._markMatches(matches);
     this.dataset.filtering = 'true';
 
     if (source === 'user') {
-      // Auto-expand groups that contain matching items.
-      for (const el of this.groups) {
-        const key = el.dataset.groupKey;
-        if (key && matches.has(el)) this.openSnapshot.add(key);
+      // Auto-expand the groups that contain a match.
+      for (const group of this._groups) {
+        const key = group.dataset.groupKey;
+        if (key && matches.has(group)) this._openSnapshot.add(key);
       }
-      this.syncSnapshotAttr();
-      safeSet(DETAILS_KEY, serializeKeys(this.openSnapshot));
+      safeSet(DETAILS_KEY, serializeKeys(this._openSnapshot));
     }
 
-    this.setExpandedState(this.openSnapshot);
-    this.updateStatus(matches.size > 0 ? null : 'no-match');
+    this._syncSnapshotAttr();
+    this._setExpandedState(this._openSnapshot);
+    this._updateStatus(matches.size === 0);
   }
 
-  private exitFilterMode(): void {
+  private _exitFilterMode(): void {
     delete this.dataset.filtering;
+    for (const item of this._items) delete item.dataset.filterMatch;
 
-    for (const el of this.items) delete el.dataset.filterMatch;
+    // Single-branch: return to the current page's branch, not to the groups that
+    // were open before filtering, which may be a second branch.
+    const restore = this._singleBranch
+      ? this._activeBranchKeys()
+      : (this._preFilterSnapshot ?? this._openSnapshot);
 
-    // Single-branch: return to the current page's branch, not to the groups
-    // that were open before filtering, which may be a second branch.
-    const restore = this.singleBranch
-      ? this.activeBranchKeys()
-      : (this.preFilterSnapshot ?? this.openSnapshot);
     if (restore) {
-      this.withSuppressed(() => this.setExpandedState(restore!));
+      this._setExpandedState(restore);
       safeSet(DETAILS_KEY, serializeKeys(restore));
     }
 
-    this.openSnapshot = null;
-    this.preFilterSnapshot = null;
-    this.syncSnapshotAttr();
-    this.ensureActiveAncestorsExpanded();
-    this.updateStatus(null);
+    this._openSnapshot = null;
+    this._preFilterSnapshot = null;
+    this._syncSnapshotAttr();
+    this._ensureActiveAncestorsExpanded();
+    this._updateStatus(false);
   }
 
-  private setExpandedState(openKeys: Set<string>): void {
-    const toExpand: IgcTreeItemComponent[] = [];
-    const toCollapse: IgcTreeItemComponent[] = [];
+  private _resetFilter(): void {
+    this._pinScrollY();
+    this._input!.value = '';
+    this._syncClearButton('');
+    safeRemove(FILTER_KEY);
+    this._exitFilterMode();
+  }
 
-    for (const el of this.groups) {
-      const hasActive = !!el.querySelector(ACTIVE_LINK_SELECTOR);
-      const inKeys = !!(el.dataset.groupKey && openKeys.has(el.dataset.groupKey));
-      if (hasActive || inKeys) toExpand.push(el as IgcTreeItemComponent);
-      else toCollapse.push(el as IgcTreeItemComponent);
+  /**
+   * Matching items, plus their ancestors and, for a matching group, its descendants.
+   * Walks the DOM instead of using the tree item API (`path`, `getChildren()`):
+   * after client-side navigation this runs from connectedCallback, before the
+   * tree items are upgraded.
+   */
+  private _computeMatches(tokens: string[]): Set<HTMLElement> {
+    const matches = new Set<HTMLElement>();
+    for (const item of this._items) {
+      const path = itemPath(item);
+      if (!tokens.every((token) => path.includes(token))) continue;
+      matches.add(item);
+      this._collectAncestors(item, matches);
+      this._collectGroupDescendants(item, matches);
     }
+    return matches;
+  }
 
-    this.withSuppressed(() => {
-      toExpand.forEach((el) => {
-        el.expanded = true;
-      });
-      toCollapse.forEach((el) => {
-        el.expanded = false;
-      });
+  private _collectAncestors(item: HTMLElement, out: Set<HTMLElement>): void {
+    for (let node = item.parentElement; node && node !== this; node = node.parentElement) {
+      if (node.matches(ITEM_SELECTOR)) out.add(node);
+    }
+  }
+
+  private _collectGroupDescendants(item: HTMLElement, out: Set<HTMLElement>): void {
+    if (!item.dataset.groupKey) return;
+    for (const child of item.querySelectorAll<HTMLElement>(ITEM_SELECTOR)) out.add(child);
+  }
+
+  private _markMatches(matches: Set<HTMLElement>): void {
+    for (const item of this._items) {
+      if (matches.has(item)) item.dataset.filterMatch = 'true';
+      else delete item.dataset.filterMatch;
+    }
+  }
+
+  private _updateStatus(noMatches: boolean): void {
+    const status = this._status;
+    if (!status) return;
+    status.textContent = noMatches ? (this.dataset.noResults ?? 'No topics match') : '';
+  }
+
+  private _syncClearButton(query: string): void {
+    const clearButton = this._clearButton;
+    if (clearButton) clearButton.hidden = !query;
+  }
+
+  //#endregion
+
+  //#region Expand state
+
+  /** Expands the groups in `openKeys` and collapses the rest. The current page's groups stay open. */
+  private _setExpandedState(openKeys: Set<string>): void {
+    this._withSuppressed(() => {
+      for (const group of this._groups) {
+        const key = group.dataset.groupKey;
+        group.expanded =
+          !!group.querySelector(ACTIVE_LINK_SELECTOR) || (!!key && openKeys.has(key));
+      }
     });
   }
 
-  /** Run fn with event-driven persistence suppressed. */
-  private withSuppressed(fn: () => void): void {
-    this.suppressPersist = true;
+  /** Runs `fn` with event-driven persistence suppressed. */
+  private _withSuppressed(fn: () => void): void {
+    this._suppressPersist = true;
     try {
       fn();
     } finally {
-      // igcItem* events may fire after a render cycle; release the suppress
-      // flag after the next task to be safe.
+      // The igcItem* events may fire after a render cycle; release on the next task.
       setTimeout(() => {
-        this.suppressPersist = false;
-      }, 0);
+        this._suppressPersist = false;
+      });
     }
   }
 
-  // ── Match computation ────────────────────────────────────────────────────
-
-  private computeMatches(tokens: string[]): Set<HTMLElement> {
-    const visible = new Set<HTMLElement>();
-    for (const el of this.items) {
-      if (!tokens.every((t) => itemPath(el).includes(t))) continue;
-      visible.add(el);
-      this.collectAncestors(el, visible);
-      this.collectGroupDescendants(el, visible);
-    }
-    return visible;
+  private _syncSnapshotAttr(): void {
+    if (this._openSnapshot) this.dataset.openSnapshot = serializeKeys(this._openSnapshot);
+    else delete this.dataset.openSnapshot;
   }
 
-  private collectAncestors(el: HTMLElement, out: Set<HTMLElement>): void {
-    // path = [root, ..., el]; slice off el itself, keep only navigable ancestors
-    (el as IgcTreeItemComponent).path.slice(0, -1).forEach((ancestor) => {
-      if (ancestor.matches(ITEM_SELECTOR)) out.add(ancestor);
-    });
-  }
-
-  private collectGroupDescendants(el: HTMLElement, out: Set<HTMLElement>): void {
-    if (!el.dataset.groupKey) return;
-    (el as IgcTreeItemComponent).getChildren({ flatten: true }).forEach((child) => {
-      if (child.matches(ITEM_SELECTOR)) out.add(child);
-    });
-  }
-
-  private markMatches(matches: Set<HTMLElement>): void {
-    for (const el of this.items) {
-      if (matches.has(el)) el.dataset.filterMatch = 'true';
-      else delete el.dataset.filterMatch;
-    }
-  }
-
-  private get singleBranch(): boolean {
-    return this.hasAttribute('data-single-branch-expand');
-  }
-
-  /** Keys of the groups that contain the active page. */
-  private activeBranchKeys(): Set<string> {
+  /** Keys of the groups that contain the current page. */
+  private _activeBranchKeys(): Set<string> {
     const keys = new Set<string>();
-    for (const el of this.groups) {
-      if (el.dataset.groupKey && el.querySelector(ACTIVE_LINK_SELECTOR)) {
-        keys.add(el.dataset.groupKey);
-      }
+    for (const group of this._groups) {
+      const key = group.dataset.groupKey;
+      if (key && group.querySelector(ACTIVE_LINK_SELECTOR)) keys.add(key);
     }
     return keys;
   }
 
-  private ensureActiveAncestorsExpanded(): void {
-    const active = this.querySelector<HTMLAnchorElement>(ACTIVE_LINK_SELECTOR);
-    if (!active) return;
-    const treeItem = active.closest<IgcTreeItemComponent>('igc-tree-item');
-    if (!treeItem) return;
-    // path = [root, ..., treeItem]; expand every group in the ancestry chain
-    treeItem.path.forEach((item) => {
-      if (item.matches(GROUP_SELECTOR)) item.expanded = true;
+  private _ensureActiveAncestorsExpanded(): void {
+    const link = this.querySelector(ACTIVE_LINK_SELECTOR);
+    for (let node = link?.parentElement; node && node !== this; node = node.parentElement) {
+      if (node.matches(GROUP_SELECTOR)) (node as IgcTreeItemComponent).expanded = true;
+    }
+  }
+
+  //#endregion
+
+  //#region Scroll
+
+  /**
+   * Chrome scrolls the page when the filter changes the tree. Pin `scrollY` for
+   * ~10 frames with `scroll-behavior: auto`, so each correction is an instant
+   * jump, then restore the previous inline value.
+   */
+  private _pinScrollY(): void {
+    const wasPinning = this._pinFrames > 0;
+    this._pinFrames = 10;
+    if (wasPinning) return;
+
+    const y = window.scrollY;
+    const { style } = document.documentElement;
+    const previous = style.getPropertyValue('scroll-behavior');
+    style.setProperty('scroll-behavior', 'auto', 'important');
+
+    const tick = (): void => {
+      if (window.scrollY !== y) window.scrollTo({ top: y, behavior: 'instant' });
+      if (--this._pinFrames > 0) requestAnimationFrame(tick);
+      else if (previous) style.setProperty('scroll-behavior', previous);
+      else style.removeProperty('scroll-behavior');
+    };
+    tick();
+  }
+
+  private _restoreScroll(isClientNav: boolean): void {
+    const container = this._scrollContainer;
+    if (!container) return;
+
+    if (isClientNav) {
+      requestAnimationFrame(() => {
+        if (!this.isConnected) return;
+        container.scrollTo({ top: Number(safeGet(SCROLL_KEY)) || 0, behavior: 'instant' });
+        container.style.visibility = '';
+        // The new page's expand state may have moved the active item out of view.
+        requestAnimationFrame(() => this._centerActiveIfHidden(container));
+      });
+
+      // Without a hash, DocsLayout scrolls the page to the top on astro:page-load, and
+      // the returning header can push the active item below the viewport. Check again
+      // then, unless the user has used the sidebar by now.
+      let userInteracted = false;
+      for (const type of ['wheel', 'touchstart', 'pointerdown', 'keydown']) {
+        this.addEventListener(
+          type,
+          () => {
+            userInteracted = true;
+          },
+          { once: true, passive: true, signal: this._abortController?.signal },
+        );
+      }
+      this._afterPageLoad(() => {
+        if (userInteracted) return;
+        // With a hash the page stays where it is, and DocsLayout has already sized
+        // the sidebar for that position, footer included.
+        if (!location.hash) this._fitToViewport();
+        this._centerActiveIfHidden(container);
+      });
+      return;
+    }
+
+    // Hard load: wait for astro:page-load, which scrolls the page to the top
+    // and sizes the sidebar, before centering the active item.
+    this._afterPageLoad(() => {
+      this._fitToViewport();
+      container.style.visibility = '';
+      const active = this.querySelector<HTMLElement>(ACTIVE_LINK_SELECTOR);
+      if (active) this._scrollToCenter(active, container);
     });
   }
 
-  // ── UI sync ──────────────────────────────────────────────────────────────
-
-  private updateStatus(state: 'no-match' | null): void {
-    if (!this.status) return;
-    this.status.textContent =
-      state === 'no-match' ? (this.dataset.noResults ?? 'No topics match') : '';
+  private _centerActiveIfHidden(container: HTMLElement): void {
+    const active = this.querySelector<HTMLElement>(ACTIVE_LINK_SELECTOR);
+    if (active && !this._isElementVisible(active, container)) {
+      this._scrollToCenter(active, container);
+    }
   }
 
-  private syncClearButton(value: string): void {
-    if (!this.clearBtn) return;
-    this.clearBtn.hidden = value.length === 0;
+  /**
+   * Sets the sidebar's max-height to the rest of the viewport now. After DocsLayout
+   * scrolls the page to the top, it updates the height only on the next scroll
+   * event, after the active item would be measured.
+   */
+  private _fitToViewport(): void {
+    const sidebar = this.closest<HTMLElement>('.docs-sidebar');
+    if (!sidebar) return;
+    const top = sidebar.getBoundingClientRect().top;
+    sidebar.style.maxHeight = `${Math.max(0, window.innerHeight - top)}px`;
   }
 
-  private resetFilter(): void {
-    this.pinScrollY();
-    this.input!.value = '';
-    this.syncClearButton('');
-    safeRemove(FILTER_KEY);
-    this.exitFilterMode();
+  /** Runs `fn` in the frame after the next `astro:page-load`, if still connected. */
+  private _afterPageLoad(fn: () => void): void {
+    document.addEventListener(
+      'astro:page-load',
+      () =>
+        requestAnimationFrame(() => {
+          if (this.isConnected) fn();
+        }),
+      { once: true, signal: this._abortController?.signal },
+    );
   }
+
+  /** Scrolls `container` so that `el` is vertically centered in it. */
+  private _scrollToCenter(el: HTMLElement, container: HTMLElement): void {
+    const elRect = el.getBoundingClientRect();
+    const containerRect = container.getBoundingClientRect();
+    container.scrollTop +=
+      elRect.top + elRect.height / 2 - (containerRect.top + containerRect.height / 2);
+  }
+
+  private _isElementVisible(el: HTMLElement, container: HTMLElement): boolean {
+    const elRect = el.getBoundingClientRect();
+    const containerRect = container.getBoundingClientRect();
+    return elRect.top >= containerRect.top && elRect.bottom <= containerRect.bottom;
+  }
+
+  //#endregion
 }
 
 if (!customElements.get('sidebar-filter')) {
