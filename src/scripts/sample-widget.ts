@@ -6,6 +6,7 @@
  * The HTML shell is pre-rendered by Sample.astro (navbar, iframe, loading state).
  * This module handles the dynamic parts:
  *   – Serial iframe loading (one at a time, IntersectionObserver-based)
+ *   – Loading-indicator hand-off for demos that keep booting after `load`
  *   – Code-tab fetching and rendering (Angular JSON or xplat JSON)
  *   – Tab switching via <igc-tabs> / <igc-tab> web components
  *   – Live-editing footer (StackBlitz / CodeSandbox)
@@ -892,6 +893,79 @@ function initFitContentIframes(): void {
     .forEach(wireFitContent);
 }
 
+// ─── Loading hand-off ───────────────────────────────────────────────────────────
+
+/**
+ * Lets a demo that keeps booting after its `load` event (a WebAssembly app, say)
+ * hand its loading indicator over to the widget's, so the reader sees one, not two:
+ *   1. Before `load`: parent.postMessage({ type: 'igd-sample-pending' }, hostOrigin)
+ *   2. If its indicator is still up, the widget answers into the iframe with
+ *      { type: 'igd-sample-pending-ack' } and keeps the indicator up past `load`.
+ *      The demo hides its own indicator only once it gets that answer.
+ *   3. Once rendered: parent.postMessage({ type: 'igd-sample-ready' }, hostOrigin)
+ *      and the widget hides its indicator.
+ * A demo that never posts `pending` loses the indicator on `load`, as before.
+ */
+const SAMPLE_PENDING_MESSAGE = 'igd-sample-pending';
+const SAMPLE_PENDING_ACK_MESSAGE = 'igd-sample-pending-ack';
+const SAMPLE_READY_MESSAGE = 'igd-sample-ready';
+
+/** How long after `load` a pending demo has to post `ready` before the indicator goes anyway. */
+const SAMPLE_READY_TIMEOUT_MS = 12_000;
+
+let _handoffMessagesBound = false;
+
+/** End a widget pane's loading state. Safe to call more than once. */
+function finishSampleLoading(iframe: HTMLIFrameElement, samplePane: HTMLElement): void {
+  delete iframe.dataset.samplePending;
+  samplePane.classList.remove('loading');
+  samplePane.removeAttribute('aria-busy');
+  iframe.removeAttribute('aria-hidden');
+}
+
+/**
+ * On a widget iframe's `load`: end the loading state, unless the demo said it is
+ * still booting. Then it ends on the demo's `ready`, or after
+ * SAMPLE_READY_TIMEOUT_MS so the indicator can never stick.
+ */
+function finishSampleLoadingOnLoad(iframe: HTMLIFrameElement, samplePane: HTMLElement): void {
+  if (!iframe.dataset.samplePending) {
+    finishSampleLoading(iframe, samplePane);
+    return;
+  }
+  setTimeout(() => {
+    if (!iframe.dataset.samplePending) return; // `ready` arrived in time
+    console.warn(
+      `[sample-widget] "${iframe.src}" posted '${SAMPLE_PENDING_MESSAGE}' but no '${SAMPLE_READY_MESSAGE}' ` +
+        `within ${SAMPLE_READY_TIMEOUT_MS / 1000}s of loading; hiding the loading indicator anyway.`,
+    );
+    finishSampleLoading(iframe, samplePane);
+  }, SAMPLE_READY_TIMEOUT_MS);
+}
+
+function bindHandoffMessages(): void {
+  if (_handoffMessagesBound) return;
+  _handoffMessagesBound = true;
+  window.addEventListener('message', (e: MessageEvent) => {
+    const type = e.data?.type;
+    if (type !== SAMPLE_PENDING_MESSAGE && type !== SAMPLE_READY_MESSAGE) return;
+    // Only a widget's own demo can drive its indicator. `chrome="bare"` has none.
+    const iframe = Array.from(
+      document.querySelectorAll<HTMLIFrameElement>('.igd-code-view .igd-sample-container iframe'),
+    ).find((frame) => frame.contentWindow === e.source);
+    const samplePane = iframe?.closest<HTMLElement>('.igd-sample-container');
+    if (!iframe || !samplePane) return;
+
+    if (type === SAMPLE_READY_MESSAGE) {
+      finishSampleLoading(iframe, samplePane);
+    } else if (samplePane.classList.contains('loading')) {
+      // Too late once the indicator is gone: without the answer, the demo keeps its own.
+      iframe.dataset.samplePending = 'true';
+      (e.source as Window).postMessage({ type: SAMPLE_PENDING_ACK_MESSAGE }, e.origin);
+    }
+  });
+}
+
 // ─── Resizable samples ──────────────────────────────────────────────────────────
 
 const RESIZE_MIN_WIDTH = 200; // px — narrowest the iframe can be dragged.
@@ -983,6 +1057,9 @@ export function initSampleWidgets(): void {
   // Wire resizable samples so their drag handle / arrow keys work immediately.
   initResizableSamples();
 
+  // Listen before any iframe starts loading: a demo's `pending` arrives early.
+  bindHandoffMessages();
+
   // Kick off the Shiki download immediately so it is ready before the user
   // opens a code tab (tabs appear only after an IntersectionObserver fires
   // + a JSON fetch completes, giving Shiki time to load in parallel).
@@ -1003,9 +1080,9 @@ export function initSampleWidgets(): void {
     iframe.addEventListener(
       'load',
       () => {
-        samplePane.classList.remove('loading');
-        samplePane.removeAttribute('aria-busy');
-        iframe.removeAttribute('aria-hidden');
+        finishSampleLoadingOnLoad(iframe, samplePane);
+        // The queue moves on at `load` even when the indicator waits for the
+        // demo's `ready` (see SAMPLE_PENDING_MESSAGE).
         iframeLoading = false;
         processIframeQueue();
       },
