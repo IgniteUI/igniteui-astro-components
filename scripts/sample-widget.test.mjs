@@ -181,3 +181,149 @@ test('chrome="demo" loads the iframe and moves only the theme picker into the fo
     dom.window.close();
   }
 });
+
+// ─── Loading hand-off ───────────────────────────────────────────────────────────
+
+const DEMO_ORIGIN = 'https://demo.example.com';
+
+// `count` chrome="demo" widgets as Sample.astro renders them, so no code-viewer
+// fetch is involved. Resolves once the first iframe has started loading and
+// the rest wait in the serial queue. Timers are collected, not run.
+async function renderLoadingWidgets(count) {
+  const widgets = Array.from(
+    { length: count },
+    (_, i) => `<div id="cw-${i}" class="igd-code-view igd-code-view--demo" data-platform="blazor"
+      data-demos-base-url="${DEMO_ORIGIN}" data-iframe-src="${DEMO_ORIGIN}/sample-${i}" data-chrome="demo">
+      <div class="igd-code-view__inner">
+        <div class="igd-sample-container loading" aria-busy="true">
+          <div class="igd-sample-frame"><iframe data-src="${DEMO_ORIGIN}/sample-${i}" aria-hidden="true"></iframe></div>
+        </div>
+      </div>
+    </div>`,
+  );
+  const dom = new JSDOM(widgets.join(''), {
+    url: 'https://www.infragistics.com/',
+    runScripts: 'outside-only',
+    pretendToBeVisual: true,
+  });
+  const timers = [];
+  const warnings = [];
+  const context = dom.getInternalVMContext();
+  context.exports = {};
+  context.require = (name) => {
+    if (name === 'igniteui-webcomponents') return new Proxy({}, { get: () => () => {} });
+    if (name === './icon-registry' || name.endsWith('?raw')) return {};
+    if (name === './copy-status') return { announceCopyStatus() {}, clearCopyStatus() {} };
+    if (name === '../lib/ultimate-ui-platforms') return platformsModule.exports;
+    if (name === 'shiki') return { createHighlighter: async () => ({}) };
+    if (name === '../code-theme') return {};
+    throw new Error(`Unexpected dependency: ${name}`);
+  };
+  context.setTimeout = (callback, ms) => timers.push({ callback, ms });
+  context.console = { ...console, warn: (message) => warnings.push(message) };
+  // Widgets after the first enqueue their iframe once they scroll into view;
+  // here they all are, on the same animation frame as the first.
+  context.IntersectionObserver = class {
+    constructor(callback) {
+      this.callback = callback;
+    }
+    observe() {
+      dom.window.requestAnimationFrame(() => this.callback([{ isIntersecting: true }]));
+    }
+    disconnect() {}
+  };
+  vm.runInContext(script, context);
+  context.exports.initSampleWidgets();
+  await new Promise((resolve) => dom.window.requestAnimationFrame(() => resolve()));
+
+  const iframes = [...dom.window.document.querySelectorAll('iframe')];
+  // The type of each message the widget posts back into each demo.
+  const posted = iframes.map((iframe) => {
+    const messages = [];
+    iframe.contentWindow.postMessage = (data, targetOrigin) =>
+      messages.push({ type: data.type, targetOrigin });
+    return messages;
+  });
+  const postFromDemo = (iframe, data) =>
+    dom.window.dispatchEvent(
+      new dom.window.MessageEvent('message', {
+        data,
+        origin: DEMO_ORIGIN,
+        source: iframe.contentWindow,
+      }),
+    );
+  const fireLoad = (iframe) => iframe.dispatchEvent(new dom.window.Event('load'));
+  return { dom, iframes, posted, postFromDemo, fireLoad, timers, warnings };
+}
+
+function assertLoading(iframe, loading) {
+  const pane = iframe.closest('.igd-sample-container');
+  assert.equal(pane.classList.contains('loading'), loading, 'loading class');
+  assert.equal(pane.getAttribute('aria-busy'), loading ? 'true' : null, 'aria-busy');
+  assert.equal(iframe.getAttribute('aria-hidden'), loading ? 'true' : null, 'aria-hidden');
+}
+
+test('a demo that never posts igd-sample-pending loses the indicator on load, as before', async () => {
+  const { dom, iframes, posted, postFromDemo, fireLoad, timers } = await renderLoadingWidgets(1);
+  try {
+    const [iframe] = iframes;
+    assert.equal(iframe.getAttribute('src'), `${DEMO_ORIGIN}/sample-0`);
+    fireLoad(iframe);
+    assertLoading(iframe, false);
+    assert.deepEqual(timers, []);
+
+    // Announced once the indicator is already gone: no answer, so the demo keeps its own.
+    postFromDemo(iframe, { type: 'igd-sample-pending' });
+    assert.deepEqual(posted[0], []);
+    assertLoading(iframe, false);
+  } finally {
+    dom.window.close();
+  }
+});
+
+test('a demo that posts igd-sample-pending keeps the indicator past load until igd-sample-ready', async () => {
+  const { dom, iframes, posted, postFromDemo, fireLoad } = await renderLoadingWidgets(2);
+  try {
+    const [first, second] = iframes;
+    assert.equal(second.getAttribute('src'), null, 'the second demo waits in the queue');
+
+    postFromDemo(first, { type: 'igd-sample-pending' });
+    assert.deepEqual(posted[0], [{ type: 'igd-sample-pending-ack', targetOrigin: DEMO_ORIGIN }]);
+
+    fireLoad(first);
+    assertLoading(first, true);
+    assert.equal(
+      second.getAttribute('src'),
+      `${DEMO_ORIGIN}/sample-1`,
+      'the queue moves on at load, not at ready',
+    );
+
+    // Only the demo in that iframe can end its loading state.
+    postFromDemo(second, { type: 'igd-sample-ready' });
+    assertLoading(first, true);
+
+    postFromDemo(first, { type: 'igd-sample-ready' });
+    assertLoading(first, false);
+  } finally {
+    dom.window.close();
+  }
+});
+
+test('the indicator goes anyway when a pending demo never posts igd-sample-ready', async () => {
+  const { dom, iframes, postFromDemo, fireLoad, timers, warnings } = await renderLoadingWidgets(1);
+  try {
+    const [iframe] = iframes;
+    postFromDemo(iframe, { type: 'igd-sample-pending' });
+    fireLoad(iframe);
+    assertLoading(iframe, true);
+
+    assert.equal(timers.length, 1);
+    assert.ok(timers[0].ms >= 10_000 && timers[0].ms <= 15_000, `fallback after ${timers[0].ms}ms`);
+    timers[0].callback();
+    assertLoading(iframe, false);
+    assert.equal(warnings.length, 1);
+    assert.match(warnings[0], /igd-sample-ready/);
+  } finally {
+    dom.window.close();
+  }
+});
