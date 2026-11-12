@@ -715,6 +715,14 @@ const FIT_CONTENT_ENABLE_MESSAGE = 'igd-sample-fit';
 let _fitContentMessageBound = false;
 
 /**
+ * The document of each fit-content iframe that has reported its own size.
+ * Keyed by document, not set on the iframe, so that navigating the iframe to
+ * a page that does not report resumes direct measurement. A report that
+ * arrives before the new page's load event is already from the new document.
+ */
+const _reportingDocuments = new WeakMap<HTMLIFrameElement, Document | null>();
+
+/**
  * Apply a measured content size to a fit-content iframe. The size goes on the
  * iframe itself; the container has `height: auto` in fit-content mode, so it
  * grows around the iframe (including any `spacing` padding). Width is only
@@ -786,8 +794,8 @@ function bindFitContentMessages(): void {
       .forEach((iframe) => {
         if (iframe.contentWindow !== e.source) return;
         // A demo that reports its own size knows it best. Direct measurement
-        // of a same-origin demo stops from here on (see wireFitContent).
-        iframe.dataset.fitReported = 'true';
+        // of this same-origin document stops from here on (see wireFitContent).
+        _reportingDocuments.set(iframe, iframe.contentDocument);
         // Width only matters when the host aligns the iframe
         // horizontally (position → data-justify); otherwise the iframe
         // stays full-width and a reported width is ignored. Resizable
@@ -833,7 +841,7 @@ function wireFitContent(iframe: HTMLIFrameElement): void {
       const doc = iframe.contentDocument;
       const body = doc?.body;
       if (!body) return; // cross-origin — rely on postMessage instead
-      if (iframe.dataset.fitReported) return; // the demo reports its own size
+      if (_reportingDocuments.get(iframe) === doc) return; // the demo reports its own size
       setFitSize(iframe, {
         height: Math.max(doc!.documentElement.offsetHeight, body.offsetHeight, body.scrollHeight),
         width: measureContentWidth(iframe, body),
