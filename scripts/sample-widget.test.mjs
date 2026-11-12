@@ -181,3 +181,109 @@ test('chrome="demo" loads the iframe and moves only the theme picker into the fo
     dom.window.close();
   }
 });
+
+// A same-origin fitContent demo whose page fills the iframe (html, body
+// { height: 100% }) and that also posts its own height. Measuring its body
+// only echoes the iframe height back, so once the demo reports, a later
+// ResizeObserver tick must not overwrite the reported height. A page that
+// does not report is measured directly, including one the iframe navigates
+// to after a reporting demo.
+const fitScenarios = {
+  reports: 'that reports its size keeps the reported height',
+  direct: 'without reports is measured directly',
+  navigates: 'is measured directly again after navigating away from a reporting demo',
+};
+for (const [scenario, title] of Object.entries(fitScenarios)) {
+  test(`fitContent same-origin demo ${title}`, async () => {
+    const dom = new JSDOM(
+      `<div class="igd-sample-container igd-sample-container--fit-content" data-fit-content="true">
+        <div class="igd-sample-frame"><iframe style="width: 100%; height: 50px;"></iframe></div>
+      </div>`,
+      {
+        url: 'https://staging.example.com/products/docs/',
+        runScripts: 'outside-only',
+        pretendToBeVisual: true,
+      },
+    );
+    try {
+      const observers = [];
+      const context = dom.getInternalVMContext();
+      context.exports = {};
+      context.require = (name) => {
+        if (name === 'igniteui-webcomponents') return new Proxy({}, { get: () => () => {} });
+        if (name === './icon-registry' || name.endsWith('?raw')) return {};
+        if (name === './copy-status') return { announceCopyStatus() {}, clearCopyStatus() {} };
+        if (name === '../lib/ultimate-ui-platforms') return platformsModule.exports;
+        if (name === '../code-theme') return { igCodeTheme: { name: 'ig-dark' } };
+        if (name === 'shiki') return { createHighlighter: async () => ({}) };
+        throw new Error(`Unexpected dependency: ${name}`);
+      };
+      context.ResizeObserver = class {
+        constructor(callback) {
+          this.callback = callback;
+          observers.push(this);
+        }
+        observe() {}
+        disconnect() {}
+      };
+      context.requestIdleCallback = (callback) => callback();
+      vm.runInContext(script, context);
+      context.exports.initSampleWidgets();
+
+      const iframe = dom.window.document.querySelector('iframe');
+      let inner = iframe.contentDocument;
+      // The demo page fills the iframe: every direct measurement is the
+      // iframe's current (stale) height, never the demo's.
+      const measureAs = (get) => {
+        for (const [el, prop] of [
+          [inner.documentElement, 'offsetHeight'],
+          [inner.body, 'offsetHeight'],
+          [inner.body, 'scrollHeight'],
+        ])
+          Object.defineProperty(el, prop, { get, configurable: true });
+      };
+      measureAs(() => parseFloat(iframe.style.height));
+      iframe.dispatchEvent(new dom.window.Event('load'));
+      assert.equal(observers.length, 1, 'the same-origin body is observed');
+
+      const report = (height) =>
+        dom.window.dispatchEvent(
+          new dom.window.MessageEvent('message', {
+            data: { type: 'igd-sample-height', height },
+            source: iframe.contentWindow,
+          }),
+        );
+
+      if (scenario === 'reports') {
+        const stale = iframe.style.height;
+        report(1224);
+        assert.equal(iframe.style.height, '1224px');
+        // The ResizeObserver tick that raced the report: the echo it would
+        // write is the height before the report.
+        measureAs(() => parseFloat(stale));
+        observers[0].callback();
+        assert.equal(iframe.style.height, '1224px', 'a stale echo does not cut the demo off');
+      } else if (scenario === 'direct') {
+        measureAs(() => 421);
+        observers[0].callback();
+        assert.equal(iframe.style.height, '421px');
+      } else {
+        report(1224);
+        assert.equal(iframe.style.height, '1224px');
+        // The iframe navigates to a same-origin page that never reports.
+        const loaded = new Promise((resolve) =>
+          iframe.addEventListener('load', resolve, { once: true }),
+        );
+        iframe.setAttribute('src', 'about:blank');
+        await loaded;
+        assert.notEqual(iframe.contentDocument, inner, 'the iframe has a new document');
+        inner = iframe.contentDocument;
+        measureAs(() => 421);
+        observers.at(-1).callback();
+        assert.equal(iframe.style.height, '421px', 'the new page is measured, not frozen');
+      }
+    } finally {
+      dom.window.close();
+    }
+  });
+}
