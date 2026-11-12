@@ -785,6 +785,9 @@ function bindFitContentMessages(): void {
       .querySelectorAll<HTMLIFrameElement>('.igd-sample-container[data-fit-content] iframe')
       .forEach((iframe) => {
         if (iframe.contentWindow !== e.source) return;
+        // A demo that reports its own size knows it best. Direct measurement
+        // of a same-origin demo stops from here on (see wireFitContent).
+        iframe.dataset.fitReported = 'true';
         // Width only matters when the host aligns the iframe
         // horizontally (position → data-justify); otherwise the iframe
         // stays full-width and a reported width is ignored. Resizable
@@ -806,6 +809,12 @@ function bindFitContentMessages(): void {
  * in sync with a ResizeObserver on their <body>. Cross-origin demos can't be
  * read, so they must post their height (see FIT_CONTENT_MESSAGE).
  *
+ * A same-origin demo that also posts its height is sized by its messages
+ * alone. Its page may fill the iframe (`html, body { height: 100% }`), and
+ * then the direct measurement only echoes the iframe height back. Both paths
+ * writing the height race: a stale echo can land after the demo's last
+ * report and leave the iframe cut off.
+ *
  * The `height` prop is only the placeholder/fallback in fit-content mode —
  * once a size is measured/reported, the content dictates it. Measurement uses
  * the html/body offset heights (not the document scrollHeight, which is
@@ -824,6 +833,7 @@ function wireFitContent(iframe: HTMLIFrameElement): void {
       const doc = iframe.contentDocument;
       const body = doc?.body;
       if (!body) return; // cross-origin — rely on postMessage instead
+      if (iframe.dataset.fitReported) return; // the demo reports its own size
       setFitSize(iframe, {
         height: Math.max(doc!.documentElement.offsetHeight, body.offsetHeight, body.scrollHeight),
         width: measureContentWidth(iframe, body),
