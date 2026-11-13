@@ -53,6 +53,12 @@ export interface Props {
   showThemeToggle?: boolean;
   /** `localStorage` key for persisting the theme. Defaults to `'docs-theme'`. */
   themeStorageKey?: string;
+  /**
+   * The page's language for `<html lang>`, as a BCP 47 tag (`'en'`, `'ja'`, `'ko'`).
+   * Defaults to the site's `navLang` from `virtual:docs-template/site-meta`:
+   * `jp` → `ja`, `kr` → `ko`, anything else → `en`.
+   */
+  lang?: string;
 }
 
 const {
@@ -73,6 +79,7 @@ const {
   versionLabel,
   showThemeToggle,
   themeStorageKey,
+  lang,
 } = Astro.props;
 const resolvedSiteTitle = siteTitleProp ?? siteTitle;
 const licenseType = license === 'commercial' ? 'premium' : license === 'MIT' ? 'opensource' : false;
@@ -93,6 +100,14 @@ const chromeSnapshot =
   navLang !== 'jp' && typeof __IG_CHROME__ !== 'undefined' ? __IG_CHROME__ : null;
 const pageTitle = title ? `${title} | ${resolvedSiteTitle}` : resolvedSiteTitle;
 
+/**
+ * `<html lang>`: the language the page is written in. A Japanese docs build
+ * (`navLang: 'jp'`) declared `en` until 1.7.x, which tells Bing, AI crawlers and
+ * screen readers that a Japanese page is English.
+ */
+const HTML_LANG_BY_NAV_LANG: Record<string, string> = { en: 'en', jp: 'ja', kr: 'ko' };
+const htmlLang = lang ?? HTML_LANG_BY_NAV_LANG[navLang ?? 'en'] ?? 'en';
+
 type HeadEntry = {
   tag: string;
   attrs?: Record<string, string | boolean | undefined>;
@@ -102,7 +117,7 @@ type HeadEntry = {
 
 <!doctype html>
 <html
-  lang="en"
+  lang={htmlLang}
   data-theme="light"
   style={!showGlobalNav ? '--docs-global-nav-height: 0' : undefined}
 >
