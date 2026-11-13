@@ -8,14 +8,7 @@ import SearchAdvanced from '../../../../src/components/SearchAdvanced/SearchAdva
 import { igCodeTheme } from '../../../../src/code-theme';
 import CodeFences from '../../components/CodeFences.mdx';
 import MockSample from '../../components/MockSample.astro';
-import {
-  SITE_TITLE,
-  SIDEBAR,
-  PRODUCT_LINKS,
-  SEARCH_TABS,
-  PACKAGES,
-  VERSIONS,
-} from '../../site-config';
+import { SITE_TITLE, SIDEBAR, SEARCH_TABS, PACKAGES, VERSIONS } from '../../site-config';
 
 const slug = 'components/code-block';
 
@@ -38,11 +31,6 @@ const longLine = `export const columns = [{ field: 'ID', header: 'Identifier', w
 <DocsLayout title="Code snippets" siteTitle={SITE_TITLE} hasSidebar currentSlug={slug}>
   <DocsSubHeader
     slot="subheader"
-    pageTitle="Code snippets"
-    currentSlug={slug}
-    siteTitle={SITE_TITLE}
-    productLinks={PRODUCT_LINKS}
-    showThemeToggle={true}
     packages={[...PACKAGES]}
     selectedPackage={PACKAGES[0].value}
     versions={[...VERSIONS]}

@@ -22,13 +22,10 @@ import DocsSubHeader from 'igniteui-astro-components/components/DocsSubHeader.as
 | `selectedVersion` | `string`                                                                           | —              | Currently selected version (must match one of `versions`).                                                                                                                                                                                              |
 | `versionLabel`    | `string`                                                                           | `'Version'`    | `aria-label` of the version selector (not a visible label).                                                                                                                                                                                             |
 
-Accepted but not rendered (kept for compatibility; see the DocsSubHeader dead-props issue):
-
-| Prop                                                    | Why it has no effect                                                                                               |
-| ------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
-| `siteTitle`, `pageTitle`, `currentSlug`, `sidebarItems` | Breadcrumb inputs. The breadcrumb moved to `DocsBreadcrumb`; the sub-header computes the crumbs and discards them. |
-| `productLinks`                                          | The product-links markup is commented out.                                                                         |
-| `showThemeToggle`, `themeStorageKey`                    | Destructured and never used. No toggle is rendered; `DocsLayout` hard-codes the `'docs-theme'` storage key.        |
+The breadcrumb props (`siteTitle`, `pageTitle`, `currentSlug`, `sidebarItems`), `productLinks`
+and the theme-toggle props (`showThemeToggle`, `themeStorageKey`) were removed in #187 (issue #180): the
+sub-header rendered none of them. Pass `currentSlug` and `siteTitle` to `DocsLayout`, which renders
+`DocsBreadcrumb`; the theme is restored from the `'docs-theme'` key by `DocsLayout`.
 
 `PackageEntry` is `{ label: string; value?: string; href?: string; base?: string }`:
 
