@@ -247,8 +247,8 @@ authored without imports.
 sidebar from a JSON TOC, static images, remark/rehype pipeline, Pagefind index,
 `llms.txt` generation, the Infragistics chrome). It is the origin of the docs
 repo's integration, but it is **not usable as-is today**: it injects route files
-that are not in this package (#158), it imports `pagefind` without declaring it
-(#157), its `site-meta` module lacks the `packages` and `selectedPackage`
+that are not in this package (#158), it needs the optional peer `pagefind`
+installed, its `site-meta` module lacks the `packages` and `selectedPackage`
 exports `DocsSubHeader` imports, and it registers no middleware. Treat it as
 reference code until those issues are closed.
 
@@ -572,7 +572,7 @@ Every component is reachable through an explicit subpath in
 [`src/index.ts`](./src/index.ts) which re-exports the runtime helpers only —
 `.astro` files must always be imported via their full subpath because Astro
 components are not plain ES modules. The barrel re-exports `./integration`,
-which imports `pagefind` (not a declared dependency, #157), so a bare import
+which imports `pagefind` (an optional peer dependency), so a bare import
 fails to resolve unless the host installs `pagefind`. Import the subpaths you
 need (`igniteui-astro-components/sidebar`, `.../platform`, `.../lib/types`, …)
 instead of the bare package.

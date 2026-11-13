@@ -16,6 +16,7 @@ import DocsLayout from 'igniteui-astro-components/layouts/DocsLayout.astro';
 | `description`     | `string \| null` | —              | `<meta name="description">` value.                                                                            |
 | `keywords`        | `string \| null` | —              | `<meta name="keywords">` value.                                                                               |
 | `hasSidebar`      | `boolean`        | `true`         | Renders the sidebar rail when `true`. Provide content via `<… slot="sidebar">`.                               |
+| `hasToc`          | `boolean`        | `true`         | Renders the `toc` slot when `true`.                                                                           |
 | `currentSlug`     | `string`         | `''`           | Slug of the current page — used for the breadcrumb above the content.                                         |
 | `siteTitle`       | `string`         | virtual module | Override the site name used in `<title>` and the breadcrumb. Use this when not running `siteMetaIntegration`. |
 | `license`         | `string`         | —              | `license` frontmatter value. `'commercial'` shows a Premium badge, `'MIT'` an Open Source badge.              |
@@ -28,10 +29,6 @@ import DocsLayout from 'igniteui-astro-components/layouts/DocsLayout.astro';
 | `versionLabel`    | `string`         | `'Version'`    | `aria-label` of the sub-header version selector (not a visible label).                                        |
 | `showThemeToggle` | `boolean`        | `false`        | Forwarded to `DocsSubHeader`, which does not render a toggle; no effect today.                                |
 | `themeStorageKey` | `string`         | `'docs-theme'` | Forwarded to `DocsSubHeader` and unused; the layout's restore script reads the `'docs-theme'` key only.       |
-
-`hasToc` (`boolean`, default `true`) is also read at runtime and hides the `toc`
-slot when `false`, but it is not yet declared in the `Props` interface (issue #161), so
-TypeScript consumers must spread it in (`{...{ hasToc: false }}`).
 
 ## Slots
 
