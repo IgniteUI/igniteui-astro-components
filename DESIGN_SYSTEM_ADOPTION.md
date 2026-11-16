@@ -4,19 +4,19 @@ Status: adopted on this branch. The package loads the design system as its base 
 
 ## What the branch does now
 
-- `DocsLayout` loads `src/styles/design-system/` (a copy of `ig-design-system` at `e240e7d`) before `theme.scss` and sets `data-igd-type="docs"`.
+- `DocsLayout` loads `src/styles/design-system/` (a copy of `ig-design-system` at `17e4b6f`: `fonts.css`, `tokens.css`, `theme.css`) before `theme.scss` and sets `data-igd-type="docs"`.
 - The hand-made palette, the type scale and the Material elevations are gone. The engine variables come from the design system.
-- No stylesheet reads a raw gray step. 196 references use semantic `--igd-color-*`, `--igd-space-*` or `--igd-font-*` tokens. `light-dark()` calls went from 158 to 43.
-- `--igd-accent`, `--igd-on-accent`, `--igd-link-color`, `--igd-link-hover-color`, `--igd-app-bg`, `--igd-on-app-bg`, `--igd-app-outline-color`, `--igd-font-sans` and `--igd-padding-sm/md/lg` keep their names and point at design system tokens.
-- Warning callouts read the warning palette. Secondary is violet in the design system, and a violet warning reads wrong.
+- No stylesheet reads a raw palette step. Colours are semantic `--igd-color-*`, feedback and badge tokens. `light-dark()` calls went from 158 to 5, none of them a palette colour.
+- 142 padding, margin, gap and radius values read `--igd-space-*` and `--igd-radius-*` tokens.
+- `--igd-accent`, `--igd-on-accent`, `--igd-link-color`, `--igd-link-hover-color`, `--igd-app-bg`, `--igd-on-app-bg`, `--igd-app-outline-color`, `--igd-font-sans`, `--igd-padding-sm/md/lg` and the status badge names keep their names and point at design system tokens.
 
 ## Still to do
 
-- 65 references to raw primary, secondary, surface, success, error and warn steps, mostly the info and warning callouts.
-- 43 `light-dark()` calls: the status badge colour pairs and the callouts. The design system has no status badge tokens and no dark brand ramps yet.
-- Spacing, radius and size values typed into stylesheets (finding 5). 26px spacing and 4px radius have no step.
+- Widths, heights and offsets stay as typed: they are not part of the design system.
+- 18 spacing and radius values are off the scale (6, 3, 18, 10, 9, 100px spacing; 2, 5, 11px radius) and stay as typed.
+- The code block colours are typed hex values from the Shiki theme.
 - `GlobalNavBar` still names `aktiv-grotesk`, so `DocsLayout` keeps the Typekit link.
-- The playground Colors and Typography pages still exist; they now show the design system's values.
+- The dark theme has not been reviewed. Nobody is working on it and the sites have no switch for it yet.
 - The copy in `src/styles/design-system/` becomes a dependency once the package is published.
 
 ## Summary
