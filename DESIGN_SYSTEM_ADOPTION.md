@@ -5,6 +5,8 @@ Branch: `mpopov/adopt-design-system-tokens`. This file is a working report and i
 
 Measured on `master` at `fca14ed` against `ig-design-system` `main` at `923f9c8`.
 
+The playground copy is now `ig-design-system` `86e6740`. Its default type set has since changed to the marketing site's live sizes (h1 52px, paragraph 16px), so the 70px and 19px figures below describe the earlier default. The `docs` set this trial selects is unchanged. With the switch on, `/` at 1440px and 390px differs from today only in font family.
+
 ## Summary
 
 - **The two systems are closer than expected in one way and further apart in three.**

@@ -14,9 +14,9 @@
   /* one shadow colour behind every neutral elevation */
   --igd-color-shadow: oklch(0 0 0);
   /* roundness, easing and neutral elevations: compiled from the engine's border-radius() and elevations() */
-  --igd-radius-full: clamp(0.25rem, calc(var(--ig-radius-factor, 1) * 2rem), 2rem);
+  --igd-radius-full: clamp(0.25rem, calc(var(--ig-radius-factor, 1) * 624.9375rem), 624.9375rem);
   --igd-nav-panel-radius: clamp(0rem, calc(var(--ig-radius-factor, 1) * 1.875rem), 1.875rem);
-  --igd-radius-xl: clamp(0.25rem, calc(var(--ig-radius-factor, 0.6428571429) * 1.75rem), 1.75rem);
+  --igd-radius-xl: clamp(0.25rem, calc(var(--ig-radius-factor, 0.8571428571) * 1.75rem), 1.75rem);
   --igd-radius-lg: clamp(0rem, calc(var(--ig-radius-factor, 0.6666666667) * 1.5rem), 1.5rem);
   --igd-radius-md: clamp(0.25rem, calc(var(--ig-radius-factor, 0.75) * 1rem), 1rem);
   --igd-radius-sm: clamp(0.125rem, calc(var(--ig-radius-factor, 0.6666666667) * 0.75rem), 0.75rem);
@@ -50,7 +50,7 @@
   /* typography: engine slot variables, compiled from the engine's typography() with the type scale in spec.ts */
   --ig-font-family: var(--igd-font-body);
   --ig-h1-font-family: var(--igd-font-display);
-  --ig-h1-font-size: clamp(2.5rem, 3.2609cqi + 1.7663rem, 4.375rem);
+  --ig-h1-font-size: clamp(2.25rem, 1.7391cqi + 1.8587rem, 3.25rem);
   --ig-h1-font-weight: 900;
   --ig-h1-font-style: normal;
   --ig-h1-line-height: 1.12;
@@ -64,14 +64,14 @@
   --ig-h2-letter-spacing: -0.0256em;
   --ig-h2-text-transform: none;
   --ig-h3-font-family: var(--igd-font-display);
-  --ig-h3-font-size: clamp(1.375rem, 0.5435cqi + 1.2527rem, 1.6875rem);
+  --ig-h3-font-size: clamp(1.25rem, 0.3261cqi + 1.1766rem, 1.4375rem);
   --ig-h3-font-weight: 800;
   --ig-h3-font-style: normal;
   --ig-h3-line-height: 1.2;
   --ig-h3-letter-spacing: -0.0222em;
   --ig-h3-text-transform: none;
   --ig-h4-font-family: var(--igd-font-display);
-  --ig-h4-font-size: 1.3125rem;
+  --ig-h4-font-size: 1.625rem;
   --ig-h4-font-weight: 800;
   --ig-h4-font-style: normal;
   --ig-h4-line-height: 1.1;
@@ -92,7 +92,7 @@
   --ig-h6-letter-spacing: 0;
   --ig-h6-text-transform: none;
   --ig-subtitle-1-font-family: var(--igd-font-body);
-  --ig-subtitle-1-font-size: clamp(1.125rem, 0.2174cqi + 1.0761rem, 1.25rem);
+  --ig-subtitle-1-font-size: clamp(1.0625rem, 0.2174cqi + 1.0136rem, 1.1875rem);
   --ig-subtitle-1-font-weight: 400;
   --ig-subtitle-1-font-style: normal;
   --ig-subtitle-1-line-height: 1.6;
@@ -106,7 +106,7 @@
   --ig-subtitle-2-letter-spacing: 0;
   --ig-subtitle-2-text-transform: none;
   --ig-body-1-font-family: var(--igd-font-body);
-  --ig-body-1-font-size: clamp(1.0625rem, 0.2174cqi + 1.0136rem, 1.1875rem);
+  --ig-body-1-font-size: 1rem;
   --ig-body-1-font-weight: 400;
   --ig-body-1-font-style: normal;
   --ig-body-1-line-height: 1.62;
@@ -317,7 +317,7 @@
   --igd-space-3xl: max(var(--is-large, 1) * 2.5rem * var(--ig-spacing-large, var(--ig-spacing, var(--ig-spacing, 1))), var(--is-medium, 1) * 2.1875rem * var(--ig-spacing-medium, var(--ig-spacing, var(--ig-spacing, 1))), var(--is-small, 1) * 1.875rem * var(--ig-spacing-small, var(--ig-spacing, var(--ig-spacing, 1))));
   --igd-space-4xl: max(var(--is-large, 1) * 3rem * var(--ig-spacing-large, var(--ig-spacing, var(--ig-spacing, 1))), var(--is-medium, 1) * 2.625rem * var(--ig-spacing-medium, var(--ig-spacing, var(--ig-spacing, 1))), var(--is-small, 1) * 2.25rem * var(--ig-spacing-small, var(--ig-spacing, var(--ig-spacing, 1))));
   --igd-space-5xl: max(var(--is-large, 1) * 4rem * var(--ig-spacing-large, var(--ig-spacing, var(--ig-spacing, 1))), var(--is-medium, 1) * 3.5rem * var(--ig-spacing-medium, var(--ig-spacing, var(--ig-spacing, 1))), var(--is-small, 1) * 3rem * var(--ig-spacing-small, var(--ig-spacing, var(--ig-spacing, 1))));
-  --igd-space-6xl: max(var(--is-large, 1) * 6.5rem * var(--ig-spacing-large, var(--ig-spacing, var(--ig-spacing, 1))), var(--is-medium, 1) * 5.6875rem * var(--ig-spacing-medium, var(--ig-spacing, var(--ig-spacing, 1))), var(--is-small, 1) * 4.875rem * var(--ig-spacing-small, var(--ig-spacing, var(--ig-spacing, 1))));
+  --igd-space-6xl: max(var(--is-large, 1) * 6rem * var(--ig-spacing-large, var(--ig-spacing, var(--ig-spacing, 1))), var(--is-medium, 1) * 5.25rem * var(--ig-spacing-medium, var(--ig-spacing, var(--ig-spacing, 1))), var(--is-small, 1) * 4.5rem * var(--ig-spacing-small, var(--ig-spacing, var(--ig-spacing, 1))));
   --igd-space-inset-3xs: var(--igd-space-3xs);
   --igd-space-inset-2xs: var(--igd-space-2xs);
   --igd-space-inset-xs: var(--igd-space-xs);
@@ -407,11 +407,11 @@
 /* ===== 2. live tokens (same names as tokens.json) ===== */
 :root, [data-ig-scope], [data-theme] {
   --igd-shadow-none: var(--ig-elevation-0);
-  --igd-shadow-raised: var(--ig-elevation-4);
+  --igd-shadow-raised: 0 calc(var(--ig-elevation-factor, 1) * 10px) calc(var(--ig-elevation-factor, 1) * 30px) calc(var(--ig-elevation-factor, 1) * -5px) hsl(from var(--igd-color-shadow) h s l / 0.08), 0 calc(var(--ig-elevation-factor, 1) * 4px) calc(var(--ig-elevation-factor, 1) * 10px) calc(var(--ig-elevation-factor, 1) * -5px) hsl(from var(--igd-color-shadow) h s l / 0.04);
   --igd-shadow-accent-lg: var(--igd-elevation-tint-16);
   --igd-shadow-accent-sm: var(--igd-elevation-tint-1);
-  --igd-shadow-overlay: var(--ig-elevation-22);
-  --igd-shadow-floating: var(--ig-elevation-16);
+  --igd-shadow-overlay: 0 calc(var(--ig-elevation-factor, 1) * 44px) calc(var(--ig-elevation-factor, 1) * 90px) calc(var(--ig-elevation-factor, 1) * -34px) rgba(15, 23, 42, 0.4);
+  --igd-shadow-floating: 0 calc(var(--ig-elevation-factor, 1) * 16px) calc(var(--ig-elevation-factor, 1) * 32px) calc(var(--ig-elevation-factor, 1) * -12px) rgba(15, 23, 42, 0.4);
   --igd-shadow-accent-md: var(--igd-elevation-tint-13);
   --igd-callout-release-shadow: inset 0 0 0 var(--igd-border-width-default) var(--igd-color-emphasis-ring), var(--igd-elevation-tint-13);
   --igd-callout-release-shadow-hover: inset 0 0 0 var(--igd-border-width-default) var(--igd-color-emphasis-ring-hover), var(--igd-elevation-tint-16);
@@ -469,7 +469,7 @@
   --igd-gradient-border-bundle: linear-gradient(var(--igd-color-surface-card), var(--igd-color-surface-card)) padding-box, linear-gradient(135deg, var(--igd-color-accent-primary), var(--igd-color-accent-secondary)) border-box;
   --igd-gradient-emphasis: linear-gradient(180deg, hsl(from var(--igd-color-accent-primary) h s l / var(--igd-opacity-subtle)), hsl(from var(--igd-color-accent-inverse) h s l / var(--igd-opacity-faint)));
   --igd-footer-card-background: linear-gradient(180deg, hsl(from var(--igd-color-text-inverse) h s l / var(--igd-opacity-faint)), transparent);
-  --igd-container-gutter: clamp(var(--igd-space-md), 4vw, var(--igd-space-4xl)); /* @kind spacing */
+  --igd-container-gutter: clamp(var(--igd-space-lg), 4vw, var(--igd-space-4xl)); /* @kind spacing */
   --igd-layout-split: 0.95fr 1.05fr; /* @kind other */
   --igd-nav-backdrop-blur: blur(var(--igd-space-sm));
 }

@@ -207,11 +207,11 @@
   --igd-footer-social-hover-background: rgba(81,187,238,0.16);
   --igd-footer-social-hover-border: rgba(149,213,247,0.4);
   --igd-shadow-none: none;
-  --igd-shadow-raised: 0 2px 12px 0 rgba(36,37,44,0.1);
+  --igd-shadow-raised: 0 10px 30px -5px rgba(0,0,0,0.08), 0 4px 10px -5px rgba(0,0,0,0.04);
   --igd-shadow-accent-lg: 0 8px 10px -5px rgba(36,98,234,0.26), 0 16px 24px 2px rgba(36,98,234,0.12), 0 6px 30px 5px rgba(36,98,234,0.08);
   --igd-shadow-accent-sm: 0 1px 3px 0 rgba(36,98,234,0.26), 0 1px 1px 0 rgba(36,98,234,0.12), 0 2px 1px -1px rgba(36,98,234,0.08);
-  --igd-shadow-overlay: 0 10px 14px -6px rgba(0,0,0,0.26), 0 22px 35px 3px rgba(0,0,0,0.12), 0 8px 42px 7px rgba(0,0,0,0.08);
-  --igd-shadow-floating: 0 8px 10px -5px rgba(0,0,0,0.26), 0 16px 24px 2px rgba(0,0,0,0.12), 0 6px 30px 5px rgba(0,0,0,0.08);
+  --igd-shadow-overlay: 0 44px 90px -34px rgba(15,23,42,0.4);
+  --igd-shadow-floating: 0 16px 32px -12px rgba(15,23,42,0.4);
   --igd-shadow-accent-md: 0 7px 8px -4px rgba(36,98,234,0.26), 0 13px 19px 2px rgba(36,98,234,0.12), 0 5px 24px 4px rgba(36,98,234,0.08);
   --igd-callout-release-shadow: inset 0 0 0 1px rgba(0,153,255,0.12), 0 7px 8px -4px rgba(36,98,234,0.26), 0 13px 19px 2px rgba(36,98,234,0.12), 0 5px 24px 4px rgba(36,98,234,0.08);
   --igd-callout-release-shadow-hover: inset 0 0 0 1px rgba(0,153,255,0.25), 0 8px 10px -5px rgba(36,98,234,0.26), 0 16px 24px 2px rgba(36,98,234,0.12), 0 6px 30px 5px rgba(36,98,234,0.08);
@@ -266,7 +266,7 @@
   --igd-space-3xl: 2.5rem;
   --igd-space-4xl: 3rem;
   --igd-space-5xl: 4rem;
-  --igd-space-6xl: 6.5rem;
+  --igd-space-6xl: 6rem;
   --igd-space-inset-3xs: var(--igd-space-3xs);
   --igd-space-inset-2xs: var(--igd-space-2xs);
   --igd-space-inset-xs: var(--igd-space-xs);
@@ -300,9 +300,9 @@
   --igd-space-gap-3xl: var(--igd-space-3xl);
   --igd-space-gap-4xl: var(--igd-space-4xl);
   --igd-space-gap-5xl: var(--igd-space-5xl);
-  --igd-radius-full: 2rem;
+  --igd-radius-full: 624.9375rem;
   --igd-nav-panel-radius: 1.875rem;
-  --igd-radius-xl: 1.125rem;
+  --igd-radius-xl: 1.5rem;
   --igd-radius-lg: 1rem;
   --igd-radius-md: 0.75rem;
   --igd-radius-sm: 0.5rem;
