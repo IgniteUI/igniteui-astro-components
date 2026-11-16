@@ -5,4 +5,4 @@
 @use 'markdown';
 @use 'component-themes';
 @use 'icon-gallery';
-@forward 'type-scale' show $igd-type-scale;
+@use 'type';

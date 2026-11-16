@@ -1,13 +1,13 @@
-// Copies the built ig-design-system package into playground/public/design-system for the adoption trial.
-// Usage: node playground/scripts/sync-design-system.mjs [path to ig-design-system]
+// Copies the built ig-design-system package into src/styles/design-system.
+// Usage: node scripts/sync-design-system.mjs [path to ig-design-system]
 import { execSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
-const source = path.resolve(process.argv[2] ?? path.join(here, '../../../ig-design-system'));
-const target = path.join(here, '../public/design-system');
+const source = path.resolve(process.argv[2] ?? path.join(here, '../../ig-design-system'));
+const target = path.join(here, '../src/styles/design-system');
 
 if (!fs.existsSync(path.join(source, 'dist/tokens.css'))) {
   console.error(
