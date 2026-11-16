@@ -104,7 +104,7 @@ Each panel is a `<figure>` whose `<figcaption>` holds the label and description,
 
 The badges are decorative: the labels already name each panel, so the badges are `aria-hidden` and add no duplicate announcement. That also means the block does not rely on color alone.
 
-The label colors meet WCAG AA for normal-size text in both themes. The "Don't" accent is `--ig-error-800` in the light theme rather than the design's `--ig-error-700`, which measures 4.1:1 on white and fails the 4.5:1 minimum. In forced-colors mode the frame keeps an outline, since box-shadow is dropped there.
+The label colors meet WCAG AA for normal-size text in both themes: `--ig-success-600` (7.35:1) and `--ig-error-500` (5.41:1) on the light page, `--ig-success-200` (8.25:1) and `--ig-error-300` (6.07:1) on the dark one. In forced-colors mode the frame keeps an outline, since box-shadow is dropped there.
 
 ## Styling
 
@@ -125,7 +125,7 @@ The component reads these tokens but never sets them — its defaults are fallba
 | `--igd-dodont-bg`              | Frame canvas, drawn by an `::after` at 0.7 opacity behind the content    |
 | `--igd-dodont-border-width`    | Frame border (1px)                                                       |
 | `--igd-dodont-accent-width`    | Top accent border (2px), colored like the panel's badge                  |
-| `--igd-dodont-frame-accent`    | Top accent color — `success-500` on Do, `error-500` on Don't             |
+| `--igd-dodont-frame-accent`    | Top accent color — `success-600` on Do, `error-500` on Don't             |
 | `--igd-dodont-border-color`    | Frame border color                                                       |
 | `--igd-dodont-accent`          | Label color — success tokens on the Do panel, error tokens on Don't      |
 
