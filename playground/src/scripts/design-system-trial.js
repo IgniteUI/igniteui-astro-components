@@ -1,4 +1,5 @@
-// Adoption trial: loads the ig-design-system stylesheets after every other stylesheet when the switch is on.
+// Adoption trial: loads the ig-design-system tokens after every other stylesheet when the switch is on,
+// and selects its docs type set. base.css, the package's element styles, is not loaded: this repo has its own.
 // Turn it on with the button in the bottom left corner, or with ?ds=on / ?ds=off in the URL.
 (function () {
   var KEY = 'igd-trial';
@@ -25,6 +26,8 @@
       });
     }
     document.documentElement.toggleAttribute('data-igd-trial', isOn());
+    if (isOn()) document.documentElement.setAttribute('data-igd-type', 'docs');
+    else document.documentElement.removeAttribute('data-igd-type');
 
     var button = document.getElementById('igd-trial-toggle');
     if (!button) {

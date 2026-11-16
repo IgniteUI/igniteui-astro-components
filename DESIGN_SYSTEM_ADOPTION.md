@@ -1,6 +1,6 @@
 # Adopting ig-design-system in igniteui-astro-components
 
-Status: step 1 (a read-only inventory) and step 2 (a trial switch in the playground) are done. No component or style in `src/` is changed.
+Status: step 1 (a read-only inventory), step 2 (a trial switch in the playground) and step 3 (the trial again after changes in the design system) are done. No component or style in `src/` is changed.
 Branch: `mpopov/adopt-design-system-tokens`. This file is a working report and is not meant to be merged as is.
 
 Measured on `master` at `fca14ed` against `ig-design-system` `main` at `923f9c8`.
@@ -221,14 +221,50 @@ Measured in Chromium at 1440px on the home page, `/components/docs-aside/` and `
 - The token layer and the base element styles ship in one file. They need to be loadable apart.
 - The type sizes need a way to be set per site.
 
+## Step 3: the trial again, after three changes in ig-design-system
+
+The owner decided: the design system ships one type set per kind of site, and each site sets the size dial for itself. Three changes followed there:
+
+1. The element styles moved to an optional `base.css`. This repo does not load it.
+2. The package no longer sets `--ig-size`, `--ig-spacing` or `--ig-elevation-factor`.
+3. A `docs` type set, selected with `data-igd-type="docs"`. Its values are the type scale this repo has today.
+
+The copy in `playground/public/design-system/` is from a local build that has all three (`VERSION` names the commit). The switch now also sets `data-igd-type="docs"` on the page.
+
+Measured in Chromium at 1440px on the home page:
+
+| What                    | Off              | On, before the changes | On, now                            |
+| ----------------------- | ---------------- | ---------------------- | ---------------------------------- |
+| Page `h1`               | 36px / 40px, 700 | 70px, 900              | 36px / 40px, 700                   |
+| Page `h2`               | 24px / 32px      | 43px                   | 24px / 32px                        |
+| Paragraph               | 16px / 28px      | 19px / 30.8px          | 16px / 28px                        |
+| Space under `h1`        | 24px             | 0                      | 24px                               |
+| Links in prose          | Underlined       | Not underlined         | Underlined                         |
+| Link colour, dark theme | A light blue     | About 3.4:1            | A light blue, `rgb(203, 214, 255)` |
+| `igc-input` height      | 40px             | 48px                   | 40px                               |
+| Sidebar tree text       | 14px             | 15px                   | 14px                               |
+| Heading face            | aktiv-grotesk    | Plus Jakarta Sans      | Plus Jakarta Sans                  |
+| Body face               | aktiv-grotesk    | DM Sans                | DM Sans                            |
+
+With the switch on, the page now differs from today's in three ways only, all of them wanted or to be reviewed:
+
+- **The faces**: DM Sans and Plus Jakarta Sans.
+- **The palette**: the engine-solved ramps. The accent this repo reads, `--ig-primary-600`, is `#2462ea` where it was `#155dfc`; secondary is violet.
+- **The dark page background**: `#0f172a` where it was `#0a0b10`.
+
+Still to do in this repo, none of it started:
+
+- Components read `--igd-font-sans`, this repo's own token, in some places. It has to point at the design system's `--igd-font-body`.
+- `--igd-accent` reads `--ig-primary-600`. To keep the exact brand blue it should read `--igd-color-action-default`.
+- The 289 raw gray references and the 158 `light-dark()` calls are untouched.
+
 ## Proposed next steps
 
 1. Done: the trial above.
-2. **In ig-design-system:** split the base element styles from the tokens, fix the link colour, and add a way to set type sizes per site. Then refresh the copy here and look again.
+2. Done: the three changes in ig-design-system, and the trial again (step 3).
 3. **One component end to end.** Move `DocsAside` (25 tokens, colours and spacing) to semantic tokens and run the design system's checks on it.
 4. **Decide the eight gaps** with what the steps above show.
 
 ## Questions for the owner
 
-1. Type sizes: docs pages need smaller headings than the marketing site. Should the design system ship one set of sizes per kind of site (marketing, docs), or should each site set its own?
-2. Should the design system's `--ig-size` stay at large on docs pages, where it makes every Ignite UI control larger?
+None open. Both earlier questions are answered: one type set per kind of site, shipped by the design system; each site sets the size dial for itself.

@@ -4,16 +4,13 @@
    2. the tokens that must stay live — spacing, sizes, radii, shadows, gradients, translucent colours —
       declared again with the same names as tokens.json, so --ig-size, --ig-spacing, --ig-radius-factor,
       --ig-elevation-factor and palette edits cascade. At the default knob values they equal tokens.json;
-   3. the semantic type variables and classes (.igd-type-<slot>), motion, and base element styles.
+   3. the semantic type variables and classes (.igd-type-<role>), motion and keyframes.
+   Element styles (body, headings, links, focus) are in base.css.
    Nothing in a component may carry a literal colour, length, font size, shadow or radius: it reads a token. */
 
 /* ===== 1. igniteui-theming engine layer ===== */
 :root {
-  /* dials: size large, spacing 1, elevation 1 */
-  --ig-size: 3;
-  --ig-spacing: 1;
-  --ig-elevation-factor: 1;
-  /* --ig-radius-factor is left unset: each radius role then takes its own design value. Set it from 0 (each role's minimum) to 1 (each role's maximum). */
+  /* The dials are left unset, so a site sets them for itself. Unset, the tokens resolve at their design values: --ig-size large, --ig-spacing 1, --ig-elevation-factor 1, and each radius role at its own value (--ig-radius-factor from 0, each role's minimum, to 1, its maximum). */
   /* one shadow colour behind every neutral elevation */
   --igd-color-shadow: oklch(0 0 0);
   /* roundness, easing and neutral elevations: compiled from the engine's border-radius() and elevations() */
@@ -488,7 +485,9 @@
   --igd-duration-spin: 800ms;
   --igd-easing-linear: linear;
   --igd-transition-default: all var(--igd-duration-fast) var(--igd-easing-default);
-  /* type */
+}
+/* type roles, declared again on a region that picks a type set */
+:root, [data-igd-type] {
   --igd-type-display-lg-font-family: var(--ig-h1-font-family);
   --igd-type-display-lg-font-size: var(--ig-h1-font-size);
   --igd-type-display-lg-font-weight: var(--ig-h1-font-weight);
@@ -595,16 +594,86 @@
 .igd-type-eyebrow { font-family: var(--igd-type-eyebrow-font-family); font-size: var(--igd-type-eyebrow-font-size); font-weight: var(--igd-type-eyebrow-font-weight); line-height: var(--igd-type-eyebrow-line-height); letter-spacing: var(--igd-type-eyebrow-letter-spacing); text-transform: var(--igd-type-eyebrow-text-transform); }
 .igd-type-body-xs { font-family: var(--igd-type-body-xs-font-family); font-size: var(--igd-type-body-xs-font-size); font-weight: var(--igd-type-body-xs-font-weight); line-height: var(--igd-type-body-xs-line-height); letter-spacing: var(--igd-type-body-xs-letter-spacing); text-transform: var(--igd-type-body-xs-text-transform); }
 .igd-type-body-2xs { font-family: var(--igd-type-body-2xs-font-family); font-size: var(--igd-type-body-2xs-font-size); font-weight: var(--igd-type-body-2xs-font-weight); line-height: var(--igd-type-body-2xs-line-height); letter-spacing: var(--igd-type-body-2xs-letter-spacing); text-transform: var(--igd-type-body-2xs-text-transform); }
-
-/* ===== 4. motion keyframes and base styles ===== */
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
-  }
+/* type set "docs": the same roles at other sizes. Put data-igd-type="docs" on the page, or on a region. */
+[data-igd-type="docs"] {
+  --ig-h1-font-size: 2.25rem;
+  --ig-h1-font-weight: 700;
+  --ig-h1-line-height: 1.1111;
+  --ig-h1-letter-spacing: 0;
+  --ig-h1-text-transform: none;
+  --ig-h2-font-size: 1.5rem;
+  --ig-h2-font-weight: 700;
+  --ig-h2-line-height: 1.3333;
+  --ig-h2-letter-spacing: 0;
+  --ig-h2-text-transform: none;
+  --ig-h3-font-size: 1.25rem;
+  --ig-h3-font-weight: 700;
+  --ig-h3-line-height: 1.4;
+  --ig-h3-letter-spacing: 0;
+  --ig-h3-text-transform: none;
+  --ig-h4-font-size: 1.125rem;
+  --ig-h4-font-weight: 700;
+  --ig-h4-line-height: 1.5556;
+  --ig-h4-letter-spacing: 0;
+  --ig-h4-text-transform: none;
+  --ig-h5-font-size: 1rem;
+  --ig-h5-font-weight: 700;
+  --ig-h5-line-height: 1.5;
+  --ig-h5-letter-spacing: 0;
+  --ig-h5-text-transform: none;
+  --ig-h6-font-size: 0.875rem;
+  --ig-h6-font-weight: 600;
+  --ig-h6-line-height: 1.4286;
+  --ig-h6-letter-spacing: 0;
+  --ig-h6-text-transform: none;
+  --ig-subtitle-1-font-size: 1rem;
+  --ig-subtitle-1-font-weight: 500;
+  --ig-subtitle-1-line-height: 1.5;
+  --ig-subtitle-1-letter-spacing: 0.0094em;
+  --ig-subtitle-1-text-transform: none;
+  --ig-subtitle-2-font-size: 0.875rem;
+  --ig-subtitle-2-font-weight: 600;
+  --ig-subtitle-2-line-height: 1.7143;
+  --ig-subtitle-2-letter-spacing: 0.0071em;
+  --ig-subtitle-2-text-transform: none;
+  --ig-body-1-font-size: 1rem;
+  --ig-body-1-font-weight: 400;
+  --ig-body-1-line-height: 1.75;
+  --ig-body-1-letter-spacing: 0;
+  --ig-body-1-text-transform: none;
+  --ig-body-2-font-size: 0.875rem;
+  --ig-body-2-font-weight: 500;
+  --ig-body-2-line-height: 1.4286;
+  --ig-body-2-letter-spacing: 0;
+  --ig-body-2-text-transform: none;
+  --ig-button-font-size: 1rem;
+  --ig-button-font-weight: 400;
+  --ig-button-line-height: 1.5;
+  --ig-button-letter-spacing: 0;
+  --ig-button-text-transform: none;
+  --ig-caption-font-size: 0.75rem;
+  --ig-caption-font-weight: 500;
+  --ig-caption-line-height: 1.5;
+  --ig-caption-letter-spacing: 0;
+  --ig-caption-text-transform: none;
+  --ig-overline-font-size: 0.625rem;
+  --ig-overline-font-weight: 400;
+  --ig-overline-line-height: 2;
+  --ig-overline-letter-spacing: 0.15em;
+  --ig-overline-text-transform: uppercase;
+  --igd-type-body-xs-font-size: 0.8125rem;
+  --igd-type-body-xs-font-weight: 400;
+  --igd-type-body-xs-line-height: 1.5385;
+  --igd-type-body-xs-letter-spacing: 0.0231em;
+  --igd-type-body-xs-text-transform: none;
+  --igd-type-body-2xs-font-size: 0.8125rem;
+  --igd-type-body-2xs-font-weight: 600;
+  --igd-type-body-2xs-line-height: 1.2308;
+  --igd-type-body-2xs-letter-spacing: 0.0115em;
+  --igd-type-body-2xs-text-transform: none;
 }
+
+/* ===== 4. keyframes and utility classes ===== */
 @keyframes igd-float {
   0%, 100% { transform: translateY(0); }
   50%      { transform: translateY(calc(-1 * var(--igd-space-xs))); }
@@ -612,34 +681,6 @@
 @keyframes igd-app-shimmer {
   0%, 100% { filter: drop-shadow(0 var(--igd-space-xs) var(--igd-space-md) hsl(from var(--igd-color-accent-primary) h s l / var(--igd-opacity-heavy))); opacity: 1; }
   50%      { filter: drop-shadow(0 var(--igd-space-xs) var(--igd-space-xl) hsl(from var(--igd-color-accent-inverse) h s l / var(--igd-opacity-heavy))); opacity: 1; }
-}
-
-* { box-sizing: border-box; }
-body {
-  margin: 0;
-  background: var(--igd-color-surface-page);
-  font-family: var(--igd-font-body);
-  font-size: var(--igd-type-body-md-font-size);
-  line-height: var(--igd-type-body-md-line-height);
-  color: var(--igd-color-text-primary);
-  text-wrap: pretty;
-}
-a { color: var(--igd-color-action-default); text-decoration: none; }
-a:hover { color: var(--igd-color-action-hover); }
-h1, h2, h3, h4, h5, h6 { font-family: var(--igd-font-display); color: var(--igd-color-text-heading); margin: 0; }
-code, pre { font-family: var(--igd-font-mono); }
-
-/* Keyboard focus. Mouse users never see this; keyboard users always do.
-   Add data-on-dark to any dark section so the ring stays visible. */
-:focus { outline: none; }
-a:focus-visible, button:focus-visible, [tabindex]:focus-visible,
-input:focus-visible, select:focus-visible, textarea:focus-visible {
-  outline: var(--igd-focus-ring-width) solid var(--igd-color-focus-default);
-  outline-offset: var(--igd-focus-ring-offset);
-}
-[data-on-dark] a:focus-visible, [data-on-dark] button:focus-visible,
-[data-on-dark] [tabindex]:focus-visible {
-  outline-color: var(--igd-color-focus-inverse);
 }
 
 /* Breakpoints (media queries cannot read custom properties; generated from tokens.json breakpoint family) */
