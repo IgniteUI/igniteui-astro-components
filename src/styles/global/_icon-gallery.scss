@@ -33,7 +33,7 @@ igc-tabs.icon-gallery-tabs {
     box-shadow 0.15s;
 
   &:hover {
-    border-color: var(--ig-primary-300);
+    border-color: var(--igd-color-border-accent);
     box-shadow: 0 2px 8px light-dark(rgba(0, 0, 0, 0.06), rgba(0, 0, 0, 0.3));
   }
 }
@@ -96,9 +96,9 @@ igc-tabs.icon-gallery-tabs {
     }
 
     &.icon-card__btn--copied::part(base) {
-      background: light-dark(var(--ig-success-100), var(--ig-success-200));
-      border-color: var(--ig-success-400);
-      color: var(--ig-success-700);
+      background: var(--igd-color-feedback-success-surface);
+      border-color: var(--igd-color-feedback-success-default);
+      color: var(--igd-color-feedback-success-default);
     }
   }
 }

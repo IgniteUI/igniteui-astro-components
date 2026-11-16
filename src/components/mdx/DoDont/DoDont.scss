@@ -198,15 +198,15 @@
 }
 
 .igd-dodont__panel--do {
-  --_accent: var(--igd-dodont-accent, light-dark(var(--ig-success-600), var(--ig-success-200)));
+  --_accent: var(--igd-dodont-accent, var(--igd-color-feedback-success-default));
   // Same token the success badge is filled with.
-  --_frame-accent: var(--igd-dodont-frame-accent, var(--ig-success-600));
+  --_frame-accent: var(--igd-dodont-frame-accent, var(--igd-color-feedback-success-default));
 }
 
 .igd-dodont__panel--dont {
-  --_accent: var(--igd-dodont-accent, light-dark(var(--ig-error-500), var(--ig-error-300)));
+  --_accent: var(--igd-dodont-accent, var(--igd-color-feedback-error-default));
   // Same token the danger badge is filled with.
-  --_frame-accent: var(--igd-dodont-frame-accent, var(--ig-error-500));
+  --_frame-accent: var(--igd-dodont-frame-accent, var(--igd-color-feedback-error-default));
 }
 
 // TYPOGRAPHY

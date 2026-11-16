@@ -130,7 +130,9 @@
   --igd-color-text-inverse: #fbfbfb;
   --igd-color-text-inverse-muted: #9da5af;
   --igd-color-icon-subtle: var(--ig-gray-400);
-  --igd-color-feedback-error-default: var(--ig-error-600);
+  --igd-color-feedback-error-default: var(--ig-error-500);
+  --igd-color-feedback-info-default: var(--ig-primary-700);
+  --igd-color-feedback-success-inverse: var(--ig-success-300);
   --igd-color-feedback-success-default: var(--ig-success-600);
   --igd-color-feedback-warning-default: var(--ig-warn-500);
   --igd-color-feedback-error-inverse: var(--ig-error-300);
@@ -211,7 +213,8 @@
   --igd-badge-preview-border: rgba(149,94,1,0.25);
   --igd-badge-premium-background: rgba(123,39,197,0.12);
   --igd-badge-premium-border: rgba(123,39,197,0.25);
-  --igd-color-feedback-error-surface: rgba(172,15,48,0.12);
+  --igd-color-feedback-info-surface: rgba(22,78,203,0.12);
+  --igd-color-feedback-error-surface: rgba(207,27,62,0.12);
   --igd-color-feedback-success-surface: rgba(6,99,60,0.12);
   --igd-color-feedback-warning-surface: rgba(149,94,1,0.12);
   --igd-nav-background: rgba(255,255,255,0.96);
@@ -407,8 +410,3 @@
   --igd-font-body: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
   --igd-font-mono: 'JetBrains Mono', ui-monospace, monospace;
 }
-
-@font-face { font-family: 'Plus Jakarta Sans'; src: url('fonts/plus-jakarta-sans-latin-wght-normal.woff2') format('woff2'); font-weight: 200 800; font-style: normal; font-display: swap; }
-@font-face { font-family: 'DM Sans'; src: url('fonts/dm-sans-latin-wght-normal.woff2') format('woff2'); font-weight: 100 1000; font-style: normal; font-display: swap; }
-@font-face { font-family: 'JetBrains Mono'; src: url('fonts/jetbrains-mono-latin-wght-normal.woff2') format('woff2'); font-weight: 100 800; font-style: normal; font-display: swap; }
-

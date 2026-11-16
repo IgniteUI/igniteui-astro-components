@@ -25,9 +25,9 @@
       --focus-background: transparent;
       --active-background: transparent;
       --foreground: var(--igd-color-text-primary);
-      --foreground-hover: var(--ig-primary-800);
-      --foreground-focus: var(--ig-primary-800);
-      --foreground-active: var(--ig-primary-800);
+      --foreground-hover: var(--igd-color-action-active);
+      --foreground-focus: var(--igd-color-action-active);
+      --foreground-active: var(--igd-color-action-active);
 
       padding: 0;
 

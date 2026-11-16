@@ -466,6 +466,7 @@
   --igd-badge-preview-border: hsl(from var(--igd-badge-preview-color) h s l / var(--igd-opacity-strong));
   --igd-badge-premium-background: hsl(from var(--igd-badge-premium-color) h s l / var(--igd-opacity-soft));
   --igd-badge-premium-border: hsl(from var(--igd-badge-premium-color) h s l / var(--igd-opacity-strong));
+  --igd-color-feedback-info-surface: hsl(from var(--igd-color-feedback-info-default) h s l / var(--igd-opacity-soft));
   --igd-color-feedback-error-surface: hsl(from var(--igd-color-feedback-error-default) h s l / var(--igd-opacity-soft));
   --igd-color-feedback-success-surface: hsl(from var(--igd-color-feedback-success-default) h s l / var(--igd-opacity-soft));
   --igd-color-feedback-warning-surface: hsl(from var(--igd-color-feedback-warning-default) h s l / var(--igd-opacity-soft));
@@ -709,7 +710,8 @@
   --igd-color-accent-primary: var(--ig-info-seed);
   --igd-color-accent-secondary: var(--ig-secondary-seed);
   --igd-color-action-default: var(--ig-primary-seed);
-  --igd-color-feedback-error-default: oklch(from var(--ig-error-600) calc((1 - var(--igd-theme-dark)) * min(l, max(0.35, 0.4767 - 0.6 * max(0, l - 0.4767))) + var(--igd-theme-dark) * max(l, min(0.92, 0.74 + 0.6 * max(0, 0.74 - l)))) calc(c * ((1 - var(--igd-theme-dark)) * min(l, max(0.35, 0.4767 - 0.6 * max(0, l - 0.4767))) / max(l, 0.0001) + var(--igd-theme-dark) * min(1, (1 - max(l, min(0.92, 0.74 + 0.6 * max(0, 0.74 - l)))) / max(1 - l, 0.0001)))) h);
+  --igd-color-feedback-error-default: oklch(from var(--ig-error-500) calc((1 - var(--igd-theme-dark)) * min(l, max(0.35, 0.5503 - 0.6 * max(0, l - 0.5503))) + var(--igd-theme-dark) * max(l, min(0.92, 0.74 + 0.6 * max(0, 0.74 - l)))) calc(c * ((1 - var(--igd-theme-dark)) * min(l, max(0.35, 0.5503 - 0.6 * max(0, l - 0.5503))) / max(l, 0.0001) + var(--igd-theme-dark) * min(1, (1 - max(l, min(0.92, 0.74 + 0.6 * max(0, 0.74 - l)))) / max(1 - l, 0.0001)))) h);
+  --igd-color-feedback-info-default: oklch(from var(--ig-primary-700) calc((1 - var(--igd-theme-dark)) * min(l, max(0.35, 0.4747 - 0.6 * max(0, l - 0.4747))) + var(--igd-theme-dark) * max(l, min(0.92, 0.74 + 0.6 * max(0, 0.74 - l)))) calc(c * ((1 - var(--igd-theme-dark)) * min(l, max(0.35, 0.4747 - 0.6 * max(0, l - 0.4747))) / max(l, 0.0001) + var(--igd-theme-dark) * min(1, (1 - max(l, min(0.92, 0.74 + 0.6 * max(0, 0.74 - l)))) / max(1 - l, 0.0001)))) h);
   --igd-color-feedback-success-default: oklch(from var(--ig-success-600) calc((1 - var(--igd-theme-dark)) * min(l, max(0.35, 0.441 - 0.6 * max(0, l - 0.441))) + var(--igd-theme-dark) * max(l, min(0.92, 0.74 + 0.6 * max(0, 0.74 - l)))) calc(c * ((1 - var(--igd-theme-dark)) * min(l, max(0.35, 0.441 - 0.6 * max(0, l - 0.441))) / max(l, 0.0001) + var(--igd-theme-dark) * min(1, (1 - max(l, min(0.92, 0.74 + 0.6 * max(0, 0.74 - l)))) / max(1 - l, 0.0001)))) h);
   --igd-color-feedback-warning-default: oklch(from var(--ig-warn-500) calc((1 - var(--igd-theme-dark)) * min(l, max(0.35, 0.5302 - 0.6 * max(0, l - 0.5302))) + var(--igd-theme-dark) * max(l, min(0.92, 0.74 + 0.6 * max(0, 0.74 - l)))) calc(c * ((1 - var(--igd-theme-dark)) * min(l, max(0.35, 0.5302 - 0.6 * max(0, l - 0.5302))) / max(l, 0.0001) + var(--igd-theme-dark) * min(1, (1 - max(l, min(0.92, 0.74 + 0.6 * max(0, 0.74 - l)))) / max(1 - l, 0.0001)))) h);
   --igd-badge-bundle-color: oklch(from var(--ig-secondary-700) calc((1 - var(--igd-theme-dark)) * min(l, max(0.35, 0.488 - 0.6 * max(0, l - 0.488))) + var(--igd-theme-dark) * max(l, min(0.92, 0.74 + 0.6 * max(0, 0.74 - l)))) calc(c * ((1 - var(--igd-theme-dark)) * min(l, max(0.35, 0.488 - 0.6 * max(0, l - 0.488))) / max(l, 0.0001) + var(--igd-theme-dark) * min(1, (1 - max(l, min(0.92, 0.74 + 0.6 * max(0, 0.74 - l)))) / max(1 - l, 0.0001)))) h);
@@ -742,7 +744,8 @@
   --igd-color-focus-inverse: oklch(from var(--igd-color-link-inverse) calc(l + 0.0909) calc(c * 0.6634) calc(h + -0.39));
   --igd-footer-focus: oklch(from var(--igd-color-link-inverse) calc(l + 0.0909) calc(c * 0.6634) calc(h + -0.39));
   --igd-footer-link-hover: oklch(from var(--igd-footer-link) calc(l + 0.1009) calc(c * 0.0000) calc(h + 0));
-  --igd-color-feedback-error-inverse: oklch(from var(--igd-color-feedback-error-default) calc(l + 0.2216) calc(c * 1.0391) calc(h + 0.01));
+  --igd-color-feedback-error-inverse: oklch(from var(--igd-color-feedback-error-default) calc(l + 0.1480) calc(c * 0.9185) calc(h + 0.20));
+  --igd-color-feedback-success-inverse: oklch(from var(--igd-color-feedback-success-default) calc(l + 0.2159) calc(c * 1.4955) calc(h + -0.33));
   --igd-badge-bundle-background: oklch(from var(--igd-badge-bundle-color) calc((1 - var(--igd-theme-dark)) * 0.9755 + var(--igd-theme-dark) * 0.2319) calc(c * 0.0507 * (1 + 1.5 * var(--igd-theme-dark))) calc(h + 5.81));
   --igd-fw-angular-background: oklch(from var(--igd-fw-angular-color) calc((1 - var(--igd-theme-dark)) * 0.9460 + var(--igd-theme-dark) * 0.2702) calc(c * 0.1342 * (1 + 1.5 * var(--igd-theme-dark))) calc(h + 6.18));
   --igd-fw-angular-border: oklch(from var(--igd-fw-angular-color) calc((1 - var(--igd-theme-dark)) * 0.8563 + var(--igd-theme-dark) * 0.3869) calc(c * 0.4165 * (1 + 1.5 * var(--igd-theme-dark))) calc(h + 4.89));

@@ -8,7 +8,7 @@
     --igd-theming-fg: var(--igd-color-text-heading);
     --igd-theming-muted: var(--igd-color-text-muted);
     --igd-theming-hover-bg: var(--igd-color-surface-muted);
-    --igd-theming-accent: var(--igd-accent, var(--ig-primary-500));
+    --igd-theming-accent: var(--igd-accent);
 
     position: relative;
     display: inline-block;

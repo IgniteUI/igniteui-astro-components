@@ -18,7 +18,7 @@ if (!fs.existsSync(path.join(source, 'dist/tokens.css'))) {
 
 fs.rmSync(target, { recursive: true, force: true });
 fs.mkdirSync(path.join(target, 'fonts'), { recursive: true });
-for (const file of ['tokens.css', 'theme.css']) {
+for (const file of ['fonts.css', 'tokens.css', 'theme.css']) {
   fs.copyFileSync(path.join(source, 'dist', file), path.join(target, file));
 }
 for (const font of fs.readdirSync(path.join(source, 'dist/fonts'))) {
