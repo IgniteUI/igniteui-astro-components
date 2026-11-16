@@ -22,16 +22,16 @@
   list-style: none;
   padding: 0;
   gap: 6px;
-  color: light-dark(var(--ig-gray-700), var(--ig-gray-400));
+  color: var(--igd-color-text-ui);
 }
 
 [data-theme='dark'] {
   .docs-breadcrumb-list {
-    color: var(--ig-gray-600);
+    color: var(--igd-color-text-secondary);
   }
 
   .docs-breadcrumb-home {
-    color: var(--ig-gray-400);
+    color: var(--igd-color-icon-subtle);
   }
 }
 
@@ -45,7 +45,7 @@
 }
 
 .docs-breadcrumb-home {
-  color: light-dark(var(--ig-gray-500), var(--ig-gray-600));
+  color: var(--igd-color-text-muted);
   flex-shrink: 0;
 }
 
@@ -55,7 +55,7 @@
   flex-shrink: 0;
   user-select: none;
   rotate: -90deg;
-  color: light-dark(var(--ig-gray-500), var(--ig-gray-600));
+  color: var(--igd-color-text-muted);
 }
 
 .docs-breadcrumb-crumb {

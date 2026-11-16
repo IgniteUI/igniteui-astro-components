@@ -44,9 +44,9 @@
     display: grid;
     place-items: center;
     padding: 0 rem(16px) rem(16px) rem(16px);
-    border-bottom: rem(1px) solid var(--ig-gray-200);
+    border-bottom: rem(1px) solid var(--igd-color-border-default);
     text-align: center;
-    color: light-dark(var(--ig-gray-500), var(--ig-gray-300));
+    color: var(--igd-color-text-muted);
 
     &:empty {
       display: none;
@@ -73,7 +73,7 @@
     igc-list-item {
       --item-border-radius: 0;
       --item-background: transparent;
-      --item-background-hover: var(--ig-gray-50);
+      --item-background-hover: var(--igd-color-surface-subtle);
       --item-background-focus: transparent;
       --item-background-active: transparent;
       --border-color: transparent;
@@ -125,7 +125,7 @@
       margin: 0;
     }
 
-    color: light-dark(var(--ig-gray-900), var(--ig-gray-600));
+    color: var(--igd-color-text-heading);
 
     mark {
       background: transparent;
@@ -141,7 +141,7 @@
       margin: 0;
     }
 
-    color: light-dark(var(--ig-gray-500), var(--ig-gray-400));
+    color: var(--igd-color-text-muted);
 
     mark {
       background: transparent;
@@ -157,8 +157,8 @@
     margin-inline-end: rem(8px);
     padding: rem(4px);
     border-radius: rem(2px);
-    color: light-dark(var(--ig-gray-700), var(--ig-gray-500));
-    background: light-dark(var(--ig-gray-100), #112031);
+    color: var(--igd-color-text-ui);
+    background: var(--igd-color-surface-muted);
   }
 
   // Category header (above each result list in the All tab)
@@ -169,7 +169,7 @@
     }
 
     display: inline-block;
-    color: light-dark(var(--ig-gray-900), var(--ig-gray-300));
+    color: var(--igd-color-text-heading);
     padding-inline: rem(16px);
     margin-block-end: rem(8px);
   }
@@ -205,11 +205,11 @@
     display: flex;
     justify-self: start;
     padding: rem(16px);
-    border-top: rem(1px) solid var(--ig-gray-100);
+    border-top: rem(1px) solid var(--igd-color-border-subtle);
   }
 
   .igd-search-meta {
-    color: light-dark(var(--ig-gray-900), var(--ig-gray-300));
+    color: var(--igd-color-text-heading);
   }
 
   // Dialog chrome — shared by both Search and SearchAdvanced
@@ -241,8 +241,8 @@
     }
 
     igc-input::part(container) {
-      --border-color: var(--ig-gray-200);
-      --border-color-hover: var(--ig-gray-300);
+      --border-color: var(--igd-color-border-default);
+      --border-color-hover: var(--igd-color-border-default);
       --border-border-radius: #{rem(8px)};
     }
   }
@@ -291,11 +291,11 @@
   }
 
   .igd-search-clear {
-    --foreground: light-dark(var(--ig-gray-900), var(--ig-gray-900));
-    --hover-foreground: light-dark(var(--ig-gray-900), var(--ig-gray-900));
-    --focus-hover-foreground: light-dark(var(--ig-gray-900), var(--ig-gray-900));
-    --focus-foreground: light-dark(var(--ig-gray-900), var(--ig-gray-900));
-    --active-foreground: light-dark(var(--ig-gray-900), var(--ig-gray-900));
+    --foreground: var(--igd-color-text-heading);
+    --hover-foreground: var(--igd-color-text-heading);
+    --focus-hover-foreground: var(--igd-color-text-heading);
+    --focus-foreground: var(--igd-color-text-heading);
+    --active-foreground: var(--igd-color-text-heading);
     --shadow-color: transparent;
     --background: transparent;
     --hover-background: transparent;
@@ -317,7 +317,7 @@
   }
 
   .igd-search-icon {
-    color: light-dark(var(--ig-gray-900), var(--ig-gray-500));
+    color: var(--igd-color-text-heading);
     padding-inline: rem(12px) rem(0);
   }
 
@@ -372,7 +372,7 @@
     gap: rem(4px);
     align-items: center;
     background: transparent;
-    color: var(--ig-gray-400);
+    color: var(--igd-color-icon-subtle);
     font-size: inherit;
     padding-inline: rem(16px);
     box-shadow: none;

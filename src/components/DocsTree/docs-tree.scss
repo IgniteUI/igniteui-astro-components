@@ -117,7 +117,7 @@ igc-tree[data-variant='sidebar'] {
   // ── Group rows ──────────────────────────────────────────────────────────
   igc-tree-item[aria-expanded] {
     &::part(wrapper):hover {
-      background-color: var(--ig-gray-50);
+      background-color: var(--igd-color-surface-subtle);
     }
 
     .docs-tree-group {
@@ -127,7 +127,7 @@ igc-tree[data-variant='sidebar'] {
 
   igc-tree-item[aria-expanded][active] {
     &::part(wrapper) {
-      background-color: var(--ig-gray-50);
+      background-color: var(--igd-color-surface-subtle);
     }
   }
 
@@ -142,23 +142,23 @@ igc-tree[data-variant='sidebar'] {
   igc-tree-item:not([data-has-children]) {
     &::part(wrapper):hover,
     &:has(.docs-tree-link:focus)::part(wrapper) {
-      background-color: var(--ig-gray-50);
+      background-color: var(--igd-color-surface-subtle);
     }
   }
 
   // Leaves directly under a root group are primary entries (dark text);
   // deeper leaves inherit the muted default foreground.
   igc-tree-item[data-depth='1']:not([data-has-children]) {
-    --foreground: light-dark(var(--ig-gray-900), var(--ig-gray-600));
-    --foreground-active: light-dark(var(--ig-gray-900), var(--ig-gray-50));
-    --foreground-hover: light-dark(var(--ig-gray-900), var(--ig-gray-50));
+    --foreground: var(--igd-color-text-heading);
+    --foreground-active: var(--igd-color-text-heading);
+    --foreground-hover: var(--igd-color-text-heading);
   }
 }
 
 igc-tree[data-variant='toc'] {
   igc-tree-item[data-depth='0']::part(label) {
     font-weight: 600 !important;
-    color: var(--ig-gray-900);
+    color: var(--igd-color-text-heading);
   }
 
   igc-tree-item:not([data-has-children]) {
@@ -186,18 +186,18 @@ igc-tree[data-variant='toc'] {
 igc-tree-item {
   --igc-tree-indentation-size: 0;
   --background: transparent;
-  --foreground: light-dark(var(--ig-gray-600), var(--ig-gray-400));
+  --foreground: var(--igd-color-text-secondary);
   --background-selected: transparent;
   --background-active: transparent;
-  --foreground-active: light-dark(var(--ig-gray-600), var(--ig-gray-400));
-  --foreground-hover: light-dark(var(--ig-gray-600), var(--ig-gray-400));
-  --hover-background: light-dark(var(--ig-gray-600), var(--ig-gray-400));
+  --foreground-active: var(--igd-color-text-secondary);
+  --foreground-hover: var(--igd-color-text-secondary);
+  --hover-background: var(--igd-color-surface-muted);
   --background-disabled: transparent;
   --hover-color: transparent;
   --hover-selected-color: transparent;
   --background-active-selected: transparent;
   --foreground-selected: transparent;
-  --foreground-active-selected: light-dark(var(--ig-gray-600), var(--ig-gray-400));
+  --foreground-active-selected: var(--igd-color-text-secondary);
   //--ig-tree-size: #{rem(32px)};
 
   a {
@@ -289,16 +289,16 @@ igc-tree-item[aria-expanded='false'] > [slot='label'] {
 igc-tree-item[aria-expanded='true'] > [slot='label'] {
   .tree-expand-icon {
     transform: rotate(0deg);
-    color: light-dark(var(--ig-gray-800), var(--ig-gray-300));
+    color: var(--igd-color-text-primary);
   }
 }
 
 igc-tree-item[data-has-children] {
-  --foreground: light-dark(var(--ig-gray-900), var(--ig-gray-600));
-  --foreground-selected: light-dark(var(--ig-gray-900), var(--ig-gray-600));
-  --foreground-active-selected: light-dark(var(--ig-gray-900), var(--ig-gray-600));
-  --foreground-active: light-dark(var(--ig-gray-900), var(--ig-gray-50));
-  --foreground-hover: light-dark(var(--ig-gray-900), var(--ig-gray-50));
+  --foreground: var(--igd-color-text-heading);
+  --foreground-selected: var(--igd-color-text-heading);
+  --foreground-active-selected: var(--igd-color-text-heading);
+  --foreground-active: var(--igd-color-text-heading);
+  --foreground-hover: var(--igd-color-text-heading);
 }
 
 // This are the igc-tree-item that dont have igc-tree-item inside
@@ -419,10 +419,10 @@ igc-tree[data-variant='sidebar'] {
   overflow: hidden;
 
   igc-tree-item[data-has-children] {
-    --foreground: light-dark(var(--ig-gray-900), var(--ig-gray-600));
-    --foreground-selected: light-dark(var(--ig-gray-900), var(--ig-gray-600));
-    --foreground-active-selected: light-dark(var(--ig-gray-900), var(--ig-gray-600));
-    --foreground-active: light-dark(var(--ig-gray-900), var(--ig-gray-50));
+    --foreground: var(--igd-color-text-heading);
+    --foreground-selected: var(--igd-color-text-heading);
+    --foreground-active-selected: var(--igd-color-text-heading);
+    --foreground-active: var(--igd-color-text-heading);
   }
 }
 

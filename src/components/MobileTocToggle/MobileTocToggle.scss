@@ -16,7 +16,7 @@
     background: transparent;
     border: none;
     cursor: pointer;
-    color: light-dark(var(--ig-gray-700), var(--ig-gray-300));
+    color: var(--igd-color-text-ui);
 
     &:focus-visible {
       outline: none;

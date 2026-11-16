@@ -10,12 +10,12 @@
     //--ig-drop-down-elevation: var(--ig-elevation-0);
 
     --ig-drop-down-background-color: var(--igd-app-bg);
-    --ig-drop-down-item-text-color: var(--ig-gray-600);
-    --ig-drop-down-hover-item-background: var(--ig-gray-50);
-    --ig-drop-down-hover-item-text-color: var(--ig-gray-900);
+    --ig-drop-down-item-text-color: var(--igd-color-text-secondary);
+    --ig-drop-down-hover-item-background: var(--igd-color-surface-subtle);
+    --ig-drop-down-hover-item-text-color: var(--igd-color-text-heading);
 
-    --ig-drop-down-focused-item-text-color: var(--ig-gray-600);
-    --ig-drop-down-focused-item-background: var(--ig-gray-50);
+    --ig-drop-down-focused-item-text-color: var(--igd-color-text-secondary);
+    --ig-drop-down-focused-item-background: var(--igd-color-surface-subtle);
     --ig-drop-down-focused-item-border-color: transparent;
 
     // TODO this affects items not the dropdown itself, log an issue in the library
@@ -32,7 +32,7 @@
     --ig-drop-down-selected-focus-item-text-color: var(--igd-accent);
 
     --ig-drop-down-selected-item-background: transparent;
-    --ig-drop-down-selected-hover-item-background: var(--ig-gray-50);
+    --ig-drop-down-selected-hover-item-background: var(--igd-color-surface-subtle);
     --ig-drop-down-selected-focus-item-background: transparent;
 
     // TODO this controls the item size which is very confusing
@@ -40,27 +40,27 @@
 
     --ig-input-group-input-prefix-background: transparent;
     --ig-input-group-input-prefix-background--filled: transparent;
-    --ig-input-group-input-prefix-color--filled: var(--ig-gray-900);
+    --ig-input-group-input-prefix-color--filled: var(--igd-color-text-heading);
     --ig-input-group-input-prefix-background--focused: transparent;
-    --ig-input-group-input-prefix-color--focused: var(--ig-gray-900);
+    --ig-input-group-input-prefix-color--focused: var(--igd-color-text-heading);
     --ig-input-group-input-suffix-background: transparent;
     --ig-input-group-input-suffix-background--filled: transparent;
-    --ig-input-group-input-suffix-color--filled: var(--ig-gray-900);
+    --ig-input-group-input-suffix-color--filled: var(--igd-color-text-heading);
     --ig-input-group-input-suffix-background--focused: transparent;
-    --ig-input-group-input-suffix-color--focused: var(--ig-gray-900);
-    --ig-input-group-idle-text-color: var(--ig-gray-900);
+    --ig-input-group-input-suffix-color--focused: var(--igd-color-text-heading);
+    --ig-input-group-idle-text-color: var(--igd-color-text-heading);
     --ig-input-group-disabled-border-color: transparent;
-    --ig-input-group-border-color: var(--ig-gray-300);
+    --ig-input-group-border-color: var(--igd-color-border-default);
     //--ig-input-group-focused-border-color: var(--ig-gray-400);
-    --ig-input-group-hover-border-color: var(--ig-gray-400);
+    --ig-input-group-hover-border-color: var(--igd-color-border-control);
     --ig-input-group-border-disabled-background: transparent;
     --ig-select-toggle-button-background: transparent;
     --ig-select-toggle-button-background-focus: transparent;
-    --ig-select-toggle-button-foreground: var(--ig-gray-900);
+    --ig-select-toggle-button-foreground: var(--igd-color-text-heading);
     --ig-select-toggle-button-foreground-focus: var(--igd-accent);
-    --ig-select-toggle-button-foreground-filled: var(--ig-gray-900);
+    --ig-select-toggle-button-foreground-filled: var(--igd-color-text-heading);
     --ig-select-toggle-button-background-disabled: transparent;
-    --ig-select-toggle-button-foreground-disabled: var(--ig-gray-400);
+    --ig-select-toggle-button-foreground-disabled: var(--igd-color-icon-subtle);
     --ig-input-group-border-border-radius: var(--igd-border-radius-xl);
 
     &::part(base) {
@@ -91,7 +91,7 @@
   }
 
   igc-icon-button[variant='outlined'] {
-    --foreground: light-dark(var(--ig-gray-900), var(--ig-gray-700));
+    --foreground: var(--igd-color-text-heading);
     --hover-foreground: var(--igd-accent);
     --focus-foreground: var(--igd-accent);
     --active-foreground: var(--igd-accent);
@@ -103,9 +103,9 @@
     --focus-hover-background: transparent;
     --focus-visible-background: transparent;
 
-    --border-color: light-dark(var(--ig-gray-400), var(--ig-gray-200));
-    --focus-border-color: light-dark(var(--ig-gray-400), var(--ig-gray-200));
-    --hover-border-color: light-dark(var(--ig-gray-400), var(--ig-gray-200));
+    --border-color: var(--igd-color-border-control);
+    --focus-border-color: var(--igd-color-border-control);
+    --hover-border-color: var(--igd-color-border-control);
     --border-radius: var(--igd-border-radius-xl);
 
     &::part(base) {
@@ -123,20 +123,20 @@
 
   igc-button[variant='outlined'] {
     &::part(base) {
-      --border-color: light-dark(var(--ig-gray-400), var(--ig-gray-200));
-      --hover-border-color: light-dark(var(--ig-gray-400), var(--ig-gray-200));
-      --focus-border-color: light-dark(var(--ig-gray-400), var(--ig-gray-200));
-      --focus-visible-border-color: light-dark(var(--ig-gray-400), var(--ig-gray-700));
-      --active-border-color: light-dark(var(--ig-gray-400), var(--ig-gray-700));
+      --border-color: var(--igd-color-border-control);
+      --hover-border-color: var(--igd-color-border-control);
+      --focus-border-color: var(--igd-color-border-control);
+      --focus-visible-border-color: var(--igd-color-border-control);
+      --active-border-color: var(--igd-color-border-control);
 
-      --foreground: light-dark(var(--ig-gray-900), var(--ig-gray-700));
+      --foreground: var(--igd-color-text-heading);
       --hover-foreground: var(--igd-accent);
       --focus-foreground: var(--igd-accent);
       --active-foreground: var(--igd-accent);
       --focus-hover-foreground: var(--igd-accent);
       --focus-visible-foreground: var(--igd-accent);
 
-      --icon-color: light-dark(var(--ig-gray-900), var(--ig-gray-200));
+      --icon-color: var(--igd-color-text-heading);
       --icon-color-hover: var(--igd-accent);
 
       --hover-background: transparent;

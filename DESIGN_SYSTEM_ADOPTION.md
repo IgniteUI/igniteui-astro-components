@@ -1,11 +1,23 @@
 # Adopting ig-design-system in igniteui-astro-components
 
-Status: step 1 (a read-only inventory), step 2 (a trial switch in the playground) and step 3 (the trial again after changes in the design system) are done. No component or style in `src/` is changed.
-Branch: `mpopov/adopt-design-system-tokens`. This file is a working report and is not meant to be merged as is.
+Status: adopted on this branch. The package loads the design system as its base and components read semantic tokens. The sections below are the inventory and the trial that led here; their numbers describe `master` before the change.
 
-Measured on `master` at `fca14ed` against `ig-design-system` `main` at `923f9c8`.
+## What the branch does now
 
-The playground copy is now `ig-design-system` `86e6740`. Its default type set has since changed to the marketing site's live sizes (h1 52px, paragraph 16px), so the 70px and 19px figures below describe the earlier default. The `docs` set this trial selects is unchanged. With the switch on, `/` at 1440px and 390px differs from today only in font family.
+- `DocsLayout` loads `src/styles/design-system/` (a copy of `ig-design-system` at `86e6740`) before `theme.scss` and sets `data-igd-type="docs"`.
+- The hand-made palette, the type scale and the Material elevations are gone. The engine variables come from the design system.
+- No stylesheet reads a raw gray step. 196 references use semantic `--igd-color-*`, `--igd-space-*` or `--igd-font-*` tokens. `light-dark()` calls went from 158 to 43.
+- `--igd-accent`, `--igd-on-accent`, `--igd-link-color`, `--igd-link-hover-color`, `--igd-app-bg`, `--igd-on-app-bg`, `--igd-app-outline-color`, `--igd-font-sans` and `--igd-padding-sm/md/lg` keep their names and point at design system tokens.
+- Warning callouts read the warning palette. Secondary is violet in the design system, and a violet warning reads wrong.
+
+## Still to do
+
+- 65 references to raw primary, secondary, surface, success, error and warn steps, mostly the info and warning callouts.
+- 43 `light-dark()` calls: the status badge colour pairs and the callouts. The design system has no status badge tokens and no dark brand ramps yet.
+- Spacing, radius and size values typed into stylesheets (finding 5). 26px spacing and 4px radius have no step.
+- `GlobalNavBar` still names `aktiv-grotesk`, so `DocsLayout` keeps the Typekit link.
+- The playground Colors and Typography pages still exist; they now show the design system's values.
+- The copy in `src/styles/design-system/` becomes a dependency once the package is published.
 
 ## Summary
 

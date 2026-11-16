@@ -1,12 +1,12 @@
 [data-theme='light'] {
-  --igd-scrollbar-thumb: var(--ig-gray-300);
+  --igd-scrollbar-thumb: var(--igd-color-icon-subtle);
   --igd-scrollbar-track: transparent;
 
   color-scheme: light;
 }
 
 [data-theme='dark'] {
-  --igd-scrollbar-thumb: var(--ig-gray-300);
+  --igd-scrollbar-thumb: var(--igd-color-icon-subtle);
   --igd-scrollbar-track: transparent;
 
   color-scheme: dark;

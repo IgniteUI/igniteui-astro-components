@@ -9,23 +9,22 @@
 
 /* DOCS PALETTE */
 :root {
-  --igd-font-sans: aktiv-grotesk, 'Segoe UI', system-ui, sans-serif;
-  --igd-font-mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+  --igd-font-sans: var(--igd-font-body);
 
   // Those are the real igniteui logo type colors not related to the palette
   --igd-logo-type: light-dark(#27265f, #fff);
 
-  --igd-accent: var(--ig-primary-600);
+  --igd-accent: var(--igd-color-action-default);
   --igd-illustration: var(--igd-accent);
-  --igd-on-accent: var(--ig-primary-600-contrast);
+  --igd-on-accent: var(--igd-color-action-on);
   --igd-border-radius: #{rem(4px)};
   --igd-border-radius-xl: #{rem(10px)};
 
-  --igd-app-bg: light-dark(var(--ig-surface-50), #0a0b10);
-  --igd-on-app-bg: light-dark(var(--ig-surface-900-contrast), var(--ig-surface-50-contrast));
+  --igd-app-bg: var(--igd-color-surface-page);
+  --igd-on-app-bg: var(--igd-color-text-primary);
 
   --igd-layout-sections-bg: var(--igd-app-bg);
-  --igd-app-outline-color: light-dark(var(--ig-gray-200), var(--ig-gray-100));
+  --igd-app-outline-color: var(--igd-color-border-default);
   --igd-app-outline-size: #{rem(1px)};
   --igd-app-outline-style: solid;
   --igd-app-outline: var(--igd-app-outline-size) var(--igd-app-outline-style)
@@ -53,13 +52,13 @@
   --igd-page-padding: #{rem(48px)};
 
   // Padding
-  --igd-padding-sm: #{rem(16px)};
-  --igd-padding-md: #{rem(24px)};
-  --igd-padding-lg: #{rem(32px)};
+  --igd-padding-sm: var(--igd-space-inset-md);
+  --igd-padding-md: var(--igd-space-inset-xl);
+  --igd-padding-lg: var(--igd-space-inset-2xl);
 
   // Links
-  --igd-link-color: light-dark(var(--ig-primary-600), var(--ig-primary-200));
-  --igd-link-hover-color: light-dark(var(--ig-primary-700), var(--ig-primary-100));
+  --igd-link-color: var(--igd-color-action-text);
+  --igd-link-hover-color: var(--igd-color-action-hover);
 
   --igd-updated-bg: light-dark(#eaf6fe, #0d1e38);
   --igd-updated-color: light-dark(#1151c1, #6b9fe8);
@@ -99,18 +98,18 @@
   --igd-aside-info-border: light-dark(var(--ig-primary-700), var(--ig-primary-400));
   --igd-aside-info-code-background: light-dark(var(--ig-primary-100), var(--ig-primary-900));
 
-  --igd-aside-warning-title: light-dark(var(--ig-secondary-700), var(--ig-secondary-400));
-  --igd-aside-warning-content: light-dark(var(--ig-secondary-700), var(--ig-secondary-300));
-  --igd-aside-warning-icon: light-dark(var(--ig-secondary-700), var(--ig-secondary-400));
-  --igd-aside-warning-bg: light-dark(var(--ig-secondary-50), var(--ig-secondary-900));
-  --igd-aside-warning-border: light-dark(var(--ig-secondary-700), var(--ig-secondary-400));
-  --igd-aside-warning-code-background: light-dark(var(--ig-secondary-100), var(--ig-secondary-900));
+  --igd-aside-warning-title: light-dark(var(--ig-warn-700), var(--ig-warn-400));
+  --igd-aside-warning-content: light-dark(var(--ig-warn-700), var(--ig-warn-300));
+  --igd-aside-warning-icon: light-dark(var(--ig-warn-700), var(--ig-warn-400));
+  --igd-aside-warning-bg: light-dark(var(--ig-warn-50), var(--ig-warn-900));
+  --igd-aside-warning-border: light-dark(var(--ig-warn-700), var(--ig-warn-400));
+  --igd-aside-warning-code-background: light-dark(var(--ig-warn-100), var(--ig-warn-900));
 
-  --igd-aside-note-title: light-dark(var(--ig-gray-700), var(--ig-gray-500));
-  --igd-aside-note-content: light-dark(var(--ig-gray-800), var(--ig-gray-400));
-  --igd-aside-note-icon: light-dark(var(--ig-gray-700), var(--ig-gray-400));
-  --igd-aside-note-bg: light-dark(var(--ig-gray-100), var(--ig-gray-50));
-  --igd-aside-note-border: light-dark(var(--ig-gray-700), var(--ig-gray-400));
+  --igd-aside-note-title: var(--igd-color-text-ui);
+  --igd-aside-note-content: var(--igd-color-text-primary);
+  --igd-aside-note-icon: var(--igd-color-text-ui);
+  --igd-aside-note-bg: var(--igd-color-surface-muted);
+  --igd-aside-note-border: var(--igd-color-border-control);
   --igd-aside-note-code-background: light-dark(var(--ig-sgray-100), var(--ig-secondary-900));
 
   // FAQ MDX
@@ -130,27 +129,27 @@
   --igd-faq-border-radius: var(--igd-border-radius-xl);
 
   --igd-faq-header-bg: var(--igd-layout-sections-bg);
-  --igd-faq-header-focus-bg: light-dark(var(--ig-gray-100), var(--ig-gray-50));
+  --igd-faq-header-focus-bg: var(--igd-color-surface-muted);
   --igd-faq-body-bg: var(--igd-layout-sections-bg);
 
-  --igd-faq-question-color: light-dark(var(--ig-gray-900), var(--ig-gray-700));
-  --igd-faq-subtitle-color: light-dark(var(--ig-gray-700), var(--ig-gray-500));
-  --igd-faq-answer-color: light-dark(var(--ig-gray-800), var(--ig-gray-600));
+  --igd-faq-question-color: var(--igd-color-text-heading);
+  --igd-faq-subtitle-color: var(--igd-color-text-ui);
+  --igd-faq-answer-color: var(--igd-color-text-primary);
   --igd-faq-indicator-color: var(--igd-accent);
-  --igd-faq-disabled-color: light-dark(var(--ig-gray-400), var(--ig-gray-300));
-  --igd-faq-disabled-bg: light-dark(var(--ig-gray-100), var(--ig-gray-50));
-  --igd-faq-disabled-border-color: light-dark(var(--ig-gray-200), var(--ig-gray-100));
+  --igd-faq-disabled-color: var(--igd-color-icon-subtle);
+  --igd-faq-disabled-bg: var(--igd-color-surface-muted);
+  --igd-faq-disabled-border-color: var(--igd-color-border-default);
 
   // TABLES
   --igd-table-max-height: #{rem(350px)};
   --igd-table-pinned-border-size: #{rem(1px)};
-  --igd-table-fg: light-dark(var(--ig-gray-700), var(--ig-gray-500));
+  --igd-table-fg: var(--igd-color-text-ui);
   --igd-table-bg: var(--igd-layout-sections-bg);
   --igd-tabe-even-row-bg: var(--igd-table-bg);
-  --igd-table-border-color: light-dark(var(--ig-gray-200), var(--ig-gray-200));
+  --igd-table-border-color: var(--igd-color-border-default);
 
   --igd-table-header-bg: var(--igd-layout-sections-bg);
-  --igd-table-header-fg: light-dark(var(--ig-gray-900), var(--ig-gray-700));
+  --igd-table-header-fg: var(--igd-color-text-heading);
 
   // FIGMA UI KITS MDX
   --igd-figma-kits-padding-block: #{rem(8px)};
@@ -171,9 +170,9 @@
   --igd-figma-kits-focus-offset: #{rem(2px)};
   --igd-figma-kits-link-weight: 700;
 
-  --igd-figma-kits-bg: light-dark(var(--ig-gray-100), var(--ig-gray-50));
-  --igd-figma-kits-border-color: light-dark(var(--ig-gray-300), var(--ig-gray-200));
-  --igd-figma-kits-title-color: var(--ig-gray-600);
+  --igd-figma-kits-bg: var(--igd-color-surface-muted);
+  --igd-figma-kits-border-color: var(--igd-color-border-default);
+  --igd-figma-kits-title-color: var(--igd-color-text-secondary);
   --igd-figma-kits-link-color: var(--igd-link-color);
   --igd-figma-kits-link-hover-color: var(--igd-link-hover-color);
 }

@@ -140,7 +140,7 @@
     position: fixed;
     inset: 0;
     z-index: 99;
-    background: light-dark(var(--ig-gray-900), var(--ig-gray-100));
+    background: var(--igd-color-surface-inverse);
     opacity: 0;
     pointer-events: none;
     transition: opacity 250ms ease;

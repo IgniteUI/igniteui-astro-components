@@ -12,7 +12,7 @@
     #{color($color: gray, $variant: 100, $opacity: 0.8)},
     #{color($color: surface, $variant: 500, $opacity: 0.8)}
   );
-  --igd-anatomy-border-color: light-dark(var(--ig-gray-300), var(--ig-surface-700));
+  --igd-anatomy-border-color: var(--igd-color-border-default);
   --igd-anatomy-radius: #{rem(4px)};
 
   display: grid;

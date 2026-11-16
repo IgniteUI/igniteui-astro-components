@@ -25,7 +25,7 @@ igc-tabs.icon-gallery-tabs {
   align-items: center;
   gap: 0.5rem;
   padding: 1rem 0.75rem 0.75rem;
-  border: 1px solid light-dark(var(--ig-gray-200), var(--ig-gray-100));
+  border: 1px solid var(--igd-color-border-default);
   border-radius: 0.625rem;
   background: light-dark(var(--ig-surface-500), var(--ig-surface-400));
   transition:
@@ -77,7 +77,7 @@ igc-tabs.icon-gallery-tabs {
 
   text-align: center;
   word-break: break-all;
-  color: light-dark(var(--ig-gray-700), var(--ig-gray-800));
+  color: var(--igd-color-text-ui);
 }
 
 .icon-card__actions {

@@ -84,7 +84,7 @@
       margin-block-start: rem(24px);
     }
 
-    color: light-dark(var(--ig-gray-800), var(--ig-gray-500));
+    color: var(--igd-color-text-primary);
 
     padding: var(--igd-page-padding);
     min-width: 0;
@@ -118,10 +118,10 @@
         margin: 0;
       }
 
-      background-color: var(--ig-gray-100);
+      background-color: var(--igd-color-surface-muted);
       color: var(--ig-gray-100-contrast);
       box-shadow: none;
-      border: rem(1px) solid var(--ig-gray-300);
+      border: rem(1px) solid var(--igd-color-border-default);
     }
 
     // <code> that is not inside a <pre> tag
@@ -132,9 +132,9 @@
       }
 
       border-radius: rem(4px);
-      color: light-dark(var(--ig-gray-900), var(--ig-gray-800));
-      background: light-dark(var(--ig-gray-100), #112031);
-      border: rem(1px) solid light-dark(var(--ig-gray-200), #1a314a);
+      color: var(--igd-color-text-heading);
+      background: var(--igd-color-surface-muted);
+      border: rem(1px) solid var(--igd-color-border-default);
     }
 
     ul,
@@ -195,7 +195,7 @@
     }
 
     iframe:not(.igd-code-view iframe) {
-      border: rem(1px) solid light-dark(var(--ig-gray-200), var(--ig-gray-100));
+      border: rem(1px) solid var(--igd-color-border-default);
       margin-block-end: rem(26px);
       border-radius: rem(8px);
     }
@@ -216,7 +216,7 @@
       padding-inline-start: 0;
 
       dt {
-        color: var(--ig-gray-900);
+        color: var(--igd-color-text-heading);
       }
 
       dd {
@@ -339,7 +339,7 @@
     h4,
     h5,
     h6 {
-      color: light-dark(var(--ig-gray-800), var(--ig-gray-700));
+      color: var(--igd-color-text-primary);
     }
 
     .igd-anchor-link {
@@ -430,14 +430,14 @@
 
       padding-block-start: rem(8px);
       margin-block-end: rem(26px);
-      color: var(--ig-gray-600);
+      color: var(--igd-color-text-secondary);
       text-align: center;
     }
 
     blockquote {
       padding: rem(16px);
       border-inline-start-width: rem(1px);
-      border-inline-start-color: var(--ig-gray-600);
+      border-inline-start-color: var(--igd-color-border-control);
       margin-block-end: rem(26px);
 
       p:only-child {
@@ -464,7 +464,7 @@
         margin: 0;
       }
 
-      color: var(--ig-gray-600);
+      color: var(--igd-color-text-secondary);
     }
 
     // Responsive video / iframe embeds
@@ -478,7 +478,7 @@
       margin-block-end: rem(26px);
       border-radius: var(--igd-border-radius);
       overflow: hidden;
-      outline: rem(1px) solid light-dark(var(--ig-gray-200), var(--ig-gray-100));
+      outline: rem(1px) solid var(--igd-color-border-default);
 
       iframe,
       video {
@@ -500,7 +500,7 @@
       border-radius: var(--igd-border-radius);
       margin-block-end: rem(26px);
       font-family: inherit;
-      outline: rem(1px) solid light-dark(var(--ig-gray-200), var(--ig-gray-100));
+      outline: rem(1px) solid var(--igd-color-border-default);
     }
 
     // Native <audio> standalone
@@ -512,7 +512,7 @@
 
     > hr {
       border: none;
-      border-block-start: rem(1px) solid light-dark(var(--ig-gray-200), var(--ig-gray-100));
+      border-block-start: rem(1px) solid var(--igd-color-border-default);
       margin-block: rem(26px);
     }
   }
@@ -529,10 +529,10 @@
       padding: rem(6px) rem(16px);
       border-bottom: rem(2px) solid transparent;
       margin-inline-end: rem(4px);
-      color: var(--ig-gray-600);
+      color: var(--igd-color-text-secondary);
 
       &:hover {
-        color: var(--ig-gray-900);
+        color: var(--igd-color-text-heading);
       }
     }
 

@@ -26,7 +26,7 @@ Before opening a PR run what CI runs: `npm run format:check`, `npm test`, `npm r
 ## Layout
 
 - `src/components/<Name>/` — `<Name>.astro`, `<Name>.scss`, `README.md`; MDX content components in `src/components/mdx/<Name>/`.
-- `src/layouts/DocsLayout/` — the page shell. `src/lib/` — shared types and helpers. `src/plugins/` — remark/rehype plugins. `src/scripts/` — client scripts. `src/chrome/` — marketing header/footer snapshot integration. `src/styles/theme.scss` — the only stylesheet; tokens in `src/styles/global/_variables.scss`.
+- `src/layouts/DocsLayout/` — the page shell. `src/lib/` — shared types and helpers. `src/plugins/` — remark/rehype plugins. `src/scripts/` — client scripts. `src/chrome/` — marketing header/footer snapshot integration. `src/styles/theme.scss` — the only stylesheet; tokens in `src/styles/global/_variables.scss`. `src/styles/design-system/` — a copy of the built `ig-design-system` package (palette, semantic tokens, type); refresh it with `node scripts/sync-design-system.mjs`, never edit it.
 - `package.json#exports` is the public surface. A file not listed there is private.
 - `playground/` — in-repo Astro site; `playground/src/middleware.ts` and `playground/astro.config.mjs` show what a host must provide.
 - `tests/` — Vitest component tests (`tests/components/**/*.test.ts`, one file per component, rendered with the Astro container API).
@@ -35,7 +35,7 @@ Before opening a PR run what CI runs: `npm run format:check`, `npm test`, `npm r
 ## Conventions
 
 - A component you add or change gets `interface Props` at the top of its `.astro` file with a JSDoc line per prop, and its README lists the same props. Leave other files as they are (6 of 28 have it today).
-- Colours, spacing and fonts come from `--igd-*` custom properties; never hard-code them.
+- Colours, spacing and fonts come from `--igd-*` custom properties; never hard-code them. A colour is a semantic design system token (`--igd-color-text-primary`, `--igd-color-border-default`), not a raw palette step (`--ig-gray-700`) and not a `light-dark()` pair of steps.
 - Formatting is Prettier's; the pre-commit hook formats staged files, so do not reformat files you did not change.
 - Commits: Conventional Commits with a scope, e.g. `feat(sample): …`, `fix(styles): …`, `docs: …`, `chore(github): …`. Branches: `<user>/<topic>`. Base branch: `master`.
 - Do not add dependencies without saying so in the PR; peer dependencies change what every consumer must install.

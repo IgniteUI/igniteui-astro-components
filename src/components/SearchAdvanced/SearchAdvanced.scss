@@ -60,7 +60,7 @@
     }
 
     igc-tab {
-      --item-text-color: light-dark(var(--ig-gray-900), var(--ig-gray-700));
+      --item-text-color: var(--igd-color-text-heading);
       --item-background: var(--igd-layout-sections-bg);
       --item-hover-background: var(--igd-layout-sections-bg);
       --item-hover-color: var(--igd-accent);
@@ -96,7 +96,7 @@
   }
 
   .igd-search-tab-count {
-    color: light-dark(var(--ig-gray-400), var(--ig-gray-300));
+    color: var(--igd-color-icon-subtle);
 
     &::before {
       content: '(';
@@ -113,7 +113,7 @@
 
     padding-inline-start: calc(#{rem(26px)} + #{rem(16px)});
     margin-block-start: rem(16px);
-    color: light-dark(var(--ig-gray-600), var(--ig-gray-400));
+    color: var(--igd-color-text-secondary);
   }
 
   .igd-search-refine-hint {
@@ -123,11 +123,11 @@
 
     padding-inline-start: calc(#{rem(26px)} + #{rem(16px)});
     margin-block-start: rem(16px);
-    color: light-dark(var(--ig-gray-600), var(--ig-gray-400));
+    color: var(--igd-color-text-secondary);
   }
 
   igc-divider {
-    --color: light-dark(var(--ig-gray-200), var(--ig-gray-300));
+    --color: var(--igd-color-border-default);
   }
 
   .igd-search-scope {
