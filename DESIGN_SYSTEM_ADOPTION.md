@@ -1,6 +1,6 @@
 # Adopting ig-design-system in igniteui-astro-components
 
-Status: step 1 of the spike, a read-only inventory. No component is changed yet.
+Status: step 1 (a read-only inventory) and step 2 (a trial switch in the playground) are done. No component or style in `src/` is changed.
 Branch: `mpopov/adopt-design-system-tokens`. This file is a working report and is not meant to be merged as is.
 
 Measured on `master` at `fca14ed` against `ig-design-system` `main` at `923f9c8`.
@@ -170,15 +170,65 @@ Each would be a Token request there. None is logged yet.
 - **`igniteui-theming` 30.** This repo is on 29. The design system's palette comes from 30.2.
 - **The checks as a command**, so this repo's CI can run them on its own styles.
 
+## Decisions taken
+
+- **Secondary:** docs move to violet. The orange palette here goes away.
+- **Typeface:** Blog, Docs and API docs move to DM Sans and Plus Jakarta Sans. A site that needs another face changes it in its own repository, not here.
+
+## Step 2: the trial in the playground
+
+### How to use it
+
+```sh
+npm run playground          # http://localhost:4567
+```
+
+- A button in the bottom left corner reads "Design system: off". Click it to load the design system on top of the page, and again to remove it.
+- `?ds=on` and `?ds=off` in the URL do the same. The choice is remembered.
+- The switch loads `tokens.css` and `theme.css` after every other stylesheet, so they win where both set the same thing. Nothing in `src/` changes.
+- The two files and the fonts are a copy in `playground/public/design-system/`, taken from `ig-design-system` at the commit in its `VERSION` file. `node playground/scripts/sync-design-system.mjs` refreshes the copy from a sibling checkout.
+
+### What changes when it is on
+
+Measured in Chromium at 1440px on the home page, `/components/docs-aside/` and `/components/badge/`, in the light and the dark theme. No page threw a script error and none scrolls sideways.
+
+| What                    | Off              | On                                  | Verdict                                                        |
+| ----------------------- | ---------------- | ----------------------------------- | -------------------------------------------------------------- |
+| Body and UI face        | aktiv-grotesk    | DM Sans                             | Wanted                                                         |
+| Heading face            | aktiv-grotesk    | Plus Jakarta Sans                   | Wanted                                                         |
+| Page `h1`               | 36px, weight 700 | 70px, weight 900                    | **Wrong for docs**                                             |
+| Page `h2`               | 24px             | 43px                                | **Wrong for docs**                                             |
+| Paragraph               | 16px / 28px      | 19px / 30.8px                       | **Wrong for docs**                                             |
+| Space under `h1`        | 24px             | 0                                   | **Broken**: headings touch the text below                      |
+| Links in prose          | Underlined       | Not underlined                      | **Broken**: a link is no longer told apart by more than colour |
+| Link colour, dark theme | A light blue     | `#155dfc` on `#0f172a`, about 3.4:1 | **Below AA**; a design system bug, see below                   |
+| Accent (`--igd-accent`) | `#155dfc`        | `#2462ea`                           | Shifts: it reads `--ig-primary-600`, now an engine step        |
+| Secondary               | Orange `#f95924` | Violet `#a452f8`                    | Wanted                                                         |
+| Page background, dark   | `#0a0b10`        | `#0f172a`                           | To review                                                      |
+| `igc-input` height      | 40px             | 48px                                | Side effect: the design system sets `--ig-size: 3` (large)     |
+| Sidebar tree text       | 14px             | 15px                                | Side effect of the body size                                   |
+
+### What the trial shows
+
+1. **The palette swap works.** Light and dark both hold together, and the Ignite UI components (search field, selects, tree) follow the design system's palette with no mapping. That confirms decision 1 of the design system on a real page.
+2. **The type cannot be taken as it is.** The engine's slots carry the marketing sizes, so every docs heading and paragraph grows. Docs needs its own sizes on the same roles.
+3. **`theme.css` carries page-level rules that are not tokens**: `h1`–`h6 { margin: 0 }`, `a { text-decoration: none }`, `body { font-size }`, `* { box-sizing }`. They suit the marketing site and override this repo's own rules. A consumer should be able to load the tokens without them.
+4. **`--ig-size` is global.** Setting it to large for the design system's spacing also makes every Ignite UI control larger.
+
+### Found in ig-design-system by the trial
+
+- The base rule `a { color: var(--igd-color-action-default) }` uses the fill colour for text. In the dark theme that is about 3.4:1 on the page. It should read `--igd-color-action-text`.
+- The token layer and the base element styles ship in one file. They need to be loadable apart.
+- The type sizes need a way to be set per site.
+
 ## Proposed next steps
 
-1. **Trial, visible in the playground.** Load `tokens.css` and `theme.css` into the playground behind a switch, change nothing else, and look at every page in light and dark. This shows what the shared `--ig-*` palette does to the layout and to the Ignite UI components.
-2. **One component end to end.** Move `DocsAside` (25 tokens, colours and spacing) to semantic tokens and run the design system's checks on it.
-3. **Decide the eight gaps** with what steps 1 and 2 show.
+1. Done: the trial above.
+2. **In ig-design-system:** split the base element styles from the tokens, fix the link colour, and add a way to set type sizes per site. Then refresh the copy here and look again.
+3. **One component end to end.** Move `DocsAside` (25 tokens, colours and spacing) to semantic tokens and run the design system's checks on it.
+4. **Decide the eight gaps** with what the steps above show.
 
 ## Questions for the owner
 
-1. Secondary: does the docs orange become a second accent in the design system, or do docs move to violet?
-2. Typeface: do Blog, Docs and API docs move to DM Sans and Plus Jakarta Sans, or keep aktiv-grotesk?
-3. Type sizes: is "docs sets its own sizes on the same 15 roles" the model you want?
-4. Is step 1 of the next steps the right place to start?
+1. Type sizes: docs pages need smaller headings than the marketing site. Should the design system ship one set of sizes per kind of site (marketing, docs), or should each site set its own?
+2. Should the design system's `--ig-size` stay at large on docs pages, where it makes every Ignite UI control larger?

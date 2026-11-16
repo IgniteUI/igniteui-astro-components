@@ -4,3 +4,4 @@ dist
 package-lock.json
 playground/public/api-search-index/data.json
 playground/public/api-search-index/manifest.json
+playground/public/design-system

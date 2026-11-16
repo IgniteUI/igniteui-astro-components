@@ -44,6 +44,15 @@ const platformHeadEntries = getPlatformHead('angular', 'en', {
   legacyChrome: !process.env.IG_CHROME_SNAPSHOT,
 });
 
+// Adoption trial: an inline script that loads the ig-design-system stylesheets when its switch is on.
+const designSystemTrial = {
+  tag: 'script',
+  content: fs.readFileSync(
+    fileURLToPath(new URL('./src/scripts/design-system-trial.js', import.meta.url)),
+    'utf8',
+  ),
+};
+
 /**
  * Dev-only Vite plugin: handles POST /api/icons/replace
  * so the IconGallery upload button can replace SVG files in src/assets/icons/.
@@ -141,7 +150,7 @@ function virtualDocsModules() {
 export const title = '';
 export const sidebar = [];
 export const productLinks = [];
-export const headEntries = ${JSON.stringify(platformHeadEntries)};
+export const headEntries = ${JSON.stringify([...platformHeadEntries, designSystemTrial])};
 export const trailingSlash = 'ignore';
 export const packages = [];
 export const selectedPackage = null;
