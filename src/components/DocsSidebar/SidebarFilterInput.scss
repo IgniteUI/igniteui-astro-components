@@ -45,7 +45,7 @@
 
     > igc-icon {
       --size: #{rem(24px)};
-      margin-inline-end: rem(8px);
+      margin-inline-end: var(--igd-space-gap-xs);
     }
   }
 
@@ -58,7 +58,7 @@
       margin: 0;
     }
 
-    padding-inline: rem(16px);
+    padding-inline: var(--igd-space-inset-md);
   }
 
   igc-button {
@@ -84,7 +84,7 @@
   }
 
   color: var(--igd-color-text-muted);
-  padding-inline: rem(16px) 0;
+  padding-inline: var(--igd-space-inset-md) 0;
 
   &:empty {
     display: none;

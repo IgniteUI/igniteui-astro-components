@@ -18,7 +18,7 @@
   background-color: var(--igd-anatomy-bg);
   border: rem(1px) solid var(--igd-anatomy-border-color);
   border-radius: var(--igd-anatomy-radius);
-  margin: 0 0 rem(26px);
+  margin: 0 0 var(--igd-space-stack-xl);
 
   // Never let the frame itself overflow its column.
   max-width: 100%;

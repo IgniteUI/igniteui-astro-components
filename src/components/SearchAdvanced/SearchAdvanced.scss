@@ -10,7 +10,7 @@
     display: contents;
 
     #search-scope-trigger-icon {
-      margin-inline-start: rem(16px);
+      margin-inline-start: var(--igd-space-gap-md);
     }
   }
 
@@ -21,7 +21,7 @@
 
   igc-tabs {
     igc-divider {
-      margin-block: rem(16px) rem(24px);
+      margin-block: var(--igd-space-stack-md) var(--igd-space-stack-xl);
 
       &:last-of-type {
         display: none;
@@ -82,14 +82,14 @@
     }
 
     igc-tab::part(base) {
-      gap: rem(4px);
+      gap: var(--igd-space-gap-2xs);
     }
 
     igc-tab::part(tab-body) {
       overflow-y: auto;
       flex: 1 1 auto;
       min-height: 0;
-      padding-block: rem(16px);
+      padding-block: var(--igd-space-inset-md);
       padding-inline: 0;
       border-block-start: var(--igd-app-outline);
     }
@@ -112,7 +112,7 @@
     }
 
     padding-inline-start: calc(#{rem(26px)} + #{rem(16px)});
-    margin-block-start: rem(16px);
+    margin-block-start: var(--igd-space-stack-md);
     color: var(--igd-color-text-secondary);
   }
 
@@ -122,7 +122,7 @@
     }
 
     padding-inline-start: calc(#{rem(26px)} + #{rem(16px)});
-    margin-block-start: rem(16px);
+    margin-block-start: var(--igd-space-stack-md);
     color: var(--igd-color-text-secondary);
   }
 

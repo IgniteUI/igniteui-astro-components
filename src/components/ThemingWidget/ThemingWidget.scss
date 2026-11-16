@@ -86,7 +86,7 @@
     left: rem(48px);
     display: inline-flex;
     align-items: baseline;
-    gap: rem(4px);
+    gap: var(--igd-space-gap-2xs);
     max-width: calc(100% - #{rem(88px)});
     pointer-events: none;
     transform: translateY(-50%);
@@ -125,7 +125,7 @@
     display: inline-flex;
     flex-shrink: 0;
     align-items: center;
-    gap: rem(2px);
+    gap: var(--igd-space-gap-3xs);
   }
 
   // Bootstrap's medium select prefix inset is 10px; the Figma trigger uses 16px.
@@ -166,7 +166,7 @@
     justify-content: space-between;
     margin: 0;
     min-height: rem(40px);
-    padding-inline: rem(16px);
+    padding-inline: var(--igd-space-inset-md);
   }
 
   .igd-theming__section-label {
@@ -221,7 +221,7 @@
 
     &::part(base) {
       min-height: rem(24px);
-      padding: rem(4px) rem(8px);
+      padding: var(--igd-space-inset-2xs) var(--igd-space-inset-xs);
       font-family: inherit;
       font-size: rem(10px);
       font-weight: 500;
@@ -244,7 +244,7 @@
     border: 0;
     outline: none;
     min-height: rem(40px);
-    padding-inline: rem(24px) rem(18px);
+    padding-inline: var(--igd-space-inset-xl) rem(18px);
     font-family: inherit;
     font-size: rem(14px);
     font-weight: 500;
@@ -252,7 +252,7 @@
     line-height: rem(20px);
 
     &::part(prefix) {
-      margin-inline-end: rem(8px);
+      margin-inline-end: var(--igd-space-gap-xs);
     }
 
     &:not([selected]) igc-icon {

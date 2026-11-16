@@ -64,7 +64,7 @@
     --ig-input-group-border-border-radius: var(--igd-border-radius-xl);
 
     &::part(base) {
-      padding-block: rem(12px);
+      padding-block: var(--igd-space-inset-sm);
     }
 
     igc-icon {

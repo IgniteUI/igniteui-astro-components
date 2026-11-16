@@ -11,8 +11,8 @@ igc-tabs.icon-gallery-tabs {
 .icon-gallery__grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(9rem, 1fr));
-  gap: rem(16px);
-  padding-block: rem(16px);
+  gap: var(--igd-space-gap-md);
+  padding-block: var(--igd-space-inset-md);
 
   &--illustrations {
     grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr));
@@ -42,7 +42,7 @@ igc-tabs.icon-gallery-tabs {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-block: rem(16px);
+  margin-block: var(--igd-space-stack-md);
 
   igc-icon {
     --size: 28px;
@@ -72,7 +72,7 @@ igc-tabs.icon-gallery-tabs {
 
 .icon-card__name {
   @include type-style('caption') {
-    margin-block-end: rem(24px);
+    margin-block-end: var(--igd-space-stack-xl);
   }
 
   text-align: center;
@@ -83,7 +83,7 @@ igc-tabs.icon-gallery-tabs {
 .icon-card__actions {
   display: flex;
   flex-direction: column;
-  gap: rem(8px);
+  gap: var(--igd-space-gap-xs);
   width: 100%;
 
   igc-button {

@@ -19,7 +19,7 @@ igc-tree {
   --ig-size: 1;
 
   position: relative;
-  padding-inline: rem(12px);
+  padding-inline: var(--igd-space-inset-sm);
 }
 
 // TODO KEEP THIS IF WEE NEED ADDITIONAL VISUAL INDICATOR FOR THE TOC
@@ -93,7 +93,7 @@ igc-tree[data-variant='sidebar'] {
     --igc-tree-indentation-size: var(--docs-tree-indent);
 
     &::part(wrapper) {
-      border-radius: rem(4px);
+      border-radius: var(--igd-radius-xs);
     }
 
     // The label part is `width: 100%`, which would otherwise make the
@@ -104,7 +104,7 @@ igc-tree[data-variant='sidebar'] {
   }
 
   igc-tree-item + igc-tree-item[data-has-children] {
-    margin-block-start: rem(4px);
+    margin-block-start: var(--igd-space-stack-2xs);
   }
 
   .docs-tree-label {
@@ -121,7 +121,7 @@ igc-tree[data-variant='sidebar'] {
     }
 
     .docs-tree-group {
-      padding-block: rem(8px);
+      padding-block: var(--igd-space-inset-xs);
     }
   }
 
@@ -166,11 +166,11 @@ igc-tree[data-variant='toc'] {
   }
 
   igc-tree-item:not([data-depth='0'], [data-has-children]) {
-    margin-left: rem(16px);
+    margin-left: var(--igd-space-gap-md);
   }
 
   igc-tree-item[data-depth='0'] {
-    margin-block: rem(16px) 0;
+    margin-block: var(--igd-space-stack-md) 0;
   }
 
   igc-tree-item::part(wrapper) {
@@ -306,7 +306,7 @@ igc-tree-item:not([data-has-children]) {
   &::part(wrapper) {
     --size: auto;
 
-    margin-block: rem(2px) !important;
+    margin-block: var(--igd-space-stack-3xs) !important;
   }
 }
 
@@ -333,11 +333,11 @@ igc-tree-item:not([data-has-children]):hover .docs-tree-label {
 
 .igd-label-and-badge {
   position: relative;
-  padding-block: rem(8px);
+  padding-block: var(--igd-space-inset-xs);
   padding-inline-start: calc(
     var(--docs-tree-row-inset, #{rem(6px)}) + var(--docs-tree-leaf-inset, #{rem(6px)})
   );
-  padding-inline-end: rem(8px);
+  padding-inline-end: var(--igd-space-inset-xs);
   height: 100%;
   z-index: -1;
 

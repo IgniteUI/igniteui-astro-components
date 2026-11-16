@@ -3,7 +3,7 @@
 .docs-breadcrumb {
   width: 100%;
   padding: 0;
-  margin-block-end: rem(16px);
+  margin-block-end: var(--igd-space-stack-md);
 
   ul,
   ol {
@@ -38,7 +38,7 @@
 .docs-breadcrumb-item {
   display: flex;
   align-items: center;
-  gap: rem(4px);
+  gap: var(--igd-space-gap-2xs);
   white-space: nowrap;
   overflow: hidden;
   padding: 0;

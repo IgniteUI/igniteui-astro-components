@@ -10,9 +10,9 @@
     display: flex;
     align-items: center;
     width: 100%;
-    gap: rem(8px);
+    gap: var(--igd-space-gap-xs);
     padding-inline: var(--igd-padding-md);
-    padding-block: rem(12px);
+    padding-block: var(--igd-space-inset-sm);
     background: transparent;
     border: none;
     cursor: pointer;
@@ -74,7 +74,7 @@
 
     nav {
       padding-inline: var(--igd-padding-md);
-      padding-block-end: rem(16px);
+      padding-block-end: var(--igd-space-inset-md);
     }
   }
 }

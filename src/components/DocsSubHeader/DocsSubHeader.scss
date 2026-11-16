@@ -18,13 +18,13 @@
     z-index: 1;
     background-color: var(--igd-layout-sections-bg);
     view-transition-name: docs-subheader;
-    padding-inline-start: rem(24px);
+    padding-inline-start: var(--igd-space-inset-xl);
 
     .igd-logo {
       display: flex;
       align-items: center;
       height: 100%;
-      padding-inline: 0 rem(16px);
+      padding-inline: 0 var(--igd-space-inset-md);
 
       .igd-logo__text {
         display: flex;
@@ -85,12 +85,12 @@
     display: flex;
     align-items: center;
     height: 100%;
-    gap: rem(16px);
+    gap: var(--igd-space-gap-md);
     min-width: 0;
     justify-content: end;
 
     &:last-child {
-      margin-inline-end: rem(32px);
+      margin-inline-end: var(--igd-space-gap-2xl);
     }
 
     > igc-input {

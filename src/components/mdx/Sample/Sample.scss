@@ -29,7 +29,7 @@ igc-tabs {
   .igd-code-view__header-actions {
     border-block: rem(1px) solid var(--igd-color-border-default);
   }
-  border-radius: rem(4px) rem(4px) 0 0;
+  border-radius: var(--igd-radius-xs) var(--igd-radius-xs) 0 0;
 
   .igd-sample-container {
     border-inline: none;
@@ -105,14 +105,14 @@ igc-tab::part(content) {
 
 igc-tab::part(tab-header) {
   min-height: rem(30px);
-  padding: rem(4px) rem(16px);
+  padding: var(--igd-space-inset-2xs) var(--igd-space-inset-md);
 }
 
 .igd-code-view {
   width: 100%;
   border: rem(1px) solid var(--igd-color-border-default);
-  border-radius: rem(4px);
-  margin-block-end: rem(26px);
+  border-radius: var(--igd-radius-xs);
+  margin-block-end: var(--igd-space-stack-xl);
 
   .igd-sample-container {
     margin-block-end: 0;
@@ -131,12 +131,12 @@ igc-tab::part(tab-header) {
     flex: 1 1 0;
     min-width: 0;
     border: none;
-    border-radius: rem(4px) rem(4px) 0 0;
+    border-radius: var(--igd-radius-xs) var(--igd-radius-xs) 0 0;
   }
 
   // Without a theme picker there is no footer, so the pane takes all four corners.
   &:not(:has(.igd-code-view__footer-actions)) .igd-sample-container {
-    border-radius: rem(4px);
+    border-radius: var(--igd-radius-xs);
   }
 }
 
@@ -155,7 +155,7 @@ igc-tab::part(tab-header) {
   position: relative;
   border: rem(1px) solid var(--igd-color-border-default);
   overflow: hidden;
-  margin-block-end: rem(26px);
+  margin-block-end: var(--igd-space-stack-xl);
   z-index: 0;
   background: var(--igd-sample-bg-light-dark);
 
@@ -413,8 +413,8 @@ igc-tab::part(tab-header) {
   border-end-start-radius: 0.25rem;
   border-end-end-radius: 0.25rem;
   min-height: rem(56px);
-  padding: rem(8px) rem(24px);
-  gap: rem(8px);
+  padding: var(--igd-space-inset-xs) var(--igd-space-inset-xl);
+  gap: var(--igd-space-gap-xs);
   background: var(--igd-color-surface-page);
 }
 
@@ -440,13 +440,13 @@ igc-tab::part(tab-header) {
   align-items: center;
   justify-content: flex-end;
   position: relative;
-  padding: rem(16px);
-  gap: rem(16px);
+  padding: var(--igd-space-inset-md);
+  gap: var(--igd-space-gap-md);
 }
 
 .igd-code-view__footer-actions {
-  padding: rem(8px) rem(24px);
-  gap: rem(8px);
+  padding: var(--igd-space-inset-xs) var(--igd-space-inset-xl);
+  gap: var(--igd-space-gap-xs);
 
   .igd-code-view__footer-edit-actions {
     display: flex;
@@ -454,8 +454,8 @@ igc-tab::part(tab-header) {
     align-items: center;
     justify-content: flex-end;
     min-width: 0;
-    padding-inline-start: rem(16px);
-    gap: rem(8px);
+    padding-inline-start: var(--igd-space-inset-md);
+    gap: var(--igd-space-gap-xs);
   }
 
   .igd-edit-in-btn {
@@ -475,7 +475,7 @@ igc-tab::part(tab-header) {
 
   &::part(base) {
     min-height: rem(24px);
-    padding: rem(4px) rem(8px);
+    padding: var(--igd-space-inset-2xs) var(--igd-space-inset-xs);
     font-family: var(--igd-font-sans);
     font-size: rem(10px);
     font-weight: 500;
@@ -493,8 +493,8 @@ igc-tab::part(tab-header) {
 
 igc-button {
   &::part(base) {
-    padding-inline: rem(16px);
-    gap: rem(4px);
+    padding-inline: var(--igd-space-inset-md);
+    gap: var(--igd-space-gap-2xs);
 
     @include type-style('caption') {
       margin: 0;
