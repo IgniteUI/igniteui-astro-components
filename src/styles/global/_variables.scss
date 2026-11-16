@@ -91,18 +91,18 @@
   --igd-aside-margin-bottom: #{rem(26px)};
   --igd-aside-border-style: solid;
 
-  --igd-aside-info-title: light-dark(var(--ig-primary-700), var(--ig-primary-400));
+  --igd-aside-info-title: light-dark(var(--ig-primary-700), var(--ig-primary-300));
   --igd-aside-info-content: light-dark(var(--ig-primary-800), var(--ig-primary-200));
   --igd-aside-info-icon: light-dark(var(--ig-primary-700), var(--ig-primary-400));
   --igd-aside-info-bg: light-dark(var(--ig-primary-50), var(--ig-primary-900));
   --igd-aside-info-border: light-dark(var(--ig-primary-700), var(--ig-primary-400));
   --igd-aside-info-code-background: light-dark(var(--ig-primary-100), var(--ig-primary-900));
 
-  --igd-aside-warning-title: light-dark(var(--ig-warn-700), var(--ig-warn-400));
-  --igd-aside-warning-content: light-dark(var(--ig-warn-700), var(--ig-warn-300));
-  --igd-aside-warning-icon: light-dark(var(--ig-warn-700), var(--ig-warn-400));
-  --igd-aside-warning-bg: light-dark(var(--ig-warn-50), var(--ig-warn-900));
-  --igd-aside-warning-border: light-dark(var(--ig-warn-700), var(--ig-warn-400));
+  --igd-aside-warning-title: light-dark(var(--ig-warn-500), var(--ig-warn-200));
+  --igd-aside-warning-content: light-dark(var(--ig-warn-600), var(--ig-warn-100));
+  --igd-aside-warning-icon: light-dark(var(--ig-warn-400), var(--ig-warn-200));
+  --igd-aside-warning-bg: light-dark(var(--ig-warn-50), var(--ig-warn-800));
+  --igd-aside-warning-border: light-dark(var(--ig-warn-400), var(--ig-warn-200));
   --igd-aside-warning-code-background: light-dark(var(--ig-warn-100), var(--ig-warn-900));
 
   --igd-aside-note-title: var(--igd-color-text-ui);
@@ -110,7 +110,7 @@
   --igd-aside-note-icon: var(--igd-color-text-ui);
   --igd-aside-note-bg: var(--igd-color-surface-muted);
   --igd-aside-note-border: var(--igd-color-border-control);
-  --igd-aside-note-code-background: light-dark(var(--ig-sgray-100), var(--ig-secondary-900));
+  --igd-aside-note-code-background: var(--igd-color-surface-subtle);
 
   // FAQ MDX
   // Consumers style the FAQ exclusively through these tokens — Faq.scss maps
@@ -194,7 +194,7 @@
   --igd-code-copy-color: #d2dbe8;
   --igd-code-copy-hover-color: #0176ff;
   --igd-code-copy-hover-bg: #002b5c;
-  --igd-code-copy-success-color: var(--ig-success-500);
+  --igd-code-copy-success-color: var(--ig-success-400);
   --igd-code-copy-inset: #{rem(12px)};
 }
 

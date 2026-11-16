@@ -27,7 +27,7 @@ igc-tabs.icon-gallery-tabs {
   padding: 1rem 0.75rem 0.75rem;
   border: 1px solid var(--igd-color-border-default);
   border-radius: 0.625rem;
-  background: light-dark(var(--ig-surface-500), var(--ig-surface-400));
+  background: var(--igd-color-surface-card);
   transition:
     border-color 0.15s,
     box-shadow 0.15s;

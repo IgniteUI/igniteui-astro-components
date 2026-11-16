@@ -244,7 +244,7 @@ igc-tab::part(tab-header) {
   // of the token is swapped, so dark mode is untouched — both the site's dark
   // surface and the theming widget's dedicated `--igd-sample-bg-dark`.
   &--white-background {
-    --igd-sample-bg-light-dark: light-dark(#fff, var(--ig-surface-500));
+    --igd-sample-bg-light-dark: var(--igd-color-surface-page);
 
     // Asking for white implies a painted surface, so it also wins over the
     // transparent container `--no-background` leaves behind — in light mode
@@ -415,7 +415,7 @@ igc-tab::part(tab-header) {
   min-height: rem(56px);
   padding: rem(8px) rem(24px);
   gap: rem(8px);
-  background: light-dark(#fff, var(--ig-surface-500));
+  background: var(--igd-color-surface-page);
 }
 
 // The footer picker is intentionally borderless: the footer itself provides
