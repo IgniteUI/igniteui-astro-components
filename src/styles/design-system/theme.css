@@ -255,7 +255,7 @@
   --ig-success-700-contrast: hsla(from color(from var(--ig-success-700) var(--y-contrast)) h 0 l/1);
   --ig-success-800-contrast: hsla(from color(from var(--ig-success-800) var(--y-contrast)) h 0 l/1);
   --ig-success-900-contrast: hsla(from color(from var(--ig-success-900) var(--y-contrast)) h 0 l/1);
-  --ig-success-seed: #0d9488;
+  --ig-success-seed: #028a54;
   --ig-success-seed-contrast: hsla(from color(from var(--ig-success-seed) var(--y-contrast)) h 0 l/1);
   --ig-success-A100-contrast: hsla(from color(from var(--ig-success-A100) var(--y-contrast)) h 0 l/1);
   --ig-success-A200-contrast: hsla(from color(from var(--ig-success-A200) var(--y-contrast)) h 0 l/1);
@@ -696,7 +696,7 @@
   --igd-color-action-default: var(--ig-primary-seed);
   --igd-color-feedback-error-default: oklch(from var(--ig-error-600) calc((1 - var(--igd-theme-dark)) * min(l, max(0.35, 0.4767 - 0.6 * max(0, l - 0.4767))) + var(--igd-theme-dark) * max(l, min(0.92, 0.74 + 0.6 * max(0, 0.74 - l)))) calc(c * ((1 - var(--igd-theme-dark)) * min(l, max(0.35, 0.4767 - 0.6 * max(0, l - 0.4767))) / max(l, 0.0001) + var(--igd-theme-dark) * min(1, (1 - max(l, min(0.92, 0.74 + 0.6 * max(0, 0.74 - l)))) / max(1 - l, 0.0001)))) h);
   --igd-badge-bundle-color: oklch(from var(--ig-secondary-700) calc((1 - var(--igd-theme-dark)) * min(l, max(0.35, 0.488 - 0.6 * max(0, l - 0.488))) + var(--igd-theme-dark) * max(l, min(0.92, 0.74 + 0.6 * max(0, 0.74 - l)))) calc(c * ((1 - var(--igd-theme-dark)) * min(l, max(0.35, 0.488 - 0.6 * max(0, l - 0.488))) / max(l, 0.0001) + var(--igd-theme-dark) * min(1, (1 - max(l, min(0.92, 0.74 + 0.6 * max(0, 0.74 - l)))) / max(1 - l, 0.0001)))) h);
-  --igd-badge-oss-color: oklch(from var(--ig-success-600) calc((1 - var(--igd-theme-dark)) * min(l, max(0.35, 0.4443 - 0.6 * max(0, l - 0.4443))) + var(--igd-theme-dark) * max(l, min(0.92, 0.74 + 0.6 * max(0, 0.74 - l)))) calc(c * ((1 - var(--igd-theme-dark)) * min(l, max(0.35, 0.4443 - 0.6 * max(0, l - 0.4443))) / max(l, 0.0001) + var(--igd-theme-dark) * min(1, (1 - max(l, min(0.92, 0.74 + 0.6 * max(0, 0.74 - l)))) / max(1 - l, 0.0001)))) h);
+  --igd-badge-oss-color: oklch(from var(--ig-success-600) calc((1 - var(--igd-theme-dark)) * min(l, max(0.35, 0.441 - 0.6 * max(0, l - 0.441))) + var(--igd-theme-dark) * max(l, min(0.92, 0.74 + 0.6 * max(0, 0.74 - l)))) calc(c * ((1 - var(--igd-theme-dark)) * min(l, max(0.35, 0.441 - 0.6 * max(0, l - 0.441))) / max(l, 0.0001) + var(--igd-theme-dark) * min(1, (1 - max(l, min(0.92, 0.74 + 0.6 * max(0, 0.74 - l)))) / max(1 - l, 0.0001)))) h);
   --igd-table-mark-partial-color: oklch(from var(--ig-warn-800) calc((1 - var(--igd-theme-dark)) * min(l, max(0.35, 0.3065 - 0.6 * max(0, l - 0.3065))) + var(--igd-theme-dark) * max(l, min(0.92, 0.74 + 0.6 * max(0, 0.74 - l)))) calc(c * ((1 - var(--igd-theme-dark)) * min(l, max(0.35, 0.3065 - 0.6 * max(0, l - 0.3065))) / max(l, 0.0001) + var(--igd-theme-dark) * min(1, (1 - max(l, min(0.92, 0.74 + 0.6 * max(0, 0.74 - l)))) / max(1 - l, 0.0001)))) h);
   --igd-window-dot-red: var(--ig-error-300);
   --igd-window-dot-amber: var(--ig-warn-200);
