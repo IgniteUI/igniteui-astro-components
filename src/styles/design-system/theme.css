@@ -415,6 +415,8 @@
   --igd-shadow-accent-md: var(--igd-elevation-tint-13);
   --igd-callout-release-shadow: inset 0 0 0 var(--igd-border-width-default) var(--igd-color-emphasis-ring), var(--igd-elevation-tint-13);
   --igd-callout-release-shadow-hover: inset 0 0 0 var(--igd-border-width-default) var(--igd-color-emphasis-ring-hover), var(--igd-elevation-tint-16);
+  --igd-shadow-popover: 0 calc(var(--ig-elevation-factor, 1) * 26px) calc(var(--ig-elevation-factor, 1) * 50px) calc(var(--ig-elevation-factor, 1) * -22px) rgba(15, 23, 42, 0.22);
+  --igd-shadow-panel: 0 calc(var(--ig-elevation-factor, 1) * -2px) calc(var(--ig-elevation-factor, 1) * 8px) calc(var(--ig-elevation-factor, 1) * 0px) rgba(15, 23, 42, 0.04), 0 calc(var(--ig-elevation-factor, 1) * 18px) calc(var(--ig-elevation-factor, 1) * 40px) calc(var(--ig-elevation-factor, 1) * -12px) rgba(15, 23, 42, 0.28), 0 calc(var(--ig-elevation-factor, 1) * 40px) calc(var(--ig-elevation-factor, 1) * 80px) calc(var(--ig-elevation-factor, 1) * -24px) rgba(15, 23, 42, 0.3);
   --igd-shadow-popover-filter: drop-shadow(0 calc(var(--ig-elevation-factor, 1) * 10px) calc(var(--ig-elevation-factor, 1) * 13px) hsl(from var(--igd-color-shadow) h s l / 0.26)) drop-shadow(0 calc(var(--ig-elevation-factor, 1) * 20px) calc(var(--ig-elevation-factor, 1) * 31px) hsl(from var(--igd-color-shadow) h s l / 0.12)) drop-shadow(0 calc(var(--ig-elevation-factor, 1) * 8px) calc(var(--ig-elevation-factor, 1) * 38px) hsl(from var(--igd-color-shadow) h s l / 0.08));
   --igd-elevation-0: var(--ig-elevation-0);
   --igd-elevation-1: var(--ig-elevation-1);
@@ -455,6 +457,18 @@
   --igd-color-emphasis-ring: hsl(from var(--igd-color-accent-primary) h s l / var(--igd-opacity-soft));
   --igd-color-emphasis-ring-hover: hsl(from var(--igd-color-accent-primary) h s l / var(--igd-opacity-strong));
   --igd-badge-oss-background: hsl(from var(--igd-badge-oss-color) h s l / var(--igd-opacity-soft));
+  --igd-badge-oss-border: hsl(from var(--igd-badge-oss-color) h s l / var(--igd-opacity-strong));
+  --igd-badge-new-background: hsl(from var(--igd-badge-new-color) h s l / var(--igd-opacity-soft));
+  --igd-badge-new-border: hsl(from var(--igd-badge-new-color) h s l / var(--igd-opacity-strong));
+  --igd-badge-updated-background: hsl(from var(--igd-badge-updated-color) h s l / var(--igd-opacity-soft));
+  --igd-badge-updated-border: hsl(from var(--igd-badge-updated-color) h s l / var(--igd-opacity-strong));
+  --igd-badge-preview-background: hsl(from var(--igd-badge-preview-color) h s l / var(--igd-opacity-soft));
+  --igd-badge-preview-border: hsl(from var(--igd-badge-preview-color) h s l / var(--igd-opacity-strong));
+  --igd-badge-premium-background: hsl(from var(--igd-badge-premium-color) h s l / var(--igd-opacity-soft));
+  --igd-badge-premium-border: hsl(from var(--igd-badge-premium-color) h s l / var(--igd-opacity-strong));
+  --igd-color-feedback-error-surface: hsl(from var(--igd-color-feedback-error-default) h s l / var(--igd-opacity-soft));
+  --igd-color-feedback-success-surface: hsl(from var(--igd-color-feedback-success-default) h s l / var(--igd-opacity-soft));
+  --igd-color-feedback-warning-surface: hsl(from var(--igd-color-feedback-warning-default) h s l / var(--igd-opacity-soft));
   --igd-nav-background: hsl(from var(--igd-color-surface-page) h s l / var(--igd-opacity-nav));
   --igd-color-overlay-scrim: hsl(from var(--igd-color-surface-inverse) h s l / var(--igd-opacity-strong));
   --igd-footer-rule: hsl(from var(--igd-color-text-inverse) h s l / var(--igd-opacity-subtle));
@@ -470,6 +484,7 @@
   --igd-gradient-emphasis: linear-gradient(180deg, hsl(from var(--igd-color-accent-primary) h s l / var(--igd-opacity-subtle)), hsl(from var(--igd-color-accent-inverse) h s l / var(--igd-opacity-faint)));
   --igd-footer-card-background: linear-gradient(180deg, hsl(from var(--igd-color-text-inverse) h s l / var(--igd-opacity-faint)), transparent);
   --igd-container-gutter: clamp(var(--igd-space-lg), 4vw, var(--igd-space-4xl)); /* @kind spacing */
+  --igd-space-section: clamp(var(--igd-space-5xl), calc(3.4783cqi + 3.2174rem), var(--igd-space-6xl)); /* @kind spacing */
   --igd-layout-split: 0.95fr 1.05fr; /* @kind other */
   --igd-nav-backdrop-blur: blur(var(--igd-space-sm));
 }
@@ -695,7 +710,14 @@
   --igd-color-accent-secondary: var(--ig-secondary-seed);
   --igd-color-action-default: var(--ig-primary-seed);
   --igd-color-feedback-error-default: oklch(from var(--ig-error-600) calc((1 - var(--igd-theme-dark)) * min(l, max(0.35, 0.4767 - 0.6 * max(0, l - 0.4767))) + var(--igd-theme-dark) * max(l, min(0.92, 0.74 + 0.6 * max(0, 0.74 - l)))) calc(c * ((1 - var(--igd-theme-dark)) * min(l, max(0.35, 0.4767 - 0.6 * max(0, l - 0.4767))) / max(l, 0.0001) + var(--igd-theme-dark) * min(1, (1 - max(l, min(0.92, 0.74 + 0.6 * max(0, 0.74 - l)))) / max(1 - l, 0.0001)))) h);
+  --igd-color-feedback-success-default: oklch(from var(--ig-success-600) calc((1 - var(--igd-theme-dark)) * min(l, max(0.35, 0.441 - 0.6 * max(0, l - 0.441))) + var(--igd-theme-dark) * max(l, min(0.92, 0.74 + 0.6 * max(0, 0.74 - l)))) calc(c * ((1 - var(--igd-theme-dark)) * min(l, max(0.35, 0.441 - 0.6 * max(0, l - 0.441))) / max(l, 0.0001) + var(--igd-theme-dark) * min(1, (1 - max(l, min(0.92, 0.74 + 0.6 * max(0, 0.74 - l)))) / max(1 - l, 0.0001)))) h);
+  --igd-color-feedback-warning-default: oklch(from var(--ig-warn-500) calc((1 - var(--igd-theme-dark)) * min(l, max(0.35, 0.5302 - 0.6 * max(0, l - 0.5302))) + var(--igd-theme-dark) * max(l, min(0.92, 0.74 + 0.6 * max(0, 0.74 - l)))) calc(c * ((1 - var(--igd-theme-dark)) * min(l, max(0.35, 0.5302 - 0.6 * max(0, l - 0.5302))) / max(l, 0.0001) + var(--igd-theme-dark) * min(1, (1 - max(l, min(0.92, 0.74 + 0.6 * max(0, 0.74 - l)))) / max(1 - l, 0.0001)))) h);
   --igd-badge-bundle-color: oklch(from var(--ig-secondary-700) calc((1 - var(--igd-theme-dark)) * min(l, max(0.35, 0.488 - 0.6 * max(0, l - 0.488))) + var(--igd-theme-dark) * max(l, min(0.92, 0.74 + 0.6 * max(0, 0.74 - l)))) calc(c * ((1 - var(--igd-theme-dark)) * min(l, max(0.35, 0.488 - 0.6 * max(0, l - 0.488))) / max(l, 0.0001) + var(--igd-theme-dark) * min(1, (1 - max(l, min(0.92, 0.74 + 0.6 * max(0, 0.74 - l)))) / max(1 - l, 0.0001)))) h);
+  --igd-badge-new-color: oklch(from var(--ig-success-600) calc((1 - var(--igd-theme-dark)) * min(l, max(0.35, 0.441 - 0.6 * max(0, l - 0.441))) + var(--igd-theme-dark) * max(l, min(0.92, 0.74 + 0.6 * max(0, 0.74 - l)))) calc(c * ((1 - var(--igd-theme-dark)) * min(l, max(0.35, 0.441 - 0.6 * max(0, l - 0.441))) / max(l, 0.0001) + var(--igd-theme-dark) * min(1, (1 - max(l, min(0.92, 0.74 + 0.6 * max(0, 0.74 - l)))) / max(1 - l, 0.0001)))) h);
+  --igd-badge-updated-color: oklch(from var(--ig-primary-700) calc((1 - var(--igd-theme-dark)) * min(l, max(0.35, 0.4747 - 0.6 * max(0, l - 0.4747))) + var(--igd-theme-dark) * max(l, min(0.92, 0.74 + 0.6 * max(0, 0.74 - l)))) calc(c * ((1 - var(--igd-theme-dark)) * min(l, max(0.35, 0.4747 - 0.6 * max(0, l - 0.4747))) / max(l, 0.0001) + var(--igd-theme-dark) * min(1, (1 - max(l, min(0.92, 0.74 + 0.6 * max(0, 0.74 - l)))) / max(1 - l, 0.0001)))) h);
+  --igd-badge-preview-color: oklch(from var(--ig-warn-500) calc((1 - var(--igd-theme-dark)) * min(l, max(0.35, 0.5302 - 0.6 * max(0, l - 0.5302))) + var(--igd-theme-dark) * max(l, min(0.92, 0.74 + 0.6 * max(0, 0.74 - l)))) calc(c * ((1 - var(--igd-theme-dark)) * min(l, max(0.35, 0.5302 - 0.6 * max(0, l - 0.5302))) / max(l, 0.0001) + var(--igd-theme-dark) * min(1, (1 - max(l, min(0.92, 0.74 + 0.6 * max(0, 0.74 - l)))) / max(1 - l, 0.0001)))) h);
+  --igd-badge-premium-color: oklch(from var(--ig-secondary-700) calc((1 - var(--igd-theme-dark)) * min(l, max(0.35, 0.488 - 0.6 * max(0, l - 0.488))) + var(--igd-theme-dark) * max(l, min(0.92, 0.74 + 0.6 * max(0, 0.74 - l)))) calc(c * ((1 - var(--igd-theme-dark)) * min(l, max(0.35, 0.488 - 0.6 * max(0, l - 0.488))) / max(l, 0.0001) + var(--igd-theme-dark) * min(1, (1 - max(l, min(0.92, 0.74 + 0.6 * max(0, 0.74 - l)))) / max(1 - l, 0.0001)))) h);
+  --igd-rating-star: var(--ig-warn-200);
   --igd-badge-oss-color: oklch(from var(--ig-success-600) calc((1 - var(--igd-theme-dark)) * min(l, max(0.35, 0.441 - 0.6 * max(0, l - 0.441))) + var(--igd-theme-dark) * max(l, min(0.92, 0.74 + 0.6 * max(0, 0.74 - l)))) calc(c * ((1 - var(--igd-theme-dark)) * min(l, max(0.35, 0.441 - 0.6 * max(0, l - 0.441))) / max(l, 0.0001) + var(--igd-theme-dark) * min(1, (1 - max(l, min(0.92, 0.74 + 0.6 * max(0, 0.74 - l)))) / max(1 - l, 0.0001)))) h);
   --igd-table-mark-partial-color: oklch(from var(--ig-warn-800) calc((1 - var(--igd-theme-dark)) * min(l, max(0.35, 0.3065 - 0.6 * max(0, l - 0.3065))) + var(--igd-theme-dark) * max(l, min(0.92, 0.74 + 0.6 * max(0, 0.74 - l)))) calc(c * ((1 - var(--igd-theme-dark)) * min(l, max(0.35, 0.3065 - 0.6 * max(0, l - 0.3065))) / max(l, 0.0001) + var(--igd-theme-dark) * min(1, (1 - max(l, min(0.92, 0.74 + 0.6 * max(0, 0.74 - l)))) / max(1 - l, 0.0001)))) h);
   --igd-window-dot-red: var(--ig-error-300);

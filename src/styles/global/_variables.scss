@@ -60,25 +60,25 @@
   --igd-link-color: var(--igd-color-action-text);
   --igd-link-hover-color: var(--igd-color-action-hover);
 
-  --igd-updated-bg: light-dark(#eaf6fe, #0d1e38);
-  --igd-updated-color: light-dark(#1151c1, #6b9fe8);
-  --igd-updated-border: light-dark(#bae2f5, #1e3d6a);
+  --igd-updated-bg: var(--igd-badge-updated-background);
+  --igd-updated-color: var(--igd-badge-updated-color);
+  --igd-updated-border: var(--igd-badge-updated-border);
 
-  --igd-new-bg: light-dark(#eafef6, #0a2a1c);
-  --igd-new-color: light-dark(#018450, #3dbf85);
-  --igd-new-border: light-dark(#baf5d7, #154a30);
+  --igd-new-bg: var(--igd-badge-new-background);
+  --igd-new-color: var(--igd-badge-new-color);
+  --igd-new-border: var(--igd-badge-new-border);
 
-  --igd-preview-bg: light-dark(#fef5ea, #2d1507);
-  --igd-preview-color: light-dark(#af390a, #e06030);
-  --igd-preview-border: light-dark(#f5c8ba, #5c2810);
+  --igd-preview-bg: var(--igd-badge-preview-background);
+  --igd-preview-color: var(--igd-badge-preview-color);
+  --igd-preview-border: var(--igd-badge-preview-border);
 
-  --igd-premium-bg: light-dark(#f5eafe, #1e1030);
-  --igd-premium-color: light-dark(#8438ff, #b585ff);
-  --igd-premium-border: light-dark(#8438ff, #5a3a99);
+  --igd-premium-bg: var(--igd-badge-premium-background);
+  --igd-premium-color: var(--igd-badge-premium-color);
+  --igd-premium-border: var(--igd-badge-premium-border);
 
-  --igd-opensource-color: light-dark(#535353, #b5b5b5);
-  --igd-opensource-bg: light-dark(#ececec, #383737);
-  --igd-opensource-border: light-dark(#cacaca, #6a6a6a);
+  --igd-opensource-color: var(--igd-color-text-secondary);
+  --igd-opensource-bg: var(--igd-color-surface-muted);
+  --igd-opensource-border: var(--igd-color-border-default);
 
   --igd-expantion-panel-color: light-dark(var(--ig-secondary-500), var(--ig-secondary-500));
 

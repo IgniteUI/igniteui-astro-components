@@ -131,6 +131,8 @@
   --igd-color-text-inverse-muted: #9da5af;
   --igd-color-icon-subtle: var(--ig-gray-400);
   --igd-color-feedback-error-default: var(--ig-error-600);
+  --igd-color-feedback-success-default: var(--ig-success-600);
+  --igd-color-feedback-warning-default: var(--ig-warn-500);
   --igd-color-feedback-error-inverse: var(--ig-error-300);
   --igd-color-surface-page: var(--ig-surface-base);
   --igd-color-surface-hero: var(--ig-surface-sunken);
@@ -154,6 +156,11 @@
   --igd-color-border-accent: var(--ig-primary-200);
   --igd-badge-bundle-background: var(--ig-secondary-50);
   --igd-badge-bundle-color: var(--ig-secondary-700);
+  --igd-badge-new-color: var(--ig-success-600);
+  --igd-badge-updated-color: var(--ig-primary-700);
+  --igd-badge-preview-color: var(--ig-warn-500);
+  --igd-badge-premium-color: var(--ig-secondary-700);
+  --igd-rating-star: var(--ig-warn-200);
   --igd-badge-oss-color: var(--ig-success-600);
   --igd-table-mark-yes-background: var(--ig-gray-200);
   --igd-table-mark-yes-color: var(--ig-gray-700);
@@ -195,6 +202,18 @@
   --igd-color-emphasis-ring: rgba(0,153,255,0.12);
   --igd-color-emphasis-ring-hover: rgba(0,153,255,0.25);
   --igd-badge-oss-background: rgba(6,99,60,0.12);
+  --igd-badge-oss-border: rgba(6,99,60,0.25);
+  --igd-badge-new-background: rgba(6,99,60,0.12);
+  --igd-badge-new-border: rgba(6,99,60,0.25);
+  --igd-badge-updated-background: rgba(22,78,203,0.12);
+  --igd-badge-updated-border: rgba(22,78,203,0.25);
+  --igd-badge-preview-background: rgba(149,94,1,0.12);
+  --igd-badge-preview-border: rgba(149,94,1,0.25);
+  --igd-badge-premium-background: rgba(123,39,197,0.12);
+  --igd-badge-premium-border: rgba(123,39,197,0.25);
+  --igd-color-feedback-error-surface: rgba(172,15,48,0.12);
+  --igd-color-feedback-success-surface: rgba(6,99,60,0.12);
+  --igd-color-feedback-warning-surface: rgba(149,94,1,0.12);
   --igd-nav-background: rgba(255,255,255,0.96);
   --igd-color-overlay-scrim: rgba(15,23,42,0.25);
   --igd-footer-rule: rgba(251,251,251,0.08);
@@ -215,6 +234,8 @@
   --igd-shadow-accent-md: 0 7px 8px -4px rgba(36,98,234,0.26), 0 13px 19px 2px rgba(36,98,234,0.12), 0 5px 24px 4px rgba(36,98,234,0.08);
   --igd-callout-release-shadow: inset 0 0 0 1px rgba(0,153,255,0.12), 0 7px 8px -4px rgba(36,98,234,0.26), 0 13px 19px 2px rgba(36,98,234,0.12), 0 5px 24px 4px rgba(36,98,234,0.08);
   --igd-callout-release-shadow-hover: inset 0 0 0 1px rgba(0,153,255,0.25), 0 8px 10px -5px rgba(36,98,234,0.26), 0 16px 24px 2px rgba(36,98,234,0.12), 0 6px 30px 5px rgba(36,98,234,0.08);
+  --igd-shadow-popover: 0 26px 50px -22px rgba(15,23,42,0.22);
+  --igd-shadow-panel: 0 -2px 8px 0 rgba(15,23,42,0.04), 0 18px 40px -12px rgba(15,23,42,0.28), 0 40px 80px -24px rgba(15,23,42,0.3);
   --igd-shadow-popover-filter: drop-shadow(0 10px 13px rgba(0,0,0,0.26)) drop-shadow(0 20px 31px rgba(0,0,0,0.12)) drop-shadow(0 8px 38px rgba(0,0,0,0.08));
   --igd-elevation-0: none;
   --igd-elevation-1: 0 1px 3px 0 rgba(0,0,0,0.26), 0 1px 1px 0 rgba(0,0,0,0.12), 0 2px 1px -1px rgba(0,0,0,0.08);
