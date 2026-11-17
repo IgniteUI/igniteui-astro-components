@@ -4,7 +4,7 @@ Status: adopted on this branch. The package loads the design system as its base 
 
 ## What the branch does now
 
-- `DocsLayout` loads `src/styles/design-system/` (a copy of `ig-design-system` at `5220187`: `fonts.css`, `tokens.css`, `theme.css`) before `theme.scss` and sets `data-igd-type="docs"`.
+- `DocsLayout` loads `src/styles/design-system/` (a copy of `ig-design-system` at `db4cee5`: `fonts.css`, `tokens.css`, `theme.css`) before `theme.scss` and sets `data-igd-type="docs"`.
 - The hand-made palette, the type scale and the Material elevations are gone. The engine variables come from the design system.
 - No stylesheet reads a raw palette step. Colours are semantic `--igd-color-*`, feedback and badge tokens. `light-dark()` calls went from 158 to 5, none of them a palette colour.
 - 142 padding, margin, gap and radius values read `--igd-space-*` and `--igd-radius-*` tokens.

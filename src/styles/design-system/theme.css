@@ -3,7 +3,7 @@
    1. the engine's own variables (--ig-*): sizing, spacing, roundness, elevations, typography, contrast;
    2. the tokens that must stay live — spacing, sizes, radii, shadows, gradients, translucent colours —
       declared again with the same names as tokens.json, so --ig-size, --ig-spacing, --ig-radius-factor,
-      --ig-elevation-factor and palette edits cascade. At the default knob values they equal tokens.json;
+      --ig-elevation-factor and palette edits cascade. At the default dial values they equal tokens.json;
    3. the semantic type variables and classes (.igd-type-<role>), motion and keyframes.
    Element styles (body, headings, links, focus) are in base.css.
    Nothing in a component may carry a literal colour, length, font size, shadow or radius: it reads a token. */
@@ -393,15 +393,7 @@
 :root, [data-ig-scope], [data-theme] {
   --igd-elevation-tint-1: 0 calc(var(--ig-elevation-factor, 1) * 1px) calc(var(--ig-elevation-factor, 1) * 3px) 0 hsl(from var(--igd-color-action-default) h s l / 0.26), 0 calc(var(--ig-elevation-factor, 1) * 1px) calc(var(--ig-elevation-factor, 1) * 1px) 0 hsl(from var(--igd-color-action-default) h s l / 0.12), 0 calc(var(--ig-elevation-factor, 1) * 2px) calc(var(--ig-elevation-factor, 1) * 1px) calc(var(--ig-elevation-factor, 1) * -1px) hsl(from var(--igd-color-action-default) h s l / 0.08);
   --igd-elevation-tint-13: 0 calc(var(--ig-elevation-factor, 1) * 7px) calc(var(--ig-elevation-factor, 1) * 8px) calc(var(--ig-elevation-factor, 1) * -4px) hsl(from var(--igd-color-action-default) h s l / 0.26), 0 calc(var(--ig-elevation-factor, 1) * 13px) calc(var(--ig-elevation-factor, 1) * 19px) calc(var(--ig-elevation-factor, 1) * 2px) hsl(from var(--igd-color-action-default) h s l / 0.12), 0 calc(var(--ig-elevation-factor, 1) * 5px) calc(var(--ig-elevation-factor, 1) * 24px) calc(var(--ig-elevation-factor, 1) * 4px) hsl(from var(--igd-color-action-default) h s l / 0.08);
-  --igd-elevation-tint-14: 0 calc(var(--ig-elevation-factor, 1) * 7px) calc(var(--ig-elevation-factor, 1) * 9px) calc(var(--ig-elevation-factor, 1) * -4px) hsl(from var(--igd-color-action-default) h s l / 0.26), 0 calc(var(--ig-elevation-factor, 1) * 14px) calc(var(--ig-elevation-factor, 1) * 21px) calc(var(--ig-elevation-factor, 1) * 2px) hsl(from var(--igd-color-action-default) h s l / 0.12), 0 calc(var(--ig-elevation-factor, 1) * 5px) calc(var(--ig-elevation-factor, 1) * 26px) calc(var(--ig-elevation-factor, 1) * 4px) hsl(from var(--igd-color-action-default) h s l / 0.08);
-  --igd-elevation-tint-15: 0 calc(var(--ig-elevation-factor, 1) * 8px) calc(var(--ig-elevation-factor, 1) * 9px) calc(var(--ig-elevation-factor, 1) * -5px) hsl(from var(--igd-color-action-default) h s l / 0.26), 0 calc(var(--ig-elevation-factor, 1) * 15px) calc(var(--ig-elevation-factor, 1) * 22px) calc(var(--ig-elevation-factor, 1) * 2px) hsl(from var(--igd-color-action-default) h s l / 0.12), 0 calc(var(--ig-elevation-factor, 1) * 6px) calc(var(--ig-elevation-factor, 1) * 28px) calc(var(--ig-elevation-factor, 1) * 5px) hsl(from var(--igd-color-action-default) h s l / 0.08);
   --igd-elevation-tint-16: 0 calc(var(--ig-elevation-factor, 1) * 8px) calc(var(--ig-elevation-factor, 1) * 10px) calc(var(--ig-elevation-factor, 1) * -5px) hsl(from var(--igd-color-action-default) h s l / 0.26), 0 calc(var(--ig-elevation-factor, 1) * 16px) calc(var(--ig-elevation-factor, 1) * 24px) calc(var(--ig-elevation-factor, 1) * 2px) hsl(from var(--igd-color-action-default) h s l / 0.12), 0 calc(var(--ig-elevation-factor, 1) * 6px) calc(var(--ig-elevation-factor, 1) * 30px) calc(var(--ig-elevation-factor, 1) * 5px) hsl(from var(--igd-color-action-default) h s l / 0.08);
-  --igd-elevation-tint-17: 0 calc(var(--ig-elevation-factor, 1) * 8px) calc(var(--ig-elevation-factor, 1) * 11px) calc(var(--ig-elevation-factor, 1) * -5px) hsl(from var(--igd-color-action-default) h s l / 0.26), 0 calc(var(--ig-elevation-factor, 1) * 17px) calc(var(--ig-elevation-factor, 1) * 26px) calc(var(--ig-elevation-factor, 1) * 2px) hsl(from var(--igd-color-action-default) h s l / 0.12), 0 calc(var(--ig-elevation-factor, 1) * 6px) calc(var(--ig-elevation-factor, 1) * 32px) calc(var(--ig-elevation-factor, 1) * 5px) hsl(from var(--igd-color-action-default) h s l / 0.08);
-  --igd-elevation-tint-18: 0 calc(var(--ig-elevation-factor, 1) * 9px) calc(var(--ig-elevation-factor, 1) * 11px) calc(var(--ig-elevation-factor, 1) * -5px) hsl(from var(--igd-color-action-default) h s l / 0.26), 0 calc(var(--ig-elevation-factor, 1) * 18px) calc(var(--ig-elevation-factor, 1) * 28px) calc(var(--ig-elevation-factor, 1) * 2px) hsl(from var(--igd-color-action-default) h s l / 0.12), 0 calc(var(--ig-elevation-factor, 1) * 7px) calc(var(--ig-elevation-factor, 1) * 34px) calc(var(--ig-elevation-factor, 1) * 6px) hsl(from var(--igd-color-action-default) h s l / 0.08);
-  --igd-elevation-tint-19: 0 calc(var(--ig-elevation-factor, 1) * 9px) calc(var(--ig-elevation-factor, 1) * 12px) calc(var(--ig-elevation-factor, 1) * -6px) hsl(from var(--igd-color-action-default) h s l / 0.26), 0 calc(var(--ig-elevation-factor, 1) * 19px) calc(var(--ig-elevation-factor, 1) * 29px) calc(var(--ig-elevation-factor, 1) * 2px) hsl(from var(--igd-color-action-default) h s l / 0.12), 0 calc(var(--ig-elevation-factor, 1) * 7px) calc(var(--ig-elevation-factor, 1) * 36px) calc(var(--ig-elevation-factor, 1) * 6px) hsl(from var(--igd-color-action-default) h s l / 0.08);
-  --igd-elevation-tint-20: 0 calc(var(--ig-elevation-factor, 1) * 10px) calc(var(--ig-elevation-factor, 1) * 13px) calc(var(--ig-elevation-factor, 1) * -6px) hsl(from var(--igd-color-action-default) h s l / 0.26), 0 calc(var(--ig-elevation-factor, 1) * 20px) calc(var(--ig-elevation-factor, 1) * 31px) calc(var(--ig-elevation-factor, 1) * 3px) hsl(from var(--igd-color-action-default) h s l / 0.12), 0 calc(var(--ig-elevation-factor, 1) * 8px) calc(var(--ig-elevation-factor, 1) * 38px) calc(var(--ig-elevation-factor, 1) * 7px) hsl(from var(--igd-color-action-default) h s l / 0.08);
-  --igd-elevation-tint-21: 0 calc(var(--ig-elevation-factor, 1) * 10px) calc(var(--ig-elevation-factor, 1) * 13px) calc(var(--ig-elevation-factor, 1) * -6px) hsl(from var(--igd-color-action-default) h s l / 0.26), 0 calc(var(--ig-elevation-factor, 1) * 21px) calc(var(--ig-elevation-factor, 1) * 33px) calc(var(--ig-elevation-factor, 1) * 3px) hsl(from var(--igd-color-action-default) h s l / 0.12), 0 calc(var(--ig-elevation-factor, 1) * 8px) calc(var(--ig-elevation-factor, 1) * 40px) calc(var(--ig-elevation-factor, 1) * 7px) hsl(from var(--igd-color-action-default) h s l / 0.08);
-  --igd-elevation-tint-22: 0 calc(var(--ig-elevation-factor, 1) * 10px) calc(var(--ig-elevation-factor, 1) * 14px) calc(var(--ig-elevation-factor, 1) * -6px) hsl(from var(--igd-color-action-default) h s l / 0.26), 0 calc(var(--ig-elevation-factor, 1) * 22px) calc(var(--ig-elevation-factor, 1) * 35px) calc(var(--ig-elevation-factor, 1) * 3px) hsl(from var(--igd-color-action-default) h s l / 0.12), 0 calc(var(--ig-elevation-factor, 1) * 8px) calc(var(--ig-elevation-factor, 1) * 42px) calc(var(--ig-elevation-factor, 1) * 7px) hsl(from var(--igd-color-action-default) h s l / 0.08);
 }
 
 /* ===== 2. live tokens (same names as tokens.json) ===== */
@@ -704,41 +696,26 @@
 }
 
 /* Breakpoints (media queries cannot read custom properties; generated from tokens.json breakpoint family) */
-.igd-hide-below-md { }
 @media (max-width: 768px) { .igd-hide-below-md { display: none !important; } }
 
 /* ===== 5. derived colour ===== */
 /* everything below is re-declared on [data-ig-scope], so a region can carry its own base colours */
 :root, [data-ig-scope], [data-theme] {
-  /* semantic tokens that alias a ramp step, and the text colours taken from an accent palette */
+  /* semantic tokens that alias a ramp step */
   --igd-color-accent-primary: var(--ig-info-seed);
   --igd-color-accent-secondary: var(--ig-secondary-seed);
   --igd-color-action-default: var(--ig-primary-seed);
-  --igd-color-feedback-error-default: oklch(from var(--ig-error-500) calc((1 - var(--igd-theme-dark)) * min(l, max(0.35, 0.5503 - 0.6 * max(0, l - 0.5503))) + var(--igd-theme-dark) * max(l, min(0.92, 0.74 + 0.6 * max(0, 0.74 - l)))) calc(c * ((1 - var(--igd-theme-dark)) * min(l, max(0.35, 0.5503 - 0.6 * max(0, l - 0.5503))) / max(l, 0.0001) + var(--igd-theme-dark) * min(1, (1 - max(l, min(0.92, 0.74 + 0.6 * max(0, 0.74 - l)))) / max(1 - l, 0.0001)))) h);
-  --igd-color-feedback-info-default: oklch(from var(--ig-primary-700) calc((1 - var(--igd-theme-dark)) * min(l, max(0.35, 0.4747 - 0.6 * max(0, l - 0.4747))) + var(--igd-theme-dark) * max(l, min(0.92, 0.74 + 0.6 * max(0, 0.74 - l)))) calc(c * ((1 - var(--igd-theme-dark)) * min(l, max(0.35, 0.4747 - 0.6 * max(0, l - 0.4747))) / max(l, 0.0001) + var(--igd-theme-dark) * min(1, (1 - max(l, min(0.92, 0.74 + 0.6 * max(0, 0.74 - l)))) / max(1 - l, 0.0001)))) h);
-  --igd-color-feedback-success-default: oklch(from var(--ig-success-600) calc((1 - var(--igd-theme-dark)) * min(l, max(0.35, 0.441 - 0.6 * max(0, l - 0.441))) + var(--igd-theme-dark) * max(l, min(0.92, 0.74 + 0.6 * max(0, 0.74 - l)))) calc(c * ((1 - var(--igd-theme-dark)) * min(l, max(0.35, 0.441 - 0.6 * max(0, l - 0.441))) / max(l, 0.0001) + var(--igd-theme-dark) * min(1, (1 - max(l, min(0.92, 0.74 + 0.6 * max(0, 0.74 - l)))) / max(1 - l, 0.0001)))) h);
-  --igd-color-feedback-warning-default: oklch(from var(--ig-warn-500) calc((1 - var(--igd-theme-dark)) * min(l, max(0.35, 0.5302 - 0.6 * max(0, l - 0.5302))) + var(--igd-theme-dark) * max(l, min(0.92, 0.74 + 0.6 * max(0, 0.74 - l)))) calc(c * ((1 - var(--igd-theme-dark)) * min(l, max(0.35, 0.5302 - 0.6 * max(0, l - 0.5302))) / max(l, 0.0001) + var(--igd-theme-dark) * min(1, (1 - max(l, min(0.92, 0.74 + 0.6 * max(0, 0.74 - l)))) / max(1 - l, 0.0001)))) h);
-  --igd-badge-bundle-color: oklch(from var(--ig-secondary-700) calc((1 - var(--igd-theme-dark)) * min(l, max(0.35, 0.488 - 0.6 * max(0, l - 0.488))) + var(--igd-theme-dark) * max(l, min(0.92, 0.74 + 0.6 * max(0, 0.74 - l)))) calc(c * ((1 - var(--igd-theme-dark)) * min(l, max(0.35, 0.488 - 0.6 * max(0, l - 0.488))) / max(l, 0.0001) + var(--igd-theme-dark) * min(1, (1 - max(l, min(0.92, 0.74 + 0.6 * max(0, 0.74 - l)))) / max(1 - l, 0.0001)))) h);
-  --igd-badge-new-color: oklch(from var(--ig-success-600) calc((1 - var(--igd-theme-dark)) * min(l, max(0.35, 0.441 - 0.6 * max(0, l - 0.441))) + var(--igd-theme-dark) * max(l, min(0.92, 0.74 + 0.6 * max(0, 0.74 - l)))) calc(c * ((1 - var(--igd-theme-dark)) * min(l, max(0.35, 0.441 - 0.6 * max(0, l - 0.441))) / max(l, 0.0001) + var(--igd-theme-dark) * min(1, (1 - max(l, min(0.92, 0.74 + 0.6 * max(0, 0.74 - l)))) / max(1 - l, 0.0001)))) h);
-  --igd-badge-updated-color: oklch(from var(--ig-primary-700) calc((1 - var(--igd-theme-dark)) * min(l, max(0.35, 0.4747 - 0.6 * max(0, l - 0.4747))) + var(--igd-theme-dark) * max(l, min(0.92, 0.74 + 0.6 * max(0, 0.74 - l)))) calc(c * ((1 - var(--igd-theme-dark)) * min(l, max(0.35, 0.4747 - 0.6 * max(0, l - 0.4747))) / max(l, 0.0001) + var(--igd-theme-dark) * min(1, (1 - max(l, min(0.92, 0.74 + 0.6 * max(0, 0.74 - l)))) / max(1 - l, 0.0001)))) h);
-  --igd-badge-preview-color: oklch(from var(--ig-warn-500) calc((1 - var(--igd-theme-dark)) * min(l, max(0.35, 0.5302 - 0.6 * max(0, l - 0.5302))) + var(--igd-theme-dark) * max(l, min(0.92, 0.74 + 0.6 * max(0, 0.74 - l)))) calc(c * ((1 - var(--igd-theme-dark)) * min(l, max(0.35, 0.5302 - 0.6 * max(0, l - 0.5302))) / max(l, 0.0001) + var(--igd-theme-dark) * min(1, (1 - max(l, min(0.92, 0.74 + 0.6 * max(0, 0.74 - l)))) / max(1 - l, 0.0001)))) h);
-  --igd-badge-premium-color: oklch(from var(--ig-secondary-700) calc((1 - var(--igd-theme-dark)) * min(l, max(0.35, 0.488 - 0.6 * max(0, l - 0.488))) + var(--igd-theme-dark) * max(l, min(0.92, 0.74 + 0.6 * max(0, 0.74 - l)))) calc(c * ((1 - var(--igd-theme-dark)) * min(l, max(0.35, 0.488 - 0.6 * max(0, l - 0.488))) / max(l, 0.0001) + var(--igd-theme-dark) * min(1, (1 - max(l, min(0.92, 0.74 + 0.6 * max(0, 0.74 - l)))) / max(1 - l, 0.0001)))) h);
   --igd-rating-star: var(--ig-warn-200);
-  --igd-badge-oss-color: oklch(from var(--ig-success-600) calc((1 - var(--igd-theme-dark)) * min(l, max(0.35, 0.441 - 0.6 * max(0, l - 0.441))) + var(--igd-theme-dark) * max(l, min(0.92, 0.74 + 0.6 * max(0, 0.74 - l)))) calc(c * ((1 - var(--igd-theme-dark)) * min(l, max(0.35, 0.441 - 0.6 * max(0, l - 0.441))) / max(l, 0.0001) + var(--igd-theme-dark) * min(1, (1 - max(l, min(0.92, 0.74 + 0.6 * max(0, 0.74 - l)))) / max(1 - l, 0.0001)))) h);
-  --igd-table-mark-partial-color: oklch(from var(--ig-warn-800) calc((1 - var(--igd-theme-dark)) * min(l, max(0.35, 0.3065 - 0.6 * max(0, l - 0.3065))) + var(--igd-theme-dark) * max(l, min(0.92, 0.74 + 0.6 * max(0, 0.74 - l)))) calc(c * ((1 - var(--igd-theme-dark)) * min(l, max(0.35, 0.3065 - 0.6 * max(0, l - 0.3065))) / max(l, 0.0001) + var(--igd-theme-dark) * min(1, (1 - max(l, min(0.92, 0.74 + 0.6 * max(0, 0.74 - l)))) / max(1 - l, 0.0001)))) h);
   --igd-window-dot-red: var(--ig-error-300);
   --igd-window-dot-amber: var(--ig-warn-200);
   --igd-window-dot-green: var(--ig-success-300);
-  --igd-fw-angular-color: oklch(from #c42579 calc((1 - var(--igd-theme-dark)) * min(l, max(0.35, 0.5516 - 0.6 * max(0, l - 0.5516))) + var(--igd-theme-dark) * max(l, min(0.92, 0.74 + 0.6 * max(0, 0.74 - l)))) calc(c * ((1 - var(--igd-theme-dark)) * min(l, max(0.35, 0.5516 - 0.6 * max(0, l - 0.5516))) / max(l, 0.0001) + var(--igd-theme-dark) * min(1, (1 - max(l, min(0.92, 0.74 + 0.6 * max(0, 0.74 - l)))) / max(1 - l, 0.0001)))) h);
-  --igd-fw-react-color: oklch(from #017589 calc((1 - var(--igd-theme-dark)) * min(l, max(0.35, 0.5178 - 0.6 * max(0, l - 0.5178))) + var(--igd-theme-dark) * max(l, min(0.92, 0.74 + 0.6 * max(0, 0.74 - l)))) calc(c * ((1 - var(--igd-theme-dark)) * min(l, max(0.35, 0.5178 - 0.6 * max(0, l - 0.5178))) / max(l, 0.0001) + var(--igd-theme-dark) * min(1, (1 - max(l, min(0.92, 0.74 + 0.6 * max(0, 0.74 - l)))) / max(1 - l, 0.0001)))) h);
   --igd-tile-4: var(--ig-success-400);
   --igd-tile-6: var(--ig-warn-200);
   /* state tokens: derived from their base. Override a base and its states follow. */
-  --igd-color-action-text: oklch(from var(--igd-color-action-default) calc((1 - var(--igd-theme-dark)) * min(l, max(0.35, 0.5466 - 0.6 * max(0, l - 0.5466))) + var(--igd-theme-dark) * max(l, min(0.92, 0.74 + 0.6 * max(0, 0.74 - l)))) calc(c * ((1 - var(--igd-theme-dark)) * min(l, max(0.35, 0.5466 - 0.6 * max(0, l - 0.5466))) / max(l, 0.0001) + var(--igd-theme-dark) * min(1, (1 - max(l, min(0.92, 0.74 + 0.6 * max(0, 0.74 - l)))) / max(1 - l, 0.0001)))) h);
   --igd-color-action-fill-hover: oklch(from var(--igd-color-action-default) calc(l + -0.0719) calc(c * 0.8229) calc(h + 0.07));
   --igd-color-action-active: oklch(from var(--igd-color-action-default) calc(l + -0.1271) calc(c * 0.6811) calc(h + -0.15));
-  --igd-color-action-hover: oklch(from var(--igd-color-action-text) calc(l + -0.0225) calc(c * 0.5758) calc(h + -13.81));
-  --igd-color-link-utility: oklch(from var(--igd-color-action-text) calc(l + -0.0225) calc(c * 0.5758) calc(h + -13.81));
+  --igd-color-action-hover: oklch(from var(--igd-color-action-text) calc(l + -0.0191) calc(c * 0.6566) calc(h + -13.81));
+  --igd-color-link-utility: oklch(from var(--igd-color-action-text) calc(l + -0.0191) calc(c * 0.6566) calc(h + -13.81));
   --igd-color-surface-tint: oklch(from var(--igd-color-action-default) calc((1 - var(--igd-theme-dark)) * 0.9717 + var(--igd-theme-dark) * 0.2368) calc(c * 0.0436 * (1 + 1.5 * var(--igd-theme-dark))) calc(h + 17.61));
   --igd-color-surface-tint-strong: oklch(from var(--igd-color-action-default) calc((1 - var(--igd-theme-dark)) * 0.9395 + var(--igd-theme-dark) * 0.2786) calc(c * 0.1176 * (1 + 1.5 * var(--igd-theme-dark))) calc(h + 12.29));
   --igd-color-border-accent: oklch(from var(--igd-color-action-default) calc((1 - var(--igd-theme-dark)) * 0.8810 + var(--igd-theme-dark) * 0.3547) calc(c * 0.2360 * (1 + 1.5 * var(--igd-theme-dark))) calc(h + 10.49));
@@ -807,7 +784,7 @@
   --igd-table-mark-no-color: var(--ig-gray-600);
 }
 /* dark: the light grey and surface ramps are swapped for the engine's dark palette (palette() with a dark surface and a light grey).
-   Every semantic name keeps its meaning. Brand fills keep the seed; text, outlines, tints and hairlines switch through --igd-theme-dark. */
+   Every semantic name keeps its meaning. Brand fills keep the seed; text in a brand or status colour reads a lighter engine step; tints and hairlines switch through --igd-theme-dark. */
 [data-theme="dark"] {
   --igd-theme-dark: 1; color-scheme: dark;
   --ig-gray-50: #1f2124;
@@ -824,5 +801,19 @@
   --ig-surface-sunken: #080f21;
   --ig-surface-raised: #161f32;
   --ig-surface-overlay: #1d263a;
+  --igd-color-action-text: var(--ig-primary-200);
+  --igd-color-feedback-error-default: var(--ig-error-100);
+  --igd-color-feedback-success-default: var(--ig-success-50);
+  --igd-color-feedback-warning-default: var(--ig-warn-100);
+  --igd-color-feedback-info-default: var(--ig-primary-200);
+  --igd-badge-bundle-color: var(--ig-secondary-200);
+  --igd-badge-new-color: var(--ig-success-50);
+  --igd-badge-updated-color: var(--ig-primary-200);
+  --igd-badge-preview-color: var(--ig-warn-100);
+  --igd-badge-premium-color: var(--ig-secondary-200);
+  --igd-badge-oss-color: var(--ig-success-50);
+  --igd-table-mark-partial-color: var(--ig-warn-50);
+  --igd-fw-angular-color: #ffb9ce;
+  --igd-fw-react-color: #d3f1fa;
 }
 [data-theme] { background-color: var(--igd-color-surface-page); color: var(--igd-color-text-primary); }
