@@ -27,7 +27,7 @@ const igNav = await fetchIgNav(resolvedLang);
     IG-family global nav (angular, react, blazor, web-components,
     slingshot, igniteui)
     ============================================================ */}
-<div class={styles.navBar} transition:persist="global-nav-bar">
+<div class={styles.navBar} transition:persist="global-nav-bar" data-ig-scope>
   {/* IG nav — fetched directly via fetchIgNav(); falls back to static markup */}
   {igNav?.prefetched && <Fragment set:html={igNav.headerHtml} />}
 </div>
