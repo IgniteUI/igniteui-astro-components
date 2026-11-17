@@ -8,60 +8,70 @@ import ColorPalette from '../../components/ColorPalette.astro';
 
 # Colors
 
-The theme exposes a complete color palette as CSS custom properties. Every family has shades `50` (lightest) through `900` (darkest). **Primary** and **Secondary** also include accent shades `A100`–`A700`.
+Every colour comes from the Infragistics design system. This package carries a copy of it in `src/styles/design-system/`, and `DocsLayout` loads it before any other style. The same tokens serve the docs, the API docs, the blog and the marketing site.
 
-## Using colors
+## Read a semantic token
 
-Reference any shade directly in CSS using `var()`:
+A semantic token is named for what the colour is for. It has one value in the light theme and one in the dark theme, and it switches by itself.
 
 ```css
 .my-element {
-  background: var(--ig-primary-500);
-  color: var(--ig-primary-500-contrast);
+  background: var(--igd-color-surface-card);
+  color: var(--igd-color-text-primary);
+  border: 1px solid var(--igd-color-border-default);
 }
 ```
 
-The pattern is always `--ig-{family}-{shade}`. For a contrasting foreground use the companion `--ig-{family}-{shade}-contrast` variable — see [Contrast pairs](#contrast-pairs) below.
+### Text
 
-## Color families
+| For                   | Token                        | Sample                                                         |
+| --------------------- | ---------------------------- | -------------------------------------------------------------- |
+| Headings              | `--igd-color-text-heading`   | <span style="color: var(--igd-color-text-heading)">Aa</span>   |
+| Body text             | `--igd-color-text-primary`   | <span style="color: var(--igd-color-text-primary)">Aa</span>   |
+| Supporting text       | `--igd-color-text-secondary` | <span style="color: var(--igd-color-text-secondary)">Aa</span> |
+| Captions and meta     | `--igd-color-text-muted`     | <span style="color: var(--igd-color-text-muted)">Aa</span>     |
+| Links and action text | `--igd-color-action-text`    | <span style="color: var(--igd-color-action-text)">Aa</span>    |
 
-Each family has a semantic role. Pick the one that matches your intent, not the shade you like visually.
+### Surfaces and fills
 
-| Family        | Role                                                               |
-| ------------- | ------------------------------------------------------------------ |
-| **Primary**   | Main brand actions — contained buttons, links, active/focus states |
-| **Secondary** | Accents, FABs, selection controls, highlighted chips               |
-| **Gray**      | Body text, labels, borders, dividers, disabled states              |
-| **Surface**   | Page backgrounds, card surfaces, panel fills                       |
-| **Info**      | Informational banners and inline hints                             |
-| **Success**   | Positive feedback, completion indicators, valid states             |
-| **Warn**      | Caution alerts, optional-step callouts                             |
-| **Error**     | Errors, validation failures, destructive actions                   |
+| For                      | Token                        | Sample                                                                                                   |
+| ------------------------ | ---------------------------- | -------------------------------------------------------------------------------------------------------- |
+| The page                 | `--igd-color-surface-page`   | <span style="background: var(--igd-color-surface-page)"> Aa </span>                                      |
+| A quiet band or panel    | `--igd-color-surface-subtle` | <span style="background: var(--igd-color-surface-subtle)"> Aa </span>                                    |
+| A card                   | `--igd-color-surface-card`   | <span style="background: var(--igd-color-surface-card)"> Aa </span>                                      |
+| A filled button          | `--igd-color-action-default` | <span style="background: var(--igd-color-action-default); color: var(--igd-color-action-on)"> Aa </span> |
+| The label on that button | `--igd-color-action-on`      | <span style="background: var(--igd-color-action-default); color: var(--igd-color-action-on)"> Aa </span> |
 
-### Choosing a shade
+### Borders
 
-| Range     | Typical use                                           |
-| --------- | ----------------------------------------------------- |
-| `50–200`  | Tinted backgrounds, hover fills, subtle highlights    |
-| `300–400` | Borders, icon fills, secondary text on light surfaces |
-| `500`     | The "brand" shade — default for interactive elements  |
-| `600–700` | Hover/active state darkening of `500`                 |
-| `800–900` | Strong emphasis text, dark overlays                   |
+| For        | Token                        | Sample                                                                      |
+| ---------- | ---------------------------- | --------------------------------------------------------------------------- |
+| A border   | `--igd-color-border-default` | <span style="border: 1px solid var(--igd-color-border-default)"> Aa </span> |
+| A hairline | `--igd-color-border-subtle`  | <span style="border: 1px solid var(--igd-color-border-subtle)"> Aa </span>  |
 
-## Contrast pairs
+### Feedback
 
-Every shade ships with a companion contrast variable that resolves to a legible foreground color (black or white) for text placed on that background:
+| For          | Token                                  | Sample                                                                                                                            |
+| ------------ | -------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| Error text   | `--igd-color-feedback-error-default`   | <span style="background: var(--igd-color-feedback-error-surface); color: var(--igd-color-feedback-error-default)"> Aa </span>     |
+| Success text | `--igd-color-feedback-success-default` | <span style="background: var(--igd-color-feedback-success-surface); color: var(--igd-color-feedback-success-default)"> Aa </span> |
+| Warning text | `--igd-color-feedback-warning-default` | <span style="background: var(--igd-color-feedback-warning-surface); color: var(--igd-color-feedback-warning-default)"> Aa </span> |
+| Info text    | `--igd-color-feedback-info-default`    | <span style="background: var(--igd-color-feedback-info-surface); color: var(--igd-color-feedback-info-default)"> Aa </span>       |
 
-```css
-/* text placed on a primary-500 background will always be readable */
-background: var(--ig-primary-500);
-color: var(--ig-primary-500-contrast);
-```
+Every token, with its value and what it is for, is in `src/styles/design-system/llms-full.txt`.
 
-Always use the contrast variable instead of a hard-coded colour whenever your text sits on a themed background.
+## Rules
 
-## Palette
+- **Never read a palette step.** `var(--ig-gray-700)` is one fixed grey; it does not follow the theme and it says nothing about its purpose. Read `var(--igd-color-text-primary)`.
+- **Text in the action colour is `--igd-color-action-text`.** `--igd-color-action-default` is a fill; as text it can fall below the contrast minimum.
+- **The label on a fill is its `-on` token**, `--igd-color-action-on` on `--igd-color-action-default`. It is black or white, whichever reads.
+- **Feedback text sits on its own tint.** `--igd-color-feedback-error-surface` is the background for `--igd-color-feedback-error-default`; the same for success, warning and info.
+- **Hover and active colours are tokens too**, derived from their base. Do not darken a colour by hand.
+- **No `light-dark()` pairs.** A token already has a value per theme.
+- **When no token fits, do not pick a hex.** Say which token is missing; it is added in the design system.
 
-Hover any swatch to see its CSS variable name.
+## The engine palette
+
+The semantic tokens are built on the palette the theming engine generates from the brand colours. It is shown here for reference. An Ignite UI component reads it; your styles do not.
 
 <ColorPalette />

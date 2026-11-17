@@ -41,6 +41,21 @@ Before opening a PR run what CI runs: `npm run format:check`, `npm test`, `npm r
 - Commits: Conventional Commits with a scope, e.g. `feat(sample): …`, `fix(styles): …`, `docs: …`, `chore(github): …`. Branches: `<user>/<topic>`. Base branch: `master`.
 - Do not add dependencies without saying so in the PR; peer dependencies change what every consumer must install.
 
+## Working with the design system
+
+Colours, type, spacing, radii and shadows come from the shared Infragistics design system. `src/styles/design-system/` is a copy of it; `node scripts/sync-design-system.mjs` refreshes it and nothing else edits it.
+
+Before writing or changing a style, read `src/styles/design-system/llms.txt`: the rules, and one component written to them. Every token with its value and use is in `llms-full.txt` next to it. The rules that matter most here:
+
+- Read a semantic token (`--igd-color-text-primary`), never a palette step (`--ig-gray-700`).
+- Padding takes `--igd-space-inset-*`, vertical margins `--igd-space-stack-*`, gaps and inline margins `--igd-space-gap-*`.
+- Text in the action colour is `--igd-color-action-text`; `--igd-color-action-default` is for fills, with `--igd-color-action-on` as the label.
+- Widths, heights and offsets are not tokens. Type them.
+- When no token fits, do not invent a value. Say which token is missing; it is added in the design system.
+- The docs sites use the smaller type set: `DocsLayout` sets `data-igd-type="docs"` on `<html>`.
+
+`ig-design-system check src --ignore styles/design-system` must pass. The package is not on npm yet, so run it from a checkout: `node ../ig-design-system/dist/cli/checks/cli.js check src --ignore styles/design-system`.
+
 ## Adding or changing a component
 
 1. `src/components/<Name>/<Name>.astro` + `<Name>.scss` + `README.md` (template in `CONTRIBUTING.md`). Put `data-ig-scope` on the root element.

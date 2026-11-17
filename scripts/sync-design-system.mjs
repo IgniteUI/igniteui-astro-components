@@ -21,6 +21,10 @@ fs.mkdirSync(path.join(target, 'fonts'), { recursive: true });
 for (const file of ['fonts.css', 'tokens.css', 'theme.css']) {
   fs.copyFileSync(path.join(source, 'dist', file), path.join(target, file));
 }
+// The rules for code that uses the tokens, and every token: what AGENTS.md points at.
+for (const file of ['llms.txt', 'llms-full.txt']) {
+  fs.copyFileSync(path.join(source, file), path.join(target, file));
+}
 for (const font of fs.readdirSync(path.join(source, 'dist/fonts'))) {
   fs.copyFileSync(path.join(source, 'dist/fonts', font), path.join(target, 'fonts', font));
 }
