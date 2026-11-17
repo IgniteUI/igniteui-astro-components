@@ -630,11 +630,11 @@
       }
 
       tr:nth-child(even) {
-        background-color: var(--igd-tabe-row-even-bg);
+        background-color: var(--igd-table-even-row-bg);
       }
 
       tr:hover {
-        background-color: var(--igd-tabe-row-hover-bg);
+        background-color: var(--igd-table-row-hover-bg);
       }
 
       th {

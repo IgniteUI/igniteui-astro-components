@@ -145,7 +145,8 @@
   --igd-table-pinned-border-size: #{rem(1px)};
   --igd-table-fg: var(--igd-color-text-ui);
   --igd-table-bg: var(--igd-layout-sections-bg);
-  --igd-tabe-even-row-bg: var(--igd-table-bg);
+  --igd-table-even-row-bg: var(--igd-table-bg);
+  --igd-table-row-hover-bg: var(--igd-table-bg);
   --igd-table-border-color: var(--igd-color-border-default);
 
   --igd-table-header-bg: var(--igd-layout-sections-bg);

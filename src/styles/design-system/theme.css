@@ -415,6 +415,7 @@
   --igd-shadow-accent-md: var(--igd-elevation-tint-13);
   --igd-callout-release-shadow: inset 0 0 0 var(--igd-border-width-default) var(--igd-color-emphasis-ring), var(--igd-elevation-tint-13);
   --igd-callout-release-shadow-hover: inset 0 0 0 var(--igd-border-width-default) var(--igd-color-emphasis-ring-hover), var(--igd-elevation-tint-16);
+  --igd-shadow-glass: 0 calc(var(--ig-elevation-factor, 1) * 24px) calc(var(--ig-elevation-factor, 1) * 50px) calc(var(--ig-elevation-factor, 1) * -12px) hsl(from var(--igd-color-shadow) h s l / 0.6);
   --igd-shadow-popover: 0 calc(var(--ig-elevation-factor, 1) * 26px) calc(var(--ig-elevation-factor, 1) * 50px) calc(var(--ig-elevation-factor, 1) * -22px) rgba(15, 23, 42, 0.22);
   --igd-shadow-panel: 0 calc(var(--ig-elevation-factor, 1) * -2px) calc(var(--ig-elevation-factor, 1) * 8px) calc(var(--ig-elevation-factor, 1) * 0px) rgba(15, 23, 42, 0.04), 0 calc(var(--ig-elevation-factor, 1) * 18px) calc(var(--ig-elevation-factor, 1) * 40px) calc(var(--ig-elevation-factor, 1) * -12px) rgba(15, 23, 42, 0.28), 0 calc(var(--ig-elevation-factor, 1) * 40px) calc(var(--ig-elevation-factor, 1) * 80px) calc(var(--ig-elevation-factor, 1) * -24px) rgba(15, 23, 42, 0.3);
   --igd-shadow-popover-filter: drop-shadow(0 calc(var(--ig-elevation-factor, 1) * 10px) calc(var(--ig-elevation-factor, 1) * 13px) hsl(from var(--igd-color-shadow) h s l / 0.26)) drop-shadow(0 calc(var(--ig-elevation-factor, 1) * 20px) calc(var(--ig-elevation-factor, 1) * 31px) hsl(from var(--igd-color-shadow) h s l / 0.12)) drop-shadow(0 calc(var(--ig-elevation-factor, 1) * 8px) calc(var(--ig-elevation-factor, 1) * 38px) hsl(from var(--igd-color-shadow) h s l / 0.08));
@@ -466,6 +467,9 @@
   --igd-badge-preview-border: hsl(from var(--igd-badge-preview-color) h s l / var(--igd-opacity-strong));
   --igd-badge-premium-background: hsl(from var(--igd-badge-premium-color) h s l / var(--igd-opacity-soft));
   --igd-badge-premium-border: hsl(from var(--igd-badge-premium-color) h s l / var(--igd-opacity-strong));
+  --igd-color-surface-tint-secondary: hsl(from var(--igd-color-accent-secondary) h s l / var(--igd-opacity-subtle));
+  --igd-color-surface-tint-alt: hsl(from var(--igd-color-accent-inverse-alt) h s l / var(--igd-opacity-subtle));
+  --igd-color-surface-inverse-glass: hsl(from var(--igd-color-surface-inverse) h s l / var(--igd-opacity-glass));
   --igd-color-feedback-info-surface: hsl(from var(--igd-color-feedback-info-default) h s l / var(--igd-opacity-soft));
   --igd-color-feedback-error-surface: hsl(from var(--igd-color-feedback-error-default) h s l / var(--igd-opacity-soft));
   --igd-color-feedback-success-surface: hsl(from var(--igd-color-feedback-success-default) h s l / var(--igd-opacity-soft));
@@ -746,6 +750,8 @@
   --igd-footer-link-hover: oklch(from var(--igd-footer-link) calc(l + 0.1009) calc(c * 0.0000) calc(h + 0));
   --igd-color-feedback-error-inverse: oklch(from var(--igd-color-feedback-error-default) calc(l + 0.1480) calc(c * 0.9185) calc(h + 0.20));
   --igd-color-feedback-success-inverse: oklch(from var(--igd-color-feedback-success-default) calc(l + 0.2159) calc(c * 1.4955) calc(h + -0.33));
+  --igd-color-feedback-warning-inverse: oklch(from var(--igd-color-feedback-warning-default) calc(l + 0.2338) calc(c * 1.2097) calc(h + -0.37));
+  --igd-color-feedback-info-inverse: oklch(from var(--igd-color-feedback-info-default) calc(l + 0.3293) calc(c * 0.4856) calc(h + 7.74));
   --igd-badge-bundle-background: oklch(from var(--igd-badge-bundle-color) calc((1 - var(--igd-theme-dark)) * 0.9755 + var(--igd-theme-dark) * 0.2319) calc(c * 0.0507 * (1 + 1.5 * var(--igd-theme-dark))) calc(h + 5.81));
   --igd-fw-angular-background: oklch(from var(--igd-fw-angular-color) calc((1 - var(--igd-theme-dark)) * 0.9460 + var(--igd-theme-dark) * 0.2702) calc(c * 0.1342 * (1 + 1.5 * var(--igd-theme-dark))) calc(h + 6.18));
   --igd-fw-angular-border: oklch(from var(--igd-fw-angular-color) calc((1 - var(--igd-theme-dark)) * 0.8563 + var(--igd-theme-dark) * 0.3869) calc(c * 0.4165 * (1 + 1.5 * var(--igd-theme-dark))) calc(h + 4.89));
