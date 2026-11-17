@@ -218,10 +218,10 @@
   --igd-color-surface-tint-secondary: rgba(152,16,250,0.08);
   --igd-color-surface-tint-alt: rgba(60,195,177,0.08);
   --igd-color-surface-inverse-glass: rgba(15,23,42,0.82);
-  --igd-color-feedback-info-surface: rgba(22,78,203,0.12);
-  --igd-color-feedback-error-surface: rgba(207,27,62,0.12);
-  --igd-color-feedback-success-surface: rgba(6,99,60,0.12);
-  --igd-color-feedback-warning-surface: rgba(149,94,1,0.12);
+  --igd-color-feedback-info-surface: rgba(22,78,203,0.08);
+  --igd-color-feedback-error-surface: rgba(207,27,62,0.08);
+  --igd-color-feedback-success-surface: rgba(6,99,60,0.08);
+  --igd-color-feedback-warning-surface: rgba(149,94,1,0.08);
   --igd-nav-background: rgba(255,255,255,0.96);
   --igd-color-overlay-scrim: rgba(15,23,42,0.25);
   --igd-footer-rule: rgba(251,251,251,0.08);
