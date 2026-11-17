@@ -20,7 +20,7 @@ const defaultText =
   variant === 'opensource' ? 'Open Source' : variant.charAt(0).toUpperCase() + variant.slice(1);
 ---
 
-<igc-badge class:list={['igd-badge', variant, className]} {...rest}>
+<igc-badge class:list={['igd-badge', variant, className]} {...rest} data-ig-scope>
   <slot>
     <span>{defaultText}</span>
   </slot>

@@ -8,6 +8,29 @@ slug: styles/typography
 
 The type scale and text styling applied by the documentation theme. All examples below reflect exactly what you will see in your `.md` and `.mdx` files.
 
+## Where the type comes from
+
+The fonts, sizes, weights and line heights are type roles of the Infragistics design system, loaded from `src/styles/design-system/`. `DocsLayout` sets `data-igd-type="docs"` on `<html>`, which selects the smaller type set made for documentation.
+
+In content you write headings and paragraphs, and they take the right role. In a component, use a role and never a typed-in size:
+
+```css
+.my-title {
+  font-family: var(--igd-type-title-sm-font-family);
+  font-size: var(--igd-type-title-sm-font-size);
+  font-weight: var(--igd-type-title-sm-font-weight);
+  line-height: var(--igd-type-title-sm-line-height);
+}
+```
+
+```html
+<p class="igd-type-body-sm">The same role as a class.</p>
+```
+
+The roles are `display-lg`, `display-md`, `display-sm`, `title-md`, `title-sm`, `lead`, `body-lg`, `body-md`, `body-sm`, `body-xs`, `body-2xs`, `label-lg`, `label-md`, `eyebrow` and `stat`. Each one, with its size and use, is in `src/styles/design-system/llms-full.txt`.
+
+---
+
 ## Headings
 
 Six levels of section headings. Choose the level based on document structure — not visual size.

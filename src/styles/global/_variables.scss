@@ -9,23 +9,22 @@
 
 /* DOCS PALETTE */
 :root {
-  --igd-font-sans: aktiv-grotesk, 'Segoe UI', system-ui, sans-serif;
-  --igd-font-mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+  --igd-font-sans: var(--igd-font-body);
 
   // Those are the real igniteui logo type colors not related to the palette
   --igd-logo-type: light-dark(#27265f, #fff);
 
-  --igd-accent: var(--ig-primary-600);
+  --igd-accent: var(--igd-color-action-default);
   --igd-illustration: var(--igd-accent);
-  --igd-on-accent: var(--ig-primary-600-contrast);
+  --igd-on-accent: var(--igd-color-action-on);
   --igd-border-radius: #{rem(4px)};
   --igd-border-radius-xl: #{rem(10px)};
 
-  --igd-app-bg: light-dark(var(--ig-surface-50), #0a0b10);
-  --igd-on-app-bg: light-dark(var(--ig-surface-900-contrast), var(--ig-surface-50-contrast));
+  --igd-app-bg: var(--igd-color-surface-page);
+  --igd-on-app-bg: var(--igd-color-text-primary);
 
   --igd-layout-sections-bg: var(--igd-app-bg);
-  --igd-app-outline-color: light-dark(var(--ig-gray-200), var(--ig-gray-100));
+  --igd-app-outline-color: var(--igd-color-border-default);
   --igd-app-outline-size: #{rem(1px)};
   --igd-app-outline-style: solid;
   --igd-app-outline: var(--igd-app-outline-size) var(--igd-app-outline-style)
@@ -53,35 +52,35 @@
   --igd-page-padding: #{rem(48px)};
 
   // Padding
-  --igd-padding-sm: #{rem(16px)};
-  --igd-padding-md: #{rem(24px)};
-  --igd-padding-lg: #{rem(32px)};
+  --igd-padding-sm: var(--igd-space-inset-md);
+  --igd-padding-md: var(--igd-space-inset-xl);
+  --igd-padding-lg: var(--igd-space-inset-2xl);
 
   // Links
-  --igd-link-color: light-dark(var(--ig-primary-600), var(--ig-primary-200));
-  --igd-link-hover-color: light-dark(var(--ig-primary-700), var(--ig-primary-100));
+  --igd-link-color: var(--igd-color-action-text);
+  --igd-link-hover-color: var(--igd-color-action-hover);
 
-  --igd-updated-bg: light-dark(#eaf6fe, #0d1e38);
-  --igd-updated-color: light-dark(#1151c1, #6b9fe8);
-  --igd-updated-border: light-dark(#bae2f5, #1e3d6a);
+  --igd-updated-bg: var(--igd-badge-updated-background);
+  --igd-updated-color: var(--igd-badge-updated-color);
+  --igd-updated-border: var(--igd-badge-updated-border);
 
-  --igd-new-bg: light-dark(#eafef6, #0a2a1c);
-  --igd-new-color: light-dark(#018450, #3dbf85);
-  --igd-new-border: light-dark(#baf5d7, #154a30);
+  --igd-new-bg: var(--igd-badge-new-background);
+  --igd-new-color: var(--igd-badge-new-color);
+  --igd-new-border: var(--igd-badge-new-border);
 
-  --igd-preview-bg: light-dark(#fef5ea, #2d1507);
-  --igd-preview-color: light-dark(#af390a, #e06030);
-  --igd-preview-border: light-dark(#f5c8ba, #5c2810);
+  --igd-preview-bg: var(--igd-badge-preview-background);
+  --igd-preview-color: var(--igd-badge-preview-color);
+  --igd-preview-border: var(--igd-badge-preview-border);
 
-  --igd-premium-bg: light-dark(#f5eafe, #1e1030);
-  --igd-premium-color: light-dark(#8438ff, #b585ff);
-  --igd-premium-border: light-dark(#8438ff, #5a3a99);
+  --igd-premium-bg: var(--igd-badge-premium-background);
+  --igd-premium-color: var(--igd-badge-premium-color);
+  --igd-premium-border: var(--igd-badge-premium-border);
 
-  --igd-opensource-color: light-dark(#535353, #b5b5b5);
-  --igd-opensource-bg: light-dark(#ececec, #383737);
-  --igd-opensource-border: light-dark(#cacaca, #6a6a6a);
+  --igd-opensource-color: var(--igd-color-text-secondary);
+  --igd-opensource-bg: var(--igd-color-surface-muted);
+  --igd-opensource-border: var(--igd-color-border-default);
 
-  --igd-expantion-panel-color: light-dark(var(--ig-secondary-500), var(--ig-secondary-500));
+  --igd-expantion-panel-color: var(--igd-color-accent-secondary);
 
   // ASIDE MDX
   --igd-aside-padding: #{rem(16px)};
@@ -92,26 +91,26 @@
   --igd-aside-margin-bottom: #{rem(26px)};
   --igd-aside-border-style: solid;
 
-  --igd-aside-info-title: light-dark(var(--ig-primary-700), var(--ig-primary-400));
-  --igd-aside-info-content: light-dark(var(--ig-primary-800), var(--ig-primary-200));
-  --igd-aside-info-icon: light-dark(var(--ig-primary-700), var(--ig-primary-400));
-  --igd-aside-info-bg: light-dark(var(--ig-primary-50), var(--ig-primary-900));
-  --igd-aside-info-border: light-dark(var(--ig-primary-700), var(--ig-primary-400));
-  --igd-aside-info-code-background: light-dark(var(--ig-primary-100), var(--ig-primary-900));
+  --igd-aside-info-title: var(--igd-color-feedback-info-default);
+  --igd-aside-info-content: var(--igd-color-feedback-info-default);
+  --igd-aside-info-icon: var(--igd-color-feedback-info-default);
+  --igd-aside-info-bg: var(--igd-color-feedback-info-surface);
+  --igd-aside-info-border: var(--igd-color-feedback-info-default);
+  --igd-aside-info-code-background: var(--igd-color-surface-page);
 
-  --igd-aside-warning-title: light-dark(var(--ig-secondary-700), var(--ig-secondary-400));
-  --igd-aside-warning-content: light-dark(var(--ig-secondary-700), var(--ig-secondary-300));
-  --igd-aside-warning-icon: light-dark(var(--ig-secondary-700), var(--ig-secondary-400));
-  --igd-aside-warning-bg: light-dark(var(--ig-secondary-50), var(--ig-secondary-900));
-  --igd-aside-warning-border: light-dark(var(--ig-secondary-700), var(--ig-secondary-400));
-  --igd-aside-warning-code-background: light-dark(var(--ig-secondary-100), var(--ig-secondary-900));
+  --igd-aside-warning-title: var(--igd-color-feedback-warning-default);
+  --igd-aside-warning-content: var(--igd-color-feedback-warning-default);
+  --igd-aside-warning-icon: var(--igd-color-feedback-warning-default);
+  --igd-aside-warning-bg: var(--igd-color-feedback-warning-surface);
+  --igd-aside-warning-border: var(--igd-color-feedback-warning-default);
+  --igd-aside-warning-code-background: var(--igd-color-surface-page);
 
-  --igd-aside-note-title: light-dark(var(--ig-gray-700), var(--ig-gray-500));
-  --igd-aside-note-content: light-dark(var(--ig-gray-800), var(--ig-gray-400));
-  --igd-aside-note-icon: light-dark(var(--ig-gray-700), var(--ig-gray-400));
-  --igd-aside-note-bg: light-dark(var(--ig-gray-100), var(--ig-gray-50));
-  --igd-aside-note-border: light-dark(var(--ig-gray-700), var(--ig-gray-400));
-  --igd-aside-note-code-background: light-dark(var(--ig-sgray-100), var(--ig-secondary-900));
+  --igd-aside-note-title: var(--igd-color-text-ui);
+  --igd-aside-note-content: var(--igd-color-text-primary);
+  --igd-aside-note-icon: var(--igd-color-text-ui);
+  --igd-aside-note-bg: var(--igd-color-surface-muted);
+  --igd-aside-note-border: var(--igd-color-border-control);
+  --igd-aside-note-code-background: var(--igd-color-surface-subtle);
 
   // FAQ MDX
   // Consumers style the FAQ exclusively through these tokens — Faq.scss maps
@@ -130,27 +129,28 @@
   --igd-faq-border-radius: var(--igd-border-radius-xl);
 
   --igd-faq-header-bg: var(--igd-layout-sections-bg);
-  --igd-faq-header-focus-bg: light-dark(var(--ig-gray-100), var(--ig-gray-50));
+  --igd-faq-header-focus-bg: var(--igd-color-surface-muted);
   --igd-faq-body-bg: var(--igd-layout-sections-bg);
 
-  --igd-faq-question-color: light-dark(var(--ig-gray-900), var(--ig-gray-700));
-  --igd-faq-subtitle-color: light-dark(var(--ig-gray-700), var(--ig-gray-500));
-  --igd-faq-answer-color: light-dark(var(--ig-gray-800), var(--ig-gray-600));
+  --igd-faq-question-color: var(--igd-color-text-heading);
+  --igd-faq-subtitle-color: var(--igd-color-text-ui);
+  --igd-faq-answer-color: var(--igd-color-text-primary);
   --igd-faq-indicator-color: var(--igd-accent);
-  --igd-faq-disabled-color: light-dark(var(--ig-gray-400), var(--ig-gray-300));
-  --igd-faq-disabled-bg: light-dark(var(--ig-gray-100), var(--ig-gray-50));
-  --igd-faq-disabled-border-color: light-dark(var(--ig-gray-200), var(--ig-gray-100));
+  --igd-faq-disabled-color: var(--igd-color-icon-subtle);
+  --igd-faq-disabled-bg: var(--igd-color-surface-muted);
+  --igd-faq-disabled-border-color: var(--igd-color-border-default);
 
   // TABLES
   --igd-table-max-height: #{rem(350px)};
   --igd-table-pinned-border-size: #{rem(1px)};
-  --igd-table-fg: light-dark(var(--ig-gray-700), var(--ig-gray-500));
+  --igd-table-fg: var(--igd-color-text-ui);
   --igd-table-bg: var(--igd-layout-sections-bg);
-  --igd-tabe-even-row-bg: var(--igd-table-bg);
-  --igd-table-border-color: light-dark(var(--ig-gray-200), var(--ig-gray-200));
+  --igd-table-even-row-bg: var(--igd-table-bg);
+  --igd-table-row-hover-bg: var(--igd-table-bg);
+  --igd-table-border-color: var(--igd-color-border-default);
 
   --igd-table-header-bg: var(--igd-layout-sections-bg);
-  --igd-table-header-fg: light-dark(var(--ig-gray-900), var(--ig-gray-700));
+  --igd-table-header-fg: var(--igd-color-text-heading);
 
   // FIGMA UI KITS MDX
   --igd-figma-kits-padding-block: #{rem(8px)};
@@ -171,9 +171,9 @@
   --igd-figma-kits-focus-offset: #{rem(2px)};
   --igd-figma-kits-link-weight: 700;
 
-  --igd-figma-kits-bg: light-dark(var(--ig-gray-100), var(--ig-gray-50));
-  --igd-figma-kits-border-color: light-dark(var(--ig-gray-300), var(--ig-gray-200));
-  --igd-figma-kits-title-color: var(--ig-gray-600);
+  --igd-figma-kits-bg: var(--igd-color-surface-muted);
+  --igd-figma-kits-border-color: var(--igd-color-border-default);
+  --igd-figma-kits-title-color: var(--igd-color-text-secondary);
   --igd-figma-kits-link-color: var(--igd-link-color);
   --igd-figma-kits-link-hover-color: var(--igd-link-hover-color);
 }
@@ -195,7 +195,7 @@
   --igd-code-copy-color: #d2dbe8;
   --igd-code-copy-hover-color: #0176ff;
   --igd-code-copy-hover-bg: #002b5c;
-  --igd-code-copy-success-color: var(--ig-success-500);
+  --igd-code-copy-success-color: var(--igd-color-feedback-success-inverse);
   --igd-code-copy-inset: #{rem(12px)};
 }
 

@@ -20,9 +20,9 @@
 
     .sidebar-gutter {
       display: grid;
-      gap: rem(16px);
+      gap: var(--igd-space-gap-md);
       overflow-y: hidden;
-      padding: rem(16px);
+      padding: var(--igd-space-inset-md);
       border-bottom: var(--igd-app-outline);
 
       &:empty {
@@ -41,14 +41,14 @@
     display: none;
     flex-direction: column;
     justify-content: center;
-    padding: rem(16px) rem(20px) rem(8px);
+    padding: var(--igd-space-inset-md) var(--igd-space-inset-lg) var(--igd-space-inset-xs);
 
     .igd-logo-text {
       @include type-style('h3') {
-        margin-block-end: rem(4px);
+        margin-block-end: var(--igd-space-stack-2xs);
         line-height: 1;
       }
-      color: var(--ig-gray-800);
+      color: var(--igd-color-text-primary);
     }
 
     .igd-logo__platform {
@@ -56,14 +56,14 @@
         line-height: 1;
         margin: 0;
       }
-      color: var(--ig-gray-500);
+      color: var(--igd-color-text-muted);
     }
   }
 
   .sidebar-scroll {
     overflow-y: auto;
     min-height: 0;
-    padding-block: rem(12px);
+    padding-block: var(--igd-space-inset-sm);
     scroll-behavior: smooth;
     overscroll-behavior: contain;
     flex-grow: 1;
@@ -81,7 +81,7 @@
   .igd-label-and-badge {
     display: flex;
     align-items: center;
-    gap: rem(8px);
+    gap: var(--igd-space-gap-xs);
 
     igc-badge {
       justify-self: end;
@@ -101,24 +101,24 @@
       margin-block: 0;
     }
 
-    color: light-dark(var(--ig-gray-900), var(--ig-gray-500));
+    color: var(--igd-color-text-heading);
     user-select: none;
   }
 
   .group-label-count {
-    color: light-dark(var(--ig-gray-700), var(--ig-gray-600));
-    background: light-dark(var(--ig-gray-100), var(--ig-gray-200));
-    padding: rem(2px) rem(8px);
+    color: var(--igd-color-text-ui);
+    background: var(--igd-color-surface-muted);
+    padding: var(--igd-space-inset-3xs) var(--igd-space-inset-xs);
     aspect-ratio: 1;
-    border-radius: rem(4px);
-    margin-inline-start: rem(8px);
+    border-radius: var(--igd-radius-xs);
+    margin-inline-start: var(--igd-space-gap-xs);
     font-size: 12px;
   }
 
   .igd-badge-container {
     display: flex;
     align-items: center;
-    gap: rem(4px);
+    gap: var(--igd-space-gap-2xs);
     margin-left: auto;
 
     igc-badge::part(base) {
@@ -128,8 +128,8 @@
 
   // Full-text tooltip for truncated labels (see sidebar-tooltip.ts).
   .igd-sidebar-tooltip {
-    --ig-tooltip-background: light-dark(var(--ig-gray-800), var(--ig-gray-200));
-    --ig-tooltip-text-color: light-dark(var(--ig-gray-50), var(--ig-gray-900));
+    --ig-tooltip-background: var(--igd-color-surface-inverse);
+    --ig-tooltip-text-color: var(--igd-color-text-inverse);
     --ig-tooltip-border-radius: #{rem(4px)};
 
     &::part(base) {

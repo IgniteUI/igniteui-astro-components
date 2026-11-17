@@ -27,7 +27,7 @@ const resolvedLang = lang;
 const igNav = await fetchIgNav(resolvedLang);
 ---
 
-<div class={styles.footer} data-igd-footer>
+<div class={styles.footer} data-igd-footer data-ig-scope>
   {/* === IgniteUI / default Infragistics footer — fetched via fetchIgNav() === */}
   {igNav?.prefetched && (
     <>

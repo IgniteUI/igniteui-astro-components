@@ -9,3 +9,4 @@ dist
 .idea/
 *.tgz
 llms-full.txt
+!src/styles/design-system/llms-full.txt

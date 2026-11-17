@@ -28,7 +28,12 @@ const label = title ?? defaultLabels[type];
 const resolvedIcon = icon !== undefined ? icon : defaultIcons[type];
 ---
 
-<div class:list={['igd-aside', `igd-aside--${type}`, className]} aria-label={label} role="note">
+<div
+  data-ig-scope
+  class:list={['igd-aside', `igd-aside--${type}`, className]}
+  aria-label={label}
+  role="note"
+>
   {resolvedIcon && (
     <igc-icon class="igd-aside__icon" name={resolvedIcon} collection="docs" aria-hidden="true" />
   )}

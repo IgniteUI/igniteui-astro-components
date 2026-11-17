@@ -332,6 +332,7 @@ const sampleIframeAttrs = {
 {isBare ? (
   <>
     <div
+      data-ig-scope
       class:list={[
         'igd-sample-container',
         {
@@ -385,6 +386,7 @@ const sampleIframeAttrs = {
 ) : (
   <>
     <div
+      data-ig-scope
       class:list={['igd-code-view', { 'igd-code-view--demo': isDemo }]}
       id={widgetId}
       data-iframe-src={iframeSrc}

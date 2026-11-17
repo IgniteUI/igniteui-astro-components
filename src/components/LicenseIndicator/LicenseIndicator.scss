@@ -2,6 +2,6 @@
 
 .license-indicator-badge {
   &::part(base) {
-    padding-inline: rem(4px);
+    padding-inline: var(--igd-space-inset-2xs);
   }
 }

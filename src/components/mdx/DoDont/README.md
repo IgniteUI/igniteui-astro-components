@@ -104,30 +104,30 @@ Each panel is a `<figure>` whose `<figcaption>` holds the label and description,
 
 The badges are decorative: the labels already name each panel, so the badges are `aria-hidden` and add no duplicate announcement. That also means the block does not rely on color alone.
 
-The label colors meet WCAG AA for normal-size text in both themes. The "Don't" accent is `--ig-error-800` in the light theme rather than the design's `--ig-error-700`, which measures 4.1:1 on white and fails the 4.5:1 minimum. In forced-colors mode the frame keeps an outline, since box-shadow is dropped there.
+The label colors meet WCAG AA for normal-size text in both themes: `--igd-color-feedback-success-default` (7.35:1) and `--igd-color-feedback-error-default` (5.41:1) on the light page. In forced-colors mode the frame keeps an outline, since box-shadow is dropped there.
 
 ## Styling
 
 The component reads these tokens but never sets them — its defaults are fallbacks — so a value set on any ancestor, or on the block itself through `class`, reaches every element that uses it. `--igd-dodont-accent` and `--igd-dodont-frame-accent` default per panel: set on the block they recolor both panels, set on `.igd-dodont__panel--do` or `.igd-dodont__panel--dont` just one.
 
-| Property                       | Purpose                                                                  |
-| ------------------------------ | ------------------------------------------------------------------------ |
-| `--igd-dodont-gap`             | Gap between the panels and between a frame and its caption               |
-| `--igd-dodont-min-panel-width` | Width below which the panels stack into one column                       |
-| `--igd-dodont-padding-block`   | Space above and below a screenshot (the design leaves 86px)              |
-| `--igd-dodont-padding-inline`  | Minimum space either side of a screenshot (20px)                         |
-| `--igd-dodont-image-width`     | Width the screenshots are laid out at (the design default is 360px)      |
-| `--igd-dodont-radius`          | Corner radius of the image frame                                         |
-| `--igd-dodont-badge-size`      | Size of the pinned badge                                                 |
-| `--igd-dodont-badge-inset`     | Distance of the badge from the frame's top and inline-start edges (30px) |
-| `--igd-dodont-caption-gap`     | Space between a label and its description (16px)                         |
-| `--igd-dodont-stack-extra`     | Added between panels when they stack, so the 26px gap becomes 46px       |
-| `--igd-dodont-bg`              | Frame canvas, drawn by an `::after` at 0.7 opacity behind the content    |
-| `--igd-dodont-border-width`    | Frame border (1px)                                                       |
-| `--igd-dodont-accent-width`    | Top accent border (2px), colored like the panel's badge                  |
-| `--igd-dodont-frame-accent`    | Top accent color — `success-500` on Do, `error-500` on Don't             |
-| `--igd-dodont-border-color`    | Frame border color                                                       |
-| `--igd-dodont-accent`          | Label color — success tokens on the Do panel, error tokens on Don't      |
+| Property                       | Purpose                                                                                                        |
+| ------------------------------ | -------------------------------------------------------------------------------------------------------------- |
+| `--igd-dodont-gap`             | Gap between the panels and between a frame and its caption                                                     |
+| `--igd-dodont-min-panel-width` | Width below which the panels stack into one column                                                             |
+| `--igd-dodont-padding-block`   | Space above and below a screenshot (the design leaves 86px)                                                    |
+| `--igd-dodont-padding-inline`  | Minimum space either side of a screenshot (20px)                                                               |
+| `--igd-dodont-image-width`     | Width the screenshots are laid out at (the design default is 360px)                                            |
+| `--igd-dodont-radius`          | Corner radius of the image frame                                                                               |
+| `--igd-dodont-badge-size`      | Size of the pinned badge                                                                                       |
+| `--igd-dodont-badge-inset`     | Distance of the badge from the frame's top and inline-start edges (30px)                                       |
+| `--igd-dodont-caption-gap`     | Space between a label and its description (16px)                                                               |
+| `--igd-dodont-stack-extra`     | Added between panels when they stack, so the 26px gap becomes 46px                                             |
+| `--igd-dodont-bg`              | Frame canvas, drawn by an `::after` at 0.7 opacity behind the content                                          |
+| `--igd-dodont-border-width`    | Frame border (1px)                                                                                             |
+| `--igd-dodont-accent-width`    | Top accent border (2px), colored like the panel's badge                                                        |
+| `--igd-dodont-frame-accent`    | Top accent color — `--igd-color-feedback-success-default` on Do, `--igd-color-feedback-error-default` on Don't |
+| `--igd-dodont-border-color`    | Frame border color                                                                                             |
+| `--igd-dodont-accent`          | Label color — success tokens on the Do panel, error tokens on Don't                                            |
 
 The stylesheet is deliberately **unlayered**. `.igd-main-content__markdown img` and `figure` live in `@layer components` and set a block margin and a corner radius on every image; unlayered rules beat all layers, so the panel's own `margin: 0` and the frame-owned radius win.
 

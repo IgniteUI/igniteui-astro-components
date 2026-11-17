@@ -10,7 +10,7 @@ igc-tabs {
     flex-grow: 1;
   }
 
-  --item-text-color: light-dark(var(--ig-gray-900), var(--ig-gray-900));
+  --item-text-color: var(--igd-color-text-heading);
   --item-hover-color: var(--igd-accent);
   --item-background: var(--igd-layout-sections-bg);
   --item-hover-background: var(--igd-layout-sections-bg);
@@ -21,15 +21,15 @@ igc-tabs {
   --item-active-hover-background: var(--igd-layout-sections-bg);
   --indicator-color: var(--igd-accent);
 
-  --button-color: light-dark(var(--ig-gray-900), var(--ig-gray-900));
+  --button-color: var(--igd-color-text-heading);
   --button-hover-color: var(--igd-accent);
   --button-background: var(--igd-layout-sections-bg);
   --button-hover-background: var(--igd-layout-sections-bg);
 
   .igd-code-view__header-actions {
-    border-block: rem(1px) solid light-dark(var(--ig-gray-300), var(--ig-gray-200));
+    border-block: rem(1px) solid var(--igd-color-border-default);
   }
-  border-radius: rem(4px) rem(4px) 0 0;
+  border-radius: var(--igd-radius-xs) var(--igd-radius-xs) 0 0;
 
   .igd-sample-container {
     border-inline: none;
@@ -51,7 +51,7 @@ igc-tab {
     border-radius: 0;
     margin: 0;
     border: none;
-    border-top: rem(1px) solid var(--ig-gray-300);
+    border-top: rem(1px) solid var(--igd-color-border-default);
     max-height: rem(400px);
     // Vertical scroll only — long lines wrap (see the pre below) instead of
     // forcing a horizontal scrollbar on the pane.
@@ -105,14 +105,14 @@ igc-tab::part(content) {
 
 igc-tab::part(tab-header) {
   min-height: rem(30px);
-  padding: rem(4px) rem(16px);
+  padding: var(--igd-space-inset-2xs) var(--igd-space-inset-md);
 }
 
 .igd-code-view {
   width: 100%;
-  border: rem(1px) solid var(--ig-gray-300);
-  border-radius: rem(4px);
-  margin-block-end: rem(26px);
+  border: rem(1px) solid var(--igd-color-border-default);
+  border-radius: var(--igd-radius-xs);
+  margin-block-end: var(--igd-space-stack-xl);
 
   .igd-sample-container {
     margin-block-end: 0;
@@ -131,12 +131,12 @@ igc-tab::part(tab-header) {
     flex: 1 1 0;
     min-width: 0;
     border: none;
-    border-radius: rem(4px) rem(4px) 0 0;
+    border-radius: var(--igd-radius-xs) var(--igd-radius-xs) 0 0;
   }
 
   // Without a theme picker there is no footer, so the pane takes all four corners.
   &:not(:has(.igd-code-view__footer-actions)) .igd-sample-container {
-    border-radius: rem(4px);
+    border-radius: var(--igd-radius-xs);
   }
 }
 
@@ -145,7 +145,7 @@ igc-tab::part(tab-header) {
   // Two selectable backgrounds: the site's own light/dark surface (default),
   // or a dedicated dark surface used when the in-sample theming widget's mode
   // is `dark` — see `[data-igd-mode='dark']` below.
-  --igd-sample-bg-light-dark: light-dark(var(--ig-gray-100), var(--ig-surface-500));
+  --igd-sample-bg-light-dark: var(--igd-color-surface-muted);
   --igd-sample-bg-dark: #0a0b10;
 
   display: grid;
@@ -153,9 +153,9 @@ igc-tab::part(tab-header) {
   // fullscreen bar with chrome="bare") keeps its own height.
   grid-template-rows: minmax(0, 1fr);
   position: relative;
-  border: rem(1px) solid var(--ig-gray-300);
+  border: rem(1px) solid var(--igd-color-border-default);
   overflow: hidden;
-  margin-block-end: rem(26px);
+  margin-block-end: var(--igd-space-stack-xl);
   z-index: 0;
   background: var(--igd-sample-bg-light-dark);
 
@@ -244,7 +244,7 @@ igc-tab::part(tab-header) {
   // of the token is swapped, so dark mode is untouched — both the site's dark
   // surface and the theming widget's dedicated `--igd-sample-bg-dark`.
   &--white-background {
-    --igd-sample-bg-light-dark: light-dark(#fff, var(--ig-surface-500));
+    --igd-sample-bg-light-dark: var(--igd-color-surface-page);
 
     // Asking for white implies a painted surface, so it also wins over the
     // transparent container `--no-background` leaves behind — in light mode
@@ -383,7 +383,7 @@ igc-tab::part(tab-header) {
       width: rem(4px);
       height: rem(32px);
       border-radius: rem(2px);
-      background: light-dark(var(--ig-gray-500), var(--ig-gray-400));
+      background: var(--igd-color-border-control);
     }
   }
 
@@ -409,13 +409,13 @@ igc-tab::part(tab-header) {
 }
 
 .igd-code-view__footer-actions {
-  border-block-start: rem(1px) solid var(--ig-gray-300);
+  border-block-start: rem(1px) solid var(--igd-color-border-default);
   border-end-start-radius: 0.25rem;
   border-end-end-radius: 0.25rem;
   min-height: rem(56px);
-  padding: rem(8px) rem(24px);
-  gap: rem(8px);
-  background: light-dark(#fff, var(--ig-surface-500));
+  padding: var(--igd-space-inset-xs) var(--igd-space-inset-xl);
+  gap: var(--igd-space-gap-xs);
+  background: var(--igd-color-surface-page);
 }
 
 // The footer picker is intentionally borderless: the footer itself provides
@@ -440,13 +440,13 @@ igc-tab::part(tab-header) {
   align-items: center;
   justify-content: flex-end;
   position: relative;
-  padding: rem(16px);
-  gap: rem(16px);
+  padding: var(--igd-space-inset-md);
+  gap: var(--igd-space-gap-md);
 }
 
 .igd-code-view__footer-actions {
-  padding: rem(8px) rem(24px);
-  gap: rem(8px);
+  padding: var(--igd-space-inset-xs) var(--igd-space-inset-xl);
+  gap: var(--igd-space-gap-xs);
 
   .igd-code-view__footer-edit-actions {
     display: flex;
@@ -454,8 +454,8 @@ igc-tab::part(tab-header) {
     align-items: center;
     justify-content: flex-end;
     min-width: 0;
-    padding-inline-start: rem(16px);
-    gap: rem(8px);
+    padding-inline-start: var(--igd-space-inset-md);
+    gap: var(--igd-space-gap-xs);
   }
 
   .igd-edit-in-btn {
@@ -470,12 +470,12 @@ igc-tab::part(tab-header) {
 // footer with these buttons.
 .igd-sample-action-tooltip {
   --ig-tooltip-background: rgb(52 75 101 / 90%);
-  --ig-tooltip-text-color: var(--ig-gray-50);
+  --ig-tooltip-text-color: var(--igd-color-text-inverse);
   --ig-tooltip-border-radius: #{rem(4px)};
 
   &::part(base) {
     min-height: rem(24px);
-    padding: rem(4px) rem(8px);
+    padding: var(--igd-space-inset-2xs) var(--igd-space-inset-xs);
     font-family: var(--igd-font-sans);
     font-size: rem(10px);
     font-weight: 500;
@@ -486,15 +486,15 @@ igc-tab::part(tab-header) {
 
 .igd-code-view__header-actions {
   height: var(--sample-container-header-height);
-  border-block-start: rem(1px) solid var(--ig-gray-300);
+  border-block-start: rem(1px) solid var(--igd-color-border-default);
   background-color: var(--igd-layout-sections-bg);
   z-index: 1;
 }
 
 igc-button {
   &::part(base) {
-    padding-inline: rem(16px);
-    gap: rem(4px);
+    padding-inline: var(--igd-space-inset-md);
+    gap: var(--igd-space-gap-2xs);
 
     @include type-style('caption') {
       margin: 0;

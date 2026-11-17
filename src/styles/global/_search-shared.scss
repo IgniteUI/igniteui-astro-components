@@ -43,10 +43,10 @@
 
     display: grid;
     place-items: center;
-    padding: 0 rem(16px) rem(16px) rem(16px);
-    border-bottom: rem(1px) solid var(--ig-gray-200);
+    padding: 0 var(--igd-space-inset-md) var(--igd-space-inset-md) var(--igd-space-inset-md);
+    border-bottom: rem(1px) solid var(--igd-color-border-default);
     text-align: center;
-    color: light-dark(var(--ig-gray-500), var(--ig-gray-300));
+    color: var(--igd-color-text-muted);
 
     &:empty {
       display: none;
@@ -68,12 +68,12 @@
 
     position: relative;
 
-    gap: rem(8px);
+    gap: var(--igd-space-gap-xs);
 
     igc-list-item {
       --item-border-radius: 0;
       --item-background: transparent;
-      --item-background-hover: var(--ig-gray-50);
+      --item-background-hover: var(--igd-color-surface-subtle);
       --item-background-focus: transparent;
       --item-background-active: transparent;
       --border-color: transparent;
@@ -109,8 +109,8 @@
   .igd-search-link {
     display: grid;
     align-items: center;
-    padding: rem(8px) rem(16px);
-    gap: rem(4px);
+    padding: var(--igd-space-inset-xs) var(--igd-space-inset-md);
+    gap: var(--igd-space-gap-2xs);
     text-decoration: none;
     color: inherit;
 
@@ -125,7 +125,7 @@
       margin: 0;
     }
 
-    color: light-dark(var(--ig-gray-900), var(--ig-gray-600));
+    color: var(--igd-color-text-heading);
 
     mark {
       background: transparent;
@@ -141,7 +141,7 @@
       margin: 0;
     }
 
-    color: light-dark(var(--ig-gray-500), var(--ig-gray-400));
+    color: var(--igd-color-text-muted);
 
     mark {
       background: transparent;
@@ -154,11 +154,11 @@
       margin-block: 0;
     }
 
-    margin-inline-end: rem(8px);
-    padding: rem(4px);
+    margin-inline-end: var(--igd-space-gap-xs);
+    padding: var(--igd-space-inset-2xs);
     border-radius: rem(2px);
-    color: light-dark(var(--ig-gray-700), var(--ig-gray-500));
-    background: light-dark(var(--ig-gray-100), #112031);
+    color: var(--igd-color-text-ui);
+    background: var(--igd-color-surface-muted);
   }
 
   // Category header (above each result list in the All tab)
@@ -169,9 +169,9 @@
     }
 
     display: inline-block;
-    color: light-dark(var(--ig-gray-900), var(--ig-gray-300));
-    padding-inline: rem(16px);
-    margin-block-end: rem(8px);
+    color: var(--igd-color-text-heading);
+    padding-inline: var(--igd-space-inset-md);
+    margin-block-end: var(--igd-space-stack-xs);
   }
 
   .igd-search-more-btn {
@@ -204,12 +204,12 @@
 
     display: flex;
     justify-self: start;
-    padding: rem(16px);
-    border-top: rem(1px) solid var(--ig-gray-100);
+    padding: var(--igd-space-inset-md);
+    border-top: rem(1px) solid var(--igd-color-border-subtle);
   }
 
   .igd-search-meta {
-    color: light-dark(var(--ig-gray-900), var(--ig-gray-300));
+    color: var(--igd-color-text-heading);
   }
 
   // Dialog chrome — shared by both Search and SearchAdvanced
@@ -219,12 +219,12 @@
     --_mh: min(calc(100vh - #{rem(100px)} - #{rem(64px)}), #{rem(768px)});
 
     &::part(base) {
-      margin: rem(100px) auto rem(64px);
+      margin: rem(100px) auto var(--igd-space-stack-5xl);
       padding: 0;
       width: 90%;
       max-width: rem(672px);
       max-height: var(--_mh);
-      border-radius: rem(8px);
+      border-radius: var(--igd-radius-sm);
 
       overflow: hidden;
 
@@ -241,8 +241,8 @@
     }
 
     igc-input::part(container) {
-      --border-color: var(--ig-gray-200);
-      --border-color-hover: var(--ig-gray-300);
+      --border-color: var(--igd-color-border-default);
+      --border-color-hover: var(--igd-color-border-default);
       --border-border-radius: #{rem(8px)};
     }
   }
@@ -251,8 +251,8 @@
   .igd-search-footer,
   .igd-search-header {
     --ig-size: var(--ig-size-large);
-    padding: rem(16px);
-    gap: rem(8px);
+    padding: var(--igd-space-inset-md);
+    gap: var(--igd-space-gap-xs);
   }
 
   // Visible only on mobile devices
@@ -291,11 +291,11 @@
   }
 
   .igd-search-clear {
-    --foreground: light-dark(var(--ig-gray-900), var(--ig-gray-900));
-    --hover-foreground: light-dark(var(--ig-gray-900), var(--ig-gray-900));
-    --focus-hover-foreground: light-dark(var(--ig-gray-900), var(--ig-gray-900));
-    --focus-foreground: light-dark(var(--ig-gray-900), var(--ig-gray-900));
-    --active-foreground: light-dark(var(--ig-gray-900), var(--ig-gray-900));
+    --foreground: var(--igd-color-text-heading);
+    --hover-foreground: var(--igd-color-text-heading);
+    --focus-hover-foreground: var(--igd-color-text-heading);
+    --focus-foreground: var(--igd-color-text-heading);
+    --active-foreground: var(--igd-color-text-heading);
     --shadow-color: transparent;
     --background: transparent;
     --hover-background: transparent;
@@ -317,8 +317,8 @@
   }
 
   .igd-search-icon {
-    color: light-dark(var(--ig-gray-900), var(--ig-gray-500));
-    padding-inline: rem(12px) rem(0);
+    color: var(--igd-color-text-heading);
+    padding-inline: var(--igd-space-inset-sm) rem(0);
   }
 
   .search-decoration {
@@ -326,7 +326,7 @@
       from var(--rot) at 50% 50%,
       var(--igd-accent) -56.25deg,
       var(--igd-accent) 43.12deg,
-      var(--ig-secondary-500) 180deg,
+      var(--igd-color-accent-secondary) 180deg,
       var(--igd-accent) 303.75deg,
       var(--igd-accent) 403.12deg
     );
@@ -369,12 +369,12 @@
 
   .search-trigger__hint {
     display: flex;
-    gap: rem(4px);
+    gap: var(--igd-space-gap-2xs);
     align-items: center;
     background: transparent;
-    color: var(--ig-gray-400);
+    color: var(--igd-color-icon-subtle);
     font-size: inherit;
-    padding-inline: rem(16px);
+    padding-inline: var(--igd-space-inset-md);
     box-shadow: none;
 
     > kbd {

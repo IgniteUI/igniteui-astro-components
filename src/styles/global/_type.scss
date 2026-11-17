@@ -1,0 +1,53 @@
+@use 'igniteui-theming' as *;
+
+// Bottom margin of each type style, in px. The design system's type roles carry no margins.
+$_margin-bottom: (
+  'h1': 24,
+  'h2': 16,
+  'h3': 16,
+  'h4': 16,
+  'h5': 12,
+  'h6': 26,
+  'body-1': 16,
+  'body-2': 16,
+  'subtitle-1': 26,
+  'subtitle-2': 26,
+  'detail-1': 26,
+  'detail-2': 26,
+  'code': 26,
+);
+
+// The design system's names for the two type slots the engine's default scale does not have.
+$_detail-roles: (
+  'detail-1': 'body-xs',
+  'detail-2': 'body-2xs',
+);
+
+:root {
+  --ig-font-family: var(--igd-font-body);
+
+  @each $slot, $px in $_margin-bottom {
+    --ig-#{$slot}-margin-top: 0;
+    --ig-#{$slot}-margin-bottom: #{rem($px * 1px)};
+  }
+
+  --ig-button-margin-top: 0;
+  --ig-button-margin-bottom: 0;
+
+  @each $slot, $role in $_detail-roles {
+    @each $prop
+      in (font-family, font-size, font-weight, line-height, letter-spacing, text-transform)
+    {
+      --ig-#{$slot}-#{$prop}: var(--igd-type-#{$role}-#{$prop});
+    }
+
+    --ig-#{$slot}-font-style: normal;
+  }
+
+  --ig-code-font-size: #{rem(14px)};
+  --ig-code-font-weight: 400;
+  --ig-code-font-style: normal;
+  --ig-code-line-height: #{rem(24px)};
+  --ig-code-letter-spacing: normal;
+  --ig-code-text-transform: none;
+}

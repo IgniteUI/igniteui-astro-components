@@ -208,7 +208,7 @@ for (const panel of panels) {
 const fetchpriority = loading === 'eager' ? 'high' : undefined;
 ---
 
-<div class:list={['igd-dodont', className]}>
+<div class:list={['igd-dodont', className]} data-ig-scope>
   {panels.map((panel) => (
     <figure class:list={['igd-dodont__panel', `igd-dodont__panel--${panel.key}`]}>
       <div class="igd-dodont__frame" data-error-text={errorText}>
