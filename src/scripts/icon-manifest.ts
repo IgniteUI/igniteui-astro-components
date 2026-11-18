@@ -25,6 +25,7 @@ export const BRAND_ICONS = new Set([
   'react-logo',
   'wc-logo',
   'github-logo',
+  'figma-logo',
   'chatgpt',
   'claude',
 ]);
