@@ -405,19 +405,20 @@ not exported yet.
 
 ### MDX components
 
-| Export                                 | Purpose                                                   | Docs                                                 |
-| -------------------------------------- | --------------------------------------------------------- | ---------------------------------------------------- |
-| `…/components/mdx/ApiLink.astro`       | Inline link to an API symbol with platform-aware URLs     | [README](src/components/mdx/ApiLink/README.md)       |
-| `…/components/mdx/ApiRef.astro`        | Block "API References" list                               | [README](src/components/mdx/ApiRef/README.md)        |
-| `…/components/mdx/Sample.astro`        | Embedded live sample with code tabs and live-edit buttons | [README](src/components/mdx/Sample/README.md)        |
-| `…/components/mdx/PlatformBlock.astro` | Show content only on selected platforms                   | [README](src/components/mdx/PlatformBlock/README.md) |
-| `…/components/mdx/DocsAside.astro`     | Note / info / warning callout                             | [README](src/components/mdx/DocsAside/README.md)     |
-| `…/components/mdx/Badge.astro`         | Status chip (preview, new, updated, premium, opensource)  | [README](src/components/mdx/Badge/README.md)         |
-| `…/components/mdx/Anatomy.astro`       | Framed component anatomy image                            | [README](src/components/mdx/Anatomy/README.md)       |
-| `…/components/mdx/DoDont.astro`        | Side-by-side Do / Don't image guidance panels             | [README](src/components/mdx/DoDont/README.md)        |
-| `…/components/mdx/Faq.astro`           | FAQ accordion                                             | [README](src/components/mdx/Faq/README.md)           |
-| `…/components/mdx/FaqItem.astro`       | One question/answer panel                                 | [README](src/components/mdx/Faq/README.md)           |
-| `…/components/mdx/Faq/types`           | `FaqEntry`, `FaqIndicatorPosition`                        | [README](src/components/mdx/Faq/README.md)           |
+| Export                                 | Purpose                                                             | Docs                                                 |
+| -------------------------------------- | ------------------------------------------------------------------- | ---------------------------------------------------- |
+| `…/components/mdx/ApiLink.astro`       | Inline link to an API symbol with platform-aware URLs               | [README](src/components/mdx/ApiLink/README.md)       |
+| `…/components/mdx/ApiRef.astro`        | Block "API References" list                                         | [README](src/components/mdx/ApiRef/README.md)        |
+| `…/components/mdx/Sample.astro`        | Embedded live sample with code tabs and live-edit buttons           | [README](src/components/mdx/Sample/README.md)        |
+| `…/components/mdx/PlatformBlock.astro` | Show content only on selected platforms                             | [README](src/components/mdx/PlatformBlock/README.md) |
+| `…/components/mdx/DocsAside.astro`     | Note / info / warning callout                                       | [README](src/components/mdx/DocsAside/README.md)     |
+| `…/components/mdx/Badge.astro`         | Status chip (preview, new, updated, premium, opensource)            | [README](src/components/mdx/Badge/README.md)         |
+| `…/components/mdx/Anatomy.astro`       | Framed component anatomy image                                      | [README](src/components/mdx/Anatomy/README.md)       |
+| `…/components/mdx/DoDont.astro`        | Side-by-side Do / Don't image guidance panels                       | [README](src/components/mdx/DoDont/README.md)        |
+| `…/components/mdx/FigmaUiKits.astro`   | "Check it out in our free Figma UI kits" banner linking to the kits | [README](src/components/mdx/FigmaUiKits/README.md)   |
+| `…/components/mdx/Faq.astro`           | FAQ accordion                                                       | [README](src/components/mdx/Faq/README.md)           |
+| `…/components/mdx/FaqItem.astro`       | One question/answer panel                                           | [README](src/components/mdx/Faq/README.md)           |
+| `…/components/mdx/Faq/types`           | `FaqEntry`, `FaqIndicatorPosition`                                  | [README](src/components/mdx/Faq/README.md)           |
 
 ### Code snippets
 

@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Validate pull request body
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         with:
           script: |
             const body = (context.payload.pull_request.body || '').replace(/<!--[\s\S]*?-->/g, '');
