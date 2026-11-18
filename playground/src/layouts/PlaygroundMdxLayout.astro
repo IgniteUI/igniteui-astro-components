@@ -13,14 +13,7 @@ import DocsSidebar from '../../../src/components/DocsSidebar/DocsSidebar.astro';
 import DocsToc from '../../../src/components/DocsToc/DocsToc.astro';
 import DocsSubHeader from '../../../src/components/DocsSubHeader/DocsSubHeader.astro';
 import SearchAdvanced from '../../../src/components/SearchAdvanced/SearchAdvanced.astro';
-import {
-  SITE_TITLE,
-  SIDEBAR,
-  PRODUCT_LINKS,
-  SEARCH_TABS,
-  PACKAGES,
-  VERSIONS,
-} from '../site-config';
+import { SITE_TITLE, SIDEBAR, SEARCH_TABS, PACKAGES, VERSIONS } from '../site-config';
 
 interface Props {
   frontmatter: {
@@ -42,11 +35,6 @@ const { frontmatter, headings } = Astro.props;
 >
   <DocsSubHeader
     slot="subheader"
-    pageTitle={frontmatter.title}
-    currentSlug={frontmatter.slug}
-    siteTitle={SITE_TITLE}
-    productLinks={PRODUCT_LINKS}
-    showThemeToggle={true}
     packages={[...PACKAGES]}
     selectedPackage={PACKAGES[0].value}
     versions={[...VERSIONS]}

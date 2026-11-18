@@ -5,14 +5,7 @@ import DocsToc from '../../../../src/components/DocsToc/DocsToc.astro';
 import ApiRef from '../../../../src/components/mdx/ApiRef/ApiRef.astro';
 import DocsSubHeader from '../../../../src/components/DocsSubHeader/DocsSubHeader.astro';
 import SearchAdvanced from '../../../../src/components/SearchAdvanced/SearchAdvanced.astro';
-import {
-  SITE_TITLE,
-  SIDEBAR,
-  PRODUCT_LINKS,
-  SEARCH_TABS,
-  PACKAGES,
-  VERSIONS,
-} from '../../site-config';
+import { SITE_TITLE, SIDEBAR, SEARCH_TABS, PACKAGES, VERSIONS } from '../../site-config';
 
 const slug = 'components/api-ref';
 
@@ -27,11 +20,6 @@ const headings = [
 <DocsLayout title="ApiRef" siteTitle={SITE_TITLE} hasSidebar currentSlug={slug}>
   <DocsSubHeader
     slot="subheader"
-    pageTitle="ApiRef"
-    currentSlug={slug}
-    siteTitle={SITE_TITLE}
-    productLinks={PRODUCT_LINKS}
-    showThemeToggle={true}
     packages={[...PACKAGES]}
     selectedPackage={PACKAGES[0].value}
     versions={[...VERSIONS]}

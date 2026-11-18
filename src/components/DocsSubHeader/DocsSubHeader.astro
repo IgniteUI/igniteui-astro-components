@@ -3,27 +3,16 @@
  * DocsSubHeader
  *
  * A secondary fixed header bar rendered below the GlobalNavBar.
- * Contains the search input and cross-product navigation links.
- *
- * Positioning (set in DocsLayout / custom.css):
- *   --docs-global-nav-height   height of the GlobalNavBar above (default 86px)
- *   --docs-subheader-height    height of this bar (default 40px)
- *
- * Note: The breadcrumb that previously lived in `.subheader-context` has been
- * moved to the `DocsBreadcrumb` component, rendered inside the main frame.
+ * Contains the logo, the search widget and the package and version selectors.
+ * The breadcrumb is rendered by `DocsBreadcrumb` inside the main frame.
  */
 import { platform as virtualPlatform } from 'virtual:docs-template/nav-html';
 import { ULTIMATE_UI_PLATFORMS, platformLabelFor } from '../../platform';
 import {
-  productLinks,
-  sidebar as sidebarData,
-  title as siteTitle,
   packages as virtualPackages,
   selectedPackage as virtualSelectedPackage,
 } from 'virtual:docs-template/site-meta';
 import Search from '../Search/Search.astro';
-import type { SidebarEntry } from '../../lib/sidebar/types';
-import { getBreadcrumb } from '../../lib/sidebar/helpers';
 import './DocsSubHeader.scss';
 
 const PLATFORM_ICONS: Record<string, string> = {
@@ -43,32 +32,7 @@ function getPlatformIcon(text: string): string | null {
   return null;
 }
 
-interface ProductLink {
-  label: string;
-  href: string;
-  platform?: string;
-}
-
 interface Props {
-  /** Fallback title if the slug is not present in the sidebar tree. */
-  pageTitle?: string | null;
-  /** Current page slug — used to derive the breadcrumb from the sidebar tree. */
-  currentSlug?: string;
-  /**
-   * Override the site title shown on the left. Defaults to the virtual module value.
-   * Useful when consuming without `siteMetaIntegration`.
-   */
-  siteTitle?: string;
-  /**
-   * Override the cross-product navigation links. Defaults to the virtual module value.
-   * Useful when consuming without `siteMetaIntegration`.
-   */
-  productLinks?: ProductLink[];
-  /**
-   * Override the sidebar tree used for breadcrumb generation.
-   * Defaults to the virtual module value.
-   */
-  sidebarItems?: SidebarEntry[];
   /**
    * Items for the package/platform selector dropdown. When omitted the selector is hidden.
    * Each entry is either a plain string label, or an object with a `label`, optional `value`
@@ -88,10 +52,6 @@ interface Props {
   selectedVersion?: string;
   /** Label rendered before the version selector. Defaults to `'Version'`. */
   versionLabel?: string;
-  /** Show a light/dark theme toggle button. */
-  showThemeToggle?: boolean;
-  /** `localStorage` key for persisting the theme. Defaults to `'docs-theme'`. */
-  themeStorageKey?: string;
   /**
    * Text label shown in the logo area when the GlobalNavBar is visible.
    * Fades out and is replaced by the SVG logo once the subheader becomes sticky.
@@ -101,25 +61,15 @@ interface Props {
 }
 
 const {
-  pageTitle = '',
-  currentSlug = '',
-  siteTitle: siteTitleProp,
-  productLinks: productLinksProp,
-  sidebarItems,
   packages: packagesProp,
   selectedPackage: selectedPackageProp,
   packageLabel = 'Package',
   versions,
   selectedVersion,
   versionLabel = 'Version',
-  showThemeToggle = false,
-  themeStorageKey = 'docs-theme',
   logoText = ULTIMATE_UI_PLATFORMS.has(virtualPlatform ?? '') ? 'Ultimate UI' : 'Ignite UI',
 } = Astro.props;
-const resolvedSiteTitle = siteTitleProp ?? siteTitle;
 const currentPlatform = virtualPlatform ?? null;
-const resolvedLinks = (productLinksProp ?? productLinks) as ProductLink[];
-const filteredLinks = resolvedLinks.filter((l: ProductLink) => l.platform !== currentPlatform);
 type PackageEntry = string | { label: string; value?: string; href?: string; base?: string };
 const rawPackages = packagesProp ?? (virtualPackages?.length > 0 ? virtualPackages : undefined);
 const packages = (rawPackages as PackageEntry[] | undefined)?.map((p: PackageEntry) =>
@@ -133,10 +83,6 @@ const platformIcon =
   PLATFORM_ICONS[selectedPackage ?? ''] ?? PLATFORM_ICONS[currentPlatform ?? ''] ?? null;
 const selectedPackageLabel =
   packages?.find((p) => p.value === selectedPackage)?.label ?? selectedPackage ?? '';
-
-const resolvedSidebar = (sidebarItems ?? sidebarData) as SidebarEntry[];
-const sidebarCrumbs = currentSlug ? getBreadcrumb(resolvedSidebar, currentSlug) : [];
-const crumbs = sidebarCrumbs.length > 0 ? sidebarCrumbs : pageTitle ? [pageTitle] : [];
 
 const platformLabel = platformLabelFor(currentPlatform);
 ---
@@ -220,18 +166,6 @@ const platformLabel = platformLabelFor(currentPlatform);
         ))}
       </igc-select>
     )}
-
-    <!-- TODO WHY WE NEED THIS? -->
-    <!--{filteredLinks.length > 0 && (-->
-    <!--    <div class="subheader-links">-->
-    <!--        {filteredLinks.map((link, i) => (-->
-    <!--                <>-->
-    <!--                    {i > 0 && <span class="product-sep" aria-hidden="true">|</span>}-->
-    <!--                    <a href={link.href} class="product-link">{link.label}</a>-->
-    <!--                </>-->
-    <!--        ))}-->
-    <!--    </div>-->
-    <!--)}-->
   </div>
 </docs-subheader-menu>
 

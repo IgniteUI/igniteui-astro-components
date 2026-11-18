@@ -4,14 +4,7 @@ import DocsSidebar from '../../../src/components/DocsSidebar/DocsSidebar.astro';
 import DocsToc from '../../../src/components/DocsToc/DocsToc.astro';
 import DocsSubHeader from '../../../src/components/DocsSubHeader/DocsSubHeader.astro';
 import SearchAdvanced from '../../../src/components/SearchAdvanced/SearchAdvanced.astro';
-import {
-  SITE_TITLE,
-  SIDEBAR,
-  PRODUCT_LINKS,
-  SEARCH_TABS,
-  PACKAGES,
-  VERSIONS,
-} from '../site-config';
+import { SITE_TITLE, SIDEBAR, SEARCH_TABS, PACKAGES, VERSIONS } from '../site-config';
 
 const headings = [
   { depth: 2, slug: 'pages', text: 'Pages' },
@@ -27,11 +20,6 @@ const headings = [
 <DocsLayout title="Playground" siteTitle={SITE_TITLE} hasSidebar currentSlug="">
   <DocsSubHeader
     slot="subheader"
-    pageTitle="Playground"
-    currentSlug=""
-    siteTitle={SITE_TITLE}
-    productLinks={PRODUCT_LINKS}
-    showThemeToggle={true}
     packages={[...PACKAGES]}
     selectedPackage={PACKAGES[0].value}
     versions={[...VERSIONS]}
