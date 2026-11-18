@@ -406,7 +406,7 @@ function addFooter(
     footer.appendChild(themingBar);
   }
 
-  // Nothing to show (e.g. a `hideCode` sample without a theme picker): no footer.
+  // Nothing to show (e.g. a `chrome="demo"` sample without a theme picker): no footer.
   if (footer.childElementCount) widget.appendChild(footer);
 }
 
@@ -715,6 +715,14 @@ const FIT_CONTENT_ENABLE_MESSAGE = 'igd-sample-fit';
 let _fitContentMessageBound = false;
 
 /**
+ * The document of each fit-content iframe that has reported its own size.
+ * Keyed by document, not set on the iframe, so that navigating the iframe to
+ * a page that does not report resumes direct measurement. A report that
+ * arrives before the new page's load event is already from the new document.
+ */
+const _reportingDocuments = new WeakMap<HTMLIFrameElement, Document | null>();
+
+/**
  * Apply a measured content size to a fit-content iframe. The size goes on the
  * iframe itself; the container has `height: auto` in fit-content mode, so it
  * grows around the iframe (including any `spacing` padding). Width is only
@@ -785,6 +793,9 @@ function bindFitContentMessages(): void {
       .querySelectorAll<HTMLIFrameElement>('.igd-sample-container[data-fit-content] iframe')
       .forEach((iframe) => {
         if (iframe.contentWindow !== e.source) return;
+        // A demo that reports its own size knows it best. Direct measurement
+        // of this same-origin document stops from here on (see wireFitContent).
+        _reportingDocuments.set(iframe, iframe.contentDocument);
         // Width only matters when the host aligns the iframe
         // horizontally (position → data-justify); otherwise the iframe
         // stays full-width and a reported width is ignored. Resizable
@@ -806,6 +817,12 @@ function bindFitContentMessages(): void {
  * in sync with a ResizeObserver on their <body>. Cross-origin demos can't be
  * read, so they must post their height (see FIT_CONTENT_MESSAGE).
  *
+ * A same-origin demo that also posts its height is sized by its messages
+ * alone. Its page may fill the iframe (`html, body { height: 100% }`), and
+ * then the direct measurement only echoes the iframe height back. Both paths
+ * writing the height race: a stale echo can land after the demo's last
+ * report and leave the iframe cut off.
+ *
  * The `height` prop is only the placeholder/fallback in fit-content mode —
  * once a size is measured/reported, the content dictates it. Measurement uses
  * the html/body offset heights (not the document scrollHeight, which is
@@ -824,6 +841,7 @@ function wireFitContent(iframe: HTMLIFrameElement): void {
       const doc = iframe.contentDocument;
       const body = doc?.body;
       if (!body) return; // cross-origin — rely on postMessage instead
+      if (_reportingDocuments.get(iframe) === doc) return; // the demo reports its own size
       setFitSize(iframe, {
         height: Math.max(doc!.documentElement.offsetHeight, body.offsetHeight, body.scrollHeight),
         width: measureContentWidth(iframe, body),
@@ -875,7 +893,7 @@ function wireFitContent(iframe: HTMLIFrameElement): void {
     }, 3000);
   };
 
-  // iframeOnly renders `src` directly, so the iframe may already be loaded —
+  // chrome="bare" renders `src` directly, so the iframe may already be loaded —
   // and a cross-origin iframe gives no way to detect that (contentDocument is
   // null whether it's loaded or not). Run the handler once at wire time as
   // well: on a not-yet-loaded iframe the enable message is simply lost and
@@ -976,7 +994,7 @@ function initResizableSamples(): void {
  * `.ig-code-view` elements managed by code-view.js.
  */
 export function initSampleWidgets(): void {
-  // Wire fit-content iframes (both full widgets and iframeOnly samples) up front
+  // Wire fit-content iframes (widgets and chrome="bare" samples alike) up front
   // so they start measuring as soon as their content loads.
   initFitContentIframes();
 
@@ -1026,8 +1044,8 @@ export function initSampleWidgets(): void {
       const demosBaseUrl = widget.dataset.demosBaseUrl || '';
       const githubSrc = widget.dataset.githubSrc || '';
       const platform = normalizePlatform(widget.dataset.platform || 'angular');
-      // `hideCode` samples render no tabs: only the demo and the theme picker.
-      const hideCode = widget.dataset.hideCode === 'true';
+      // `chrome="demo"` samples render no tabs: only the demo and the theme picker.
+      const isDemo = widget.dataset.chrome === 'demo';
 
       if (!iframeSrc) return;
 
@@ -1035,7 +1053,7 @@ export function initSampleWidgets(): void {
       const samplePane = widget.querySelector<HTMLElement>('.igd-sample-container');
       const iframe = widget.querySelector<HTMLIFrameElement>('iframe');
 
-      if (!igcTabs && !hideCode) return;
+      if (!igcTabs && !isDemo) return;
 
       const exampleTabId = `${widget.id}-example`;
 
@@ -1131,7 +1149,7 @@ export function initSampleWidgets(): void {
 
       // No code to fetch and nothing to live-edit or open in full screen: the
       // footer carries only the theme picker, right away.
-      if (hideCode || !igcTabs) {
+      if (isDemo || !igcTabs) {
         addFooter(widget, iframeSrc, null, null, null, false);
         return;
       }
