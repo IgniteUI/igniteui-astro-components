@@ -1,0 +1,68 @@
+---
+// Placeholder with a popup that is open on load and closes on a click outside it.
+// Served at /mock-demo-popup.
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mock Demo (popup)</title>
+    <style>
+      body {
+        margin: 0;
+        font-family: system-ui, sans-serif;
+      }
+      .picker {
+        display: inline-flex;
+        flex-direction: column;
+        gap: 8px;
+        padding: 8px;
+      }
+      .toggle {
+        padding: 8px 16px;
+        border: 1px solid #c7d2fe;
+        border-radius: 8px;
+        background: #eef2ff;
+        font: inherit;
+        cursor: pointer;
+      }
+      .popup {
+        padding: 16px;
+        border-radius: 8px;
+        background: linear-gradient(90deg, #eef2ff, #f5f3ff);
+        border: 1px solid #e0e7ff;
+        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25);
+      }
+      .popup[hidden] {
+        display: block;
+        visibility: hidden;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="picker">
+      <button class="toggle" type="button" aria-expanded="true" aria-controls="popup">
+        Toggle popup
+      </button>
+      <div class="popup" id="popup">
+        Open popup. Click outside it to close.
+      </div>
+    </div>
+    <script is:inline>
+      const picker = document.querySelector('.picker');
+      const toggle = document.querySelector('.toggle');
+      const popup = document.getElementById('popup');
+      const setOpen = (open) => {
+        popup.hidden = !open;
+        toggle.setAttribute('aria-expanded', String(open));
+      };
+      toggle.addEventListener('click', () => setOpen(popup.hidden));
+      // Closes the popup on a click outside the picker.
+      document.addEventListener('click', (event) => {
+        if (!picker.contains(event.target)) setOpen(false);
+      });
+    </script>
+  </body>
+</html>

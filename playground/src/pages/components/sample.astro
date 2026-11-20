@@ -549,6 +549,27 @@ const sections: Section[] = [
     ],
   },
   {
+    slug: 'click-forwarding',
+    title: 'Clicks beside the demo',
+    description: `<p>A click on the empty part of the sample area, beside the iframe, is
+            forwarded to a same-origin demo, so its outside-click handling runs: click
+            next to the demo below and its open popup closes. Cross-origin demos cannot
+            be reached and are unchanged.</p>`,
+    examples: [
+      {
+        props: {
+          src: '/mock-demo-popup',
+          alt: 'Popup Example',
+          chrome: 'bare',
+          fitContent: true,
+          noBorder: false,
+          spacing: 'md',
+          position: 'center',
+        },
+      },
+    ],
+  },
+  {
     slug: 'resizable',
     title: 'Resizable',
     description: `<p><code>resizable</code> shows an always-visible drag handle on the right
