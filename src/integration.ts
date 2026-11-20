@@ -223,7 +223,8 @@ export const navLang = ${JSON.stringify(navLang)};
                   loadPaths: [path.join(process.cwd(), 'node_modules')],
                   // The if-function deprecation originates inside
                   // igniteui-theming (vendor code we cannot modify).
-                  silenceDeprecations: ['if-function'],
+                  // Vite types this against `sass-embedded`, whose 1.92 types predate the id.
+                  silenceDeprecations: ['if-function' as never],
                 },
               },
             },
@@ -383,12 +384,10 @@ export const navLang = ${JSON.stringify(navLang)};
         // The index is written to <outDir>/pagefind/ and served statically.
         console.log('[docs-template] Running pagefind…');
         try {
-          const { index, errors: initErrors } = await pagefindCreateIndex({});
+          // `rootSelector` is an index option; on `addDirectory` pagefind ignored it and indexed whole pages.
+          const { index, errors: initErrors } = await pagefindCreateIndex({ rootSelector: 'main' });
           if (initErrors?.length) throw new Error(initErrors.join(', '));
-          const { errors: addErrors } = await index!.addDirectory({
-            path: outDir,
-            rootSelector: 'main',
-          });
+          const { errors: addErrors } = await index!.addDirectory({ path: outDir });
           if (addErrors?.length)
             console.warn('[docs-template] pagefind addDirectory warnings:', addErrors);
           const { errors: writeErrors } = await index!.writeFiles({
