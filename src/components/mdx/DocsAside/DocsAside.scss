@@ -72,6 +72,10 @@ blockquote {
 
   .igd-aside__content {
     color: var(--igd-aside-info-content);
+
+    code:not(pre code) {
+      background: var(--igd-aside-info-code-background);
+    }
   }
 }
 
@@ -89,6 +93,10 @@ blockquote {
 
   .igd-aside__content {
     color: var(--igd-aside-warning-content);
+
+    code:not(pre code) {
+      background: var(--igd-aside-warning-code-background);
+    }
   }
 }
 
@@ -106,6 +114,10 @@ blockquote {
 
   .igd-aside__content {
     color: var(--igd-aside-note-content);
+
+    code:not(pre code) {
+      background: var(--igd-aside-note-code-background);
+    }
   }
 }
 
