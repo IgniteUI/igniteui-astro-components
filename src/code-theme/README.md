@@ -5,6 +5,11 @@ Moon** recoloured with Shiki's `colorReplacements` to match the API Docs Figma
 design (`api-snippet`, dark). Fenced Markdown/MDX blocks, Astro's `<Code>` and
 the Sample component's code tabs all use it.
 
+Snippets use no italic. The theme removes `italic` from every token rule it
+inherits from Rosé Pine Moon (comments, attribute names, variables, built-in
+functions, Vue directives, Markdown emphasis), so tokens differ by colour only.
+`bold` stays.
+
 | Export          | What it is                                                   |
 | --------------- | ------------------------------------------------------------ |
 | `igCodeTheme`   | The Shiki theme object (`ig-dark`).                          |
