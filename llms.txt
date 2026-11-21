@@ -78,7 +78,7 @@
 
 ## Code theme
 
-- [Code theme](src/code-theme/README.md): `igniteui-astro-components/code-theme` — `igCodeTheme` (Shiki theme `ig-dark`: Rosé Pine Moon recoloured with `colorReplacements`) and `igShikiConfig` (`{ theme: igCodeTheme, wrap: true }`) for `markdown.shikiConfig`. Shiki writes colours inline; the surface comes from `--igd-code-*` tokens.
+- [Code theme](src/code-theme/README.md): `igniteui-astro-components/code-theme` — `igCodeTheme` (Shiki theme `ig-dark`: Rosé Pine Moon recoloured with `colorReplacements`, no italic) and `igShikiConfig` (`{ theme: igCodeTheme, wrap: true }`) for `markdown.shikiConfig`. Shiki writes colours inline; the surface comes from `--igd-code-*` tokens.
 
 ## Styles
 
