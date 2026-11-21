@@ -17,7 +17,7 @@ npm test                    # test:scripts (node --test scripts/**/*.test.mjs) +
 npm run lint                # oxlint
 npm run format:check        # prettier
 npm run playground          # dev site on http://localhost:4567 rendering every component
-npm run playground:check    # astro check over playground/ only; nothing type-checks src/ yet
+npm run playground:check    # astro check over src/ and playground/
 npm run build:llms          # write llms-full.txt locally (generated at prepack, not committed)
 ```
 
