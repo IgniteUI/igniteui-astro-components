@@ -9,6 +9,8 @@ import type { ShikiConfig } from 'astro';
 import type { ThemeRegistration } from 'shiki';
 import rosePineMoon from '@shikijs/themes/rose-pine-moon';
 
+type TokenColor = NonNullable<ThemeRegistration['tokenColors']>[number];
+
 /** Object-literal, JSON and YAML keys and `obj.prop` access: Rosé Pine leaves them on the default text colour. */
 const PROPERTY_KEY_SCOPES = [
   'meta.object-literal.key',
@@ -18,7 +20,23 @@ const PROPERTY_KEY_SCOPES = [
   'variable.other.object.property',
 ];
 
-/** Dark brand theme. Rosé Pine colour → brand colour, scopes and font styles unchanged. */
+/**
+ * Removes `italic` from a rule's `fontStyle` and keeps the other styles.
+ * An emptied `fontStyle` stays as `''`, which Shiki reads as no font style.
+ */
+function withoutItalic(rule: TokenColor): TokenColor {
+  const { fontStyle } = rule.settings;
+  if (fontStyle === undefined) return rule;
+
+  const kept = fontStyle
+    .split(/\s+/)
+    .filter((style) => style !== '' && style !== 'italic')
+    .join(' ');
+
+  return { ...rule, settings: { ...rule.settings, fontStyle: kept } };
+}
+
+/** Dark brand theme. Rosé Pine colour → brand colour, scopes unchanged, no italic. */
 export const igCodeTheme: ThemeRegistration = {
   ...rosePineMoon,
   name: 'ig-dark',
@@ -40,12 +58,13 @@ export const igCodeTheme: ThemeRegistration = {
     '#eb6f92': '#ff4d25', // love: invalid, built-in functions
   },
   tokenColors: [
-    ...(rosePineMoon.tokenColors ?? []),
+    // Code snippets use no italic: tokens differ by colour only.
+    ...(rosePineMoon.tokenColors ?? []).map(withoutItalic),
     { scope: PROPERTY_KEY_SCOPES, settings: { foreground: '#66adff' } },
     // Keep a comment's `//` / `/* */` as muted as its text.
     {
       scope: ['punctuation.definition.comment'],
-      settings: { foreground: '#7d91ab', fontStyle: 'italic' },
+      settings: { foreground: '#7d91ab' },
     },
   ],
 };
