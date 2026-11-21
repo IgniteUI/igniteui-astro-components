@@ -155,9 +155,8 @@ with `data-igd-footer`, persisted across navigations. See
 ## Virtual module dependencies
 
 `DocsLayout` imports from two virtual modules. Supply them with a Vite plugin
-(see [Quick start](../../../README.md#quick-start) step 2; `siteMetaIntegration`
-does not emit `packages` and `selectedPackage`, so it cannot provide them
-today):
+(see [Quick start](../../../README.md#quick-start) step 2) or with
+`siteMetaIntegration()`, which emits every `site-meta` name:
 
 | Module                            | Used for                                                                                                     | Can be overridden by prop                                                                                              |
 | --------------------------------- | ------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------- |

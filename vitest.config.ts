@@ -1,4 +1,5 @@
 import { getViteConfig } from 'astro/config';
+import { buildSiteMetaModule } from './src/site-meta.ts';
 
 /**
  * Stub for `virtual:docs-template/site-meta` and `virtual:docs-template/nav-html`.
@@ -20,14 +21,14 @@ function virtualDocsMocks() {
     },
     load(id: string) {
       if (id === prefix + SITE_META_ID) {
-        return `
-export const title = 'Test Site';
-export const sidebar = [];
-export const productLinks = [];
-export const headEntries = [];
-export const trailingSlash = 'ignore';
-export const navLang = 'en';
-        `.trim();
+        return buildSiteMetaModule({
+          title: 'Test Site',
+          sidebar: [],
+          productLinks: [],
+          headEntries: [],
+          trailingSlash: 'ignore',
+          navLang: 'en',
+        });
       }
       if (id === prefix + NAV_HTML_ID) {
         return `export const platform = 'react';`;
