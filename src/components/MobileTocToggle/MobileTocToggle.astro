@@ -7,6 +7,7 @@
  * Tapping it opens a dropdown containing the TOC links.
  *
  * Hidden on tablet and above — the full DocsToc sidebar is shown there.
+ * The active heading mirrors the page's DocsToc, which owns the scroll-spy.
  */
 import type { MarkdownHeading } from 'astro';
 import DocsTree from '../DocsTree/DocsTree.astro';
@@ -59,7 +60,12 @@ const nodes = headingsToTreeNodes(headings, tocConfig);
 )}
 
 <script>
+  import { observeActiveHeading } from './sync-active';
+
+  let activeObserver: MutationObserver | undefined;
+
   function initMobileToc() {
+    activeObserver?.disconnect();
     const trigger = document.getElementById('mobile-toc-trigger');
     const dropdown = document.getElementById('mobile-toc-dropdown');
     const activeLabel = document.getElementById('mobile-toc-active');
@@ -89,19 +95,12 @@ const nodes = headingsToTreeNodes(headings, tocConfig);
       }
     });
 
-    // Sync active heading text from the desktop TOC scroll-spy.
-    // DocsToc sets aria-current="true" on the active anchor — observe that.
-    const syncActive = () => {
-      if (!activeLabel) return;
-      const active = document.querySelector<HTMLAnchorElement>(
-        '#mobile-toc-dropdown a[aria-current="true"]',
-      );
-      activeLabel.textContent = active?.textContent?.trim() ?? '';
-    };
-
-    const observer = new MutationObserver(syncActive);
-    observer.observe(dropdown, { subtree: true, attributeFilter: ['aria-current'] });
-    syncActive();
+    // The page's <docs-toc> runs the scroll-spy; mirror its active link here.
+    activeObserver = observeActiveHeading(
+      document.querySelector('docs-toc'),
+      dropdown,
+      activeLabel,
+    );
   }
 
   document.addEventListener('astro:page-load', initMobileToc);
