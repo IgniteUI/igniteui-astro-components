@@ -5,7 +5,9 @@ export type PlatformName =
   | 'Blazor'
   /** XAML platforms. Share the WinUI control surface; see the docs host's NonWeb platform group. */
   | 'WinUI'
-  | 'Uno';
+  | 'Uno'
+  /** Ignite UI for jQuery: the JavaScript API and the MVC / ASP.NET Core / Documents (.NET) API in one registry, told apart by `pkg`. */
+  | 'jQuery';
 
 export interface ApiPackageConfig {
   /** TypeDoc documentation root URL (no trailing slash). */
