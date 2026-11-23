@@ -144,7 +144,7 @@ import { defineMiddleware } from 'astro:middleware';
 import type { PlatformContext } from 'igniteui-astro-components/lib/types';
 
 const platformContext: PlatformContext = {
-  name: 'React', // 'Angular' | 'React' | 'WebComponents' | 'Blazor' | 'WinUI' | 'Uno'
+  name: 'React', // 'Angular' | 'React' | 'WebComponents' | 'Blazor' | 'WinUI' | 'Uno' | 'jQuery'
   lower: 'react',
   prefix: 'Igr',
   productName: 'Ignite UI for React',
