@@ -17,7 +17,7 @@ Load the stylesheets in this order, before the site's own styles:
 3. `ig-design-system/theme.css` — the live layer: dials, derived state colours, the dark theme, type roles.
 4. `ig-design-system/base.css` — optional. Element styles for a site that has none.
 
-A documentation site puts `data-igd-type="docs"` on `<html>` for the smaller type set. `data-theme="dark"` selects the dark theme.
+A documentation site puts `data-igd-type="docs"` on `<html>` for the smaller type set. `data-theme="dark"` selects the dark variant.
 
 ## Rules for code that uses the tokens
 

@@ -775,7 +775,7 @@
   --igd-color-surface-hero: var(--ig-surface-sunken);
   --igd-color-surface-subtle: var(--ig-surface-sunken);
   --igd-color-surface-card: var(--ig-surface-raised);
-  --igd-color-surface-muted: var(--ig-gray-100);
+  --igd-color-surface-muted: var(--ig-surface-sunken);
   --igd-color-border-default: var(--ig-gray-200);
   --igd-color-border-subtle: var(--ig-gray-100);
   --igd-color-border-control: var(--ig-gray-500);

@@ -147,7 +147,7 @@
   --igd-color-surface-inverse-sunken: #070e1d;
   --igd-color-surface-inverse: #0f172a;
   --igd-color-surface-tint-strong: var(--ig-primary-100);
-  --igd-color-surface-muted: var(--ig-gray-100);
+  --igd-color-surface-muted: var(--ig-surface-sunken);
   --igd-footer-background: var(--igd-color-surface-inverse-sunken);
   --igd-footer-text: #bcc1c9;
   --igd-footer-strong: #f6f7f8;
