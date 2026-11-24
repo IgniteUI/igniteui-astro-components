@@ -4,35 +4,35 @@
 
 ## Colour
 
-- `--igd-color-accent-primary`: `{ig-info-seed}`. Brand accent: gradient start, icon tile fill, glow source. Not a CTA fill and never text on white.
-- `--igd-color-accent-primary-hover`: `{ig-info-400}`. Hover step of `color-accent-primary`.
-- `--igd-color-accent-primary-active`: `{ig-info-500}`. Press state step of `color-accent-primary`.
-- `--igd-color-accent-secondary`: `{ig-secondary-seed}`. Gradient partner to `color-accent-primary` and the AI marker. Never a fill on its own.
+- `--igd-color-accent-brand`: `{ig-info-seed}`. Brand accent: gradient start, icon tile fill, glow source. Not a CTA fill and never text on white.
+- `--igd-color-accent-brand-hover`: `{ig-info-400}`. Hover step of `color-accent-brand`.
+- `--igd-color-accent-brand-active`: `{ig-info-500}`. Press state step of `color-accent-brand`.
+- `--igd-color-accent-ai`: `{ig-secondary-seed}`. Gradient partner to `color-accent-brand` and the AI marker. Never a fill on its own.
 - `--igd-color-accent-inverse`: `#51bbee`. On-dark accent only: stat numbers on `color-surface-inverse`. Never on white. Engine step 200 of the sky palette. Contrast 8.24:1 on `color-surface-inverse`.
-- `--igd-color-accent-inverse-alt`: `#3cc3b1`. On-dark accent only: performance stat numbers on `color-surface-inverse`. Never on white. Engine step 200 of the teal palette. Contrast 8.19:1 on `color-surface-inverse`.
+- `--igd-color-accent-inverse-performance`: `#3cc3b1`. On-dark accent only: performance stat numbers on `color-surface-inverse`. Never on white. Engine step 200 of the teal palette. Contrast 8.19:1 on `color-surface-inverse`.
 - `--igd-color-action-default`: `{ig-primary-seed}`. The engine’s primary seed itself (--ig-primary-seed), not a fitted shade. The fill of every action: the primary CTA, with `color-action-on` as its label. Text in the action colour is `color-action-text`. Contrast 5.25:1 on `color-surface-page`.
-- `--igd-color-action-hover`: `{ig-info-500}`. Link hover on light surfaces (colour shift only, no underline). Contrast 5.41:1 on `color-surface-page`.
+- `--igd-color-action-hover`: `{ig-primary-700}`. Link hover on light surfaces (colour shift only, no underline). Contrast 7.03:1 on `color-surface-page`.
 - `--igd-color-action-fill-hover`: `{ig-primary-700}`. Filled-button hover: the primary fill moves to this and nothing else changes. A step `color-action-on` reads on: darker under a white label, primary step 400 under a black one.
 - `--igd-color-action-active`: `{ig-primary-800}`. Inline link press state on light surfaces.
-- `--igd-color-action-text`: `{ig-primary-600}`. The action colour when it is text, an icon or a thin line on a surface: links, eyebrows, outline and ghost button labels, focus outlines. An engine step, which the engine solves to the same contrast for any seed. Contrast 5.24:1 on `color-surface-page`, 4.82:1 on `color-surface-tint`, 5.24:1 on `color-surface-card`, 4.98:1 on `color-surface-subtle`.
+- `--igd-color-action-text`: `{ig-primary-600}`. The action colour when it is text, an icon or a thin line on a surface: links, eyebrows, outline and ghost button labels, focus outlines. An engine step, which the engine solves to the same contrast for any seed. Contrast 5.24:1 on `color-surface-page`, 4.82:1 on `color-surface-tint`, 5.24:1 on `color-surface-card`, 4.89:1 on `color-surface-subtle`.
 - `--igd-color-action-on`: `#ffffff`. Label and icon colour on `color-action-default` fills: black or white, whichever reads on the fill (the engine’s adaptive contrast). Contrast 5.25:1 on `color-action-default`, 7.03:1 on `color-action-fill-hover`.
-- `--igd-color-link-utility`: `{ig-info-500}`. Links in the utility row above the nav, on `color-surface-page`. Contrast 5.41:1 on `color-surface-page`, 5.14:1 on `color-surface-subtle`.
+- `--igd-color-link-utility`: `{ig-info-500}`. Links in the utility row above the nav, on `color-surface-page`. Contrast 5.41:1 on `color-surface-page`, 5.05:1 on `color-surface-subtle`.
 - `--igd-color-link-utility-hover`: `{color-action-text}`. Utility-row link hover. Contrast 5.24:1 on `color-surface-page`.
 - `--igd-color-link-inverse`: `#51bbee`. Inline links on dark surfaces (`color-surface-inverse`). Engine step 200 of the sky palette. Contrast 8.24:1 on `color-surface-inverse`.
-- `--igd-color-link-inverse-hover`: `#fbfbfb`. Hover of `color-link-inverse`: colour shift only. Engine step 900 of the dark palette's gray ramp. Contrast 17.25:1 on `color-surface-inverse`.
+- `--igd-color-link-inverse-hover`: `#95d5f7`. Hover of `color-link-inverse`: colour shift only. Engine step 100 of the sky palette. Contrast 11.17:1 on `color-surface-inverse`.
 - `--igd-footer-link`: `#d7dade`. Footer column links on the footer gradient. Engine step 600 of the dark palette's gray ramp. Contrast 11.07:1 on `color-surface-inverse-raised`.
 - `--igd-footer-link-hover`: `#fbfbfb`. Footer link hover. Engine step 900 of the dark palette's gray ramp.
 - `--igd-color-focus-default`: `{color-action-text}`. Keyboard focus outline on light surfaces, `focus-ring-width` at `focus-ring-offset`, `:focus-visible` only. Contrast 5.24:1 on `color-surface-page`.
 - `--igd-color-focus-inverse`: `#95d5f7`. Keyboard focus outline inside a `data-on-dark` section. Engine step 100 of the sky palette. Contrast 11.17:1 on `color-surface-inverse`, 11.17:1 on `color-surface-inverse`.
 - `--igd-color-text-heading`: `{ig-gray-900}`. Headlines h1–h6 on `color-surface-page` and the catalog band. Contrast 17.79:1 on `color-surface-page`.
-- `--igd-color-text-primary`: `{ig-gray-800}`. Strong text and secondary-button labels on `color-surface-page`; the body default in base styles. Contrast 13.8:1 on `color-surface-page`.
-- `--igd-color-text-secondary`: `{ig-gray-600}`. Body and lead copy, utility-bar text and nav triggers at rest, on `color-surface-page` and `color-surface-subtle`. Contrast 7.53:1 on `color-surface-page`, 7.16:1 on `color-surface-subtle`, 6.74:1 on `color-surface-muted`.
-- `--igd-color-text-ui`: `{ig-gray-700}`. UI text — nav, buttons, list rows, chips — on `color-surface-page`. Contrast 10.43:1 on `color-surface-page`, 9.92:1 on `color-surface-subtle`.
-- `--igd-color-text-muted`: `{ig-gray-500}`. Muted copy, nano labels, card descriptions and catalog counts; body copy never goes lighter. Contrast 4.94:1 on `color-surface-page`, 4.7:1 on `color-surface-subtle`, 4.94:1 on `color-surface-card`, 4.55:1 on `color-surface-tint`.
+- `--igd-color-text-strong`: `{ig-gray-800}`. Strong text and secondary-button labels on `color-surface-page`; the body default in base styles. Contrast 13.8:1 on `color-surface-page`.
+- `--igd-color-text-body`: `{ig-gray-600}`. Body and lead copy, utility-bar text and nav triggers at rest, on `color-surface-page` and `color-surface-subtle`. Contrast 7.53:1 on `color-surface-page`, 7.03:1 on `color-surface-subtle`, 6.74:1 on `color-surface-muted`.
+- `--igd-color-text-ui`: `{ig-gray-700}`. UI text — nav, buttons, list rows, chips — on `color-surface-page`. Contrast 10.43:1 on `color-surface-page`, 9.74:1 on `color-surface-subtle`.
+- `--igd-color-text-muted`: `{ig-gray-500}`. Muted copy, nano labels, card descriptions and catalog counts; body copy never goes lighter. Contrast 4.94:1 on `color-surface-page`, 4.62:1 on `color-surface-subtle`, 4.94:1 on `color-surface-card`, 4.55:1 on `color-surface-tint`.
 - `--igd-color-text-inverse`: `#fbfbfb`. Text on `color-surface-inverse`. Engine step 900 of the dark palette's gray ramp. Contrast 17.25:1 on `color-surface-inverse`.
 - `--igd-color-text-inverse-muted`: `#9da5af`. Stat-badge labels and muted copy on `color-surface-inverse`. Engine step 400 of the dark palette's gray ramp. Contrast 7.17:1 on `color-surface-inverse`.
 - `--igd-color-icon-subtle`: `{ig-gray-400}`. The caret in the nav row (decorative, below the 3:1 icon floor, kept as in the source). Contrast 2.59:1 on `color-surface-page`.
-- `--igd-color-feedback-error-default`: `{ig-error-500}`. Validation text and border on light surfaces. Contrast 5.41:1 on `color-surface-page`, 5.14:1 on `color-surface-subtle`.
+- `--igd-color-feedback-error-default`: `{ig-error-500}`. Validation text and border on light surfaces. Contrast 5.41:1 on `color-surface-page`, 5.05:1 on `color-surface-subtle`.
 - `--igd-color-feedback-info-default`: `{ig-primary-700}`. Informational text and icons on light surfaces: a note, a tip. Contrast 7.03:1 on `color-surface-page`, 6.47:1 on `color-surface-tint`.
 - `--igd-color-feedback-warning-inverse`: `{ig-warn-200}`. Warning text and icons on dark surfaces. Contrast 8.23:1 on `color-surface-inverse`.
 - `--igd-color-feedback-info-inverse`: `{ig-primary-300}`. Informational text and icons on dark surfaces. Contrast 9.59:1 on `color-surface-inverse`.
@@ -42,7 +42,7 @@
 - `--igd-color-feedback-error-inverse`: `{ig-error-300}`. Validation text and border on the dark footer. Contrast 5.28:1 on `color-surface-inverse-raised`.
 - `--igd-color-surface-page`: `{ig-surface-base}`. Page background; flat.
 - `--igd-color-surface-hero`: `{ig-surface-sunken}`. Top of the hero wash (`gradient-hero`).
-- `--igd-color-surface-subtle`: `{ig-gray-50}`. Alternating section bands, BrowserFrame title bar, callout strips and chips at rest.
+- `--igd-color-surface-subtle`: `{ig-surface-sunken}`. Alternating section bands, BrowserFrame title bar, callout strips and chips at rest.
 - `--igd-color-surface-card`: `{ig-surface-raised}`. Marketing card fill.
 - `--igd-color-surface-tint`: `{ig-primary-50}`. Soft blue fill: tinted chips, callouts, the catalog band, release strip at rest and monogram badges.
 - `--igd-color-surface-inverse-raised`: `#1c2435`. The lightest dark surface: where a dark area lifts towards the light, such as the start of the footer gradient. Engine step 200 of the dark palette's surface ramp.
@@ -94,19 +94,19 @@
 - `--igd-fw-blazor-border`: `{ig-secondary-200}`. Blazor framework pill border.
 - `--igd-fw-wpf-background`: `{ig-primary-100}`. WPF framework pill fill.
 - `--igd-fw-wpf-border`: `{ig-primary-200}`. WPF framework pill border.
-- `--igd-tile-1`: `{ig-info-seed}`. Icon tile fill — CLI MCP on the AI toolchain row. Flat, never a gradient; white glyph.
-- `--igd-tile-2`: `{ig-secondary-seed}`. Icon tile fill — Agent Skills on the AI toolchain row.
-- `--igd-tile-3`: `#e23b8f`. Icon tile fill — Theming MCP on the AI toolchain row. Engine step 400 of the pink palette.
-- `--igd-tile-4`: `{ig-success-400}`. Icon tile fill — AI Scaffolding on the AI toolchain row.
-- `--igd-tile-5`: `#39bfdc`. Extended icon tile fill for grids longer than four tiles. Engine step 200 of the cyan palette.
-- `--igd-tile-6`: `{ig-warn-200}`. Extended icon tile fill for grids longer than four tiles.
-- `--igd-tile-7`: `{ig-primary-seed}`. Extended icon tile fill for grids longer than four tiles.
-- `--igd-tile-8`: `#0f172a`. Extended icon tile fill for grids longer than four tiles. Engine step 500 of the dark palette's surface ramp.
+- `--igd-tile-1`: `{ig-info-seed}`. Icon tile fill 1 of 8; a grid of icon tiles takes the fills in order. Now: CLI MCP on the AI toolchain row. Flat, never a gradient; white glyph.
+- `--igd-tile-2`: `{ig-secondary-seed}`. Icon tile fill 2 of 8; a grid of icon tiles takes the fills in order. Now: Agent Skills on the AI toolchain row.
+- `--igd-tile-3`: `#e23b8f`. Icon tile fill 3 of 8; a grid of icon tiles takes the fills in order. Now: Theming MCP on the AI toolchain row. Engine step 400 of the pink palette.
+- `--igd-tile-4`: `{ig-success-400}`. Icon tile fill 4 of 8; a grid of icon tiles takes the fills in order. Now: AI Scaffolding on the AI toolchain row.
+- `--igd-tile-5`: `#39bfdc`. Icon tile fill 5 of 8; a grid of icon tiles takes the fills in order. Now: used when a grid has more than four tiles. Engine step 200 of the cyan palette.
+- `--igd-tile-6`: `{ig-warn-200}`. Icon tile fill 6 of 8; a grid of icon tiles takes the fills in order. Now: used when a grid has more than four tiles.
+- `--igd-tile-7`: `{ig-primary-seed}`. Icon tile fill 7 of 8; a grid of icon tiles takes the fills in order. Now: used when a grid has more than four tiles.
+- `--igd-tile-8`: `#0f172a`. Icon tile fill 8 of 8; a grid of icon tiles takes the fills in order. Now: used when a grid has more than four tiles. Engine step 500 of the dark palette's surface ramp.
 - `--igd-color-action-subtle`: `rgba(21,93,252,0.08)`. Tinted capsule fill behind `color-action-default` text. Live: `color-action-default` at `opacity-subtle`.
 - `--igd-color-action-subtle-border`: `rgba(21,93,252,0.25)`. Border of the `color-action-subtle` capsule. Live: `color-action-default` at `opacity-strong`.
-- `--igd-color-emphasis-border`: `rgba(0,153,255,0.4)`. Border of emphasised cards and the release strip at rest. Live: `color-accent-primary` at `opacity-heavy`.
-- `--igd-color-emphasis-ring`: `rgba(0,153,255,0.12)`. Inner ring of the release strip at rest. Live: `color-accent-primary` at `opacity-soft`.
-- `--igd-color-emphasis-ring-hover`: `rgba(0,153,255,0.25)`. Inner ring of the release strip on hover. Live: `color-accent-primary` at `opacity-strong`.
+- `--igd-color-emphasis-border`: `rgba(0,153,255,0.4)`. Border of emphasised cards and the release strip at rest. Live: `color-accent-brand` at `opacity-heavy`.
+- `--igd-color-emphasis-ring`: `rgba(0,153,255,0.12)`. Inner ring of the release strip at rest. Live: `color-accent-brand` at `opacity-soft`.
+- `--igd-color-emphasis-ring-hover`: `rgba(0,153,255,0.25)`. Inner ring of the release strip on hover. Live: `color-accent-brand` at `opacity-strong`.
 - `--igd-badge-oss-background`: `rgba(6,99,60,0.12)`. OSS tag fill. Live: `badge-oss-color` at `opacity-soft`.
 - `--igd-badge-oss-border`: `rgba(6,99,60,0.25)`. OSS tag border. Live: `badge-oss-color` at `opacity-strong`.
 - `--igd-badge-new-background`: `rgba(6,99,60,0.12)`. New status badge fill. Live: `badge-new-color` at `opacity-soft`.
@@ -117,9 +117,9 @@
 - `--igd-badge-preview-border`: `rgba(149,94,1,0.25)`. Preview status badge border. Live: `badge-preview-color` at `opacity-strong`.
 - `--igd-badge-premium-background`: `rgba(123,39,197,0.12)`. Premium status badge fill. Live: `badge-premium-color` at `opacity-soft`.
 - `--igd-badge-premium-border`: `rgba(123,39,197,0.25)`. Premium status badge border. Live: `badge-premium-color` at `opacity-strong`.
-- `--igd-color-surface-tint-secondary`: `rgba(152,16,250,0.08)`. Soft fill in the secondary accent: a second category beside `color-surface-tint`. Live: `color-accent-secondary` at `opacity-subtle`.
-- `--igd-color-surface-tint-alt`: `rgba(60,195,177,0.08)`. Soft fill in the alternative accent: a third category beside `color-surface-tint`. Live: `color-accent-inverse-alt` at `opacity-subtle`.
-- `--igd-color-surface-inverse-glass`: `rgba(15,23,42,0.82)`. Translucent dark chip that floats over a screenshot. Live: `color-surface-inverse` at `opacity-glass`.
+- `--igd-color-surface-tint-ai`: `rgba(152,16,250,0.08)`. Soft fill in the secondary accent: a second category beside `color-surface-tint`. Live: `color-accent-ai` at `opacity-subtle`.
+- `--igd-color-surface-tint-category`: `rgba(60,195,177,0.08)`. Soft fill for a third category, beside `color-surface-tint` and `color-surface-tint-ai`. Live: `color-accent-inverse-performance` at `opacity-subtle`.
+- `--igd-color-surface-inverse-chip`: `rgba(15,23,42,0.82)`. Translucent dark chip that floats over a screenshot. Live: `color-surface-inverse` at `opacity-chip`.
 - `--igd-color-feedback-info-surface`: `rgba(22,78,203,0.08)`. Tinted fill behind `color-feedback-info-default` text. Live: `color-feedback-info-default` at `opacity-subtle`.
 - `--igd-color-feedback-error-surface`: `rgba(207,27,62,0.08)`. Tinted fill behind `color-feedback-error-default` text. Live: `color-feedback-error-default` at `opacity-subtle`.
 - `--igd-color-feedback-success-surface`: `rgba(6,99,60,0.08)`. Tinted fill behind `color-feedback-success-default` text. Live: `color-feedback-success-default` at `opacity-subtle`.
@@ -130,7 +130,7 @@
 - `--igd-footer-rule-strong`: `rgba(251,251,251,0.16)`. Footer legal-link dividers and form control borders. Live: `color-text-inverse` at `opacity-muted`.
 - `--igd-footer-card-border`: `rgba(251,251,251,0.08)`. Border of the footer newsletter card. Live: `color-text-inverse` at `opacity-subtle`.
 - `--igd-footer-field-background`: `rgba(251,251,251,0.08)`. Footer input fill (stacked newsletter). Live: `color-text-inverse` at `opacity-subtle`.
-- `--igd-footer-field-pill-background`: `rgba(7,14,29,0.6)`. Footer input fill inside the pill field. Live: `footer-background` at `opacity-field`.
+- `--igd-footer-field-inline-background`: `rgba(7,14,29,0.6)`. Footer input fill inside the pill field. Live: `footer-background` at `opacity-field`.
 - `--igd-footer-check-background`: `rgba(251,251,251,0.04)`. Footer checkbox fill, unchecked. Live: `color-text-inverse` at `opacity-faint`.
 - `--igd-footer-check-border`: `rgba(251,251,251,0.4)`. Footer checkbox border, unchecked. Live: `color-text-inverse` at `opacity-heavy`.
 - `--igd-footer-social-hover-background`: `rgba(81,187,238,0.16)`. Social button fill on hover. Live: `color-link-inverse` at `opacity-muted`.
@@ -190,13 +190,13 @@ Two tiers. Steps (space-3xs … space-6xl) are the raw scale; the name is a size
 
 Live values are produced by the engine's border-radius() in theme.css and follow --ig-radius-factor (unset = as listed, 0 = each role’s minimum, 1 = each role’s maximum).
 
-- `--igd-radius-full`: `624.9375rem`. Pills: every action, chip and framework selector. Fully round at any height; never sharper than 4px. Range 4px to 9999px.
+- `--igd-radius-action`: `624.9375rem`. Every action, chip and framework selector. Fully round at any height today; never sharper than 4px. Range 4px to 9999px.
 - `--igd-nav-panel-radius`: `1.875rem`. Flared top corners of an open nav panel. Range 0px to 30px.
-- `--igd-radius-xl`: `1.5rem`. Emphasis and catalog cards. Never a circle: capped at 28px. Range 4px to 28px.
-- `--igd-radius-lg`: `1rem`. Marketing cards and media frames. Capped at 24px. Range 0px to 24px.
-- `--igd-radius-md`: `0.75rem`. Icon tiles, stat badges and nav link rows. Capped at 16px so a tile never becomes a circle. Range 4px to 16px.
-- `--igd-radius-sm`: `0.5rem`. Small elements and the monogram badge. Range 2px to 12px.
-- `--igd-radius-xs`: `0.375rem`. OSS tag and checkbox. Range 2px to 8px.
+- `--igd-radius-card-featured`: `1.5rem`. Emphasis and catalog cards. Never a circle: capped at 28px. Range 4px to 28px.
+- `--igd-radius-card`: `1rem`. Marketing cards and media frames. Capped at 24px. Range 0px to 24px.
+- `--igd-radius-tile`: `0.75rem`. Icon tiles, stat badges and nav link rows. Capped at 16px so a tile never becomes a circle. Range 4px to 16px.
+- `--igd-radius-badge`: `0.5rem`. Small elements and the monogram badge. Range 2px to 12px.
+- `--igd-radius-control`: `0.375rem`. OSS tag and checkbox. Range 2px to 8px.
 
 ## Size
 
@@ -245,18 +245,18 @@ Live values are produced by the engine's sizable() in theme.css and step down fo
 
 ## Shadow
 
-`shadow-raised`, `shadow-overlay`, `shadow-floating`, `shadow-popover`, `shadow-panel` and `shadow-glass` are the shadows www.infragistics.com ships, compiled with the engine's box-shadow(). The rest are resolved from igniteui-theming elevations (indigo preset) at --ig-elevation-factor 1; tinted levels use the same preset with `color-action-default` as umbra, penumbra and ambient colour. theme.css keeps them live.
+`shadow-card-hover`, `shadow-screenshot`, `shadow-floating`, `shadow-popover`, `shadow-panel` and `shadow-chip` are the shadows www.infragistics.com ships, compiled with the engine's box-shadow(). The rest are resolved from igniteui-theming elevations (indigo preset) at --ig-elevation-factor 1; tinted levels use the same preset with `color-action-default` as umbra, penumbra and ambient colour. theme.css keeps them live.
 
 - `--igd-shadow-none`: `none`. Cards at rest — flat; a card is defined by its hairline `color-border-default`. Engine elevation 0.
-- `--igd-shadow-raised`: `0 10px 30px -5px rgba(0,0,0,0.08), 0 4px 10px -5px rgba(0,0,0,0.04)`. Card hover: cards lift shadow only, no translate or scale.
-- `--igd-shadow-accent-lg`: `0 8px 10px -5px rgba(36,98,234,0.26), 0 16px 24px 2px rgba(36,98,234,0.12), 0 6px 30px 5px rgba(36,98,234,0.08)`. Primary CTA and its hover (no shadow change on hover). Engine elevation 16 tinted with `color-action-default`.
-- `--igd-shadow-accent-sm`: `0 1px 3px 0 rgba(36,98,234,0.26), 0 1px 1px 0 rgba(36,98,234,0.12), 0 2px 1px -1px rgba(36,98,234,0.08)`. Framework pill hover — the only hover change on a pill. Engine elevation 1 tinted with `color-action-default`.
-- `--igd-shadow-overlay`: `0 44px 90px -34px rgba(15,23,42,0.4)`. Screenshots inside a BrowserFrame.
+- `--igd-shadow-card-hover`: `0 10px 30px -5px rgba(0,0,0,0.08), 0 4px 10px -5px rgba(0,0,0,0.04)`. Card hover: cards lift shadow only, no translate or scale.
+- `--igd-shadow-action-lg`: `0 8px 10px -5px rgba(36,98,234,0.26), 0 16px 24px 2px rgba(36,98,234,0.12), 0 6px 30px 5px rgba(36,98,234,0.08)`. Primary CTA and its hover (no shadow change on hover). Engine elevation 16 tinted with `color-action-default`.
+- `--igd-shadow-action-sm`: `0 1px 3px 0 rgba(36,98,234,0.26), 0 1px 1px 0 rgba(36,98,234,0.12), 0 2px 1px -1px rgba(36,98,234,0.08)`. Framework pill hover — the only hover change on a pill. Engine elevation 1 tinted with `color-action-default`.
+- `--igd-shadow-screenshot`: `0 44px 90px -34px rgba(15,23,42,0.4)`. Screenshots inside a BrowserFrame.
 - `--igd-shadow-floating`: `0 16px 32px -12px rgba(15,23,42,0.4)`. Floating stat badges.
-- `--igd-shadow-accent-md`: `0 7px 8px -4px rgba(36,98,234,0.26), 0 13px 19px 2px rgba(36,98,234,0.12), 0 5px 24px 4px rgba(36,98,234,0.08)`. Bundle cards with the gradient border. Engine elevation 13 tinted with `color-action-default`.
+- `--igd-shadow-action-md`: `0 7px 8px -4px rgba(36,98,234,0.26), 0 13px 19px 2px rgba(36,98,234,0.12), 0 5px 24px 4px rgba(36,98,234,0.08)`. Bundle cards with the gradient border. Engine elevation 13 tinted with `color-action-default`.
 - `--igd-callout-release-shadow`: `inset 0 0 0 1px rgba(0,153,255,0.12), 0 7px 8px -4px rgba(36,98,234,0.26), 0 13px 19px 2px rgba(36,98,234,0.12), 0 5px 24px 4px rgba(36,98,234,0.08)`. Release strip at rest. Engine elevation 13 tinted with `color-action-default`.
 - `--igd-callout-release-shadow-hover`: `inset 0 0 0 1px rgba(0,153,255,0.25), 0 8px 10px -5px rgba(36,98,234,0.26), 0 16px 24px 2px rgba(36,98,234,0.12), 0 6px 30px 5px rgba(36,98,234,0.08)`. Release strip on hover. Engine elevation 16 tinted with `color-action-default`.
-- `--igd-shadow-glass`: `0 24px 50px -12px rgba(0,0,0,0.6)`. Dark glass chips over a screenshot, with `color-surface-inverse-glass`.
+- `--igd-shadow-chip`: `0 24px 50px -12px rgba(0,0,0,0.6)`. Dark glass chips over a screenshot, with `color-surface-inverse-chip`.
 - `--igd-shadow-popover`: `0 26px 50px -22px rgba(15,23,42,0.22)`. Dropdown menus and popovers.
 - `--igd-shadow-panel`: `0 -2px 8px 0 rgba(15,23,42,0.04), 0 18px 40px -12px rgba(15,23,42,0.28), 0 40px 80px -24px rgba(15,23,42,0.3)`. Open nav panel.
 - `--igd-shadow-popover-filter`: `drop-shadow(0 10px 13px rgba(0,0,0,0.26)) drop-shadow(0 20px 31px rgba(0,0,0,0.12)) drop-shadow(0 8px 38px rgba(0,0,0,0.08))`. Open nav panel — the flared panel outline needs a `filter`, so this is engine elevation 20 expressed as drop-shadow() layers (spread dropped).
@@ -300,7 +300,7 @@ Alpha steps for translucent colours; combined with a colour token as hsl(from <c
 - `--igd-opacity-strong`: `0.25`. Capsule borders and scrims.
 - `--igd-opacity-heavy`: `0.4`. Emphasis borders and strong glows.
 - `--igd-opacity-field`: `0.6`. Input fill on the dark footer.
-- `--igd-opacity-glass`: `0.82`. Dark chips over a screenshot.
+- `--igd-opacity-chip`: `0.82`. Dark chips over a screenshot.
 - `--igd-opacity-nav`: `0.96`. Sticky nav background.
 - `--igd-opacity-disabled`: `0.45`. Disabled controls.
 
@@ -320,11 +320,11 @@ Gradients and ambient glows. Three uses only: clipped headline text, the hero wa
 - `--igd-footer-background-gradient`: `linear-gradient(155deg, #1c2435 0%, #121a2c 42%, #070e1d 100%)`. The site footer’s own 155° gradient — one of the two dark surfaces in the system.
 - `--igd-gradient-brand`: `linear-gradient(92deg, #0099ff, #9810fa)`. The 92° blue→violet, clipped to one headline fragment per section. Never a background fill, button or tile.
 - `--igd-gradient-hero`: `linear-gradient(180deg, #f7f7f7, #ffffff)`. The hero wash behind the homepage hero.
-- `--igd-glow-primary`: `radial-gradient(circle, rgba(0,153,255,0.16), transparent 62%)`. Ambient radial glow behind hero and section content, bleeding off the edges, `pointer-events:none`.
-- `--igd-glow-secondary`: `radial-gradient(circle, rgba(152,16,250,0.16), transparent 62%)`. Ambient radial glow partnered with `glow-primary` on light sections.
-- `--igd-glow-secondary-strong`: `radial-gradient(circle, rgba(152,16,250,0.4), transparent 62%)`. Footer glow only (top-right of the dark footer).
+- `--igd-glow-brand`: `radial-gradient(circle, rgba(0,153,255,0.16), transparent 62%)`. Ambient radial glow behind hero and section content, bleeding off the edges, `pointer-events:none`.
+- `--igd-glow-ai`: `radial-gradient(circle, rgba(152,16,250,0.16), transparent 62%)`. Ambient radial glow partnered with `glow-brand` on light sections.
+- `--igd-glow-footer`: `radial-gradient(circle, rgba(152,16,250,0.4), transparent 62%)`. Footer glow only (top-right of the dark footer).
 - `--igd-glow-inverse`: `radial-gradient(circle, rgba(226,59,143,0.16), transparent 62%)`. Ambient glow for the dark AI and enterprise bands only.
-- `--igd-glow-inverse-alt`: `radial-gradient(circle, rgba(60,195,177,0.12), transparent 68%)`. Ambient glow for the dark AI and enterprise bands and the footer.
+- `--igd-glow-inverse-partner`: `radial-gradient(circle, rgba(60,195,177,0.12), transparent 68%)`. Ambient glow for the dark AI and enterprise bands and the footer.
 
 ## Breakpoint
 
@@ -355,12 +355,12 @@ Each role has `--igd-type-<role>-font-family`, `-font-size`, `-font-weight`, `-l
 - `display-lg`: 3.25rem, fluid from 2.25rem, line height 1.12, weight 900; 2.25rem in the docs set. Homepage hero only, in `color-text-heading`. Engine slot `h1`.
 - `display-md`: 2.6875rem, fluid from 1.875rem, line height 1.06, weight 800; 1.5rem in the docs set. Section heads, in `color-text-heading`. Engine slot `h2`.
 - `display-sm`: 1.4375rem, fluid from 1.25rem, line height 1.2, weight 800; 1.25rem in the docs set. Sub-section and panel heads; `color-text-inverse` on dark. There is no h7. Engine slot `h3`.
-- `stat`: 1.625rem, line height 1.1, weight 800; 1.125rem in the docs set. Stat badge values: `color-accent-inverse` or `color-accent-inverse-alt` on `color-surface-inverse`, `color-text-muted` on light; newsletter title. Engine slot `h4`.
+- `stat`: 1.625rem, line height 1.1, weight 800; 1.125rem in the docs set. Stat badge values: `color-accent-inverse` or `color-accent-inverse-performance` on `color-surface-inverse`, `color-text-muted` on light; newsletter title. Engine slot `h4`.
 - `title-md`: 1.125rem, line height 1.3, weight 800; 1rem in the docs set. Product names in a catalog card, in `color-text-heading`. Engine slot `h5`.
 - `title-sm`: 1rem, line height 1.4, weight 600; 0.875rem in the docs set. Card titles, sentence case, in `color-text-heading` — body face, not the display face. Engine slot `h6`.
-- `lead`: 1.1875rem, fluid from 1.0625rem, line height 1.6, weight 400; 1rem in the docs set. Lead under an h1 or h2, in `color-text-secondary`. Engine slot `subtitle-1`.
+- `lead`: 1.1875rem, fluid from 1.0625rem, line height 1.6, weight 400; 1rem in the docs set. Lead under an h1 or h2, in `color-text-body`. Engine slot `subtitle-1`.
 - `label-lg`: 1.0625rem, line height 1.5, weight 700; 0.875rem in the docs set. Hero button label and callout titles. Engine slot `subtitle-2`.
-- `body-lg`: 1rem, line height 1.62, weight 400; 1rem in the docs set. Running prose, in `color-text-secondary`. Engine slot `body-1`.
+- `body-lg`: 1rem, line height 1.62, weight 400; 1rem in the docs set. Running prose, in `color-text-body`. Engine slot `body-1`.
 - `body-md`: 0.9375rem, line height 1.5, weight 400; 0.875rem in the docs set. Nav, buttons and list rows, in `color-text-ui`. Engine slot `body-2`.
 - `label-md`: 0.9375rem, line height 1.5, weight 600; 1rem in the docs set. Button and CTA labels. Engine slot `button`.
 - `body-sm`: 0.875rem, line height 1.55, weight 400; 0.75rem in the docs set. Captions, card descriptions and table detail copy. Engine slot `caption`.
@@ -384,8 +384,8 @@ Fonts, motion, layout and the theme switch. They are custom properties of `token
       clamp(0, var(--ig-size-large, 3) - var(--igd-component-size, 1), 1)
   )`
 - `--igd-is-small`: `clamp(0, var(--ig-size-medium, 2) - var(--igd-component-size, 1), 1)`
-- `--igd-gradient-border-bundle`: `linear-gradient(var(--igd-color-surface-card), var(--igd-color-surface-card)) padding-box, linear-gradient(135deg, var(--igd-color-accent-primary), var(--igd-color-accent-secondary)) border-box`
-- `--igd-gradient-emphasis`: `linear-gradient(180deg, hsl(from var(--igd-color-accent-primary) h s l / var(--igd-opacity-subtle)), hsl(from var(--igd-color-accent-inverse) h s l / var(--igd-opacity-faint)))`
+- `--igd-gradient-border-bundle`: `linear-gradient(var(--igd-color-surface-card), var(--igd-color-surface-card)) padding-box, linear-gradient(135deg, var(--igd-color-accent-brand), var(--igd-color-accent-ai)) border-box`
+- `--igd-gradient-emphasis`: `linear-gradient(180deg, hsl(from var(--igd-color-accent-brand) h s l / var(--igd-opacity-subtle)), hsl(from var(--igd-color-accent-inverse) h s l / var(--igd-opacity-faint)))`
 - `--igd-footer-card-background`: `linear-gradient(180deg, hsl(from var(--igd-color-text-inverse) h s l / var(--igd-opacity-faint)), transparent)`
 - `--igd-container-gutter`: `clamp(var(--igd-space-lg), 4vw, var(--igd-space-4xl))`
 - `--igd-space-section`: `clamp(var(--igd-space-5xl), calc(3.4783cqi + 3.2174rem), var(--igd-space-6xl))`

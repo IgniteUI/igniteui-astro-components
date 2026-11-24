@@ -113,7 +113,7 @@
 
     padding-inline-start: calc(#{rem(26px)} + #{rem(16px)});
     margin-block-start: var(--igd-space-stack-md);
-    color: var(--igd-color-text-secondary);
+    color: var(--igd-color-text-body);
   }
 
   .igd-search-refine-hint {
@@ -123,7 +123,7 @@
 
     padding-inline-start: calc(#{rem(26px)} + #{rem(16px)});
     margin-block-start: var(--igd-space-stack-md);
-    color: var(--igd-color-text-secondary);
+    color: var(--igd-color-text-body);
   }
 
   igc-divider {

@@ -48,7 +48,7 @@
         margin-block-end: var(--igd-space-stack-2xs);
         line-height: 1;
       }
-      color: var(--igd-color-text-primary);
+      color: var(--igd-color-text-strong);
     }
 
     .igd-logo__platform {
@@ -110,7 +110,7 @@
     background: var(--igd-color-surface-muted);
     padding: var(--igd-space-inset-3xs) var(--igd-space-inset-xs);
     aspect-ratio: 1;
-    border-radius: var(--igd-radius-xs);
+    border-radius: var(--igd-radius-control);
     margin-inline-start: var(--igd-space-gap-xs);
     font-size: 12px;
   }

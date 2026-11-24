@@ -84,7 +84,7 @@
       margin-block-start: var(--igd-space-stack-xl);
     }
 
-    color: var(--igd-color-text-primary);
+    color: var(--igd-color-text-strong);
 
     padding: var(--igd-page-padding);
     min-width: 0;
@@ -119,7 +119,7 @@
       }
 
       background-color: var(--igd-color-surface-muted);
-      color: var(--igd-color-text-primary);
+      color: var(--igd-color-text-strong);
       box-shadow: none;
       border: rem(1px) solid var(--igd-color-border-default);
     }
@@ -131,7 +131,7 @@
         line-height: normal;
       }
 
-      border-radius: var(--igd-radius-xs);
+      border-radius: var(--igd-radius-control);
       color: var(--igd-color-text-heading);
       background: var(--igd-color-surface-muted);
       border: rem(1px) solid var(--igd-color-border-default);
@@ -197,7 +197,7 @@
     iframe:not(.igd-code-view iframe) {
       border: rem(1px) solid var(--igd-color-border-default);
       margin-block-end: var(--igd-space-stack-xl);
-      border-radius: var(--igd-radius-sm);
+      border-radius: var(--igd-radius-badge);
     }
 
     // <ul> that is not inside <li>
@@ -307,7 +307,7 @@
       align-items: start;
       grid-template-columns: auto 1fr;
       gap: var(--igd-space-gap-xs);
-      color: var(--igd-color-accent-secondary);
+      color: var(--igd-color-accent-ai);
       margin-block-end: var(--igd-space-stack-xl);
 
       a {
@@ -339,7 +339,7 @@
     h4,
     h5,
     h6 {
-      color: var(--igd-color-text-primary);
+      color: var(--igd-color-text-strong);
     }
 
     .igd-anchor-link {
@@ -430,7 +430,7 @@
 
       padding-block-start: var(--igd-space-inset-xs);
       margin-block-end: var(--igd-space-stack-xl);
-      color: var(--igd-color-text-secondary);
+      color: var(--igd-color-text-body);
       text-align: center;
     }
 
@@ -464,7 +464,7 @@
         margin: 0;
       }
 
-      color: var(--igd-color-text-secondary);
+      color: var(--igd-color-text-body);
     }
 
     // Responsive video / iframe embeds
@@ -529,7 +529,7 @@
       padding: rem(6px) var(--igd-space-inset-md);
       border-bottom: rem(2px) solid transparent;
       margin-inline-end: var(--igd-space-gap-2xs);
-      color: var(--igd-color-text-secondary);
+      color: var(--igd-color-text-body);
 
       &:hover {
         color: var(--igd-color-text-heading);

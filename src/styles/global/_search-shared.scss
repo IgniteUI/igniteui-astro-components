@@ -224,7 +224,7 @@
       width: 90%;
       max-width: rem(672px);
       max-height: var(--_mh);
-      border-radius: var(--igd-radius-sm);
+      border-radius: var(--igd-radius-badge);
 
       overflow: hidden;
 
@@ -326,7 +326,7 @@
       from var(--rot) at 50% 50%,
       var(--igd-accent) -56.25deg,
       var(--igd-accent) 43.12deg,
-      var(--igd-color-accent-secondary) 180deg,
+      var(--igd-color-accent-ai) 180deg,
       var(--igd-accent) 303.75deg,
       var(--igd-accent) 403.12deg
     );

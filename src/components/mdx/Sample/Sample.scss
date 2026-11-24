@@ -29,7 +29,7 @@ igc-tabs {
   .igd-code-view__header-actions {
     border-block: rem(1px) solid var(--igd-color-border-default);
   }
-  border-radius: var(--igd-radius-xs) var(--igd-radius-xs) 0 0;
+  border-radius: var(--igd-radius-control) var(--igd-radius-control) 0 0;
 
   .igd-sample-container {
     border-inline: none;
@@ -111,7 +111,7 @@ igc-tab::part(tab-header) {
 .igd-code-view {
   width: 100%;
   border: rem(1px) solid var(--igd-color-border-default);
-  border-radius: var(--igd-radius-xs);
+  border-radius: var(--igd-radius-control);
   margin-block-end: var(--igd-space-stack-xl);
 
   .igd-sample-container {
@@ -131,12 +131,12 @@ igc-tab::part(tab-header) {
     flex: 1 1 0;
     min-width: 0;
     border: none;
-    border-radius: var(--igd-radius-xs) var(--igd-radius-xs) 0 0;
+    border-radius: var(--igd-radius-control) var(--igd-radius-control) 0 0;
   }
 
   // Without a theme picker there is no footer, so the pane takes all four corners.
   &:not(:has(.igd-code-view__footer-actions)) .igd-sample-container {
-    border-radius: var(--igd-radius-xs);
+    border-radius: var(--igd-radius-control);
   }
 }
 

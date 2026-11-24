@@ -35,7 +35,7 @@ Before opening a PR run what CI runs: `npm run format:check`, `npm test`, `npm r
 ## Conventions
 
 - A component you add or change gets `interface Props` at the top of its `.astro` file with a JSDoc line per prop, and its README lists the same props. Leave other files as they are (6 of 28 have it today).
-- Colours, spacing and fonts come from `--igd-*` custom properties; never hard-code them. A colour is a semantic design system token (`--igd-color-text-primary`, `--igd-color-border-default`), not a raw palette step (`--ig-gray-700`) and not a `light-dark()` pair of steps.
+- Colours, spacing and fonts come from `--igd-*` custom properties; never hard-code them. A colour is a semantic design system token (`--igd-color-text-strong`, `--igd-color-border-default`), not a raw palette step (`--ig-gray-700`) and not a `light-dark()` pair of steps.
 - The root element of a component carries `data-ig-scope`, so a design system dial (`--ig-size`, `--ig-spacing`, `--ig-radius-factor`, `--ig-elevation-factor`) set on any ancestor reaches it. `tests/components/design-system-scope.test.ts` checks every component and lists the exceptions with the reason for each.
 - Formatting is Prettier's; the pre-commit hook formats staged files, so do not reformat files you did not change.
 - Commits: Conventional Commits with a scope, e.g. `feat(sample): …`, `fix(styles): …`, `docs: …`, `chore(github): …`. Branches: `<user>/<topic>`. Base branch: `master`.
@@ -47,7 +47,7 @@ Colours, type, spacing, radii and shadows come from the shared Infragistics desi
 
 Before writing or changing a style, read `src/styles/design-system/llms.txt`: the rules, and one component written to them. Every token with its value and use is in `llms-full.txt` next to it. The rules that matter most here:
 
-- Read a semantic token (`--igd-color-text-primary`), never a palette step (`--ig-gray-700`).
+- Read a semantic token (`--igd-color-text-strong`), never a palette step (`--ig-gray-700`).
 - Padding takes `--igd-space-inset-*`, vertical margins `--igd-space-stack-*`, gaps and inline margins `--igd-space-gap-*`.
 - Text in the action colour is `--igd-color-action-text`; `--igd-color-action-default` is for fills, with `--igd-color-action-on` as the label.
 - Widths, heights and offsets are not tokens. Type them.

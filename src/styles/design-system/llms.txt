@@ -6,8 +6,6 @@ One design system for the Infragistics sites. The marketing site and igniteui-as
 
 ## Using it in a site
 
-The package is not on npm yet. Until the first release, copy `dist/` from this repository. After it:
-
 ```sh
 npm install ig-design-system
 ```
@@ -23,7 +21,7 @@ A documentation site puts `data-igd-type="docs"` on `<html>` for the smaller typ
 
 ## Rules for code that uses the tokens
 
-- Read a semantic token, `var(--igd-color-text-primary)`. Never read a palette step, `var(--ig-gray-700)`, and never declare one.
+- Read a semantic token, `var(--igd-color-text-strong)`. Never read a palette step, `var(--ig-gray-700)`, and never declare one.
 - A custom property is `--igd-*` when the design system defines it and `--ig-*` only when the `igniteui-theming` engine emits that exact name.
 - Padding uses `--igd-space-inset-*`, vertical margins `--igd-space-stack-*`, gaps and inline margins `--igd-space-gap-*`. Not the raw step `--igd-space-md`.
 - A colour has one value per theme. Do not write `light-dark()` pairs of palette steps; the token already switches.
@@ -75,13 +73,13 @@ The same in every framework and every repository: plain HTML, Astro, React, Angu
     gap: var(--igd-space-gap-sm);
     padding: var(--igd-space-inset-lg);
     border: var(--igd-border-width-default) solid var(--igd-color-border-default);
-    border-radius: var(--igd-radius-lg);
+    border-radius: var(--igd-radius-card);
     background: var(--igd-color-surface-card);
-    color: var(--igd-color-text-primary);
+    color: var(--igd-color-text-strong);
   }
 
   .card:hover {
-    box-shadow: var(--igd-shadow-raised);
+    box-shadow: var(--igd-shadow-card-hover);
   }
 
   .card__title {

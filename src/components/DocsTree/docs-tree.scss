@@ -93,7 +93,7 @@ igc-tree[data-variant='sidebar'] {
     --igc-tree-indentation-size: var(--docs-tree-indent);
 
     &::part(wrapper) {
-      border-radius: var(--igd-radius-xs);
+      border-radius: var(--igd-radius-control);
     }
 
     // The label part is `width: 100%`, which would otherwise make the
@@ -186,18 +186,18 @@ igc-tree[data-variant='toc'] {
 igc-tree-item {
   --igc-tree-indentation-size: 0;
   --background: transparent;
-  --foreground: var(--igd-color-text-secondary);
+  --foreground: var(--igd-color-text-body);
   --background-selected: transparent;
   --background-active: transparent;
-  --foreground-active: var(--igd-color-text-secondary);
-  --foreground-hover: var(--igd-color-text-secondary);
+  --foreground-active: var(--igd-color-text-body);
+  --foreground-hover: var(--igd-color-text-body);
   --hover-background: var(--igd-color-surface-muted);
   --background-disabled: transparent;
   --hover-color: transparent;
   --hover-selected-color: transparent;
   --background-active-selected: transparent;
   --foreground-selected: transparent;
-  --foreground-active-selected: var(--igd-color-text-secondary);
+  --foreground-active-selected: var(--igd-color-text-body);
   //--ig-tree-size: #{rem(32px)};
 
   a {
@@ -289,7 +289,7 @@ igc-tree-item[aria-expanded='false'] > [slot='label'] {
 igc-tree-item[aria-expanded='true'] > [slot='label'] {
   .tree-expand-icon {
     transform: rotate(0deg);
-    color: var(--igd-color-text-primary);
+    color: var(--igd-color-text-strong);
   }
 }
 
