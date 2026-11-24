@@ -56,6 +56,10 @@ A modifier the chrome ignores, or a `chrome` value that is not one of the three,
 
 As in 1.x, `iframeOnly` wins over `hideCode`. A valid `chrome` wins over both, and the warning says the deprecated prop is ignored. A `chrome` that is not one of the three is ignored itself, so the deprecated prop still applies.
 
+## Clicks beside the demo
+
+The iframe does not always fill the sample area: `position` leaves slack around it, `spacing` pads it, and a centered `fitContent` iframe has margins beside it. A `click` or `pointerdown` on that empty part of the area is forwarded to a same-origin demo as an untrusted event on its `<html>` element, so the demo's outside-click handling runs and open popups (a picker, a dropdown, a combo) close. The forwarded event carries no coordinates. A cross-origin demo cannot be reached, so its behavior is unchanged.
+
 ## Examples
 
 ```mdx

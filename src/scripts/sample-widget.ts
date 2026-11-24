@@ -983,6 +983,56 @@ function initResizableSamples(): void {
     .forEach(wireResizable);
 }
 
+// ─── Click forwarding ───────────────────────────────────────────────────────────
+
+/**
+ * Forwards a `pointerdown` or `click` on the container's empty area to a
+ * same-origin demo's `<html>` element.
+ */
+function wireClickForwarding(container: HTMLElement): void {
+  if (container.dataset.clickForwardingWired) return;
+  container.dataset.clickForwardingWired = 'true';
+
+  const forward = (event: MouseEvent): void => {
+    if (event.target !== container) return;
+    const iframe = container.querySelector('iframe');
+    let doc: Document | null = null;
+    try {
+      doc = iframe?.contentDocument ?? null;
+    } catch {
+      // A cross-origin demo cannot be reached.
+    }
+    const win = iframe?.contentWindow as (Window & typeof globalThis) | null | undefined;
+    if (!doc?.documentElement || !win) return;
+
+    const init = {
+      bubbles: true,
+      composed: true,
+      cancelable: true,
+      view: win,
+      button: event.button,
+      buttons: event.buttons,
+    };
+    doc.documentElement.dispatchEvent(
+      event.type === 'pointerdown'
+        ? new win.PointerEvent('pointerdown', {
+            ...init,
+            pointerId: 1,
+            pointerType: 'mouse',
+            isPrimary: true,
+          })
+        : new win.MouseEvent('click', init),
+    );
+  };
+
+  container.addEventListener('pointerdown', forward);
+  container.addEventListener('click', forward);
+}
+
+function initClickForwarding(): void {
+  document.querySelectorAll<HTMLElement>('.igd-sample-container').forEach(wireClickForwarding);
+}
+
 // ─── Entry Point ──────────────────────────────────────────────────────────────
 
 /**
@@ -1000,6 +1050,9 @@ export function initSampleWidgets(): void {
 
   // Wire resizable samples so their drag handle / arrow keys work immediately.
   initResizableSamples();
+
+  // Forward clicks on the empty sample area to same-origin demos.
+  initClickForwarding();
 
   // Kick off the Shiki download immediately so it is ready before the user
   // opens a code tab (tabs appear only after an IntersectionObserver fires
