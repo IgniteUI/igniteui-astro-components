@@ -338,6 +338,25 @@ function addCodeTab(igcTabs: HTMLElement, file: SampleFile, useFileName = false)
 
 // ─── Footer / Live Edit Buttons ───────────────────────────────────────────────
 
+/**
+ * The URL that "Open in full screen" opens. A sample opened in its own tab gets
+ * no `igd-sample-theme` message, so the theme picker's selection travels as the
+ * `igd-theme` and `igd-mode` query parameters instead; sample browsers apply
+ * them when they are not in an iframe. Without a theme the URL is unchanged.
+ */
+function getFullscreenHref(iframeSrc: string, theme?: string, mode?: string): string {
+  if (!iframeSrc || !theme) return iframeSrc;
+  try {
+    const url = new URL(iframeSrc, window.location.origin);
+    url.searchParams.set('igd-theme', theme);
+    if (mode) url.searchParams.set('igd-mode', mode);
+    else url.searchParams.delete('igd-mode');
+    return url.href;
+  } catch {
+    return iframeSrc;
+  }
+}
+
 function addFooter(
   widget: HTMLElement,
   iframeSrc: string,
@@ -393,7 +412,9 @@ function addFooter(
     fsBtn.setAttribute('aria-label', 'Open in full screen');
     fsBtn.className = 'igd-full-screen-btn igd-edit-in-btn';
     if (iframeSrc) {
-      fsBtn.setAttribute('href', iframeSrc);
+      const picker = themingBar?.querySelector<HTMLElement>('.igd-theming');
+      const mode = picker?.dataset.resolvedMode || picker?.dataset.mode;
+      fsBtn.setAttribute('href', getFullscreenHref(iframeSrc, picker?.dataset.theme, mode));
       fsBtn.setAttribute('target', '_blank');
     }
     actions.appendChild(fsBtn);
@@ -1146,10 +1167,17 @@ export function initSampleWidgets(): void {
         const reflectMode = (mode?: string) => {
           if (samplePane) samplePane.dataset.igdMode = mode || '';
         };
+        // Keeps "Open in full screen" on the selection the embedded demo has.
+        const syncFullscreen = (theme?: string, mode?: string) => {
+          widget
+            .querySelector<HTMLElement>('.igd-full-screen-btn')
+            ?.setAttribute('href', getFullscreenHref(iframeSrc, theme, mode));
+        };
         themingBar.addEventListener('igd-theme-change', (e: Event) => {
           const detail = (e as CustomEvent<{ theme: string; mode: string }>).detail;
           postTheme(detail?.theme, detail?.mode);
           reflectMode(detail?.mode);
+          syncFullscreen(detail?.theme, detail?.mode);
         });
         // Send the current (possibly persisted) selection once the sample
         // loads. `resolvedMode` is the widget's `system` selection already
@@ -1159,6 +1187,7 @@ export function initSampleWidgets(): void {
           const mode = themingRoot?.dataset.resolvedMode || themingRoot?.dataset.mode;
           postTheme(themingRoot?.dataset.theme, mode);
           reflectMode(mode);
+          syncFullscreen(themingRoot?.dataset.theme, mode);
         });
       }
 
