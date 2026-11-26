@@ -84,7 +84,7 @@
       margin-block-start: var(--igd-space-stack-xl);
     }
 
-    color: var(--igd-color-text-strong);
+    color: var(--igd-color-foreground-default);
 
     padding: var(--igd-page-padding);
     min-width: 0;
@@ -118,8 +118,8 @@
         margin: 0;
       }
 
-      background-color: var(--igd-color-surface-muted);
-      color: var(--igd-color-text-strong);
+      background-color: var(--igd-color-background-subtle);
+      color: var(--igd-color-foreground-default);
       box-shadow: none;
       border: rem(1px) solid var(--igd-color-border-default);
     }
@@ -132,8 +132,8 @@
       }
 
       border-radius: var(--igd-radius-control);
-      color: var(--igd-color-text-heading);
-      background: var(--igd-color-surface-muted);
+      color: var(--igd-color-foreground-heading);
+      background: var(--igd-color-background-subtle);
       border: rem(1px) solid var(--igd-color-border-default);
     }
 
@@ -149,7 +149,7 @@
       color: inherit;
 
       ::marker {
-        color: var(--igd-color-action-text);
+        color: var(--igd-color-foreground-action);
       }
 
       li {
@@ -165,7 +165,7 @@
         padding-block: var(--igd-space-inset-2xs);
 
         ::marker {
-          color: var(--igd-color-action-text);
+          color: var(--igd-color-foreground-action);
         }
 
         > .astro-code,
@@ -216,7 +216,7 @@
       padding-inline-start: 0;
 
       dt {
-        color: var(--igd-color-text-heading);
+        color: var(--igd-color-foreground-heading);
       }
 
       dd {
@@ -266,7 +266,7 @@
       &:focus {
         code {
           color: var(--igd-accent);
-          border-color: var(--igd-color-border-accent);
+          border-color: var(--igd-color-border-action);
         }
       }
     }
@@ -297,7 +297,7 @@
         white-space: nowrap;
       }
 
-      border: 1px solid var(--igd-color-action-default);
+      border: 1px solid var(--igd-color-background-action);
       padding: var(--igd-space-inset-xs) var(--igd-space-inset-md);
       border-radius: var(--igd-border-radius);
 
@@ -339,7 +339,7 @@
     h4,
     h5,
     h6 {
-      color: var(--igd-color-text-strong);
+      color: var(--igd-color-foreground-default);
     }
 
     .igd-anchor-link {
@@ -349,18 +349,18 @@
 
       // igc-icon-button internal sizing
       --ig-size: 1;
-      --foreground: var(--igd-color-action-text);
-      --background: var(--igd-color-surface-tint);
-      --border-color: var(--igd-color-border-accent);
+      --foreground: var(--igd-color-foreground-action);
+      --background: var(--igd-color-background-tint);
+      --border-color: var(--igd-color-border-action);
 
-      --hover-foreground: var(--igd-color-action-text);
-      --hover-background: var(--igd-color-surface-tint);
+      --hover-foreground: var(--igd-color-foreground-action);
+      --hover-background: var(--igd-color-background-tint);
 
-      --focus-foreground: var(--igd-color-action-text);
-      --focus-background: var(--igd-color-surface-tint);
+      --focus-foreground: var(--igd-color-foreground-action);
+      --focus-background: var(--igd-color-background-tint);
 
-      --active-foreground: var(--igd-color-action-text);
-      --active-background: var(--igd-color-surface-tint);
+      --active-foreground: var(--igd-color-foreground-action);
+      --active-background: var(--igd-color-background-tint);
 
       &::part(focused) {
         &:after {
@@ -430,7 +430,7 @@
 
       padding-block-start: var(--igd-space-inset-xs);
       margin-block-end: var(--igd-space-stack-xl);
-      color: var(--igd-color-text-body);
+      color: var(--igd-color-foreground-subtle);
       text-align: center;
     }
 
@@ -464,7 +464,7 @@
         margin: 0;
       }
 
-      color: var(--igd-color-text-body);
+      color: var(--igd-color-foreground-subtle);
     }
 
     // Responsive video / iframe embeds
@@ -529,10 +529,10 @@
       padding: rem(6px) var(--igd-space-inset-md);
       border-bottom: rem(2px) solid transparent;
       margin-inline-end: var(--igd-space-gap-2xs);
-      color: var(--igd-color-text-body);
+      color: var(--igd-color-foreground-subtle);
 
       &:hover {
-        color: var(--igd-color-text-heading);
+        color: var(--igd-color-foreground-heading);
       }
     }
 

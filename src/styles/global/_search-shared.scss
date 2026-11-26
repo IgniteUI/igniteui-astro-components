@@ -46,7 +46,7 @@
     padding: 0 var(--igd-space-inset-md) var(--igd-space-inset-md) var(--igd-space-inset-md);
     border-bottom: rem(1px) solid var(--igd-color-border-default);
     text-align: center;
-    color: var(--igd-color-text-muted);
+    color: var(--igd-color-foreground-faint);
 
     &:empty {
       display: none;
@@ -73,7 +73,7 @@
     igc-list-item {
       --item-border-radius: 0;
       --item-background: transparent;
-      --item-background-hover: var(--igd-color-surface-subtle);
+      --item-background-hover: var(--igd-color-background-subtle);
       --item-background-focus: transparent;
       --item-background-active: transparent;
       --border-color: transparent;
@@ -125,7 +125,7 @@
       margin: 0;
     }
 
-    color: var(--igd-color-text-heading);
+    color: var(--igd-color-foreground-heading);
 
     mark {
       background: transparent;
@@ -141,7 +141,7 @@
       margin: 0;
     }
 
-    color: var(--igd-color-text-muted);
+    color: var(--igd-color-foreground-faint);
 
     mark {
       background: transparent;
@@ -157,8 +157,8 @@
     margin-inline-end: var(--igd-space-gap-xs);
     padding: var(--igd-space-inset-2xs);
     border-radius: rem(2px);
-    color: var(--igd-color-text-ui);
-    background: var(--igd-color-surface-muted);
+    color: var(--igd-color-foreground-control);
+    background: var(--igd-color-background-subtle);
   }
 
   // Category header (above each result list in the All tab)
@@ -169,7 +169,7 @@
     }
 
     display: inline-block;
-    color: var(--igd-color-text-heading);
+    color: var(--igd-color-foreground-heading);
     padding-inline: var(--igd-space-inset-md);
     margin-block-end: var(--igd-space-stack-xs);
   }
@@ -209,7 +209,7 @@
   }
 
   .igd-search-meta {
-    color: var(--igd-color-text-heading);
+    color: var(--igd-color-foreground-heading);
   }
 
   // Dialog chrome — shared by both Search and SearchAdvanced
@@ -291,11 +291,11 @@
   }
 
   .igd-search-clear {
-    --foreground: var(--igd-color-text-heading);
-    --hover-foreground: var(--igd-color-text-heading);
-    --focus-hover-foreground: var(--igd-color-text-heading);
-    --focus-foreground: var(--igd-color-text-heading);
-    --active-foreground: var(--igd-color-text-heading);
+    --foreground: var(--igd-color-foreground-heading);
+    --hover-foreground: var(--igd-color-foreground-heading);
+    --focus-hover-foreground: var(--igd-color-foreground-heading);
+    --focus-foreground: var(--igd-color-foreground-heading);
+    --active-foreground: var(--igd-color-foreground-heading);
     --shadow-color: transparent;
     --background: transparent;
     --hover-background: transparent;
@@ -317,7 +317,7 @@
   }
 
   .igd-search-icon {
-    color: var(--igd-color-text-heading);
+    color: var(--igd-color-foreground-heading);
     padding-inline: var(--igd-space-inset-sm) rem(0);
   }
 
@@ -372,7 +372,7 @@
     gap: var(--igd-space-gap-2xs);
     align-items: center;
     background: transparent;
-    color: var(--igd-color-icon-subtle);
+    color: var(--igd-color-foreground-decorative);
     font-size: inherit;
     padding-inline: var(--igd-space-inset-md);
     box-shadow: none;

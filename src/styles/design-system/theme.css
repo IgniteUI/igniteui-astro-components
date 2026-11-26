@@ -391,9 +391,9 @@
 }
 /* elevations tinted with the action colour: the engine's indigo preset compiled with its $color-1..3, published under the design system's own names */
 :root, [data-ig-scope], [data-theme] {
-  --igd-elevation-tint-1: 0 calc(var(--ig-elevation-factor, 1) * 1px) calc(var(--ig-elevation-factor, 1) * 3px) 0 hsl(from var(--igd-color-action-default) h s l / 0.26), 0 calc(var(--ig-elevation-factor, 1) * 1px) calc(var(--ig-elevation-factor, 1) * 1px) 0 hsl(from var(--igd-color-action-default) h s l / 0.12), 0 calc(var(--ig-elevation-factor, 1) * 2px) calc(var(--ig-elevation-factor, 1) * 1px) calc(var(--ig-elevation-factor, 1) * -1px) hsl(from var(--igd-color-action-default) h s l / 0.08);
-  --igd-elevation-tint-13: 0 calc(var(--ig-elevation-factor, 1) * 7px) calc(var(--ig-elevation-factor, 1) * 8px) calc(var(--ig-elevation-factor, 1) * -4px) hsl(from var(--igd-color-action-default) h s l / 0.26), 0 calc(var(--ig-elevation-factor, 1) * 13px) calc(var(--ig-elevation-factor, 1) * 19px) calc(var(--ig-elevation-factor, 1) * 2px) hsl(from var(--igd-color-action-default) h s l / 0.12), 0 calc(var(--ig-elevation-factor, 1) * 5px) calc(var(--ig-elevation-factor, 1) * 24px) calc(var(--ig-elevation-factor, 1) * 4px) hsl(from var(--igd-color-action-default) h s l / 0.08);
-  --igd-elevation-tint-16: 0 calc(var(--ig-elevation-factor, 1) * 8px) calc(var(--ig-elevation-factor, 1) * 10px) calc(var(--ig-elevation-factor, 1) * -5px) hsl(from var(--igd-color-action-default) h s l / 0.26), 0 calc(var(--ig-elevation-factor, 1) * 16px) calc(var(--ig-elevation-factor, 1) * 24px) calc(var(--ig-elevation-factor, 1) * 2px) hsl(from var(--igd-color-action-default) h s l / 0.12), 0 calc(var(--ig-elevation-factor, 1) * 6px) calc(var(--ig-elevation-factor, 1) * 30px) calc(var(--ig-elevation-factor, 1) * 5px) hsl(from var(--igd-color-action-default) h s l / 0.08);
+  --igd-elevation-tint-1: 0 calc(var(--ig-elevation-factor, 1) * 1px) calc(var(--ig-elevation-factor, 1) * 3px) 0 hsl(from var(--igd-color-background-action) h s l / 0.26), 0 calc(var(--ig-elevation-factor, 1) * 1px) calc(var(--ig-elevation-factor, 1) * 1px) 0 hsl(from var(--igd-color-background-action) h s l / 0.12), 0 calc(var(--ig-elevation-factor, 1) * 2px) calc(var(--ig-elevation-factor, 1) * 1px) calc(var(--ig-elevation-factor, 1) * -1px) hsl(from var(--igd-color-background-action) h s l / 0.08);
+  --igd-elevation-tint-13: 0 calc(var(--ig-elevation-factor, 1) * 7px) calc(var(--ig-elevation-factor, 1) * 8px) calc(var(--ig-elevation-factor, 1) * -4px) hsl(from var(--igd-color-background-action) h s l / 0.26), 0 calc(var(--ig-elevation-factor, 1) * 13px) calc(var(--ig-elevation-factor, 1) * 19px) calc(var(--ig-elevation-factor, 1) * 2px) hsl(from var(--igd-color-background-action) h s l / 0.12), 0 calc(var(--ig-elevation-factor, 1) * 5px) calc(var(--ig-elevation-factor, 1) * 24px) calc(var(--ig-elevation-factor, 1) * 4px) hsl(from var(--igd-color-background-action) h s l / 0.08);
+  --igd-elevation-tint-16: 0 calc(var(--ig-elevation-factor, 1) * 8px) calc(var(--ig-elevation-factor, 1) * 10px) calc(var(--ig-elevation-factor, 1) * -5px) hsl(from var(--igd-color-background-action) h s l / 0.26), 0 calc(var(--ig-elevation-factor, 1) * 16px) calc(var(--ig-elevation-factor, 1) * 24px) calc(var(--ig-elevation-factor, 1) * 2px) hsl(from var(--igd-color-background-action) h s l / 0.12), 0 calc(var(--ig-elevation-factor, 1) * 6px) calc(var(--ig-elevation-factor, 1) * 30px) calc(var(--ig-elevation-factor, 1) * 5px) hsl(from var(--igd-color-background-action) h s l / 0.08);
 }
 
 /* ===== 2. live tokens (same names as tokens.json) ===== */
@@ -405,8 +405,8 @@
   --igd-shadow-screenshot: 0 calc(var(--ig-elevation-factor, 1) * 44px) calc(var(--ig-elevation-factor, 1) * 90px) calc(var(--ig-elevation-factor, 1) * -34px) rgba(15, 23, 42, 0.4);
   --igd-shadow-floating: 0 calc(var(--ig-elevation-factor, 1) * 16px) calc(var(--ig-elevation-factor, 1) * 32px) calc(var(--ig-elevation-factor, 1) * -12px) rgba(15, 23, 42, 0.4);
   --igd-shadow-action-md: var(--igd-elevation-tint-13);
-  --igd-callout-release-shadow: inset 0 0 0 var(--igd-border-width-default) var(--igd-color-emphasis-ring), var(--igd-elevation-tint-13);
-  --igd-callout-release-shadow-hover: inset 0 0 0 var(--igd-border-width-default) var(--igd-color-emphasis-ring-hover), var(--igd-elevation-tint-16);
+  --igd-callout-release-shadow: inset 0 0 0 var(--igd-border-width-default) var(--igd-release-strip-ring), var(--igd-elevation-tint-13);
+  --igd-callout-release-shadow-hover: inset 0 0 0 var(--igd-border-width-default) var(--igd-release-strip-ring-hover), var(--igd-elevation-tint-16);
   --igd-shadow-chip: 0 calc(var(--ig-elevation-factor, 1) * 24px) calc(var(--ig-elevation-factor, 1) * 50px) calc(var(--ig-elevation-factor, 1) * -12px) hsl(from var(--igd-color-shadow) h s l / 0.6);
   --igd-shadow-popover: 0 calc(var(--ig-elevation-factor, 1) * 26px) calc(var(--ig-elevation-factor, 1) * 50px) calc(var(--ig-elevation-factor, 1) * -22px) rgba(15, 23, 42, 0.22);
   --igd-shadow-panel: 0 calc(var(--ig-elevation-factor, 1) * -2px) calc(var(--ig-elevation-factor, 1) * 8px) calc(var(--ig-elevation-factor, 1) * 0px) rgba(15, 23, 42, 0.04), 0 calc(var(--ig-elevation-factor, 1) * 18px) calc(var(--ig-elevation-factor, 1) * 40px) calc(var(--ig-elevation-factor, 1) * -12px) rgba(15, 23, 42, 0.28), 0 calc(var(--ig-elevation-factor, 1) * 40px) calc(var(--ig-elevation-factor, 1) * 80px) calc(var(--ig-elevation-factor, 1) * -24px) rgba(15, 23, 42, 0.3);
@@ -436,50 +436,47 @@
   --igd-elevation-22: var(--ig-elevation-22);
   --igd-elevation-23: var(--ig-elevation-23);
   --igd-elevation-24: var(--ig-elevation-24);
-  --igd-footer-background-gradient: linear-gradient(155deg, var(--igd-color-surface-inverse-raised) 0%, #121a2c 42%, var(--igd-footer-background) 100%);
+  --igd-footer-background-gradient: linear-gradient(155deg, var(--igd-color-background-inverse-raised) 0%, #121a2c 42%, var(--igd-footer-background) 100%);
   --igd-gradient-brand: linear-gradient(92deg, var(--igd-color-accent-brand), var(--igd-color-accent-ai));
-  --igd-gradient-hero: linear-gradient(180deg, var(--igd-color-surface-hero), var(--igd-color-surface-page));
+  --igd-gradient-hero: linear-gradient(180deg, var(--igd-color-background-subtle), var(--igd-color-background-page));
   --igd-glow-brand: radial-gradient(circle, hsl(from var(--igd-color-accent-brand) h s l / var(--igd-opacity-muted)), transparent 62%);
   --igd-glow-ai: radial-gradient(circle, hsl(from var(--igd-color-accent-ai) h s l / var(--igd-opacity-muted)), transparent 62%);
   --igd-glow-footer: radial-gradient(circle, hsl(from var(--igd-color-accent-ai) h s l / var(--igd-opacity-heavy)), transparent 62%);
   --igd-glow-inverse: radial-gradient(circle, hsl(from var(--igd-tile-3) h s l / var(--igd-opacity-muted)), transparent 62%);
-  --igd-glow-inverse-partner: radial-gradient(circle, hsl(from var(--igd-color-accent-inverse-performance) h s l / var(--igd-opacity-soft)), transparent 68%);
-  --igd-color-action-subtle: hsl(from var(--igd-color-action-default) h s l / var(--igd-opacity-subtle));
-  --igd-color-action-subtle-border: hsl(from var(--igd-color-action-default) h s l / var(--igd-opacity-strong));
-  --igd-color-emphasis-border: hsl(from var(--igd-color-accent-brand) h s l / var(--igd-opacity-heavy));
-  --igd-color-emphasis-ring: hsl(from var(--igd-color-accent-brand) h s l / var(--igd-opacity-soft));
-  --igd-color-emphasis-ring-hover: hsl(from var(--igd-color-accent-brand) h s l / var(--igd-opacity-strong));
-  --igd-badge-oss-background: hsl(from var(--igd-badge-oss-color) h s l / var(--igd-opacity-soft));
-  --igd-badge-oss-border: hsl(from var(--igd-badge-oss-color) h s l / var(--igd-opacity-strong));
-  --igd-badge-new-background: hsl(from var(--igd-badge-new-color) h s l / var(--igd-opacity-soft));
-  --igd-badge-new-border: hsl(from var(--igd-badge-new-color) h s l / var(--igd-opacity-strong));
-  --igd-badge-updated-background: hsl(from var(--igd-badge-updated-color) h s l / var(--igd-opacity-soft));
-  --igd-badge-updated-border: hsl(from var(--igd-badge-updated-color) h s l / var(--igd-opacity-strong));
-  --igd-badge-preview-background: hsl(from var(--igd-badge-preview-color) h s l / var(--igd-opacity-soft));
-  --igd-badge-preview-border: hsl(from var(--igd-badge-preview-color) h s l / var(--igd-opacity-strong));
-  --igd-badge-premium-background: hsl(from var(--igd-badge-premium-color) h s l / var(--igd-opacity-soft));
-  --igd-badge-premium-border: hsl(from var(--igd-badge-premium-color) h s l / var(--igd-opacity-strong));
-  --igd-color-surface-tint-ai: hsl(from var(--igd-color-accent-ai) h s l / var(--igd-opacity-subtle));
-  --igd-color-surface-tint-category: hsl(from var(--igd-color-accent-inverse-performance) h s l / var(--igd-opacity-subtle));
-  --igd-color-surface-inverse-chip: hsl(from var(--igd-color-surface-inverse) h s l / var(--igd-opacity-chip));
-  --igd-color-feedback-info-surface: hsl(from var(--igd-color-feedback-info-default) h s l / var(--igd-opacity-subtle));
-  --igd-color-feedback-error-surface: hsl(from var(--igd-color-feedback-error-default) h s l / var(--igd-opacity-subtle));
-  --igd-color-feedback-success-surface: hsl(from var(--igd-color-feedback-success-default) h s l / var(--igd-opacity-subtle));
-  --igd-color-feedback-warning-surface: hsl(from var(--igd-color-feedback-warning-default) h s l / var(--igd-opacity-subtle));
-  --igd-nav-background: hsl(from var(--igd-color-surface-page) h s l / var(--igd-opacity-nav));
-  --igd-color-overlay-scrim: hsl(from var(--igd-color-surface-inverse) h s l / var(--igd-opacity-strong));
-  --igd-footer-rule: hsl(from var(--igd-color-text-inverse) h s l / var(--igd-opacity-subtle));
-  --igd-footer-rule-strong: hsl(from var(--igd-color-text-inverse) h s l / var(--igd-opacity-muted));
-  --igd-footer-card-border: hsl(from var(--igd-color-text-inverse) h s l / var(--igd-opacity-subtle));
-  --igd-footer-field-background: hsl(from var(--igd-color-text-inverse) h s l / var(--igd-opacity-subtle));
+  --igd-glow-inverse-partner: radial-gradient(circle, hsl(from var(--igd-color-accent-inverse-2) h s l / var(--igd-opacity-soft)), transparent 68%);
+  --igd-release-strip-border: hsl(from var(--igd-color-accent-brand) h s l / var(--igd-opacity-heavy));
+  --igd-release-strip-ring: hsl(from var(--igd-color-accent-brand) h s l / var(--igd-opacity-soft));
+  --igd-release-strip-ring-hover: hsl(from var(--igd-color-accent-brand) h s l / var(--igd-opacity-strong));
+  --igd-badge-oss-background: hsl(from var(--igd-badge-oss-foreground) h s l / var(--igd-opacity-soft));
+  --igd-badge-updated-background: hsl(from var(--igd-badge-updated-foreground) h s l / var(--igd-opacity-soft));
+  --igd-badge-updated-border: hsl(from var(--igd-badge-updated-foreground) h s l / var(--igd-opacity-strong));
+  --igd-badge-preview-background: hsl(from var(--igd-badge-preview-foreground) h s l / var(--igd-opacity-soft));
+  --igd-badge-preview-border: hsl(from var(--igd-badge-preview-foreground) h s l / var(--igd-opacity-strong));
+  --igd-badge-premium-background: hsl(from var(--igd-badge-premium-foreground) h s l / var(--igd-opacity-soft));
+  --igd-badge-premium-border: hsl(from var(--igd-badge-premium-foreground) h s l / var(--igd-opacity-strong));
+  --igd-badge-new-background: hsl(from var(--igd-badge-new-foreground) h s l / var(--igd-opacity-soft));
+  --igd-badge-new-border: hsl(from var(--igd-badge-new-foreground) h s l / var(--igd-opacity-strong));
+  --igd-color-background-category-2: hsl(from var(--igd-color-accent-ai) h s l / var(--igd-opacity-subtle));
+  --igd-color-background-category-3: hsl(from var(--igd-color-accent-inverse-2) h s l / var(--igd-opacity-subtle));
+  --igd-color-background-inverse-overlay: hsl(from var(--igd-color-background-inverse) h s l / var(--igd-opacity-chip));
+  --igd-color-background-info: hsl(from var(--igd-color-foreground-info) h s l / var(--igd-opacity-subtle));
+  --igd-color-background-error: hsl(from var(--igd-color-foreground-error) h s l / var(--igd-opacity-subtle));
+  --igd-color-background-success: hsl(from var(--igd-color-foreground-success) h s l / var(--igd-opacity-subtle));
+  --igd-color-background-warning: hsl(from var(--igd-color-foreground-warning) h s l / var(--igd-opacity-subtle));
+  --igd-nav-background: hsl(from var(--igd-color-background-page) h s l / var(--igd-opacity-nav));
+  --igd-color-background-scrim: hsl(from var(--igd-color-background-inverse) h s l / var(--igd-opacity-strong));
+  --igd-footer-border-subtle: hsl(from var(--igd-color-foreground-inverse) h s l / var(--igd-opacity-subtle));
+  --igd-footer-border: hsl(from var(--igd-color-foreground-inverse) h s l / var(--igd-opacity-muted));
+  --igd-footer-card-border: hsl(from var(--igd-color-foreground-inverse) h s l / var(--igd-opacity-subtle));
+  --igd-footer-field-background: hsl(from var(--igd-color-foreground-inverse) h s l / var(--igd-opacity-subtle));
   --igd-footer-field-inline-background: hsl(from var(--igd-footer-background) h s l / var(--igd-opacity-field));
-  --igd-footer-check-background: hsl(from var(--igd-color-text-inverse) h s l / var(--igd-opacity-faint));
-  --igd-footer-check-border: hsl(from var(--igd-color-text-inverse) h s l / var(--igd-opacity-heavy));
-  --igd-footer-social-hover-background: hsl(from var(--igd-color-link-inverse) h s l / var(--igd-opacity-muted));
-  --igd-footer-social-hover-border: hsl(from var(--igd-color-focus-inverse) h s l / var(--igd-opacity-heavy));
-  --igd-gradient-border-bundle: linear-gradient(var(--igd-color-surface-card), var(--igd-color-surface-card)) padding-box, linear-gradient(135deg, var(--igd-color-accent-brand), var(--igd-color-accent-ai)) border-box;
-  --igd-gradient-emphasis: linear-gradient(180deg, hsl(from var(--igd-color-accent-brand) h s l / var(--igd-opacity-subtle)), hsl(from var(--igd-color-accent-inverse) h s l / var(--igd-opacity-faint)));
-  --igd-footer-card-background: linear-gradient(180deg, hsl(from var(--igd-color-text-inverse) h s l / var(--igd-opacity-faint)), transparent);
+  --igd-footer-check-background: hsl(from var(--igd-color-foreground-inverse) h s l / var(--igd-opacity-faint));
+  --igd-footer-check-border: hsl(from var(--igd-color-foreground-inverse) h s l / var(--igd-opacity-heavy));
+  --igd-footer-social-background-hover: hsl(from var(--igd-color-foreground-link-inverse) h s l / var(--igd-opacity-muted));
+  --igd-footer-social-border-hover: hsl(from var(--igd-color-focus-ring-inverse) h s l / var(--igd-opacity-heavy));
+  --igd-gradient-border-bundle: linear-gradient(var(--igd-color-background-card), var(--igd-color-background-card)) padding-box, linear-gradient(135deg, var(--igd-color-accent-brand), var(--igd-color-accent-ai)) border-box;
+  --igd-gradient-emphasis: linear-gradient(180deg, hsl(from var(--igd-color-accent-brand) h s l / var(--igd-opacity-subtle)), hsl(from var(--igd-color-accent-inverse-1) h s l / var(--igd-opacity-faint)));
+  --igd-footer-card-background: linear-gradient(180deg, hsl(from var(--igd-color-foreground-inverse) h s l / var(--igd-opacity-faint)), transparent);
   --igd-container-gutter: clamp(var(--igd-space-lg), 4vw, var(--igd-space-4xl)); /* @kind spacing */
   --igd-space-section: clamp(var(--igd-space-5xl), calc(3.4783cqi + 3.2174rem), var(--igd-space-6xl)); /* @kind spacing */
   --igd-layout-split: 0.95fr 1.05fr; /* @kind other */
@@ -692,7 +689,7 @@
 }
 @keyframes igd-app-shimmer {
   0%, 100% { filter: drop-shadow(0 var(--igd-space-xs) var(--igd-space-md) hsl(from var(--igd-color-accent-brand) h s l / var(--igd-opacity-heavy))); opacity: 1; }
-  50%      { filter: drop-shadow(0 var(--igd-space-xs) var(--igd-space-xl) hsl(from var(--igd-color-accent-inverse) h s l / var(--igd-opacity-heavy))); opacity: 1; }
+  50%      { filter: drop-shadow(0 var(--igd-space-xs) var(--igd-space-xl) hsl(from var(--igd-color-accent-inverse-1) h s l / var(--igd-opacity-heavy))); opacity: 1; }
 }
 
 /* Breakpoints (media queries cannot read custom properties; generated from tokens.json breakpoint family) */
@@ -704,7 +701,7 @@
   /* semantic tokens that alias a ramp step */
   --igd-color-accent-brand: var(--ig-info-seed);
   --igd-color-accent-ai: var(--ig-secondary-seed);
-  --igd-color-action-default: var(--ig-primary-seed);
+  --igd-color-background-action: var(--ig-primary-seed);
   --igd-rating-star: var(--ig-warn-200);
   --igd-window-dot-red: var(--ig-error-300);
   --igd-window-dot-amber: var(--ig-warn-200);
@@ -712,51 +709,35 @@
   --igd-tile-4: var(--ig-success-400);
   --igd-tile-6: var(--ig-warn-200);
   /* state tokens: derived from their base. Override a base and its states follow. */
-  --igd-color-action-fill-hover: oklch(from var(--igd-color-action-default) calc(l + -0.0719) calc(c * 0.8229) calc(h + 0.07));
-  --igd-color-action-active: oklch(from var(--igd-color-action-default) calc(l + -0.1271) calc(c * 0.6811) calc(h + -0.15));
-  --igd-color-action-hover: oklch(from var(--igd-color-action-text) calc(l + -0.0685) calc(c * 0.9384) calc(h + 0.06));
-  --igd-color-link-utility: oklch(from var(--igd-color-action-text) calc(l + -0.0191) calc(c * 0.6566) calc(h + -13.81));
-  --igd-color-surface-tint: oklch(from var(--igd-color-action-default) calc((1 - var(--igd-theme-dark)) * 0.9717 + var(--igd-theme-dark) * 0.2368) calc(c * 0.0436 * (1 + 1.5 * var(--igd-theme-dark))) calc(h + 17.61));
-  --igd-color-surface-tint-strong: oklch(from var(--igd-color-action-default) calc((1 - var(--igd-theme-dark)) * 0.9395 + var(--igd-theme-dark) * 0.2786) calc(c * 0.1176 * (1 + 1.5 * var(--igd-theme-dark))) calc(h + 12.29));
-  --igd-color-border-accent: oklch(from var(--igd-color-action-default) calc((1 - var(--igd-theme-dark)) * 0.8810 + var(--igd-theme-dark) * 0.3547) calc(c * 0.2360 * (1 + 1.5 * var(--igd-theme-dark))) calc(h + 10.49));
+  --igd-color-background-action-hover: oklch(from var(--igd-color-background-action) calc(l + -0.0719) calc(c * 0.8229) calc(h + 0.07));
+  --igd-color-foreground-link-hover: oklch(from var(--igd-color-foreground-action) calc(l + -0.0685) calc(c * 0.9384) calc(h + 0.06));
+  --igd-color-foreground-link-active: oklch(from var(--igd-color-foreground-action) calc(l + -0.1237) calc(c * 0.7768) calc(h + -0.16));
+  --igd-color-background-tint: oklch(from var(--igd-color-background-action) calc((1 - var(--igd-theme-dark)) * 0.9717 + var(--igd-theme-dark) * 0.2368) calc(c * 0.0436 * (1 + 1.5 * var(--igd-theme-dark))) calc(h + 17.61));
+  --igd-color-background-tint-strong: oklch(from var(--igd-color-background-action) calc((1 - var(--igd-theme-dark)) * 0.9395 + var(--igd-theme-dark) * 0.2786) calc(c * 0.1176 * (1 + 1.5 * var(--igd-theme-dark))) calc(h + 12.29));
+  --igd-color-border-action: oklch(from var(--igd-color-background-action) calc((1 - var(--igd-theme-dark)) * 0.8810 + var(--igd-theme-dark) * 0.3547) calc(c * 0.2360 * (1 + 1.5 * var(--igd-theme-dark))) calc(h + 10.49));
   --igd-color-accent-brand-hover: oklch(from var(--igd-color-accent-brand) calc(l + -0.0722) calc(c * 0.8392) calc(h + 0.16));
   --igd-color-accent-brand-active: oklch(from var(--igd-color-accent-brand) calc(l + -0.1450) calc(c * 0.7697) calc(h + 0.25));
-  --igd-color-link-inverse-hover: oklch(from var(--igd-color-link-inverse) calc(l + 0.0909) calc(c * 0.6634) calc(h + -0.39));
-  --igd-color-focus-inverse: oklch(from var(--igd-color-link-inverse) calc(l + 0.0909) calc(c * 0.6634) calc(h + -0.39));
-  --igd-footer-focus: oklch(from var(--igd-color-link-inverse) calc(l + 0.0909) calc(c * 0.6634) calc(h + -0.39));
-  --igd-footer-link-hover: oklch(from var(--igd-footer-link) calc(l + 0.1009) calc(c * 0.0000) calc(h + 0));
-  --igd-color-feedback-error-inverse: oklch(from var(--igd-color-feedback-error-default) calc(l + 0.1480) calc(c * 0.9185) calc(h + 0.20));
-  --igd-color-feedback-success-inverse: oklch(from var(--igd-color-feedback-success-default) calc(l + 0.2159) calc(c * 1.4955) calc(h + -0.33));
-  --igd-color-feedback-warning-inverse: oklch(from var(--igd-color-feedback-warning-default) calc(l + 0.2338) calc(c * 1.2097) calc(h + -0.37));
-  --igd-color-feedback-info-inverse: oklch(from var(--igd-color-feedback-info-default) calc(l + 0.3293) calc(c * 0.4856) calc(h + 7.74));
-  --igd-badge-bundle-background: oklch(from var(--igd-badge-bundle-color) calc((1 - var(--igd-theme-dark)) * 0.9755 + var(--igd-theme-dark) * 0.2319) calc(c * 0.0507 * (1 + 1.5 * var(--igd-theme-dark))) calc(h + 5.81));
-  --igd-fw-angular-background: oklch(from var(--igd-fw-angular-color) calc((1 - var(--igd-theme-dark)) * 0.9460 + var(--igd-theme-dark) * 0.2702) calc(c * 0.1342 * (1 + 1.5 * var(--igd-theme-dark))) calc(h + 6.18));
-  --igd-fw-angular-border: oklch(from var(--igd-fw-angular-color) calc((1 - var(--igd-theme-dark)) * 0.8563 + var(--igd-theme-dark) * 0.3869) calc(c * 0.4165 * (1 + 1.5 * var(--igd-theme-dark))) calc(h + 4.89));
-  --igd-fw-react-background: oklch(from var(--igd-fw-react-color) calc((1 - var(--igd-theme-dark)) * 0.9392 + var(--igd-theme-dark) * 0.2790) calc(c * 0.3684 * (1 + 1.5 * var(--igd-theme-dark))) calc(h + 2.63));
-  --igd-fw-react-border: oklch(from var(--igd-fw-react-color) calc((1 - var(--igd-theme-dark)) * 0.8371 + var(--igd-theme-dark) * 0.4117) calc(c * 1.0737 * (1 + 1.5 * var(--igd-theme-dark))) calc(h + 0.47));
-  --igd-fw-blazor-background: oklch(from var(--igd-color-accent-ai) calc((1 - var(--igd-theme-dark)) * 0.9755 + var(--igd-theme-dark) * 0.2319) calc(c * 0.0395 * (1 + 1.5 * var(--igd-theme-dark))) calc(h + 6.03));
-  --igd-fw-blazor-border: oklch(from var(--igd-color-accent-ai) calc((1 - var(--igd-theme-dark)) * 0.9040 + var(--igd-theme-dark) * 0.3248) calc(c * 0.2125 * (1 + 1.5 * var(--igd-theme-dark))) calc(h + 6.41));
-  --igd-fw-webcomponents-background: oklch(from var(--igd-color-action-default) calc((1 - var(--igd-theme-dark)) * 0.9717 + var(--igd-theme-dark) * 0.2368) calc(c * 0.0436 * (1 + 1.5 * var(--igd-theme-dark))) calc(h + 17.61));
-  --igd-fw-webcomponents-border: oklch(from var(--igd-color-action-default) calc((1 - var(--igd-theme-dark)) * 0.8810 + var(--igd-theme-dark) * 0.3547) calc(c * 0.2360 * (1 + 1.5 * var(--igd-theme-dark))) calc(h + 10.49));
-  --igd-fw-winforms-background: oklch(from var(--igd-color-action-default) calc((1 - var(--igd-theme-dark)) * 0.9717 + var(--igd-theme-dark) * 0.2368) calc(c * 0.0436 * (1 + 1.5 * var(--igd-theme-dark))) calc(h + 17.61));
-  --igd-fw-winforms-border: oklch(from var(--igd-color-action-default) calc((1 - var(--igd-theme-dark)) * 0.8810 + var(--igd-theme-dark) * 0.3547) calc(c * 0.2360 * (1 + 1.5 * var(--igd-theme-dark))) calc(h + 10.49));
-  --igd-fw-wpf-background: oklch(from var(--igd-color-action-default) calc((1 - var(--igd-theme-dark)) * 0.9395 + var(--igd-theme-dark) * 0.2786) calc(c * 0.1176 * (1 + 1.5 * var(--igd-theme-dark))) calc(h + 12.29));
-  --igd-fw-wpf-border: oklch(from var(--igd-color-action-default) calc((1 - var(--igd-theme-dark)) * 0.8810 + var(--igd-theme-dark) * 0.3547) calc(c * 0.2360 * (1 + 1.5 * var(--igd-theme-dark))) calc(h + 10.49));
-  --igd-table-mark-partial-background: oklch(from var(--igd-table-mark-partial-color) calc((1 - var(--igd-theme-dark)) * 0.8500 + var(--igd-theme-dark) * 0.3949) calc(c * 1.7546 * (1 + 1.5 * var(--igd-theme-dark))) calc(h + -0.29));
-  --igd-footer-heading: oklch(from var(--igd-footer-text) calc(l + -0.0907) calc(c * 1.3685) calc(h + -5.88));
-  --igd-footer-link: oklch(from var(--igd-footer-text) calc(l + 0.0778) calc(c * 0.5091) calc(h + -4.35));
-  --igd-footer-strong: oklch(from var(--igd-footer-text) calc(l + 0.1662) calc(c * 0.1365) calc(h + 0));
-  --igd-color-text-inverse-muted: oklch(from var(--igd-color-text-inverse) calc(l + -0.2694) 0.0171 253.94);
-  --igd-table-header-sub-highlight-color: var(--igd-color-action-on);
-  --igd-color-link-utility-hover: var(--igd-color-action-text);
-  --igd-color-focus-default: var(--igd-color-action-text);
+  --igd-color-foreground-link-inverse-hover: oklch(from var(--igd-color-foreground-link-inverse) calc(l + 0.0909) calc(c * 0.6634) calc(h + -0.39));
+  --igd-color-focus-ring-inverse: oklch(from var(--igd-color-foreground-link-inverse) calc(l + 0.0909) calc(c * 0.6634) calc(h + -0.39));
+  --igd-footer-focus-ring: oklch(from var(--igd-color-foreground-link-inverse) calc(l + 0.0909) calc(c * 0.6634) calc(h + -0.39));
+  --igd-color-foreground-error-inverse: oklch(from var(--igd-color-foreground-error) calc(l + 0.1480) calc(c * 0.9185) calc(h + 0.20));
+  --igd-color-foreground-success-inverse: oklch(from var(--igd-color-foreground-success) calc(l + 0.2159) calc(c * 1.4955) calc(h + -0.33));
+  --igd-color-foreground-warning-inverse: oklch(from var(--igd-color-foreground-warning) calc(l + 0.2338) calc(c * 1.2097) calc(h + -0.37));
+  --igd-color-foreground-info-inverse: oklch(from var(--igd-color-foreground-info) calc(l + 0.3293) calc(c * 0.4856) calc(h + 7.74));
+  --igd-badge-bundle-background: oklch(from var(--igd-badge-bundle-foreground) calc((1 - var(--igd-theme-dark)) * 0.9755 + var(--igd-theme-dark) * 0.2319) calc(c * 0.0507 * (1 + 1.5 * var(--igd-theme-dark))) calc(h + 5.81));
+  --igd-table-mark-partial-background: oklch(from var(--igd-table-mark-partial-foreground) calc((1 - var(--igd-theme-dark)) * 0.8500 + var(--igd-theme-dark) * 0.3949) calc(c * 1.7546 * (1 + 1.5 * var(--igd-theme-dark))) calc(h + -0.29));
+  --igd-footer-foreground-faint: oklch(from var(--igd-footer-foreground) calc(l + -0.0907) calc(c * 1.3685) calc(h + -5.88));
+  --igd-footer-link-foreground: oklch(from var(--igd-footer-foreground) calc(l + 0.0778) calc(c * 0.5091) calc(h + -4.35));
+  --igd-footer-foreground-strong: oklch(from var(--igd-footer-foreground) calc(l + 0.1662) calc(c * 0.1365) calc(h + 0));
+  --igd-color-foreground-inverse-faint: oklch(from var(--igd-color-foreground-inverse) calc(l + -0.2694) 0.0171 253.94);
+  --igd-table-header-sub-foreground-highlighted: var(--igd-color-foreground-on-action);
+  --igd-color-focus-ring: var(--igd-color-foreground-action);
   --igd-tile-1: var(--igd-color-accent-brand);
   --igd-tile-2: var(--igd-color-accent-ai);
-  --igd-tile-7: var(--igd-color-action-default);
-  --igd-color-link-inverse: var(--igd-color-accent-inverse);
-  --igd-footer-icon: var(--igd-footer-text);
+  --igd-tile-7: var(--igd-color-background-action);
+  --igd-color-foreground-link-inverse: var(--igd-color-accent-inverse-1);
   /* label on the action fill: the engine's adaptive-contrast(), black or white by luminance at the WCAG AA threshold */
-  --igd-color-action-on: hsla(from color(from var(--igd-color-action-default) var(--y-contrast)) h 0 l / 1);
+  --igd-color-foreground-on-action: hsla(from color(from var(--igd-color-background-action) var(--y-contrast)) h 0 l / 1);
 }
 [data-ig="icon-tile"] { --igd-tile-fill: var(--igd-tile-1); --igd-tile-on: hsla(from color(from var(--igd-tile-fill) var(--y-contrast)) h 0 l / 1); }
 
@@ -765,24 +746,22 @@
 [data-theme="light"] { color-scheme: light; }
 /* neutral roles, declared again on each scope and theme */
 :root, [data-ig-scope], [data-theme] {
-  --igd-color-text-heading: var(--ig-gray-900);
-  --igd-color-text-strong: var(--ig-gray-800);
-  --igd-color-text-body: var(--ig-gray-600);
-  --igd-color-text-ui: var(--ig-gray-700);
-  --igd-color-text-muted: var(--ig-gray-500);
-  --igd-color-icon-subtle: var(--ig-gray-400);
-  --igd-color-surface-page: var(--ig-surface-base);
-  --igd-color-surface-hero: var(--ig-surface-sunken);
-  --igd-color-surface-subtle: var(--ig-surface-sunken);
-  --igd-color-surface-card: var(--ig-surface-raised);
-  --igd-color-surface-muted: var(--ig-surface-sunken);
+  --igd-color-foreground-heading: var(--ig-gray-900);
+  --igd-color-foreground-default: var(--ig-gray-800);
+  --igd-color-foreground-subtle: var(--ig-gray-600);
+  --igd-color-foreground-control: var(--ig-gray-700);
+  --igd-color-foreground-faint: var(--ig-gray-500);
+  --igd-color-foreground-decorative: var(--ig-gray-400);
+  --igd-color-background-page: var(--ig-surface-base);
+  --igd-color-background-subtle: var(--ig-surface-sunken);
+  --igd-color-background-card: var(--ig-surface-raised);
   --igd-color-border-default: var(--ig-gray-200);
   --igd-color-border-subtle: var(--ig-gray-100);
   --igd-color-border-control: var(--ig-gray-500);
   --igd-table-mark-yes-background: var(--ig-gray-200);
-  --igd-table-mark-yes-color: var(--ig-gray-700);
+  --igd-table-mark-yes-foreground: var(--ig-gray-700);
   --igd-table-mark-no-background: var(--ig-gray-100);
-  --igd-table-mark-no-color: var(--ig-gray-600);
+  --igd-table-mark-no-foreground: var(--ig-gray-600);
 }
 /* dark: the light grey and surface ramps are swapped for the engine's dark palette (palette() with a dark surface and a light grey).
    Every semantic name keeps its meaning. Brand fills keep the seed; text in a brand or status colour reads a lighter engine step; tints and hairlines switch through --igd-theme-dark. */
@@ -802,19 +781,18 @@
   --ig-surface-sunken: #080f21;
   --ig-surface-raised: #161f32;
   --ig-surface-overlay: #1d263a;
-  --igd-color-action-text: var(--ig-primary-200);
-  --igd-color-feedback-error-default: var(--ig-error-100);
-  --igd-color-feedback-success-default: var(--ig-success-50);
-  --igd-color-feedback-warning-default: var(--ig-warn-100);
-  --igd-color-feedback-info-default: var(--ig-primary-200);
-  --igd-badge-bundle-color: var(--ig-secondary-200);
-  --igd-badge-new-color: var(--ig-success-50);
-  --igd-badge-updated-color: var(--ig-primary-200);
-  --igd-badge-preview-color: var(--ig-warn-100);
-  --igd-badge-premium-color: var(--ig-secondary-200);
-  --igd-badge-oss-color: var(--ig-success-50);
-  --igd-table-mark-partial-color: var(--ig-warn-50);
-  --igd-fw-angular-color: #ffb9ce;
-  --igd-fw-react-color: #d3f1fa;
+  --igd-color-foreground-action: var(--ig-primary-200);
+  --igd-color-foreground-link: var(--ig-primary-200);
+  --igd-color-foreground-error: var(--ig-error-100);
+  --igd-color-foreground-success: var(--ig-success-50);
+  --igd-color-foreground-warning: var(--ig-warn-100);
+  --igd-color-foreground-info: var(--ig-primary-200);
+  --igd-badge-bundle-foreground: var(--ig-secondary-200);
+  --igd-badge-new-foreground: var(--ig-success-50);
+  --igd-badge-updated-foreground: var(--ig-primary-200);
+  --igd-badge-preview-foreground: var(--ig-warn-100);
+  --igd-badge-premium-foreground: var(--ig-secondary-200);
+  --igd-badge-oss-foreground: var(--ig-success-50);
+  --igd-table-mark-partial-foreground: var(--ig-warn-50);
 }
-[data-theme] { background-color: var(--igd-color-surface-page); color: var(--igd-color-text-strong); }
+[data-theme] { background-color: var(--igd-color-background-page); color: var(--igd-color-foreground-default); }

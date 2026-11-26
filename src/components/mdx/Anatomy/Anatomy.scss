@@ -8,7 +8,7 @@
 .igd-anatomy {
   // Declared here, so overrides target .igd-anatomy: .igd-anatomy { --igd-anatomy-padding: 32px; }
   --igd-anatomy-padding: #{rem(60px)} #{rem(24px)};
-  --igd-anatomy-bg: hsl(from var(--igd-color-surface-muted) h s l / 0.8);
+  --igd-anatomy-bg: hsl(from var(--igd-color-background-subtle) h s l / 0.8);
   --igd-anatomy-border-color: var(--igd-color-border-default);
   --igd-anatomy-radius: #{rem(4px)};
 

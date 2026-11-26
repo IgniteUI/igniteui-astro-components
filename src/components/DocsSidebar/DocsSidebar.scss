@@ -48,7 +48,7 @@
         margin-block-end: var(--igd-space-stack-2xs);
         line-height: 1;
       }
-      color: var(--igd-color-text-strong);
+      color: var(--igd-color-foreground-default);
     }
 
     .igd-logo__platform {
@@ -56,7 +56,7 @@
         line-height: 1;
         margin: 0;
       }
-      color: var(--igd-color-text-muted);
+      color: var(--igd-color-foreground-faint);
     }
   }
 
@@ -101,13 +101,13 @@
       margin-block: 0;
     }
 
-    color: var(--igd-color-text-heading);
+    color: var(--igd-color-foreground-heading);
     user-select: none;
   }
 
   .group-label-count {
-    color: var(--igd-color-text-ui);
-    background: var(--igd-color-surface-muted);
+    color: var(--igd-color-foreground-control);
+    background: var(--igd-color-background-subtle);
     padding: var(--igd-space-inset-3xs) var(--igd-space-inset-xs);
     aspect-ratio: 1;
     border-radius: var(--igd-radius-control);
@@ -128,8 +128,8 @@
 
   // Full-text tooltip for truncated labels (see sidebar-tooltip.ts).
   .igd-sidebar-tooltip {
-    --ig-tooltip-background: var(--igd-color-surface-inverse);
-    --ig-tooltip-text-color: var(--igd-color-text-inverse);
+    --ig-tooltip-background: var(--igd-color-background-inverse);
+    --ig-tooltip-text-color: var(--igd-color-foreground-inverse);
     --ig-tooltip-border-radius: #{rem(4px)};
 
     &::part(base) {

@@ -26,7 +26,7 @@
 .toc-sidebar__heading {
   @include type-style('body-2');
 
-  color: var(--igd-color-text-muted);
+  color: var(--igd-color-foreground-faint);
   padding-block-end: var(--igd-space-inset-xs);
   padding-inline: var(--igd-space-inset-xl) 0;
   text-transform: uppercase;

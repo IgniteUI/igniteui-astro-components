@@ -4,10 +4,10 @@
   .igd-theming {
     --igd-theming-radius: #{rem(4px)};
     --igd-theming-border: var(--igd-color-border-default);
-    --igd-theming-bg: var(--igd-color-surface-card);
-    --igd-theming-fg: var(--igd-color-text-heading);
-    --igd-theming-muted: var(--igd-color-text-muted);
-    --igd-theming-hover-bg: var(--igd-color-surface-muted);
+    --igd-theming-bg: var(--igd-color-background-card);
+    --igd-theming-fg: var(--igd-color-foreground-heading);
+    --igd-theming-muted: var(--igd-color-foreground-faint);
+    --igd-theming-hover-bg: var(--igd-color-background-subtle);
     --igd-theming-accent: var(--igd-accent);
 
     position: relative;
@@ -34,7 +34,7 @@
     --ig-input-group-filled-text-hover-color: transparent;
     --ig-input-group-focused-text-color: transparent;
     --ig-select-toggle-button-background: transparent;
-    --ig-select-toggle-button-foreground: var(--igd-color-text-body);
+    --ig-select-toggle-button-foreground: var(--igd-color-foreground-subtle);
     --ig-drop-down-background-color: var(--igd-theming-bg);
     --ig-drop-down-border-color: var(--igd-theming-border);
     --ig-drop-down-border-width: #{rem(1px)};
@@ -216,7 +216,7 @@
 
   .igd-theming__mode-tooltip {
     --ig-tooltip-background: rgb(52 75 101 / 90%);
-    --ig-tooltip-text-color: var(--igd-color-text-inverse);
+    --ig-tooltip-text-color: var(--igd-color-foreground-inverse);
     --ig-tooltip-border-radius: var(--igd-theming-radius);
 
     &::part(base) {

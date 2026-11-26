@@ -16,31 +16,31 @@ A semantic token is named for what the colour is for. It has one value in the li
 
 ```css
 .my-element {
-  background: var(--igd-color-surface-card);
-  color: var(--igd-color-text-strong);
+  background: var(--igd-color-background-card);
+  color: var(--igd-color-foreground-default);
   border: 1px solid var(--igd-color-border-default);
 }
 ```
 
 ### Text
 
-| For                   | Token                      | Sample                                                       |
-| --------------------- | -------------------------- | ------------------------------------------------------------ |
-| Headings              | `--igd-color-text-heading` | <span style="color: var(--igd-color-text-heading)">Aa</span> |
-| Body text             | `--igd-color-text-strong`  | <span style="color: var(--igd-color-text-strong)">Aa</span>  |
-| Supporting text       | `--igd-color-text-body`    | <span style="color: var(--igd-color-text-body)">Aa</span>    |
-| Captions and meta     | `--igd-color-text-muted`   | <span style="color: var(--igd-color-text-muted)">Aa</span>   |
-| Links and action text | `--igd-color-action-text`  | <span style="color: var(--igd-color-action-text)">Aa</span>  |
+| For                   | Token                            | Sample                                                             |
+| --------------------- | -------------------------------- | ------------------------------------------------------------------ |
+| Headings              | `--igd-color-foreground-heading` | <span style="color: var(--igd-color-foreground-heading)">Aa</span> |
+| Body text             | `--igd-color-foreground-default` | <span style="color: var(--igd-color-foreground-default)">Aa</span> |
+| Supporting text       | `--igd-color-foreground-subtle`  | <span style="color: var(--igd-color-foreground-subtle)">Aa</span>  |
+| Captions and meta     | `--igd-color-foreground-faint`   | <span style="color: var(--igd-color-foreground-faint)">Aa</span>   |
+| Links and action text | `--igd-color-foreground-action`  | <span style="color: var(--igd-color-foreground-action)">Aa</span>  |
 
 ### Surfaces and fills
 
-| For                      | Token                        | Sample                                                                                                   |
-| ------------------------ | ---------------------------- | -------------------------------------------------------------------------------------------------------- |
-| The page                 | `--igd-color-surface-page`   | <span style="background: var(--igd-color-surface-page)"> Aa </span>                                      |
-| A quiet band or panel    | `--igd-color-surface-subtle` | <span style="background: var(--igd-color-surface-subtle)"> Aa </span>                                    |
-| A card                   | `--igd-color-surface-card`   | <span style="background: var(--igd-color-surface-card)"> Aa </span>                                      |
-| A filled button          | `--igd-color-action-default` | <span style="background: var(--igd-color-action-default); color: var(--igd-color-action-on)"> Aa </span> |
-| The label on that button | `--igd-color-action-on`      | <span style="background: var(--igd-color-action-default); color: var(--igd-color-action-on)"> Aa </span> |
+| For                      | Token                              | Sample                                                                                                                 |
+| ------------------------ | ---------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| The page                 | `--igd-color-background-page`      | <span style="background: var(--igd-color-background-page)"> Aa </span>                                                 |
+| A quiet band or panel    | `--igd-color-background-subtle`    | <span style="background: var(--igd-color-background-subtle)"> Aa </span>                                               |
+| A card                   | `--igd-color-background-card`      | <span style="background: var(--igd-color-background-card)"> Aa </span>                                                 |
+| A filled button          | `--igd-color-background-action`    | <span style="background: var(--igd-color-background-action); color: var(--igd-color-foreground-on-action)"> Aa </span> |
+| The label on that button | `--igd-color-foreground-on-action` | <span style="background: var(--igd-color-background-action); color: var(--igd-color-foreground-on-action)"> Aa </span> |
 
 ### Borders
 
@@ -51,21 +51,21 @@ A semantic token is named for what the colour is for. It has one value in the li
 
 ### Feedback
 
-| For          | Token                                  | Sample                                                                                                                            |
-| ------------ | -------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
-| Error text   | `--igd-color-feedback-error-default`   | <span style="background: var(--igd-color-feedback-error-surface); color: var(--igd-color-feedback-error-default)"> Aa </span>     |
-| Success text | `--igd-color-feedback-success-default` | <span style="background: var(--igd-color-feedback-success-surface); color: var(--igd-color-feedback-success-default)"> Aa </span> |
-| Warning text | `--igd-color-feedback-warning-default` | <span style="background: var(--igd-color-feedback-warning-surface); color: var(--igd-color-feedback-warning-default)"> Aa </span> |
-| Info text    | `--igd-color-feedback-info-default`    | <span style="background: var(--igd-color-feedback-info-surface); color: var(--igd-color-feedback-info-default)"> Aa </span>       |
+| For          | Token                            | Sample                                                                                                                |
+| ------------ | -------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| Error text   | `--igd-color-foreground-error`   | <span style="background: var(--igd-color-background-error); color: var(--igd-color-foreground-error)"> Aa </span>     |
+| Success text | `--igd-color-foreground-success` | <span style="background: var(--igd-color-background-success); color: var(--igd-color-foreground-success)"> Aa </span> |
+| Warning text | `--igd-color-foreground-warning` | <span style="background: var(--igd-color-background-warning); color: var(--igd-color-foreground-warning)"> Aa </span> |
+| Info text    | `--igd-color-foreground-info`    | <span style="background: var(--igd-color-background-info); color: var(--igd-color-foreground-info)"> Aa </span>       |
 
 Every token, with its value and what it is for, is in `src/styles/design-system/llms-full.txt`.
 
 ## Rules
 
-- **Never read a palette step.** `var(--ig-gray-700)` is one fixed grey; it does not follow the theme and it says nothing about its purpose. Read `var(--igd-color-text-strong)`.
-- **Text in the action colour is `--igd-color-action-text`.** `--igd-color-action-default` is a fill; as text it can fall below the contrast minimum.
-- **The label on a fill is its `-on` token**, `--igd-color-action-on` on `--igd-color-action-default`. It is black or white, whichever reads.
-- **Feedback text sits on its own tint.** `--igd-color-feedback-error-surface` is the background for `--igd-color-feedback-error-default`; the same for success, warning and info.
+- **Never read a palette step.** `var(--ig-gray-700)` is one fixed grey; it does not follow the theme and it says nothing about its purpose. Read `var(--igd-color-foreground-default)`.
+- **Text in the action colour is `--igd-color-foreground-action`.** `--igd-color-background-action` is a fill; as text it can fall below the contrast minimum.
+- **The label on a fill is its `-on` token**, `--igd-color-foreground-on-action` on `--igd-color-background-action`. It is black or white, whichever reads.
+- **Feedback text sits on its own tint.** `--igd-color-background-error` is the background for `--igd-color-foreground-error`; the same for success, warning and info.
 - **Hover and active colours are tokens too**, derived from their base. Do not darken a colour by hand.
 - **No `light-dark()` pairs.** A token already has a value per theme.
 - **When no token fits, do not pick a hex.** Say which token is missing; it is added in the design system.

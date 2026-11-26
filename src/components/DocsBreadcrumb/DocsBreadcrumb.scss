@@ -22,16 +22,16 @@
   list-style: none;
   padding: 0;
   gap: 6px;
-  color: var(--igd-color-text-ui);
+  color: var(--igd-color-foreground-control);
 }
 
 [data-theme='dark'] {
   .docs-breadcrumb-list {
-    color: var(--igd-color-text-body);
+    color: var(--igd-color-foreground-subtle);
   }
 
   .docs-breadcrumb-home {
-    color: var(--igd-color-icon-subtle);
+    color: var(--igd-color-foreground-decorative);
   }
 }
 
@@ -45,7 +45,7 @@
 }
 
 .docs-breadcrumb-home {
-  color: var(--igd-color-text-muted);
+  color: var(--igd-color-foreground-faint);
   flex-shrink: 0;
 }
 
@@ -55,7 +55,7 @@
   flex-shrink: 0;
   user-select: none;
   rotate: -90deg;
-  color: var(--igd-color-text-muted);
+  color: var(--igd-color-foreground-faint);
 }
 
 .docs-breadcrumb-crumb {
