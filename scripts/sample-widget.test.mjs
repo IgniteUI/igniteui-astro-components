@@ -182,6 +182,66 @@ test('chrome="demo" loads the iframe and moves only the theme picker into the fo
   }
 });
 
+// In its own tab a sample browser gets no theme message, so "Open in full
+// screen" carries the picker's selection as query parameters and follows it.
+test('the full-screen link carries the theme picker selection', async () => {
+  const base = 'https://demo.example.com/react-demos';
+  const route = 'grids/grid/overview';
+  const dom = new JSDOM(
+    `<div id="cw-theme" class="igd-code-view" data-platform="react"
+      data-demos-base-url="${base}" data-iframe-src="${base}/${route}">
+      <igc-tabs></igc-tabs>
+      <div class="igd-sample-container loading" aria-busy="true">
+        <div class="igd-sample-frame"><iframe data-src="${base}/${route}" aria-hidden="true"></iframe></div>
+      </div>
+      <div class="igd-sample-theming" hidden>
+        <div class="igd-theming" data-theme="bootstrap" data-mode="system" data-resolved-mode="light"></div>
+      </div>
+    </div>`,
+    { url: 'https://www.infragistics.com/', runScripts: 'outside-only', pretendToBeVisual: true },
+  );
+  try {
+    const context = dom.getInternalVMContext();
+    context.exports = {};
+    context.require = (name) => {
+      if (name === 'igniteui-webcomponents') return new Proxy({}, { get: () => () => {} });
+      if (name === './icon-registry' || name.endsWith('?raw')) return {};
+      if (name === './copy-status') return { announceCopyStatus() {}, clearCopyStatus() {} };
+      if (name === '../lib/ultimate-ui-platforms') return platformsModule.exports;
+      if (name === '../code-theme') return { igCodeTheme: { name: 'ig-dark' } };
+      if (name === 'shiki') return { createHighlighter: async () => ({}) };
+      throw new Error(`Unexpected dependency: ${name}`);
+    };
+    context.fetch = async () => ({ ok: true, json: async () => ({ sampleFiles: [] }) });
+    context.requestIdleCallback = (callback) => callback();
+    vm.runInContext(script, context);
+    context.exports.initSampleWidgets();
+    await new Promise((resolve) => setImmediate(resolve));
+
+    const doc = dom.window.document;
+    const href = () => doc.querySelector('.igd-full-screen-btn').getAttribute('href');
+    // The resolved mode, as the embedded demo gets it.
+    assert.equal(href(), `${base}/${route}?igd-theme=bootstrap&igd-mode=light`);
+
+    const picker = doc.querySelector('.igd-theming');
+    picker.dispatchEvent(
+      new dom.window.CustomEvent('igd-theme-change', {
+        detail: { theme: 'material', mode: 'dark', modePreference: 'dark' },
+        bubbles: true,
+      }),
+    );
+    assert.equal(href(), `${base}/${route}?igd-theme=material&igd-mode=dark`);
+
+    // On load the widget posts the picker's current selection, and the link follows it.
+    picker.dataset.theme = 'indigo';
+    picker.dataset.resolvedMode = 'light';
+    doc.querySelector('iframe').dispatchEvent(new dom.window.Event('load'));
+    assert.equal(href(), `${base}/${route}?igd-theme=indigo&igd-mode=light`);
+  } finally {
+    dom.window.close();
+  }
+});
+
 // A same-origin fitContent demo whose page fills the iframe (html, body
 // { height: 100% }) and that also posts its own height. Measuring its body
 // only echoes the iframe height back, so once the demo reports, a later

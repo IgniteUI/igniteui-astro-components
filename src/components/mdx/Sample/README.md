@@ -60,6 +60,10 @@ As in 1.x, `iframeOnly` wins over `hideCode`. A valid `chrome` wins over both, a
 
 The iframe does not always fill the sample area: `position` leaves slack around it, `spacing` pads it, and a centered `fitContent` iframe has margins beside it. A `click` or `pointerdown` on that empty part of the area is forwarded to a same-origin demo as an untrusted event on its `<html>` element, so the demo's outside-click handling runs and open popups (a picker, a dropdown, a combo) close. The forwarded event carries no coordinates. A cross-origin demo cannot be reached, so its behavior is unchanged.
 
+## Theme picker and the sample browser
+
+With `showThemePicker`, the widget posts `{ type: 'igd-sample-theme', theme, mode }` to the demo iframe when it loads and on every change; `mode` is `light` or `dark`, already resolved from `system`. "Open in full screen" opens the demo in its own tab, where no message arrives, so its URL carries the same selection as the `igd-theme` and `igd-mode` query parameters, for example `…/grids/grid/overview?igd-theme=material&igd-mode=dark`. A sample browser applies them when it is not in an iframe. Without a theme picker the URL is the demo's own.
+
 ## Examples
 
 ```mdx
