@@ -5,7 +5,7 @@ import DocsToc from '../../../../src/components/DocsToc/DocsToc.astro';
 import DocsSubHeader from '../../../../src/components/DocsSubHeader/DocsSubHeader.astro';
 import Search from '../../../../src/components/Search/Search.astro';
 import DocsAside from '../../../../src/components/mdx/DocsAside/DocsAside.astro';
-import { SITE_TITLE, SIDEBAR, PRODUCT_LINKS, PACKAGES, VERSIONS } from '../../site-config';
+import { SITE_TITLE, SIDEBAR, PACKAGES, VERSIONS } from '../../site-config';
 
 const slug = 'components/search';
 
@@ -20,11 +20,6 @@ const headings = [
 <DocsLayout title="Search" siteTitle={SITE_TITLE} hasSidebar currentSlug={slug}>
   <DocsSubHeader
     slot="subheader"
-    pageTitle="Search"
-    currentSlug={slug}
-    siteTitle={SITE_TITLE}
-    productLinks={PRODUCT_LINKS}
-    showThemeToggle={true}
     packages={[...PACKAGES]}
     selectedPackage={PACKAGES[0].value}
     versions={[...VERSIONS]}
