@@ -22,6 +22,7 @@ import {
   selectedPackage as virtualSelectedPackage,
 } from 'virtual:docs-template/site-meta';
 import Search from '../Search/Search.astro';
+import type { PackageEntry } from '../../site-meta';
 import type { SidebarEntry } from '../../lib/sidebar/types';
 import { getBreadcrumb } from '../../lib/sidebar/helpers';
 import './DocsSubHeader.scss';
@@ -77,7 +78,7 @@ interface Props {
    * page: selecting the entry goes to the current URL with this site's base swapped for `base`.
    * Nothing checks that the page exists there; redirect missing pages on the server.
    */
-  packages?: Array<string | { label: string; value?: string; href?: string; base?: string }>;
+  packages?: PackageEntry[];
   /** Currently selected package value (must match one of `packages`). */
   selectedPackage?: string;
   /** Label rendered before the package selector. Defaults to `'Package'`. */
@@ -120,7 +121,6 @@ const resolvedSiteTitle = siteTitleProp ?? siteTitle;
 const currentPlatform = virtualPlatform ?? null;
 const resolvedLinks = (productLinksProp ?? productLinks) as ProductLink[];
 const filteredLinks = resolvedLinks.filter((l: ProductLink) => l.platform !== currentPlatform);
-type PackageEntry = string | { label: string; value?: string; href?: string; base?: string };
 const rawPackages = packagesProp ?? (virtualPackages?.length > 0 ? virtualPackages : undefined);
 const packages = (rawPackages as PackageEntry[] | undefined)?.map((p: PackageEntry) =>
   typeof p === 'string'

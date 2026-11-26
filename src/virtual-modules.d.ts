@@ -34,9 +34,8 @@ declare module 'virtual:docs-template/site-meta' {
   }>;
   /** Astro trailingSlash config value: 'always' | 'never' | 'ignore'. */
   export const trailingSlash: 'always' | 'never' | 'ignore';
-  /** Optional package switcher entries. */
-  export const packages:
-    Array<string | { label: string; value?: string; href?: string; base?: string }> | undefined;
+  /** Optional package switcher entries. Mirrored by SITE_META_EXPORTS in site-meta.ts. */
+  export const packages: import('./site-meta.ts').PackageEntry[] | undefined;
   /** Currently selected package. */
   export const selectedPackage: string | undefined;
 }
