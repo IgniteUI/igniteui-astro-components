@@ -287,3 +287,118 @@ for (const [scenario, title] of Object.entries(fitScenarios)) {
     }
   });
 }
+
+// Loads the widget over a centered bare sample and returns the DOM and its parts.
+const setupCenteredSample = (resizable = false) => {
+  const dom = new JSDOM(
+    `<div class="igd-sample-container" data-justify="center" data-valign="center" data-spacing="md"
+      ${resizable ? 'data-resizable="true"' : ''}>
+      <div class="igd-sample-frame"><iframe style="width: 65%; height: 50px;"></iframe>
+        ${resizable ? '<div class="igd-sample-resize-handle" aria-hidden="true"></div>' : ''}
+      </div>
+    </div>`,
+    {
+      url: 'https://staging.example.com/products/docs/',
+      runScripts: 'outside-only',
+      pretendToBeVisual: true,
+    },
+  );
+  const context = dom.getInternalVMContext();
+  context.exports = {};
+  context.require = (name) => {
+    if (name === 'igniteui-webcomponents') return new Proxy({}, { get: () => () => {} });
+    if (name === './icon-registry' || name.endsWith('?raw')) return {};
+    if (name === './copy-status') return { announceCopyStatus() {}, clearCopyStatus() {} };
+    if (name === '../lib/ultimate-ui-platforms') return platformsModule.exports;
+    if (name === '../code-theme') return { igCodeTheme: { name: 'ig-dark' } };
+    if (name === 'shiki') return { createHighlighter: async () => ({}) };
+    throw new Error(`Unexpected dependency: ${name}`);
+  };
+  context.ResizeObserver = class {
+    observe() {}
+    disconnect() {}
+  };
+  context.requestIdleCallback = (callback) => callback();
+  vm.runInContext(script, context);
+  context.exports.initSampleWidgets();
+  const doc = dom.window.document;
+  return {
+    dom,
+    container: doc.querySelector('.igd-sample-container'),
+    frame: doc.querySelector('.igd-sample-frame'),
+    iframe: doc.querySelector('iframe'),
+  };
+};
+
+// Builds a bubbling pointerdown or click with the window's own event classes.
+const pointerEventOf = (window, type, init = {}) => {
+  const EventClass = type === 'pointerdown' ? window.PointerEvent : window.MouseEvent;
+  return new EventClass(type, { bubbles: true, composed: true, ...init });
+};
+
+for (const type of ['click', 'pointerdown']) {
+  test(`forwards a ${type} on the empty sample area to a same-origin demo`, () => {
+    const { dom, container, iframe } = setupCenteredSample();
+    try {
+      const inner = iframe.contentDocument;
+      const received = [];
+      inner.addEventListener(type, (event) => received.push(event));
+      container.dispatchEvent(pointerEventOf(dom.window, type));
+      assert.equal(received.length, 1, 'the demo document receives one event');
+      assert.equal(received[0].type, type);
+      assert.equal(received[0].target, inner.documentElement);
+    } finally {
+      dom.window.close();
+    }
+  });
+}
+
+test('does not forward a click on the frame or the resize handle', () => {
+  const { dom, frame, iframe } = setupCenteredSample(true);
+  try {
+    const received = [];
+    iframe.contentDocument.addEventListener('click', (event) => received.push(event));
+    frame.dispatchEvent(pointerEventOf(dom.window, 'click'));
+    frame
+      .querySelector('.igd-sample-resize-handle')
+      .dispatchEvent(pointerEventOf(dom.window, 'click'));
+    assert.equal(received.length, 0, 'the demo document receives nothing');
+  } finally {
+    dom.window.close();
+  }
+});
+
+test('keeps the pressed button on a forwarded pointerdown', () => {
+  const { dom, container, iframe } = setupCenteredSample();
+  try {
+    const received = [];
+    iframe.contentDocument.addEventListener('pointerdown', (event) => received.push(event));
+    container.dispatchEvent(pointerEventOf(dom.window, 'pointerdown', { button: 2, buttons: 2 }));
+    assert.equal(received.length, 1);
+    assert.equal(received[0].button, 2);
+    assert.equal(received[0].buttons, 2);
+  } finally {
+    dom.window.close();
+  }
+});
+
+const crossOriginDocuments = {
+  'that has no document': () => null,
+  'whose document throws': (window) => {
+    throw new window.DOMException('Blocked a frame', 'SecurityError');
+  },
+};
+for (const [title, contentDocument] of Object.entries(crossOriginDocuments)) {
+  test(`ignores a click on the empty area of a cross-origin sample ${title}`, () => {
+    const { dom, container, iframe } = setupCenteredSample();
+    try {
+      const errors = [];
+      dom.window.addEventListener('error', (event) => errors.push(event.message));
+      Object.defineProperty(iframe, 'contentDocument', { get: () => contentDocument(dom.window) });
+      container.dispatchEvent(pointerEventOf(dom.window, 'click'));
+      assert.deepEqual(errors, [], 'the listener raises no error');
+    } finally {
+      dom.window.close();
+    }
+  });
+}
