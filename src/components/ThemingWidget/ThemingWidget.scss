@@ -3,12 +3,12 @@
 @layer components {
   .igd-theming {
     --igd-theming-radius: #{rem(4px)};
-    --igd-theming-border: var(--ig-gray-300);
-    --igd-theming-bg: light-dark(#fff, var(--ig-gray-100));
-    --igd-theming-fg: var(--ig-gray-900);
-    --igd-theming-muted: var(--ig-gray-500);
-    --igd-theming-hover-bg: var(--ig-gray-100);
-    --igd-theming-accent: var(--igd-accent, var(--ig-primary-500));
+    --igd-theming-border: var(--igd-color-border-default);
+    --igd-theming-bg: var(--igd-color-background-card);
+    --igd-theming-fg: var(--igd-color-foreground-heading);
+    --igd-theming-muted: var(--igd-color-foreground-faint);
+    --igd-theming-hover-bg: var(--igd-color-background-subtle);
+    --igd-theming-accent: var(--igd-accent);
 
     position: relative;
     display: inline-block;
@@ -21,7 +21,7 @@
   .igd-theming__select {
     width: 100%;
     --ig-input-group-border-color: var(--igd-theming-border);
-    --ig-input-group-hover-border-color: var(--ig-gray-400);
+    --ig-input-group-hover-border-color: var(--igd-color-border-control);
     --ig-input-group-focused-border-color: var(--igd-theming-accent);
     --ig-input-group-border-border-radius: var(--igd-theming-radius);
     --ig-input-group-input-prefix-background: transparent;
@@ -34,7 +34,7 @@
     --ig-input-group-filled-text-hover-color: transparent;
     --ig-input-group-focused-text-color: transparent;
     --ig-select-toggle-button-background: transparent;
-    --ig-select-toggle-button-foreground: var(--ig-gray-600);
+    --ig-select-toggle-button-foreground: var(--igd-color-foreground-subtle);
     --ig-drop-down-background-color: var(--igd-theming-bg);
     --ig-drop-down-border-color: var(--igd-theming-border);
     --ig-drop-down-border-width: #{rem(1px)};
@@ -86,7 +86,7 @@
     left: rem(48px);
     display: inline-flex;
     align-items: baseline;
-    gap: rem(4px);
+    gap: var(--igd-space-gap-2xs);
     max-width: calc(100% - #{rem(88px)});
     pointer-events: none;
     transform: translateY(-50%);
@@ -125,7 +125,7 @@
     display: inline-flex;
     flex-shrink: 0;
     align-items: center;
-    gap: rem(2px);
+    gap: var(--igd-space-gap-3xs);
   }
 
   // Bootstrap's medium select prefix inset is 10px; the Figma trigger uses 16px.
@@ -166,7 +166,7 @@
     justify-content: space-between;
     margin: 0;
     min-height: rem(40px);
-    padding-inline: rem(16px);
+    padding-inline: var(--igd-space-inset-md);
   }
 
   .igd-theming__section-label {
@@ -216,12 +216,12 @@
 
   .igd-theming__mode-tooltip {
     --ig-tooltip-background: rgb(52 75 101 / 90%);
-    --ig-tooltip-text-color: var(--ig-gray-50);
+    --ig-tooltip-text-color: var(--igd-color-foreground-inverse);
     --ig-tooltip-border-radius: var(--igd-theming-radius);
 
     &::part(base) {
       min-height: rem(24px);
-      padding: rem(4px) rem(8px);
+      padding: var(--igd-space-inset-2xs) var(--igd-space-inset-xs);
       font-family: inherit;
       font-size: rem(10px);
       font-weight: 500;
@@ -244,7 +244,7 @@
     border: 0;
     outline: none;
     min-height: rem(40px);
-    padding-inline: rem(24px) rem(18px);
+    padding-inline: var(--igd-space-inset-xl) rem(18px);
     font-family: inherit;
     font-size: rem(14px);
     font-weight: 500;
@@ -252,7 +252,7 @@
     line-height: rem(20px);
 
     &::part(prefix) {
-      margin-inline-end: rem(8px);
+      margin-inline-end: var(--igd-space-gap-xs);
     }
 
     &:not([selected]) igc-icon {

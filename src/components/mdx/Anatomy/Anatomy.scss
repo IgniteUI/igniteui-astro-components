@@ -8,11 +8,8 @@
 .igd-anatomy {
   // Declared here, so overrides target .igd-anatomy: .igd-anatomy { --igd-anatomy-padding: 32px; }
   --igd-anatomy-padding: #{rem(60px)} #{rem(24px)};
-  --igd-anatomy-bg: light-dark(
-    #{color($color: gray, $variant: 100, $opacity: 0.8)},
-    #{color($color: surface, $variant: 500, $opacity: 0.8)}
-  );
-  --igd-anatomy-border-color: light-dark(var(--ig-gray-300), var(--ig-surface-700));
+  --igd-anatomy-bg: hsl(from var(--igd-color-background-subtle) h s l / 0.8);
+  --igd-anatomy-border-color: var(--igd-color-border-default);
   --igd-anatomy-radius: #{rem(4px)};
 
   display: grid;
@@ -21,7 +18,7 @@
   background-color: var(--igd-anatomy-bg);
   border: rem(1px) solid var(--igd-anatomy-border-color);
   border-radius: var(--igd-anatomy-radius);
-  margin: 0 0 rem(26px);
+  margin: 0 0 var(--igd-space-stack-xl);
 
   // Never let the frame itself overflow its column.
   max-width: 100%;

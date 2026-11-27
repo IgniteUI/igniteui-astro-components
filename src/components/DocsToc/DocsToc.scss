@@ -13,7 +13,7 @@
   min-width: rem(256px);
   max-height: calc(100vh - var(--igd-header-height));
   overflow-y: auto;
-  padding-block: rem(24px);
+  padding-block: var(--igd-space-inset-xl);
 }
 
 .toc-wrapper {
@@ -26,8 +26,8 @@
 .toc-sidebar__heading {
   @include type-style('body-2');
 
-  color: var(--ig-gray-500);
-  padding-block-end: rem(8px);
-  padding-inline: rem(24px) 0;
+  color: var(--igd-color-foreground-faint);
+  padding-block-end: var(--igd-space-inset-xs);
+  padding-inline: var(--igd-space-inset-xl) 0;
   text-transform: uppercase;
 }

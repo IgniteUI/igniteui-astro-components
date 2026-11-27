@@ -18,13 +18,13 @@
     z-index: 1;
     background-color: var(--igd-layout-sections-bg);
     view-transition-name: docs-subheader;
-    padding-inline-start: rem(24px);
+    padding-inline-start: var(--igd-space-inset-xl);
 
     .igd-logo {
       display: flex;
       align-items: center;
       height: 100%;
-      padding-inline: 0 rem(16px);
+      padding-inline: 0 var(--igd-space-inset-md);
 
       .igd-logo__text {
         display: flex;
@@ -37,7 +37,7 @@
             line-height: 1;
           }
 
-          color: var(--ig-gray-800);
+          color: var(--igd-color-foreground-default);
         }
       }
 
@@ -47,25 +47,19 @@
           margin: 0;
         }
 
-        color: var(--ig-gray-500);
+        color: var(--igd-color-foreground-faint);
       }
     }
 
     // TODO THIS AND THE FILTER CAN BE UNDEr ONCE CLASS SINCE THE THEME IS THE SAME NO NEED TO REPEAT
     igc-input {
-      --ig-input-group-input-suffix-color: light-dark(var(--ig-gray-900), var(--ig-gray-800));
-      --ig-input-group-input-suffix-color--filled: light-dark(
-        var(--ig-gray-900),
-        var(--ig-gray-800)
-      );
-      --ig-input-group-input-suffix-color--focused: light-dark(
-        var(--ig-gray-900),
-        var(--ig-gray-800)
-      );
-      --ig-input-group-idle-text-color: light-dark(var(--ig-gray-900), var(--ig-gray-800));
-      --ig-input-group-filled-text-color: light-dark(var(--ig-gray-900), var(--ig-gray-900));
-      --ig-input-group-placeholder-color: var(--ig-gray-500);
-      --ig-input-group-hover-placeholder-color: var(--ig-gray-500);
+      --ig-input-group-input-suffix-color: var(--igd-color-foreground-heading);
+      --ig-input-group-input-suffix-color--filled: var(--igd-color-foreground-heading);
+      --ig-input-group-input-suffix-color--focused: var(--igd-color-foreground-heading);
+      --ig-input-group-idle-text-color: var(--igd-color-foreground-heading);
+      --ig-input-group-filled-text-color: var(--igd-color-foreground-heading);
+      --ig-input-group-placeholder-color: var(--igd-color-foreground-faint);
+      --ig-input-group-hover-placeholder-color: var(--igd-color-foreground-faint);
 
       --input-prefix-background: transparent;
       --input-prefix-background--focused: transparent;
@@ -80,9 +74,9 @@
       --ig-flat-button-icon-color-hover: var(--igd-accent);
       --ig-flat-button-icon-color-focus: var(--igd-accent);
       --border-border-radius: var(--igd-border-radius-xl);
-      --border-background: light-dark(var(--ig-gray-50), var(--ig-gray-50));
+      --border-background: var(--igd-color-background-subtle);
       --border-color: transparent;
-      --hover-border-color: var(--ig-gray-400);
+      --hover-border-color: var(--igd-color-border-control);
       --focused-border-color: var(--igd-accent);
     }
   }
@@ -91,12 +85,12 @@
     display: flex;
     align-items: center;
     height: 100%;
-    gap: rem(16px);
+    gap: var(--igd-space-gap-md);
     min-width: 0;
     justify-content: end;
 
     &:last-child {
-      margin-inline-end: rem(32px);
+      margin-inline-end: var(--igd-space-gap-2xl);
     }
 
     > igc-input {
@@ -154,7 +148,7 @@
   .subheader-sidebar-toggle {
     display: none;
 
-    --foreground: light-dark(var(--ig-gray-900), var(--ig-gray-900));
+    --foreground: var(--igd-color-foreground-heading);
     --background: transparent;
     --border-color: transparent;
 

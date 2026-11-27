@@ -259,9 +259,24 @@ reference code until those issues are closed.
 `DocsLayout` imports the **JetBrains Mono** variable font from
 `@fontsource-variable/jetbrains-mono` (self-hosted, no CDN request) and
 `styles/theme.scss` sets `--font-mono: 'JetBrains Mono Variable'` on `:root`.
-The sans-serif stack is the Infragistics brand font through
-`--igd-font-sans`, and code uses `--igd-font-mono`. Override either custom
-property to change the fonts site-wide.
+Body text is **DM Sans** and headings are **Plus Jakarta Sans**, both from the
+design system (`--igd-font-body`, `--igd-font-display`). `--igd-font-sans` is an
+alias of `--igd-font-body`, and code uses `--igd-font-mono`. Override a custom
+property in the host site to change a font site-wide.
+
+---
+
+## Design system
+
+`DocsLayout` loads the Infragistics design system before `styles/theme.scss`:
+the engine palette (`--ig-*`), the semantic tokens (`--igd-color-*`,
+`--igd-space-*`, `--igd-radius-*`, `--igd-shadow-*`) and its `docs` type set,
+selected with `data-igd-type="docs"` on `<html>`. Components read semantic
+tokens, so a colour has the right value in the light and the dark theme without
+`light-dark()`.
+
+The design system is the `ig-design-system` npm package, a dependency of this
+one. `npm run check:design-system` checks `src` against its rules.
 
 ---
 

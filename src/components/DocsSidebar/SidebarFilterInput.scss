@@ -2,35 +2,32 @@
 
 .docs-sidebar {
   igc-input {
-    --ig-input-group-input-suffix-color: light-dark(var(--ig-gray-900), var(--ig-gray-800));
-    --ig-input-group-input-suffix-color--filled: light-dark(var(--ig-gray-900), var(--ig-gray-800));
-    --ig-input-group-input-suffix-color--focused: light-dark(
-      var(--ig-gray-900),
-      var(--ig-gray-800)
-    );
-    --ig-input-group-idle-text-color: light-dark(var(--ig-gray-900), var(--ig-gray-800));
-    --ig-input-group-filled-text-color: light-dark(var(--ig-gray-900), var(--ig-gray-900));
-    --ig-input-group-placeholder-color: var(--ig-gray-500);
-    --ig-input-group-hover-placeholder-color: var(--ig-gray-500);
+    --ig-input-group-input-suffix-color: var(--igd-color-foreground-heading);
+    --ig-input-group-input-suffix-color--filled: var(--igd-color-foreground-heading);
+    --ig-input-group-input-suffix-color--focused: var(--igd-color-foreground-heading);
+    --ig-input-group-idle-text-color: var(--igd-color-foreground-heading);
+    --ig-input-group-filled-text-color: var(--igd-color-foreground-heading);
+    --ig-input-group-placeholder-color: var(--igd-color-foreground-faint);
+    --ig-input-group-hover-placeholder-color: var(--igd-color-foreground-faint);
 
     --ig-flat-button-hover-background: transparent;
     --ig-flat-button-focus-background: transparent;
     --ig-flat-button-icon-color-hover: var(--igd-accent);
     --ig-flat-button-icon-color-focus: var(--igd-accent);
     --border-border-radius: var(--igd-border-radius-xl);
-    --border-background: light-dark(var(--ig-gray-50), var(--ig-gray-50));
-    --border-color: light-dark(var(--ig-gray-300), var(--ig-gray-100));
-    --hover-border-color: light-dark(var(--ig-gray-400), var(--ig-gray-100));
+    --border-background: var(--igd-color-background-subtle);
+    --border-color: var(--igd-color-border-default);
+    --hover-border-color: var(--igd-color-border-control);
 
     igc-icon-button[variant='flat'] {
       --background: transparent;
       --hover-background: transparent;
       --focus-background: transparent;
       --active-background: transparent;
-      --foreground: var(--ig-gray-800);
-      --foreground-hover: var(--ig-primary-800);
-      --foreground-focus: var(--ig-primary-800);
-      --foreground-active: var(--ig-primary-800);
+      --foreground: var(--igd-color-foreground-default);
+      --foreground-hover: var(--igd-color-foreground-link-active);
+      --foreground-focus: var(--igd-color-foreground-link-active);
+      --foreground-active: var(--igd-color-foreground-link-active);
 
       padding: 0;
 
@@ -48,7 +45,7 @@
 
     > igc-icon {
       --size: #{rem(24px)};
-      margin-inline-end: rem(8px);
+      margin-inline-end: var(--igd-space-gap-xs);
     }
   }
 
@@ -61,7 +58,7 @@
       margin: 0;
     }
 
-    padding-inline: rem(16px);
+    padding-inline: var(--igd-space-inset-md);
   }
 
   igc-button {
@@ -86,8 +83,8 @@
     line-height: 1;
   }
 
-  color: light-dark(var(--ig-gray-500), var(--ig-gray-700));
-  padding-inline: rem(16px) 0;
+  color: var(--igd-color-foreground-faint);
+  padding-inline: var(--igd-space-inset-md) 0;
 
   &:empty {
     display: none;

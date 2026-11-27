@@ -42,6 +42,7 @@ const breadcrumbMeta = breadcrumbPath.replace(/,/g, '');
 
 {(resolvedSiteTitle || crumbs.length > 0) && (
   <nav
+    data-ig-scope
     class="docs-breadcrumb"
     aria-label="Breadcrumb"
     data-pagefind-meta={breadcrumbMeta ? `breadcrumb:${breadcrumbMeta}` : undefined}

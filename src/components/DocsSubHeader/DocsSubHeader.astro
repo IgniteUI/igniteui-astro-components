@@ -141,7 +141,7 @@ const crumbs = sidebarCrumbs.length > 0 ? sidebarCrumbs : pageTitle ? [pageTitle
 const platformLabel = platformLabelFor(currentPlatform);
 ---
 
-<docs-subheader-menu class="igd-docs-subheader" data-platform={currentPlatform ?? ''}>
+<docs-subheader-menu class="igd-docs-subheader" data-platform={currentPlatform ?? ''} data-ig-scope>
   <div class="igd-logo">
     <!-- Sidebar toggle — visible only when the sidebar is hidden (tablet + mobile) -->
     <igc-icon-button

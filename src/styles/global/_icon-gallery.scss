@@ -11,8 +11,8 @@ igc-tabs.icon-gallery-tabs {
 .icon-gallery__grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(9rem, 1fr));
-  gap: rem(16px);
-  padding-block: rem(16px);
+  gap: var(--igd-space-gap-md);
+  padding-block: var(--igd-space-inset-md);
 
   &--illustrations {
     grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr));
@@ -25,15 +25,15 @@ igc-tabs.icon-gallery-tabs {
   align-items: center;
   gap: 0.5rem;
   padding: 1rem 0.75rem 0.75rem;
-  border: 1px solid light-dark(var(--ig-gray-200), var(--ig-gray-100));
+  border: 1px solid var(--igd-color-border-default);
   border-radius: 0.625rem;
-  background: light-dark(var(--ig-surface-500), var(--ig-surface-400));
+  background: var(--igd-color-background-card);
   transition:
     border-color 0.15s,
     box-shadow 0.15s;
 
   &:hover {
-    border-color: var(--ig-primary-300);
+    border-color: var(--igd-color-border-action);
     box-shadow: 0 2px 8px light-dark(rgba(0, 0, 0, 0.06), rgba(0, 0, 0, 0.3));
   }
 }
@@ -42,7 +42,7 @@ igc-tabs.icon-gallery-tabs {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-block: rem(16px);
+  margin-block: var(--igd-space-stack-md);
 
   igc-icon {
     --size: 28px;
@@ -72,18 +72,18 @@ igc-tabs.icon-gallery-tabs {
 
 .icon-card__name {
   @include type-style('caption') {
-    margin-block-end: rem(24px);
+    margin-block-end: var(--igd-space-stack-xl);
   }
 
   text-align: center;
   word-break: break-all;
-  color: light-dark(var(--ig-gray-700), var(--ig-gray-800));
+  color: var(--igd-color-foreground-control);
 }
 
 .icon-card__actions {
   display: flex;
   flex-direction: column;
-  gap: rem(8px);
+  gap: var(--igd-space-gap-xs);
   width: 100%;
 
   igc-button {
@@ -96,9 +96,9 @@ igc-tabs.icon-gallery-tabs {
     }
 
     &.icon-card__btn--copied::part(base) {
-      background: light-dark(var(--ig-success-100), var(--ig-success-200));
-      border-color: var(--ig-success-400);
-      color: var(--ig-success-700);
+      background: var(--igd-color-background-success);
+      border-color: var(--igd-color-foreground-success);
+      color: var(--igd-color-foreground-success);
     }
   }
 }

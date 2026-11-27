@@ -26,7 +26,7 @@ Before opening a PR run what CI runs: `npm run format:check`, `npm test`, `npm r
 ## Layout
 
 - `src/components/<Name>/` — `<Name>.astro`, `<Name>.scss`, `README.md`; MDX content components in `src/components/mdx/<Name>/`.
-- `src/layouts/DocsLayout/` — the page shell. `src/lib/` — shared types and helpers. `src/plugins/` — remark/rehype plugins. `src/scripts/` — client scripts. `src/chrome/` — marketing header/footer snapshot integration. `src/styles/theme.scss` — the only stylesheet; tokens in `src/styles/global/_variables.scss`.
+- `src/layouts/DocsLayout/` — the page shell. `src/lib/` — shared types and helpers. `src/plugins/` — remark/rehype plugins. `src/scripts/` — client scripts. `src/chrome/` — marketing header/footer snapshot integration. `src/styles/theme.scss` — the only stylesheet; tokens in `src/styles/global/_variables.scss`. The design system (palette, semantic tokens, type) is the `ig-design-system` dependency, which `DocsLayout` imports.
 - `package.json#exports` is the public surface. A file not listed there is private.
 - `playground/` — in-repo Astro site; `playground/src/middleware.ts` and `playground/astro.config.mjs` show what a host must provide.
 - `tests/` — Vitest component tests (`tests/components/**/*.test.ts`, one file per component, rendered with the Astro container API).
@@ -35,14 +35,30 @@ Before opening a PR run what CI runs: `npm run format:check`, `npm test`, `npm r
 ## Conventions
 
 - A component you add or change gets `interface Props` at the top of its `.astro` file with a JSDoc line per prop, and its README lists the same props. Leave other files as they are (6 of 28 have it today).
-- Colours, spacing and fonts come from `--igd-*` custom properties; never hard-code them.
+- Colours, spacing and fonts come from `--igd-*` custom properties; never hard-code them. A colour is a semantic design system token (`--igd-color-foreground-default`, `--igd-color-border-default`), not a raw palette step (`--ig-gray-700`) and not a `light-dark()` pair of steps.
+- The root element of a component carries `data-ig-scope`, so a design system dial (`--ig-size`, `--ig-spacing`, `--ig-radius-factor`, `--ig-elevation-factor`) set on any ancestor reaches it. `tests/components/design-system-scope.test.ts` checks every component and lists the exceptions with the reason for each.
 - Formatting is Prettier's; the pre-commit hook formats staged files, so do not reformat files you did not change.
 - Commits: Conventional Commits with a scope, e.g. `feat(sample): …`, `fix(styles): …`, `docs: …`, `chore(github): …`. Branches: `<user>/<topic>`. Base branch: `master`.
 - Do not add dependencies without saying so in the PR; peer dependencies change what every consumer must install.
 
+## Working with the design system
+
+Colours, type, spacing, radii and shadows come from the shared Infragistics design system. It is the `ig-design-system` npm package, a dependency of this one; `DocsLayout` imports its `fonts.css`, `tokens.css` and `theme.css`.
+
+Before writing or changing a style, read `node_modules/ig-design-system/llms.txt`: the rules, and one component written to them. Every token with its value and use is in `llms-full.txt` next to it. The rules that matter most here:
+
+- Read a semantic token (`--igd-color-foreground-default`), never a palette step (`--ig-gray-700`).
+- Padding takes `--igd-space-inset-*`, vertical margins `--igd-space-stack-*`, gaps and inline margins `--igd-space-gap-*`.
+- Text in the action colour is `--igd-color-foreground-action`; `--igd-color-background-action` is for fills, with `--igd-color-foreground-on-action` as the label.
+- Widths, heights and offsets are not tokens. Type them.
+- When no token fits, do not invent a value. Say which token is missing; it is added in the design system.
+- The docs sites use the smaller type set: `DocsLayout` sets `data-igd-type="docs"` on `<html>`.
+
+`npm run check:design-system` (`ig-design-system check src`) must pass; CI runs it.
+
 ## Adding or changing a component
 
-1. `src/components/<Name>/<Name>.astro` + `<Name>.scss` + `README.md` (template in `CONTRIBUTING.md`).
+1. `src/components/<Name>/<Name>.astro` + `<Name>.scss` + `README.md` (template in `CONTRIBUTING.md`). Put `data-ig-scope` on the root element.
 2. Add the subpath to `package.json#exports`.
 3. Add a row to the tables in `README.md` and a line to `llms.txt`.
 4. Add or update a playground page under `playground/src/pages/components/` and the entry in `playground/src/site-config.ts`.

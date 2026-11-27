@@ -7,7 +7,7 @@ a:has(code) {
   &:hover {
     code {
       color: var(--igd-accent);
-      border-color: var(--ig-primary-100);
+      border-color: var(--igd-color-border-action);
     }
   }
 }

@@ -3,7 +3,7 @@
 .docs-breadcrumb {
   width: 100%;
   padding: 0;
-  margin-block-end: rem(16px);
+  margin-block-end: var(--igd-space-stack-md);
 
   ul,
   ol {
@@ -22,30 +22,30 @@
   list-style: none;
   padding: 0;
   gap: 6px;
-  color: light-dark(var(--ig-gray-700), var(--ig-gray-400));
+  color: var(--igd-color-foreground-control);
 }
 
 [data-theme='dark'] {
   .docs-breadcrumb-list {
-    color: var(--ig-gray-600);
+    color: var(--igd-color-foreground-subtle);
   }
 
   .docs-breadcrumb-home {
-    color: var(--ig-gray-400);
+    color: var(--igd-color-foreground-decorative);
   }
 }
 
 .docs-breadcrumb-item {
   display: flex;
   align-items: center;
-  gap: rem(4px);
+  gap: var(--igd-space-gap-2xs);
   white-space: nowrap;
   overflow: hidden;
   padding: 0;
 }
 
 .docs-breadcrumb-home {
-  color: light-dark(var(--ig-gray-500), var(--ig-gray-600));
+  color: var(--igd-color-foreground-faint);
   flex-shrink: 0;
 }
 
@@ -55,7 +55,7 @@
   flex-shrink: 0;
   user-select: none;
   rotate: -90deg;
-  color: light-dark(var(--ig-gray-500), var(--ig-gray-600));
+  color: var(--igd-color-foreground-faint);
 }
 
 .docs-breadcrumb-crumb {

@@ -10,7 +10,7 @@
     display: contents;
 
     #search-scope-trigger-icon {
-      margin-inline-start: rem(16px);
+      margin-inline-start: var(--igd-space-gap-md);
     }
   }
 
@@ -21,7 +21,7 @@
 
   igc-tabs {
     igc-divider {
-      margin-block: rem(16px) rem(24px);
+      margin-block: var(--igd-space-stack-md) var(--igd-space-stack-xl);
 
       &:last-of-type {
         display: none;
@@ -60,7 +60,7 @@
     }
 
     igc-tab {
-      --item-text-color: light-dark(var(--ig-gray-900), var(--ig-gray-700));
+      --item-text-color: var(--igd-color-foreground-heading);
       --item-background: var(--igd-layout-sections-bg);
       --item-hover-background: var(--igd-layout-sections-bg);
       --item-hover-color: var(--igd-accent);
@@ -82,21 +82,21 @@
     }
 
     igc-tab::part(base) {
-      gap: rem(4px);
+      gap: var(--igd-space-gap-2xs);
     }
 
     igc-tab::part(tab-body) {
       overflow-y: auto;
       flex: 1 1 auto;
       min-height: 0;
-      padding-block: rem(16px);
+      padding-block: var(--igd-space-inset-md);
       padding-inline: 0;
       border-block-start: var(--igd-app-outline);
     }
   }
 
   .igd-search-tab-count {
-    color: light-dark(var(--ig-gray-400), var(--ig-gray-300));
+    color: var(--igd-color-foreground-decorative);
 
     &::before {
       content: '(';
@@ -112,8 +112,8 @@
     }
 
     padding-inline-start: calc(#{rem(26px)} + #{rem(16px)});
-    margin-block-start: rem(16px);
-    color: light-dark(var(--ig-gray-600), var(--ig-gray-400));
+    margin-block-start: var(--igd-space-stack-md);
+    color: var(--igd-color-foreground-subtle);
   }
 
   .igd-search-refine-hint {
@@ -122,12 +122,12 @@
     }
 
     padding-inline-start: calc(#{rem(26px)} + #{rem(16px)});
-    margin-block-start: rem(16px);
-    color: light-dark(var(--ig-gray-600), var(--ig-gray-400));
+    margin-block-start: var(--igd-space-stack-md);
+    color: var(--igd-color-foreground-subtle);
   }
 
   igc-divider {
-    --color: light-dark(var(--ig-gray-200), var(--ig-gray-300));
+    --color: var(--igd-color-border-default);
   }
 
   .igd-search-scope {

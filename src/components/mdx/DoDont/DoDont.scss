@@ -89,11 +89,8 @@
 
 // THEME
 .igd-dodont__frame {
-  --_bg: var(--igd-dodont-bg, light-dark(var(--ig-gray-100), var(--ig-surface-500)));
-  --_border-color: var(
-    --igd-dodont-border-color,
-    light-dark(var(--ig-gray-300), var(--ig-surface-700))
-  );
+  --_bg: var(--igd-dodont-bg, var(--igd-color-background-subtle));
+  --_border-color: var(--igd-dodont-border-color, var(--igd-color-border-default));
 
   border: var(--_border-width) solid var(--_border-color);
   border-block-start: var(--_accent-width) solid var(--_frame-accent);
@@ -166,7 +163,7 @@
     display: block;
     inline-size: #{rem(32px)};
     block-size: #{rem(32px)};
-    color: var(--ig-gray-600);
+    color: var(--igd-color-foreground-subtle);
 
     svg {
       display: block;
@@ -180,13 +177,13 @@
       margin: 0;
     }
 
-    color: var(--ig-gray-700);
+    color: var(--igd-color-foreground-control);
   }
 }
 
 .igd-dodont__badge {
   --ig-badge-size: var(--_badge-diameter);
-  --ig-badge-border-color: light-dark(var(--ig-gray-50), var(--ig-surface-600));
+  --ig-badge-border-color: var(--igd-color-background-page);
 
   &::part(base) {
     inline-size: var(--_badge-diameter);
@@ -201,16 +198,15 @@
 }
 
 .igd-dodont__panel--do {
-  --_accent: var(--igd-dodont-accent, light-dark(var(--ig-success-900), var(--ig-success-100)));
+  --_accent: var(--igd-dodont-accent, var(--igd-color-foreground-success));
   // Same token the success badge is filled with.
-  --_frame-accent: var(--igd-dodont-frame-accent, var(--ig-success-900));
+  --_frame-accent: var(--igd-dodont-frame-accent, var(--igd-color-foreground-success));
 }
 
 .igd-dodont__panel--dont {
-  // error-800: error-700 is 4.1:1 on white and fails AA for 14px text.
-  --_accent: var(--igd-dodont-accent, light-dark(var(--ig-error-700), var(--ig-error-300)));
+  --_accent: var(--igd-dodont-accent, var(--igd-color-foreground-error));
   // Same token the danger badge is filled with.
-  --_frame-accent: var(--igd-dodont-frame-accent, var(--ig-error-700));
+  --_frame-accent: var(--igd-dodont-frame-accent, var(--igd-color-foreground-error));
 }
 
 // TYPOGRAPHY
@@ -243,5 +239,5 @@
     margin: 0;
   }
 
-  color: var(--ig-gray-700);
+  color: var(--igd-color-foreground-control);
 }

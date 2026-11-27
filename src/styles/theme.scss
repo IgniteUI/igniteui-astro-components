@@ -1,6 +1,4 @@
 @use 'igniteui-theming' as *;
-@use 'igniteui-theming/sass/typography/presets' as *;
-@use 'igniteui-theming/sass/elevations/presets' as *;
 @use 'global' as *;
 
 // Establish the CSS cascade layer order.
@@ -48,9 +46,6 @@ body {
 
 @include sizing();
 @include spacing();
-@include elevations($material-elevations);
-
-@include typography($font-family: aktiv-grotesk, $type-scale: $igd-type-scale);
 
 // scroll-behavior is applied via JS (astro:page-load) so it is not active
 // during the browser's initial scroll-position restoration on page refresh.
