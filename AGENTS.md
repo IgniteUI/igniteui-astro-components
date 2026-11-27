@@ -26,7 +26,7 @@ Before opening a PR run what CI runs: `npm run format:check`, `npm test`, `npm r
 ## Layout
 
 - `src/components/<Name>/` — `<Name>.astro`, `<Name>.scss`, `README.md`; MDX content components in `src/components/mdx/<Name>/`.
-- `src/layouts/DocsLayout/` — the page shell. `src/lib/` — shared types and helpers. `src/plugins/` — remark/rehype plugins. `src/scripts/` — client scripts. `src/chrome/` — marketing header/footer snapshot integration. `src/styles/theme.scss` — the only stylesheet; tokens in `src/styles/global/_variables.scss`. `src/styles/design-system/` — a copy of the built `ig-design-system` package (palette, semantic tokens, type); refresh it with `node scripts/sync-design-system.mjs`, never edit it.
+- `src/layouts/DocsLayout/` — the page shell. `src/lib/` — shared types and helpers. `src/plugins/` — remark/rehype plugins. `src/scripts/` — client scripts. `src/chrome/` — marketing header/footer snapshot integration. `src/styles/theme.scss` — the only stylesheet; tokens in `src/styles/global/_variables.scss`. The design system (palette, semantic tokens, type) is the `ig-design-system` dependency, which `DocsLayout` imports.
 - `package.json#exports` is the public surface. A file not listed there is private.
 - `playground/` — in-repo Astro site; `playground/src/middleware.ts` and `playground/astro.config.mjs` show what a host must provide.
 - `tests/` — Vitest component tests (`tests/components/**/*.test.ts`, one file per component, rendered with the Astro container API).
@@ -43,9 +43,9 @@ Before opening a PR run what CI runs: `npm run format:check`, `npm test`, `npm r
 
 ## Working with the design system
 
-Colours, type, spacing, radii and shadows come from the shared Infragistics design system. `src/styles/design-system/` is a copy of it; `node scripts/sync-design-system.mjs` refreshes it and nothing else edits it.
+Colours, type, spacing, radii and shadows come from the shared Infragistics design system. It is the `ig-design-system` npm package, a dependency of this one; `DocsLayout` imports its `fonts.css`, `tokens.css` and `theme.css`.
 
-Before writing or changing a style, read `src/styles/design-system/llms.txt`: the rules, and one component written to them. Every token with its value and use is in `llms-full.txt` next to it. The rules that matter most here:
+Before writing or changing a style, read `node_modules/ig-design-system/llms.txt`: the rules, and one component written to them. Every token with its value and use is in `llms-full.txt` next to it. The rules that matter most here:
 
 - Read a semantic token (`--igd-color-foreground-default`), never a palette step (`--ig-gray-700`).
 - Padding takes `--igd-space-inset-*`, vertical margins `--igd-space-stack-*`, gaps and inline margins `--igd-space-gap-*`.
@@ -54,7 +54,7 @@ Before writing or changing a style, read `src/styles/design-system/llms.txt`: th
 - When no token fits, do not invent a value. Say which token is missing; it is added in the design system.
 - The docs sites use the smaller type set: `DocsLayout` sets `data-igd-type="docs"` on `<html>`.
 
-`ig-design-system check src --ignore styles/design-system` must pass. The package is not on npm yet, so run it from a checkout: `node ../ig-design-system/dist/cli/checks/cli.js check src --ignore styles/design-system`.
+`npm run check:design-system` (`ig-design-system check src`) must pass; CI runs it.
 
 ## Adding or changing a component
 

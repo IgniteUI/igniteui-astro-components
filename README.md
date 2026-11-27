@@ -275,10 +275,8 @@ selected with `data-igd-type="docs"` on `<html>`. Components read semantic
 tokens, so a colour has the right value in the light and the dark theme without
 `light-dark()`.
 
-`src/styles/design-system/` is a copy of the built `ig-design-system` package,
-and `src/styles/design-system/VERSION` names the commit. `node
-scripts/sync-design-system.mjs` refreshes it from a sibling checkout. The copy
-is replaced by a dependency once the package is published.
+The design system is the `ig-design-system` npm package, a dependency of this
+one. `npm run check:design-system` checks `src` against its rules.
 
 ---
 

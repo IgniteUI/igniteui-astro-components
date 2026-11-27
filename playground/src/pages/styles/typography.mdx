@@ -10,7 +10,7 @@ The type scale and text styling applied by the documentation theme. All examples
 
 ## Where the type comes from
 
-The fonts, sizes, weights and line heights are type roles of the Infragistics design system, loaded from `src/styles/design-system/`. `DocsLayout` sets `data-igd-type="docs"` on `<html>`, which selects the smaller type set made for documentation.
+The fonts, sizes, weights and line heights are type roles of the Infragistics design system, loaded from the `ig-design-system` package. `DocsLayout` sets `data-igd-type="docs"` on `<html>`, which selects the smaller type set made for documentation.
 
 In content you write headings and paragraphs, and they take the right role. In a component, use a role and never a typed-in size:
 
@@ -27,7 +27,7 @@ In content you write headings and paragraphs, and they take the right role. In a
 <p class="igd-type-body-sm">The same role as a class.</p>
 ```
 
-The roles are `display-lg`, `display-md`, `display-sm`, `title-md`, `title-sm`, `lead`, `body-lg`, `body-md`, `body-sm`, `body-xs`, `body-2xs`, `label-lg`, `label-md`, `eyebrow` and `stat`. Each one, with its size and use, is in `src/styles/design-system/llms-full.txt`.
+The roles are `display-lg`, `display-md`, `display-sm`, `title-md`, `title-sm`, `lead`, `body-lg`, `body-md`, `body-sm`, `body-xs`, `body-2xs`, `label-lg`, `label-md`, `eyebrow` and `stat`. Each one, with its size and use, is in `node_modules/ig-design-system/llms-full.txt`.
 
 ---
 

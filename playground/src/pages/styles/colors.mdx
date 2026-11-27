@@ -8,7 +8,7 @@ import ColorPalette from '../../components/ColorPalette.astro';
 
 # Colors
 
-Every colour comes from the Infragistics design system. This package carries a copy of it in `src/styles/design-system/`, and `DocsLayout` loads it before any other style. The same tokens serve the docs, the API docs, the blog and the marketing site.
+Every colour comes from the Infragistics design system. It is the `ig-design-system` npm package, a dependency of this one, and `DocsLayout` loads it before any other style. The same tokens serve the docs, the API docs, the blog and the marketing site.
 
 ## Read a semantic token
 
@@ -58,7 +58,7 @@ A semantic token is named for what the colour is for. It has one value in the li
 | Warning text | `--igd-color-foreground-warning` | <span style="background: var(--igd-color-background-warning); color: var(--igd-color-foreground-warning)"> Aa </span> |
 | Info text    | `--igd-color-foreground-info`    | <span style="background: var(--igd-color-background-info); color: var(--igd-color-foreground-info)"> Aa </span>       |
 
-Every token, with its value and what it is for, is in `src/styles/design-system/llms-full.txt`.
+Every token, with its value and what it is for, is in `node_modules/ig-design-system/llms-full.txt`.
 
 ## Rules
 

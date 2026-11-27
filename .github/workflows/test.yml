@@ -74,3 +74,9 @@ jobs:
 
       - name: Build playground
         run: npm run playground:build
+
+  design-system:
+    name: Design system
+    uses: IgniteUI/ig-design-system/.github/workflows/check-site.yml@1.0.1
+    with:
+      paths: src
